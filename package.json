@@ -1,0 +1,19 @@
+{
+  "name": "test_demo",
+  "version": "1.0.0",
+  "description": "just try",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^6.7.2",
+    "mocha": "^5.2.0",
+    "nativescript-websockets": "^1.5.3",
+    "querystring": "^0.2.0",
+    "request": "^2.79.0"
+  }
+}
