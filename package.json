@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
+    "chai-json-schema": "^1.5.1",
     "mocha": "^5.2.0",
     "nativescript-websockets": "^1.5.3",
     "querystring": "^0.2.0",
