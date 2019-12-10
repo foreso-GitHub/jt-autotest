@@ -1,0 +1,29 @@
+os: linux
+sudo: false
+language: node_js
+node_js:
+  - "10"
+
+# Travis-CI Caching
+cache:
+  directories:
+    - node_modules
+
+
+# S: Build Lifecycle
+install:
+  - npm install
+
+before_script:
+
+# 无其他依赖项所以执行npm run build 构建就行了
+script:
+  - mocha ./test/jingtumTest.js
+
+after_script:
+branches:
+  only:
+    - master
+
+notifications:
+  email: foreso@sina.com
