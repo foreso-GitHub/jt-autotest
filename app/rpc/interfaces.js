@@ -1,7 +1,8 @@
 var server = require('./server.js')
 
-
-
+var log4js = require('log4js')
+log4js.configure('./log4js.json')
+var logger = log4js.getLogger('default');
 
 var rpc = module.exports = {
 
@@ -26,7 +27,7 @@ var rpc = module.exports = {
     },
 
     responseBlockNumber: function () {
-        console.log('Trying to get block number!')
+        logger.debug('Trying to get block number!')
         return new Promise((resolve, reject) => {
             var params = []
             server.RPC_POST('jt_blockNumber', params, function (error, data) {
@@ -47,7 +48,7 @@ var rpc = module.exports = {
     },
 
     responseBalance: function (address) {
-        console.log('Trying to get balance for ' + address)
+        logger.debug('Trying to get balance for ' + address)
         return new Promise((resolve, reject) => {
             var params = []
             params.push(address)
@@ -66,7 +67,7 @@ var rpc = module.exports = {
     },
 
     responseCreateWallet: function () {
-        console.log('Trying to create a new wallet!')
+        logger.debug('Trying to create a new wallet!')
         return new Promise((resolve, reject) => {
             var params = []
             server.RPC_POST('jt_createWallet', params, function (error, data) {
@@ -83,7 +84,7 @@ var rpc = module.exports = {
     },
 
     responseGetTx: function (hash) {
-        console.log('Trying to get tx for ' + hash)
+        logger.debug('Trying to get tx for ' + hash)
         return new Promise((resolve, reject) => {
             var params = []
             params.push(hash)
@@ -101,7 +102,7 @@ var rpc = module.exports = {
     },
 
     responseSendTx: function (from, secret, to, value, memo) {
-        console.log('Trying to send tx from ' + from)
+        logger.debug('Trying to send tx from ' + from)
         return new Promise((resolve, reject) => {
 
             var data = {}
@@ -127,12 +128,12 @@ var rpc = module.exports = {
         if (!error) {
             if (data != null ) {
                 if(JSON.stringify(data.result) !== '{}'){
-                    console.log('result: ', data)
+                    logger.debug('result: ', data)
                     resolve(data)
                 }
             }
         } else {
-            console.log('error: ', error)
+            logger.debug('error: ', error)
             reject(error)
         }
     }

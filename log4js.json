@@ -1,0 +1,18 @@
+{
+  "appenders" : {
+    "console": {"type" : "console"},
+    "dateFile": {
+      "type" : "dateFile",
+      "filename" : "logs/app",
+      "pattern" : "-yyyy-MM-dd.log",
+      "encoding" : "utf-8",
+      "alwaysIncludePattern" : true,
+      "category" : "app"
+    }
+  },
+  "categories": {
+    "default": { "appenders": [ "console", "dateFile" ], "level": "OFF" },
+    "travis": { "appenders": [ "console" ], "level": "OFF" }
+  }
+}
+

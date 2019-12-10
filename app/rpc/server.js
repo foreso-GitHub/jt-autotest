@@ -1,8 +1,11 @@
 var querystring = require('querystring')
 var request = require('request')
 
+var log4js = require('log4js')
+log4js.configure('./log4js.json')
+var logger = log4js.getLogger('default');
+
 const PARSER_TEXT_JSON = 'application/json'
-// const PARSER_NAME_JSON = 'json'
 const PARSER_NAME_URLENCODED = 'urlencoded'
 const PARSER_TEXT_URLENCODED = 'application/x-www-form-urlencoded'
 
@@ -87,7 +90,8 @@ var server = module.exports = {
         data.method = method
         data.params = params
 
-        console.log(JSON.stringify(data))
+        // console.log(JSON.stringify(data))
+        logger.debug(JSON.stringify(data))
 
         server.sendRequest(url, requestMethod, parserText, data, username, password, function (error, res) {
             callback(error, res)
