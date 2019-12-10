@@ -90,8 +90,8 @@ const TX_SCHEMA = {
         "hash",
         "inLedger",
         "ledger_index",
-        // "meta",
-        // "validated"
+        "meta",
+        "validated"
     ],
     properties: {
         meta: {
