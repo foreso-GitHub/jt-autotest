@@ -5,8 +5,7 @@ const PARSER_TEXT_JSON = 'application/json'
 // const PARSER_NAME_JSON = 'json'
 const PARSER_NAME_URLENCODED = 'urlencoded'
 const PARSER_TEXT_URLENCODED = 'application/x-www-form-urlencoded'
-// const RPC_URL = "http://139.198.177.59:9545";
-// const RPC_URL = 'http://139.198.191.254:7545/v1/jsonrpc'
+
 var _url
 var _id = 1;
 
@@ -14,6 +13,10 @@ var server = module.exports = {
 
     setUrl: function(url){
         _url = url
+    },
+
+    getUrl: function(){
+        return _url
     },
 
     // region send http request
@@ -83,6 +86,8 @@ var server = module.exports = {
         data.id = _id++
         data.method = method
         data.params = params
+
+        console.log(JSON.stringify(data))
 
         server.sendRequest(url, requestMethod, parserText, data, username, password, function (error, res) {
             callback(error, res)

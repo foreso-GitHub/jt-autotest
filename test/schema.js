@@ -370,15 +370,14 @@ const PAYMENT_SCHEMA = {
     }
 }
 
-const BLOCKNUMBER_SCHEMA = {
-    title: "test response of jt_blockNumber",
+const RESPONSE_SCHEMA = {
+    title: "test response schema",
     type: "object",
     required: [
         "id",
         "jsonrpc",
         "result",
         "status",
-        // "news"
     ],
     properties: {
         id: {
@@ -387,26 +386,55 @@ const BLOCKNUMBER_SCHEMA = {
         jsonrpc: {
             type: "string"
         },
-        result: {
-            type: "integer"
-        },
         status: {
             type: "string"
         },
-        // news: {
-        //     type: "string"
-        // }
     },
+}
+
+const BLOCKNUMBER_SCHEMA = {
+    title: "test response of jt_blockNumber",
+    type: "integer",
 }
 
 const BLANCE_SCHEMA = {
     title: "test response of jt_getBalance",
     type: "object",
     required: [
+        "balance"
+    ],
+    properties: {
+        balance: {
+            "type": "string"
+        }
+    },
+}
+
+const WALLET_SCHEMA = {
+    title: "test response of jt_createWallet",
+    type: "object",
+    properties: {
+        "address": {
+            "type": "string"
+        },
+        "secret": {
+            "type": "string"
+        }
+    },
+    required: [
+        "address",
+        "secret"
+    ]
+}
+
+const SENDTX_SCHEMA = {
+    title: "test response of jt_sendTransaction",
+    type: "object",
+    required: [
         "id",
         "jsonrpc",
         "result",
-        "status"
+        "status",
     ],
     properties: {
         id: {
@@ -416,20 +444,16 @@ const BLANCE_SCHEMA = {
             type: "string"
         },
         result: {
-            type: "object",
-            required: [
-                "balance"
-            ],
-            properties: {
-                balance: {
-                    "type": "string"
-                }
-            },
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "string"
+            }
         },
         status: {
             type: "string"
-        }
-    }
+        },
+    },
 }
 
 module.exports = {
@@ -448,4 +472,7 @@ module.exports = {
     PAYMENT_SCHEMA,
     BLOCKNUMBER_SCHEMA,
     BLANCE_SCHEMA,
+    WALLET_SCHEMA,
+    RESPONSE_SCHEMA,
+    SENDTX_SCHEMA,
 }
