@@ -1,17 +1,11 @@
-var rpc_7545 = require('../app/rpc/interfaces.js')
-var rpc_9545 = require('../app/rpc/interfaces.js')
+var rpc = require('../app/rpc/interfaces.js')
 
 const RPC_URL_7545 = 'http://139.198.191.254:7545/v1/jsonrpc'
 const RPC_URL_9545 = 'http://139.198.177.59:9545/v1/jsonrpc'
 
-// init()
-// function init(){
-//     rpc_7545.setUrl(RPC_URL_9545)
-//     // rpc_9545.setUrl(RPC_URL_9545)
-// }
-
-let servers = [rpc_7545, rpc_7545]
-
+let rpc_7545 = new rpc()
+let rpc_9545 = new rpc()
+let servers = [rpc_7545, rpc_9545]
 let chains = ['swt', 'bwt']
 
 let status = {
@@ -259,11 +253,11 @@ let modes = [
         url: RPC_URL_7545,
         tx1: data.tx1,
     },
-    // {
-    //     server: rpc_9545,
-    //     url: RPC_URL_9545,
-    //     tx1: data.tx2,
-    // },
+    {
+        server: rpc_9545,
+        url: RPC_URL_9545,
+        tx1: data.tx2,
+    },
 ]
 
 module.exports = {

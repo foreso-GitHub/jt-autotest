@@ -1,130 +1,104 @@
-var server = require('./server.js')
-
-var log4js = require('log4js')
+let Server = require('./server.js')
+let log4js = require('log4js')
 log4js.configure('./log4js.json')
-var logger = log4js.getLogger('default');
+let logger = log4js.getLogger('default');
 
-var rpc = module.exports = {
+function rpc() {
 
-    getName: function(){
-        return "rpc@" + server.getUrl()
+    //region init
+    let server = new Server()
+
+    this.getName = function(){
+        return "rpc@" + server._url
     },
 
-    setUrl: function(url){
-        server.setUrl(url)
+    this.setUrl = function(url){
+        server._url = url
     },
+    //endregion
 
     //region interfaces
 
     //region block number
-    getBlockNumber: async function(){
-        var response = await rpc.responseBlockNumber()
+    this.getBlockNumber = async function(){
+        let response = await this.responseBlockNumber()
         return response.result
     },
 
-    processBlockNumberResponse: function(response){
+    this.processBlockNumberResponse = function(response){
         return response.result
     },
 
-    responseBlockNumber: function () {
-        logger.debug('Trying to get block number!')
-        return new Promise((resolve, reject) => {
-            var params = []
-            server.RPC_POST('jt_blockNumber', params, function (error, data) {
-                rpc.processResponse(error, data,resolve, reject)
-            })
-        })
+    this.responseBlockNumber = function () {
+        let params = []
+        return this.getResponse('jt_blockNumber', params)
     },
     //endregion
 
     //region balance
-    getBalance: async function (address) {
-        var response = await rpc.responseBalance(address)
+    this.getBalance = async function (address) {
+        let response = await this.responseBalance(address)
         return response.result.balance
     },
 
-    processBalanceResponse: function(response){
+    this.processBalanceResponse = function(response){
         return response.result.balance
     },
 
-    responseBalance: function (address) {
-        logger.debug('Trying to get balance for ' + address)
-        return new Promise((resolve, reject) => {
-            var params = []
-            params.push(address)
-            server.RPC_POST('jt_getBalance', params, function (error, data) {
-                rpc.processResponse(error, data,resolve, reject)
-            })
-        })
+    this.responseBalance = function (address) {
+        let params = []
+        params.push(address)
+        return this.getResponse('jt_getBalance', params)
     },
-
     //endregion
 
     //region new wallet
-    createWallet: async function(){
-        var response = await rpc.responseCreateWallet()
+    this.createWallet = async function(){
+        let response = await this.responseCreateWallet()
         return response.result
     },
 
-    responseCreateWallet: function () {
-        logger.debug('Trying to create a new wallet!')
-        return new Promise((resolve, reject) => {
-            var params = []
-            server.RPC_POST('jt_createWallet', params, function (error, data) {
-                rpc.processResponse(error, data,resolve, reject)
-            })
-        })
+    this.responseCreateWallet = function () {
+        let params = []
+        return this.getResponse('jt_createWallet', params)
     },
     //endregion
 
     //region get tx
-    getTx: async function (hash) {
-        var response = await rpc.responseGetTx(hash)
+    this.getTx = async function (hash) {
+        let response = await this.responseGetTx(hash)
         return response.result.balance
     },
 
-    responseGetTx: function (hash) {
-        logger.debug('Trying to get tx for ' + hash)
-        return new Promise((resolve, reject) => {
-            var params = []
-            params.push(hash)
-            server.RPC_POST('jt_getTransactionByHash', params, function (error, data) {
-                rpc.processResponse(error, data,resolve, reject)
-            })
-        })
+    this.responseGetTx = function (hash) {
+        let params = []
+        params.push(hash)
+        return this.getResponse('jt_getTransactionByHash', params)
     },
     //endregion
 
     //region send tx
-    sendTx: async function (hash) {
-        var response = await rpc.responseTx(hash)
+    this.sendTx = async function (hash) {
+        let response = await this.responseTx(hash)
         return response.result.balance
     },
 
-    responseSendTx: function (from, secret, to, value, memo) {
-        logger.debug('Trying to send tx from ' + from)
-        return new Promise((resolve, reject) => {
-
-            var data = {}
-            data.from = from
-            data.secret = secret
-            data.to = to
-            data.value = value
-            data.memo = memo
-
-            var params = []
-            params.push(data)
-
-            server.RPC_POST('jt_sendTransaction', params, function (error, data) {
-                rpc.processResponse(error, data,resolve, reject)
-            })
-        })
+    this.responseSendTx = function (from, secret, to, value, memo) {
+        let data = {}
+        data.from = from
+        data.secret = secret
+        data.to = to
+        data.value = value
+        data.memo = memo
+        let params = []
+        params.push(data)
+        return this.getResponse('jt_sendTransaction', params)
     },
     //endregion
-    //endregion
+            //endregion
 
     //region common methods
-    processResponse: function(error, data,resolve, reject){
+    processResponse = function(error, data, resolve, reject){
         if (!error) {
             if (data != null ) {
                 if(JSON.stringify(data.result) !== '{}'){
@@ -136,7 +110,18 @@ var rpc = module.exports = {
             logger.debug('error: ', error)
             reject(error)
         }
+    },
+
+    this.getResponse = function (methodName, params) {
+        logger.debug('Trying to invoke ' + methodName + '!')
+        return new Promise((resolve, reject) => {
+            server.RPC_POST(methodName, params, function (error, data) {
+                this.processResponse(error, data, resolve, reject)
+            })
+        })
     }
     //endregion
 
 }
+
+module.exports = rpc

@@ -9,8 +9,10 @@ describe('jingtum test', function () {
   this.timeout(20000)
 
   for(let mode of modes){
+
     let server = mode.server
     server.setUrl(mode.url)
+
     describe('jingtum test mode: ' + server.getName(), function () {
 
       //region common test
@@ -119,13 +121,14 @@ describe('jingtum test', function () {
   // region utility methods
   async function get2BlockNumber (server) {
     return new Promise(async (resolve, reject) => {
-      var result = {}
+      let result = {}
       result.blockNumber1 = await server.getBlockNumber()
       setTimeout(
           async () => {
             result.blockNumber2 = await server.getBlockNumber()
             resolve(result)
-          }, 5000)
+          },5000
+      )
     })
   }
   // endregion

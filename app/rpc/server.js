@@ -1,48 +1,35 @@
-var querystring = require('querystring')
-var request = require('request')
-
-var log4js = require('log4js')
+let querystring = require('querystring')
+let request = require('request')
+let log4js = require('log4js')
 log4js.configure('./log4js.json')
-var logger = log4js.getLogger('default');
+let logger = log4js.getLogger('default');
 
 const PARSER_TEXT_JSON = 'application/json'
 const PARSER_NAME_URLENCODED = 'urlencoded'
 const PARSER_TEXT_URLENCODED = 'application/x-www-form-urlencoded'
 
-var _url
-var _id = 1;
+function server() {
 
-var server = module.exports = {
-
-    setUrl: function(url){
-        _url = url
-    },
-
-    getUrl: function(){
-        return _url
-    },
+    this._url = ""
+    this._id = 1
 
     // region send http request
-
-    send_request_get: function (url, callback) {
-        server.sendRequest(url, 'GET', PARSER_TEXT_JSON, null, null, null, callback)
+    this.send_request_get = function (url, callback) {
+        this.sendRequest(url, 'GET', PARSER_TEXT_JSON, null, null, null, callback)
     },
 
-    send_request_post: function (url, data, callback) {
-        server.sendRequest(url, 'POST', PARSER_TEXT_JSON, data, null, null, callback)
+    this.send_request_post = function (url, data, callback) {
+        this.sendRequest(url, 'POST', PARSER_TEXT_JSON, data, null, null, callback)
     },
 
-    sendRequest: function (url, method, parser, rawData, username, password, callback) {
-        // default is JSON
-        var data = JSON.stringify(rawData)
-        var parserText = PARSER_TEXT_JSON
-
+    this.sendRequest = function (url, method, parser, rawData, username, password, callback) {
+        let data = JSON.stringify(rawData)
+        let parserText = PARSER_TEXT_JSON // default is JSON
         if (parser === PARSER_NAME_URLENCODED) {
             data = querystring.stringify(rawData)
             parserText = PARSER_TEXT_URLENCODED
         }
-
-        var options = {
+        let options = {
             url: url,
             method: method,
             headers: {
@@ -50,15 +37,12 @@ var server = module.exports = {
                 Accept: parserText
             }
         }
-
         if (rawData) {
             options.body = data
         }
-
         if (username && password) {
             options.headers.Authorization = 'Basic ' + Buffer.from(username + ':' + password).toString('base64')
         }
-
         request(options, function (error, response, body) {
             if (error) {
                 callback(error)
@@ -74,28 +58,26 @@ var server = module.exports = {
         })
     },
 
-    RPC_POST: function (method, params, callback) {
-        if(!_url){
+    this.RPC_POST = function (method, params, callback) {
+        if(!this._url){
             callback("Error: RPC URL hasn't been set!")
         }
-
-        var requestMethod = 'POST'
-        var username = null
-        var password = null
-        var url = _url
-        var parserText = PARSER_TEXT_JSON
-        var data = {}
+        let requestMethod = 'POST'
+        let username = null
+        let password = null
+        let url = this._url
+        let parserText = PARSER_TEXT_JSON
+        let data = {}
         data.jsonrpc = '2.0'
-        data.id = _id++
+        data.id = this._id++
         data.method = method
         data.params = params
-
-        // console.log(JSON.stringify(data))
         logger.debug(JSON.stringify(data))
-
-        server.sendRequest(url, requestMethod, parserText, data, username, password, function (error, res) {
+        this.sendRequest(url, requestMethod, parserText, data, username, password, function (error, res) {
             callback(error, res)
         })
     }
     // endregion
 }
+
+module.exports = server
