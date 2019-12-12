@@ -98,25 +98,19 @@ function rpc() {
             //endregion
 
     //region common methods
-    processResponse = function(error, data, resolve, reject){
-        if (!error) {
-            if (data != null ) {
-                if(JSON.stringify(data.result) !== '{}'){
-                    logger.debug('result: ', data)
-                    resolve(data)
-                }
-            }
-        } else {
-            logger.debug('error: ', error)
-            reject(error)
-        }
-    },
-
     this.getResponse = function (methodName, params) {
         logger.debug('Trying to invoke ' + methodName + '!')
         return new Promise((resolve, reject) => {
-            server.RPC_POST(methodName, params, function (error, data) {
-                this.processResponse(error, data, resolve, reject)
+            server.RPC_POST(methodName, params).then(function(data){
+                if (data != null && JSON.stringify(data.result) !== '{}'){
+                    logger.debug('result: ', data)
+                    resolve(data)
+                }
+                else{
+                    reject('result format is wrong: ' + data)
+                }
+            }, function (err) {
+                reject(err)
             })
         })
     }

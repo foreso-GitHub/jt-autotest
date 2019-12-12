@@ -22,7 +22,7 @@ function server() {
         this.sendRequest(url, 'POST', PARSER_TEXT_JSON, data, null, null, callback)
     },
 
-    this.sendRequest = function (url, method, parser, rawData, username, password, callback) {
+    this.sendRequest = function (url, method, parser, rawData, username, password) {
         let data = JSON.stringify(rawData)
         let parserText = PARSER_TEXT_JSON // default is JSON
         if (parser === PARSER_NAME_URLENCODED) {
@@ -43,18 +43,21 @@ function server() {
         if (username && password) {
             options.headers.Authorization = 'Basic ' + Buffer.from(username + ':' + password).toString('base64')
         }
-        request(options, function (error, response, body) {
-            if (error) {
-                callback(error)
-            } else if (response.statusCode !== 200) {
-                callback(response)
-            } else {
-                try {
-                    callback(null, JSON.parse(body))
-                } catch (e) {
-                    callback(null, body)
+
+        return new Promise((resolve, reject) => {
+            request(options, function (error, response, body) {
+                if (error) {
+                    reject(error)
+                } else if (response.statusCode !== 200) {
+                    resolve(response)
+                } else {
+                    try {
+                        resolve(JSON.parse(body))
+                    } catch (e) {
+                        resolve(body)
+                    }
                 }
-            }
+            })
         })
     },
 
@@ -73,9 +76,7 @@ function server() {
         data.method = method
         data.params = params
         logger.debug(JSON.stringify(data))
-        this.sendRequest(url, requestMethod, parserText, data, username, password, function (error, res) {
-            callback(error, res)
-        })
+        return this.sendRequest(url, requestMethod, parserText, data, username, password)
     }
     // endregion
 }
