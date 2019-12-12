@@ -1,4 +1,4 @@
-var rpc = require('../app/rpc/interfaces.js')
+var rpc = require('../lib/rpc/interfaces.js')
 
 const RPC_URL_7545 = 'http://139.198.191.254:7545/v1/jsonrpc'
 const RPC_URL_9545 = 'http://139.198.177.59:9545/v1/jsonrpc'
@@ -249,14 +249,14 @@ let data = {
 
 let modes = [
     {
-        server: rpc_7545,
-        url: RPC_URL_7545,
-        tx1: data.tx1,
-    },
-    {
         server: rpc_9545,
         url: RPC_URL_9545,
         tx1: data.tx2,
+    },
+    {
+        server: rpc_7545,
+        url: RPC_URL_7545,
+        tx1: data.tx1,
     },
 ]
 
