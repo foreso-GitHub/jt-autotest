@@ -24,8 +24,7 @@ describe('jingtum test', function () {
 
         it('test create wallet', function () {
           return Promise.resolve(server.responseCreateWallet()).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
+            checkResponse(true, value)
             expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
             expect(value.result.address).to.match(/^j/)
             expect(value.result.secret).to.match(/^s/)
@@ -36,8 +35,7 @@ describe('jingtum test', function () {
 
         it('test get balance', function () {
           return Promise.resolve(server.responseBalance(addresses.balanceAccount.address)).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
+            checkResponse(true, value)
             expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
             expect(Number(value.result.balance)).to.be.above(0)
           }, function (err) {
@@ -47,8 +45,7 @@ describe('jingtum test', function () {
 
         it('test get block number', function () {
           return Promise.resolve(server.responseBlockNumber()).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
+            checkResponse(true, value)
             expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
             expect(server.processBlockNumberResponse(value)).to.be.above(400000)
           }, function (err) {
@@ -67,8 +64,7 @@ describe('jingtum test', function () {
 
         it('test get transaction', function () {
           return Promise.resolve(server.responseGetTx(mode.tx1.hash)).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
+            checkResponse(true, value)
             expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
             expect(value.result.Account).to.be.equal(mode.tx1.Account)
           }, function (err) {
@@ -88,9 +84,8 @@ describe('jingtum test', function () {
               "1",
               ["test"]
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+            checkResponse(true, value)
+            checkSendTxSuccess(value)
           }, function (err) {
             expect(err).to.be.ok
           })
@@ -110,9 +105,8 @@ describe('jingtum test', function () {
                 }
               ]
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+            checkResponse(true, value)
+            checkSendTxSuccess(value)
           }, function (err) {
             expect(err).to.be.ok
           })
@@ -129,13 +123,8 @@ describe('jingtum test', function () {
               addresses.sender1.secret,
               addresses.receiver1.address,
               "1",
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -145,13 +134,8 @@ describe('jingtum test', function () {
               addresses.sender1.secret,
               addresses.receiver1.address,
               "1/swt",
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -162,8 +146,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('No secret found for')
           }, function (err) {
             expect(err).to.be.ok
@@ -177,8 +160,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('Bad Base58 string')
           }, function (err) {
             expect(err).to.be.ok
@@ -192,8 +174,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('Bad Base58 checksum')
           }, function (err) {
             expect(err).to.be.ok
@@ -207,8 +188,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('Bad account address:')
           }, function (err) {
             expect(err).to.be.ok
@@ -222,8 +202,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address + '1',
               "1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('Bad account address:')
           }, function (err) {
             expect(err).to.be.ok
@@ -237,8 +216,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "999999999999999",  //todo need check balance first
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('telINSUF_FEE_P Fee insufficient')
           }, function (err) {
             expect(err).to.be.ok
@@ -252,8 +230,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "-100",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('temBAD_AMOUNT Can only send positive amounts')
           }, function (err) {
             expect(err).to.be.ok
@@ -267,8 +244,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               null,
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('Invalid Number')
           }, function (err) {
             expect(err).to.be.ok
@@ -282,8 +258,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "aawrwfsfs",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('Invalid Number')
           }, function (err) {
             expect(err).to.be.ok
@@ -297,8 +272,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "0.1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.equal('value must be integer type')
           }, function (err) {
             expect(err).to.be.ok
@@ -312,8 +286,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1.1",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.equal('value must be integer type')
           }, function (err) {
             expect(err).to.be.ok
@@ -327,8 +300,7 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "-1.23",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.equal('value must be integer type')
           }, function (err) {
             expect(err).to.be.ok
@@ -343,13 +315,8 @@ describe('jingtum test', function () {
               "1",
               12,
               ["大家好"],
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -361,13 +328,8 @@ describe('jingtum test', function () {
               "1",
               12,
               [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}],
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -387,8 +349,7 @@ describe('jingtum test', function () {
               12,
               [data],
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
           }, function (err) {
             expect(err).to.be.ok
           })
@@ -410,8 +371,7 @@ describe('jingtum test', function () {
               12,
               [{"type":"ok","format":"utf8","data":data}],
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
           }, function (err) {
             expect(err).to.be.ok
           })
@@ -425,13 +385,8 @@ describe('jingtum test', function () {
               "1",
               12,
               null,
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -442,13 +397,8 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
               null,
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -459,13 +409,8 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
               11,
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -476,13 +421,8 @@ describe('jingtum test', function () {
               addresses.receiver1.address,
               "1",
               110,
-          )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.success)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            //todo need check if the tx exists, check by hash
-          }, function (err) {
-            expect(err).to.be.ok
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
           })
         })
 
@@ -494,8 +434,7 @@ describe('jingtum test', function () {
               "1",
               5,
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('tecINSUFF_FEE Insufficient balance to pay fee')
           }, function (err) {
             expect(err).to.be.ok
@@ -510,8 +449,7 @@ describe('jingtum test', function () {
               "1",
               0,
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('tecINSUFF_FEE Insufficient balance to pay fee')
           }, function (err) {
             expect(err).to.be.ok
@@ -526,8 +464,7 @@ describe('jingtum test', function () {
               "1",
               12.5,
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('tecINSUFF_FEE Insufficient balance to pay fee')
           }, function (err) {
             expect(err).to.be.ok
@@ -542,8 +479,7 @@ describe('jingtum test', function () {
               "1",
               999999999999999,  //todo need check balance first
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('telINSUF_FEE_P Fee insufficient')
           }, function (err) {
             expect(err).to.be.ok
@@ -558,8 +494,7 @@ describe('jingtum test', function () {
               "1",
               -35,
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.message).to.contains('tecINSUFF_FEE Insufficient balance to pay fee')
           }, function (err) {
             expect(err).to.be.ok
@@ -574,39 +509,57 @@ describe('jingtum test', function () {
               "1",
               "35",
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('interface conversion: interface {} is string, not float64')
           }, function (err) {
             expect(err).to.be.ok
           })
         })
 
-        afterEach(function() {
+
+
+        afterEach(async function() {
           //set timeout to ensure the next test which use the same sender address can pass the test
-          return Promise.resolve(timeout(5000)).then(function (value) {
-            logger.debug(value)
-          }, function (err) {
-            logger.debug(err)
-          })
+          return await timeout(5000)
         });
+
 
       })
 
       describe.skip('test by case, working', function () {
 
 
+        it('0010\t发起底层币有效交易_01', function () {
+          return Promise.resolve(server.responseSendTx(
+              addresses.sender1.address,
+              addresses.sender1.secret,
+              addresses.receiver1.address,
+              "1",
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
+          })
+        })
+
+        it('0020\t发起底层币有效交易_02: 交易额填"1/swt"或“100/SWT”等', function () {
+          return Promise.resolve(server.responseSendTx(
+              addresses.sender1.address,
+              addresses.sender1.secret,
+              addresses.receiver1.address,
+              "1/swt",
+          )).then(async function (value) {
+            return await checkSendTxSuccess(value, server)
+          })
+        })
 
         it('0240\t发起带无效fee的交易_06\n: fee为字符串\n', function () {
           return Promise.resolve(server.responseSendTx(
               addresses.sender1.address,
               addresses.sender1.secret,
               addresses.receiver1.address,
-              "1",
-              "35",
+              1,
+              12,
           )).then(function (value) {
-            expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(value.status).to.equal(status.error)
+            checkResponse(false, value)
             expect(value.result).to.contains('interface conversion: interface {} is string, not float64')
           }, function (err) {
             expect(err).to.be.ok
@@ -623,43 +576,48 @@ describe('jingtum test', function () {
   // region utility methods
   async function get2BlockNumber (server) {
     return new Promise(async (resolve, reject) => {
+      if(!server) reject("Server cannot be null!")
       let result = {}
       result.blockNumber1 = await server.getBlockNumber()
-      setTimeout(
-          async () => {
-            result.blockNumber2 = await server.getBlockNumber()
-            resolve(result)
-          },5000
-      )
+      await timeout(5000)
+      result.blockNumber2 = await server.getBlockNumber()
+      resolve(result)
     })
   }
 
-  async function timeout (time) {
+  function timeout (time) {
     return new Promise(async (resolve, reject) => {
+      if (typeof time != 'number') reject(new Error('参数必须是number类型'));
       setTimeout(
-          async () => {
-            resolve('done!')
-          },
-          time
-      )
+          () => {
+            resolve('timeout done!')
+          }, time)
     })
   }
 
-  function promiseSendTx(from, secret, to, value, memo) {
-    return Promise.resolve(server.responseSendTx(
-        from,
-        secret,
-        to,
-        value,
-        memo,
-    )).then(function (value) {
-      // logger.debug(value)
-      expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-      expect(value.status).to.equal(status.success)
-      expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-    }, function (err) {
-      expect(err).to.be.ok
-    })
+  function checkResponse(isSuccess, value){
+    expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
+    expect(value.status).to.equal(isSuccess ? status.success: status.error)
+  }
+
+  async function checkSendTxSuccess(value, server){
+    checkResponse(true, value)
+    expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+    let hash = value.result[0]
+    await timeout(5000)
+    return checkTx(hash, server)
+  }
+
+  function checkTx(hash, server){
+    return server.responseGetTx(hash)
+        .then(function (value) {
+          checkResponse(true, value)
+          // expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
+          expect(value.result.hash).to.be.equal(hash)
+        }).catch(function(error){
+          logger.debug(error)
+          expect(error).to.not.be.ok
+        })
   }
 
   // endregion

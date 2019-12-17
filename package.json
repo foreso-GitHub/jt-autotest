@@ -15,7 +15,8 @@
     "nativescript-websockets": "^1.5.3",
     "querystring": "^0.2.0",
     "request": "^2.79.0",
-    "log4js": "^6.1.0"
+    "log4js": "^6.1.0",
+    "swtc-lib": "^1.6.39"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
