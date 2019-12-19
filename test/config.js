@@ -13,44 +13,90 @@ let status = {
     error: "error",
 }
 
+let accounts = [
+    {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: ""},
+    {address: "jnrX7oqQLtF2Vi5tXpS8gNza2x75kgQmFp", secret: "shU3sYDD5bSrtAn2jQSEMX8RVFiYf"},
+    {address: "jP6qtKENk7dFqkk9R5gbzoR3doPbeThujj", secret: "ss7zdg72dGuRwi4r7kic4TkzVb4Zz", nickName:"autotest_1"},
+    {address: "jJ2iyFtGTzYzv8GuNpCyxfKFxhr1SwmAqw", secret: "shne2fBdSVBM9jkDeLKPHiLN9nxSk"},
+    {address: "jGRY1qHuVtSbpjqHLQsKPBQ9L4Hng38iyJ", secret: "ssujaeqwGnA6dEDyYf2tCG8UxUCX8"},
+    {address: "jKmboSgBUbEsCdARP6sf1FeRWX5gYm7TcZ", secret: "ssrJCd6zp4hRavjaApsxPy8u3qZKu"},
+    {address: "jD53RxbnN23vSAEJrFJ69TPgrvBU7UNhU5", secret: "ssebtBTcNLL2FPcarxXK3WXMzKYZC"},
+    {address: "jfoxXUf1onsPYYeBxGtJApDenaMQD7YCUf", secret: "shPJ7FWtMfhVagt3avcUYUTaMn27k"},
+    {address: "j4hxZmEo37wWcq7WLaoCtf8BjPDesTpAaR", secret: "ss1RvLHxENzbFPe5P4HgCTFebhSQD"},
+    {address: "jBykxUHVDccTYtquCSCsFVgem1zt3FFe71", secret: "shJcGmQDoF3DU61ufA25a36ipfe4x"},
+    // {address: "j3Go8eJjRD5yvZuZbrGXXDcrACkxHgdaM8", secret: "shnWYMunzyrzfLAE4LWknxxST7mq8"},
+    // {address: "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd", secret: "ss6iFshVyH7zZL2pGiQ4otrrd5uCg"},
+    // {address: "jjsbo9Yz5RTrKAWSWgNtEHdrviMtWYoqZ5", secret: ""},
+    // {address: "jGPPk3jWd2NY1wStCHK27NDm61MES8Bhuf", secret: "ss5WvoCyjpryiuQ8ioENTccZoxPG6"},
+    // {address: "jJMsY9dmkRfj1fGbft7kyXxJ3SyehPg1tG", secret: ""},
+    // {address: "jDjvM2rrjgAsYEeFJsSvuXxkbYxZQpdEwu", secret: "shJTqjPJKsgTLDqCQ16nuALHSzjTd"},
+    // {address: "jnrX7oqQLtF2Vi5tXpS8gNza2x75kgQmFp", secret: "shU3sYDD5bSrtAn2jQSEMX8RVFiYf"},
+]
+
+//inactive account, do not send swt in them!
+let inactiveAccounts = [
+    {
+        address:"j4tBKPidB9iEJMqdatq7rbh14nPhAbCyfg",
+        secret:"sawLfQ4sDGHAu65pe11Uvv5HkvDcG",
+        nickName: "inactive_1",
+    },
+    {
+        address:"j4SnwaukEx7VaRhwaQGzJJ9LF7XAbJhDzv",
+        secret:"shU9YLun779XCUa91SkRe5z8ZG3LZ",
+        nickName: "notexist1",
+    },
+]
+
+let i = 0
+
 let addresses = {
     rootAccount:{
-      address:"jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh",
-      secret:""
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     walletAccount:{
-        address:"j3Go8eJjRD5yvZuZbrGXXDcrACkxHgdaM8",
-        secret:"shnWYMunzyrzfLAE4LWknxxST7mq8"
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     balanceAccount:{
-        address:"j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
-        secret:""
+        address:accounts[i].address,
+        secret:accounts[i].secret,
+        nickName: accounts[i++].nickName,
     },
     sender1:{
-        address:"j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
-        secret:"ss6iFshVyH7zZL2pGiQ4otrrd5uCg"
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     receiver1:{
-        address:"jjsbo9Yz5RTrKAWSWgNtEHdrviMtWYoqZ5",
-        secret:""
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     sender2:{
-        address:"jGPPk3jWd2NY1wStCHK27NDm61MES8Bhuf",
-        secret:"ss5WvoCyjpryiuQ8ioENTccZoxPG6"
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     receiver2:{
-        address:"jJMsY9dmkRfj1fGbft7kyXxJ3SyehPg1tG",
-        secret:""
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     sender3:{
-        address:"jDjvM2rrjgAsYEeFJsSvuXxkbYxZQpdEwu",
-        secret:"shJTqjPJKsgTLDqCQ16nuALHSzjTd"
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
     receiver3:{
-        address:"",
-        secret:""
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
     },
-
+    inactiveAccount1:{
+        address:inactiveAccounts[0].address,
+        secret:inactiveAccounts[0].secret,
+        nickName:inactiveAccounts[0].nickName,
+    },
+    wrongFormatAccount1:{
+        address:"inactiveAccounts[0].address",
+        secret:"inactiveAccounts[0].secret",
+        nickName:"inactiveAccounts[0].nickName",
+    }
 }
 
 let data = {
@@ -245,6 +291,203 @@ let data = {
             "TransactionResult": "tesSUCCESS"
         }
     },
+
+    tx_memo:{
+        "TransactionType": "Payment",
+        "Flags": 2147483648,
+        "Account": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+        "Sequence": 521,
+        "Fee": "10",
+        "SigningPubKey": "02D9E3B2D4ED2A49C1BB3891A62DC275C0C610D7570A37EA174DB39EF732AA4EE7",
+        "TxnSignature": "3044022062095105FF18A0EDC4771BBA1FE565E8A03A66D5FBB87522069F6F8C35F7B184022042A58D077306FFCAD370069952E1CA2D57E9DEF8A0234E34788D6D934FAB3BBF",
+        "Memos": [
+            {
+                "Memo": {
+                    "MemoType": "",
+                    "MemoData": "74657374",
+                    "MemoFormat": ""
+                }
+            }
+        ],
+        "hash": "467D3947047430CD88A20D05278487DCF780A5B42E9C41FEC85F4ED96C9F9E37",
+        "Destination": "jjsbo9Yz5RTrKAWSWgNtEHdrviMtWYoqZ5",
+        "Amount": "1",
+        "date": 629876705,
+        "inLedger": 561502,
+        "ledger_index": 561502,
+        "meta": {
+            "AffectedNodes": [
+                {
+                    "ModifiedNode": {
+                        "FinalFields": {
+                            "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "Account": "jhCVwTcg5aYWMMdfDmwqYxBr5NMA1PDfyg",
+                            "Sequence": 0,
+                            "Balance": "11525"
+                        },
+                        "LedgerEntryType": "AccountRoot",
+                        "PreviousFields": {
+                            "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "Account": "jhCVwTcg5aYWMMdfDmwqYxBr5NMA1PDfyg",
+                            "Sequence": 0,
+                            "Balance": "11515"
+                        }
+                    }
+                },
+                {
+                    "ModifiedNode": {
+                        "FinalFields": {
+                            "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "Account": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+                            "Sequence": 521,
+                            "Balance": "1987391099"
+                        },
+                        "LedgerEntryType": "AccountRoot",
+                        "PreviousFields": {
+                            "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "Account": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+                            "Sequence": 520,
+                            "Balance": "1987391110"
+                        }
+                    }
+                },
+                {
+                    "ModifiedNode": {
+                        "FinalFields": {
+                            "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "Account": "jjsbo9Yz5RTrKAWSWgNtEHdrviMtWYoqZ5",
+                            "Sequence": 0,
+                            "Balance": "13300617"
+                        },
+                        "LedgerEntryType": "AccountRoot",
+                        "PreviousFields": {
+                            "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "Account": "jjsbo9Yz5RTrKAWSWgNtEHdrviMtWYoqZ5",
+                            "Sequence": 0,
+                            "Balance": "13300616"
+                        }
+                    }
+                }
+            ],
+            "TransactionIndex": 0,
+            "TransactionResult": "tesSUCCESS"
+        }
+    },
+
+    tx_token: {
+        TransactionType: 'IssueCoin',
+        Flags: 2147549184,
+        Account: 'j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd',
+        Sequence: 549,
+        Fee: '20',
+        SigningPubKey:
+            '02D9E3B2D4ED2A49C1BB3891A62DC275C0C610D7570A37EA174DB39EF732AA4EE7',
+        TxnSignature:
+            '304402206591240859BD6EEF123FD540A880A39AB5D9107E969EED6788850A23F7663199022034963C36227295FE44F518947B7F668983ABB93549E20B3049D24E4125923606',
+        hash:
+            'AE25D5C8787AC4A1AF2434FD3B46A0EDEE60147EE766FB79D60FC3AAC93AC891',
+        Name: 'TestCoin1576569581',
+        Decimals: 8,
+        TotalSupply:
+            { value: '9876543210',
+                currency: 'TC',
+                issuer: 'j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd' },
+        date: 629884785,
+        inLedger: 563118,
+        ledger_index: 563118,
+        meta:
+            { AffectedNodes: [Array],
+                TransactionIndex: 0,
+                TransactionResult: 'tesSUCCESS' }
+    },
+
+}
+
+let token = {
+    config_normal:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:false,
+        flags: 0,
+        fee: 20,
+    },
+    config_mintable:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:false,
+        flags: 65536,
+        fee: 20,
+    },
+    config_burnable:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:false,
+        flags: 131072,
+        fee: 20,
+    },
+    config_mint_burn:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:false,
+        flags: 196608,
+        fee: 20,
+    },
+    config_issuer_normal:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:true,
+        flags: 0,
+        fee: 20,
+    },
+    config_issuer_mintable:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:true,
+        flags: 65536,
+        fee: 20,
+    },
+    config_issuer_burnable:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:true,
+        flags: 131072,
+        fee: 20,
+    },
+    config_issuer_mint_burn:{
+        type: "IssueCoin",
+        name: "TestCoin",
+        symbol: "TC",
+        decimals: 8,
+        total_supply: "9876543210",
+        local:true,
+        flags: 196608,
+        fee: 20,
+    },
+    existToken:{
+        name: "TestCoin1576652216",
+        symbol: "5df9cdf0",
+    },
 }
 
 let modes = [
@@ -264,7 +507,9 @@ module.exports = {
     servers,
     status,
     chains,
+    accounts,
     addresses,
     data,
+    token,
     modes,
 }
