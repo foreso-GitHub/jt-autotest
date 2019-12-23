@@ -1,5 +1,5 @@
 let log4js = require('log4js')
-log4js.configure('../log4js.json')
+log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 
 const { accounts, modes } = require("./config")
@@ -12,7 +12,7 @@ let root = "root"
 initTestData()
 
 async function initTestData(){
-    let value = "100000"
+    let value = "10000000000"
     for(let account of accounts){
         await charge(account.address, value)
             .then(function(result){logger.debug(JSON.stringify(result))})
