@@ -14,7 +14,7 @@ let status = {
 }
 
 let accounts = [
-    {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: ""},
+    {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
     {address: "jnrX7oqQLtF2Vi5tXpS8gNza2x75kgQmFp", secret: "shU3sYDD5bSrtAn2jQSEMX8RVFiYf"},
     {address: "jP6qtKENk7dFqkk9R5gbzoR3doPbeThujj", secret: "ss7zdg72dGuRwi4r7kic4TkzVb4Zz", nickName:"autotest_1"},
     {address: "jJ2iyFtGTzYzv8GuNpCyxfKFxhr1SwmAqw", secret: "shne2fBdSVBM9jkDeLKPHiLN9nxSk"},
@@ -99,6 +99,9 @@ let addresses = {
 }
 
 let data = {
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,  //todo sometimes get tx will fail because the tx has not been written in block yet.  in such case, can retry get tx after 1s, for 3 times.
+    defaultFee: 12,
     chain:{
         tx:{
             "TransactionType": "Payment",
