@@ -74,48 +74,6 @@ describe('Jingtum测试', function () {
 
         //endregion
 
-        //region send tx
-
-        it('test send transaction with string memo', function () {
-          return Promise.resolve(server.responseSendTx(
-              addresses.sender1.address,
-              addresses.sender1.secret,
-              addresses.receiver1.address,
-              "1",
-              data.defaultFee,
-              ["test"]
-          )).then(async function (value) {
-            checkResponse(true, value)
-            await checkSendTxSuccess(server, value)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
-
-        it('test send transaction with json memo', function () {
-          return Promise.resolve(server.responseSendTx(
-              addresses.sender2.address,
-              addresses.sender2.secret,
-              addresses.receiver2.address,
-              "5",
-              data.defaultFee,
-              [
-                {
-                  "type":"ok",
-                  "format":"utf8",
-                  "data":""
-                }
-              ]
-          )).then(async function (value) {
-            checkResponse(true, value)
-            await checkSendTxSuccess(server, value)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
-
-        //endregion
-
       })
 
       describe.skip('用例测试', function () {
@@ -275,8 +233,6 @@ describe('Jingtum测试', function () {
             let params = createTokenParams("底层币", addresses.sender1, addresses.receiver1,
                 "swt", "telINSUF_FEE_P Fee insufficient")
             testBasicTransaction(server, params)
-
-            //todo check send tx continuously by with sequence
           })
 
           describe('测试token交易', function (){
@@ -495,8 +451,8 @@ describe('Jingtum测试', function () {
         describe('测试token交易', function (){
 
           describe('测试基本交易', function (){
-            let params = createTokenParams("token", addresses.sender3, addresses.receiver1,
-                "at1", "telINSUF_FUND Fund insufficient")
+            let params = createTokenParams("token", addresses.sender2, addresses.receiver1,
+                null, "telINSUF_FUND Fund insufficient")
             testBasicTransaction(server, params)
           })
 
@@ -526,10 +482,6 @@ describe('Jingtum测试', function () {
 
         })
 
-        // afterEach(async function() {
-        //   //set timeout to ensure the next test which use the same sender address can pass the test
-        //   return await utility.timeout(data.defaultBlockTime)
-        // })
 
 
       })
@@ -540,8 +492,9 @@ describe('Jingtum测试', function () {
   }
 
   //region common test case
+
   function createTokenParams(type, from, to, symbol, exceedingErrorMessage){
-    let showSymbol = (symbol === 'swt') ? "" : ("/" + symbol)
+    let showSymbol = (symbol || symbol == null) ? "" : ("/" + symbol)
     let params = {}
     params.type = type
     params.from = from.address
@@ -549,7 +502,7 @@ describe('Jingtum测试', function () {
     params.to = to.address
     params.symbol = symbol
     params.value = "1" + showSymbol
-    params.value2 = "123/" + symbol
+    params.value2 = "123/" + ((symbol || symbol == null) ? "swt" : symbol)
     params.exceedingValue = "999999999999999" + showSymbol
     params.exceedingErrorMessage = exceedingErrorMessage
     params.nagetiveValue = "-100" + showSymbol
@@ -560,248 +513,159 @@ describe('Jingtum测试', function () {
     return params
   }
 
-  function createTxParams(type, from, to, symbol){
-    let showSymbol = (symbol === 'swt') ? "" : ("/" + symbol)
+  function cloneParams(originalParams){
     let params = {}
-    params.type = type
-    params.from = from.address
-    params.secret = from.secret
-    params.to = to.address
-    params.symbol = symbol
-    params.value = "1" + showSymbol
+    params.type = originalParams.type
+    params.from = originalParams.from
+    params.secret = originalParams.secret
+    params.to = originalParams.to
+    params.symbol = originalParams.symbol
+    params.value = originalParams.value
     return params
   }
 
   function testBasicTransaction(server, params) {
+    let retentiveParams = {}
 
-    describe.skip('测试基本交易', function () {
+    describe('测试基本交易', function () {
 
       it('0010\t发起' + params.type + '有效交易_01', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.value,
-        )).then(async function (value) {
-          return await checkSendTxSuccess(server, value)
+        let commonParams = cloneParams(params)
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
+      })
+
+      //todo check send tx continuously by with sequence
+      it('0010\t发起' + params.type + '有效交易_01：连续交易', async function () {
+        let commonParams = cloneParams(params)
+        let sendCount = 100
+        let finishCount = 0;
+        await sendTxWithSequenceContinuously(server, commonParams, retentiveParams, sendCount).then(async (txHashes)=>{
+          for(let i = 0; i < txHashes.length; i++){
+            let value = txHashes[i]
+            checkResponse(true, value)
+            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+            let hash = value.result[0]
+            await checkSendTxResponse(server, hash)
+            finishCount++
+            if(finishCount == sendCount) {
+              logger.debug("=== sendTxWithSequenceContinuously: " + finishCount + " checks done! ===")
+              return txHashes
+            }
+          }
         })
       })
 
       it('0020\t发起' + params.type + '有效交易_02: 交易额填"1/' + params.symbol + '或“100/' + params.symbol + '”等', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.value2,
-        )).then(async function (value) {
-          return await checkSendTxSuccess(server, value)
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.value2
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0030\t发起' + params.type + '无效交易_01: 没有秘钥', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            null,
-            params.to,
-            params.value,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('No secret found for')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.secret = null
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'No secret found for')
       })
 
       it('0030\t发起' + params.type + '无效交易_01: 错误的秘钥1', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            '错误的秘钥',
-            params.to,
-            params.value,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Bad Base58 string')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.secret = '错误的秘钥'
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Bad Base58 string')
       })
 
       it('0030\t发起' + params.type + '无效交易_01: 错误的秘钥2', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret + '1',
-            params.to,
-            params.value,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Bad Base58 checksum')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.secret = commonParams.secret + '1'
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Bad Base58 checksum')
       })
 
       it('0040\t发起' + params.type + '无效交易_02: 错误的发起钱包地址（乱码字符串）', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from + '1',
-            params.secret,
-            params.to,
-            params.value,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Bad account address:')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.from = commonParams.from + '1'
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Bad account address:')
       })
 
       it('0050\t发起' + params.type + '无效交易_03: 错误的接收钱包地址（乱码字符串）', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to + '1',
-            params.value,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Bad account address:')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.to = commonParams.to + '1'
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Bad account address:')
       })
 
       it('0060\t发起' + params.type + '无效交易_04: 交易额超过发起钱包余额', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.exceedingValue,  //todo need check balance first
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.message).to.contains(params.exceedingErrorMessage)
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.exceedingValue
+        return checkSendTxFailure(server, commonParams, retentiveParams, false, params.exceedingErrorMessage)
       })
 
       it('0070\t发起' + params.type + '无效交易_05: 交易额为负数', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.nagetiveValue,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.message).to.contains('temBAD_AMOUNT Can only send positive amounts')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.nagetiveValue
+        return checkSendTxFailure(server, commonParams, retentiveParams, false, 'temBAD_AMOUNT Can only send positive amounts')
       })
 
       it('0080\t发起' + params.type + '无效交易_06: 交易额为空', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            null,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Invalid Number')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = null
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Invalid Number')
       })
 
       it('0080\t发起' + params.type + '无效交易_06: 交易额为字符串', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.stringValue,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Invalid Number')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.stringValue
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Invalid Number')
       })
 
       it('0090\t发起' + params.type + '无效交易_07: 交易额为小于1的正小数', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.below1DecimalValue,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.equal('value must be integer type')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.below1DecimalValue
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'value must be integer type')
       })
 
       it('0100\t发起' + params.type + '无效交易_08: 交易额为大于1的小数', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.over1DecimalValue,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.equal('value must be integer type')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.over1DecimalValue
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'value must be integer type')
       })
 
       it('0110\t发起' + params.type + '无效交易_09: 交易额为负小数：-0.1、-1.23等', function () {
-        return Promise.resolve(server.responseSendTx(
-            params.from,
-            params.secret,
-            params.to,
-            params.negativeDecimalValue,
-        )).then(function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.equal('value must be integer type')
-        }, function (err) {
-          expect(err).to.be.ok
-        })
+        let commonParams = cloneParams(params)
+        commonParams.value = params.negativeDecimalValue
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'value must be integer type')
       })
+
 
     })
 
     describe('测试带memo的交易', function () {
+
       it('0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]', function () {
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = ["大家好"]
-        return checkMemosSuccess(server, params, specialParams)
+        let commonParams = cloneParams(params)
+        commonParams.memos = ["大家好"]
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0120\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]', function () {
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = ["12345"]
-        return checkMemosSuccess(server, params, specialParams)
+        let commonParams = cloneParams(params)
+        commonParams.memos = ["12345"]
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0120\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]', function () {
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = ["123456"]
-        return checkMemosSuccess(server, params, specialParams)
+        let commonParams = cloneParams(params)
+        commonParams.memos = ["123456"]
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0120\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]', function () {
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = ["E5A4A7E5AEB6E5A5BDff"]
-        return checkMemosSuccess(server, params, specialParams)
+        let commonParams = cloneParams(params)
+        commonParams.memos = ["E5A4A7E5AEB6E5A5BDff"]
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0130\t发起带有效memo的交易_02\n: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]', function () {
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
-        return checkMemosSuccess(server, params, specialParams)
+        let commonParams = cloneParams(params)
+        commonParams.memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0140\t发起带无效memo的交易_01\n: memo内容使整个交易内容超过900K', function () {
@@ -810,10 +674,9 @@ describe('Jingtum测试', function () {
         for(let i = 0; i < 18; i++){
           memos += memos;
         }
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = memos
-        return checkMemosFailure(server, params, specialParams, 'memos data error')
+        let commonParams = cloneParams(params)
+        commonParams.memos = memos
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'memos data error')
       })
 
       it('0150\t发起带无效memo的交易_02: memo内容使整个交易内容超过900K', function () {
@@ -822,10 +685,9 @@ describe('Jingtum测试', function () {
         for(let i = 0; i < 18; i++){
           memos += memos;
         }
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        specialParams.memos = memos
-        return checkMemosFailure(server, params, specialParams, 'memos data error')
+        let commonParams = cloneParams(params)
+        commonParams.memos = memos
+        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'memos data error')
       })
 
     })
@@ -833,63 +695,66 @@ describe('Jingtum测试', function () {
     describe('测试交易fee', function (){
 
       it('0160\t发起带有效fee的交易_01: fee为默认值12', function () {
-        let specialParams = {}
-        specialParams.fee = data.defaultFee
-        return checkFeeSuccess(server, params, specialParams, specialParams.fee)
+        let commonParams = cloneParams(params)
+        commonParams.fee = data.defaultFee
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0160\t发起带有效fee的交易_01: fee为null', function () {
-        let specialParams = {}
-        specialParams.fee = null
-        return checkFeeSuccess(server, params, specialParams, data.defaultFee)
+        let commonParams = cloneParams(params)
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易', function () {
-        let specialParams = {}
-        specialParams.fee = 11
-        return checkFeeSuccess(server, params, specialParams, specialParams.fee)
+        let commonParams = cloneParams(params)
+        commonParams.fee = 11
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0180\t发起带有效fee的交易_03\n: fee比12大但小于钱包余额', function () {
-        let specialParams = {}
-        specialParams.fee = 110
-        return checkFeeSuccess(server, params, specialParams, specialParams.fee)
+        let commonParams = cloneParams(params)
+        commonParams.fee = 110
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
       it('0190\t发起带无效fee的交易_01\n: fee比12小（比如5），但是不足以发起成功的交易\n', function () {
-        let specialParams = {}
-        specialParams.fee = 5
-        return checkFeeFailure(server, params, specialParams, 'tecINSUFF_FEE Insufficient balance to pay fee')
+        let commonParams = cloneParams(params)
+        commonParams.fee = 5
+        return checkSendTxFailure(server, commonParams, retentiveParams, false, 'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
       it('0200\t发起带无效fee的交易_02\n: fee为0\n', function () {
-        let specialParams = {}
-        specialParams.fee = 0
-        return checkFeeFailure(server, params, specialParams, 'tecINSUFF_FEE Insufficient balance to pay fee')
+        let commonParams = cloneParams(params)
+        commonParams.fee = 0
+        return checkSendTxFailure(server, commonParams, retentiveParams, false, 'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
       it('0210\t发起带无效fee的交易_03\n: fee为大于0的小数，比如12.5、5.5\n', function () {
-        let specialParams = {}
-        specialParams.fee = 12.5
-        return checkFeeFailure(server, params, specialParams, 'tecINSUFF_FEE Insufficient balance to pay fee')
+        let commonParams = cloneParams(params)
+        commonParams.fee = 12.5
+        return checkSendTxFailure(server, commonParams, retentiveParams, false,
+            'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
       it('0220\t发起带无效fee的交易_04\n: fee为大于发起钱包' + params.type + '余额的整数\n', function () {
-        let specialParams = {}
-        specialParams.fee = 999999999999999
-        return checkFeeFailure(server, params, specialParams, 'telINSUF_FEE_P Fee insufficient')
+        let commonParams = cloneParams(params)
+        commonParams.fee = 999999999999999
+        return checkSendTxFailure(server, commonParams, retentiveParams, false,
+            'telINSUF_FEE_P Fee insufficient')
       })
 
       it('0230\t发起带无效fee的交易_05\n: fee为负数，比如-3.5、-555等\n', function () {
-        let specialParams = {}
-        specialParams.fee = -35
-        return checkFeeFailure(server, params, specialParams, 'tecINSUFF_FEE Insufficient balance to pay fee')
+        let commonParams = cloneParams(params)
+        commonParams.fee = -35
+        return checkSendTxFailure(server, commonParams, retentiveParams, false,
+            'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
       it('0240\t发起带无效fee的交易_06\n: fee为字符串\n', function () {
-        let specialParams = {}
-        specialParams.fee = "35"
-        return checkFeeFailure(server, params, specialParams, 'interface conversion: interface {} is string, not float64')
+        let commonParams = cloneParams(params)
+        commonParams.fee = "35"
+        return checkSendTxFailure(server, commonParams, retentiveParams, true,
+            'interface conversion: interface {} is string, not float64')
       })
 
     })
@@ -1332,12 +1197,52 @@ describe('Jingtum测试', function () {
   }
 
   //region normal response check
-  function checkResponse(isSuccess, value){
-    expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-    expect(value.status).to.equal(isSuccess ? status.success: status.error)
+  function checkSendTxSuccess(server, commonParams, retentiveParams){
+    return Promise.resolve(sendTx(server, commonParams, retentiveParams)).then(async function (value) {
+      await checkCommonSendTxSuccess(server, value).then((tx)=>{
+        expect(tx.Account).to.be.equals(commonParams.from)
+        expect(tx.Destination).to.be.equals(commonParams.to)
+        expect(tx.Fee).to.be.equals(((commonParams.fee) ? commonParams.fee : 10).toString())
+        //check value
+        if(commonParams.symbol){
+          expect(tx.Amount.currency).to.be.equals(commonParams.symbol)
+          expect(tx.Amount.value + "/" + tx.Amount.currency).to.be.equals(commonParams.value)
+        }
+        else{
+          expect(tx.Amount).to.be.equals(commonParams.value)
+        }
+        //check memos
+        if(tx.Memos){
+          let memos = tx.Memos
+          let expectedMemos = commonParams.memos
+          for(let i = 0; i < expectedMemos.length; i++){
+            let expectedMemo = expectedMemos[i]
+            if(typeof expectedMemo == "string"){
+              expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
+            }
+            else if(expectedMemo.data){
+              expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
+            }
+            else{
+              expect(false).to.be.ok
+            }
+            //todo need check type and format also. need make type, format, data of memo function clear with weijia.
+          }
+        }
+      })
+    })
   }
 
-  async function checkSendTxSuccess(server, value){
+  function checkSendTxFailure(server, commonParams, retentiveParams, isErrorInResult, expectedError){
+    return Promise.resolve(sendTx(server, commonParams, retentiveParams)).then(function (value) {
+      checkResponse(false, value)
+      expect((isErrorInResult) ? value.result : value.message).to.contains(expectedError)
+    }, function (err) {
+      expect(err).to.be.ok
+    })
+  }
+
+  async function checkCommonSendTxSuccess(server, value){
     checkResponse(true, value)
     expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
     let hash = value.result[0]
@@ -1345,9 +1250,16 @@ describe('Jingtum测试', function () {
     return checkSendTxResponse(server, hash)
   }
 
-  function checkSendTxResponse(server, hash){
+  function checkSendTxResponse(server, hash, isRetry){
     return server.responseGetTx(hash)
-        .then(function (value) {
+        .then(async function (value) {
+          //retry
+          if(!isRetry && (value.result.toString().indexOf('can\'t find transaction') != -1 || value.result.toString().indexOf('no such transaction') != -1)){
+            logger.debug("===Try responseGetTx again!===")
+            await utility.timeout(data.retryPauseTime)
+            return checkSendTxResponse(server, hash, true)
+          }
+
           checkResponse(true, value)
           // expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
           expect(value.result.hash).to.be.equal(hash)
@@ -1356,6 +1268,11 @@ describe('Jingtum测试', function () {
           logger.debug(error)
           expect(error).to.not.be.ok
         })
+  }
+
+  function checkResponse(isSuccess, value){
+    expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
+    expect(value.status).to.equal(isSuccess ? status.success: status.error)
   }
   //endregion
 
@@ -1439,86 +1356,54 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
-  //region memos check
-  function checkMemosSuccess(server, params, specialParams){
-    return Promise.resolve(sendTx(server, params, specialParams)).then(async function (value) {
-      await checkSendTxSuccess(server, value).then((tx)=>{
-        let memos = tx.Memos
-        let expectedMemos = specialParams.memos
-
-        for(let i = 0; i < expectedMemos.length; i++){
-          let expectedMemo = expectedMemos[i]
-          if(typeof expectedMemo == "string"){
-            expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
-          }
-          else if(expectedMemo.data){
-            expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
-          }
-          else{
-            expect(false).to.be.ok
-          }
-          //todo need check type and format also. need make type, format, data of memo function clear with weijia.
-        }
-      })
-    })
-  }
-  
-  function checkMemosFailure(server, params, specialParams, expectedError){
-    return Promise.resolve(sendTx(server, params, specialParams)).then(function (value) {
-      checkResponse(false, value)
-      expect(value.result).to.contains(expectedError)
-    }, function (err) {
-      expect(err).to.be.ok
-    })
-  }
-  //endregion
-
-  //region fee check
-  function checkFeeSuccess(server, params, specialParams, expectedFee){
-    return Promise.resolve(sendTx(server, params, specialParams)).then(async function (value) {
-      await checkSendTxSuccess(server, value).then((tx)=>{
-        expect(tx.Fee).to.be.equals(expectedFee.toString())
-      })
-    })
-  }
-
-  function checkFeeFailure(server, params, specialParams, expectedError){
-    return Promise.resolve(sendTx(server, params, specialParams)).then(function (value) {
-      checkResponse(false, value)
-      expect(value.message).to.contains(expectedError)
-    }, function (err) {
-      expect(err).to.be.ok
-    })
-  }
-  //endregion
-
   //region send tx
-  async function sendTx(server, commonParams, specialParams){
-    if(!commonParams.sequence){
+  async function sendTx(server, commonParams, retentiveParams){
+    if(!retentiveParams.sequence){
       await server.responseGetAccount(commonParams.from).then((accountInfo)=>{
-        commonParams.sequence = Number(accountInfo.result.Sequence)
+        retentiveParams.sequence = Number(accountInfo.result.Sequence)
       })
     }
-    return sendTxWithSequence(server, commonParams, specialParams)
+    return sendTxWithSequence(server, commonParams, retentiveParams)
   }
 
-  function sendTxWithSequence(server, commonParams, specialParams){
+  function sendTxWithSequence(server, commonParams, retentiveParams){
     return Promise.resolve(server.responseSendTxWithSequence(
         commonParams.from,
         commonParams.secret,
-        commonParams.sequence,
+        retentiveParams.sequence,
         commonParams.to,
         commonParams.value,
-        specialParams.fee,
-        specialParams.memos,
+        commonParams.fee,
+        commonParams.memos,
     )).then(async function (value) {
       if(value.status === status.success){
-        commonParams.sequence++ //if send tx successfully, then sequence need plus 1
+        retentiveParams.sequence++ //if send tx successfully, then sequence need plus 1
       }
       return value
     })
   }
+
+  async function sendTxWithSequenceContinuously(server, commonParams, retentiveParams, sendCount){
+    if(!retentiveParams.sequence){
+      await server.responseGetAccount(commonParams.from).then((accountInfo)=>{
+        retentiveParams.sequence = Number(accountInfo.result.Sequence)
+      })
+    }
+    return new Promise(async (resolve, reject) => {
+      let txHashes = []
+      for(let index = 0; index < sendCount; index++){
+        await sendTxWithSequence(server, commonParams, retentiveParams).then(function (value) {
+          txHashes.push(value)
+          if(txHashes.length == sendCount) {
+            resolve(txHashes)
+          }
+        })
+      }
+    })
+  }
   //endregion
+
+  //region common functions
 
   function checkGetTxSuccess(tx, value){
     checkResponse(true, value)
@@ -1535,16 +1420,14 @@ describe('Jingtum测试', function () {
   }
 
   function hex2String(hex){
-    return new Buffer(hex, 'hex').toString('utf8')
+    return new Buffer.from(hex, 'hex').toString('utf8')
   }
 
   function string2hex(string){
     return new Buffer(string, 'base64').toString('hex')
   }
 
-  function isHex(string){
-
-  }
+  //endregion
 
   // endregion
 
