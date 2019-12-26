@@ -575,12 +575,112 @@ let modes = [
         url: RPC_URL_9545,
         tx1: data.chain.tx,
     },
-    {
-        server: rpc_7545,
-        url: RPC_URL_7545,
-        tx1: data.ipfs.tx,
-    },
+    // {
+    //     server: rpc_7545,
+    //     url: RPC_URL_7545,
+    //     tx1: data.ipfs.tx,
+    // },
 ]
+
+let txs = {
+    swtTx1:{
+        hash: "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530B",
+        blockHash: "69C6AF9882E6F86E97057090882530A6A55FDD9191040ADFF701621FAFCEBA6E",
+        tx: {
+            "TransactionType": "Payment",
+            "Flags": 2147483648,
+            "Account": "j4hxZmEo37wWcq7WLaoCtf8BjPDesTpAaR",
+            "Sequence": 1,
+            "Fee": "10",
+            "SigningPubKey": "02477644256C68CCFB9D1FF3990F8444FC54D17A11878616430AFDA12A4F1EDDE9",
+            "TxnSignature": "30450221008B94D0244A969AF09BC94657D5739347CB004A95787389A5A7235A3863485587022051220CF94FA705AA74D3D0B5747BA550EFC2DB8862AFC22D4B81B041D92017AB",
+            "Memos": [
+                {
+                    "Memo": {
+                        "MemoType": "",
+                        "MemoData": "74657374",
+                        "MemoFormat": ""
+                    }
+                }
+            ],
+            "hash": "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530B",
+            "Destination": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+            "Amount": "1",
+            "date": 630665495,
+            "inLedger": 103896,
+            "ledger_index": 103896,
+            "meta": {
+                "AffectedNodes": [
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jhCVwTcg5aYWMMdfDmwqYxBr5NMA1PDfyg",
+                                "Sequence": 0,
+                                "Balance": "100018"
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "PreviousFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jhCVwTcg5aYWMMdfDmwqYxBr5NMA1PDfyg",
+                                "Sequence": 0,
+                                "Balance": "100008"
+                            }
+                        }
+                    },
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "j4hxZmEo37wWcq7WLaoCtf8BjPDesTpAaR",
+                                "Sequence": 1,
+                                "Balance": "20000099989"
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "PreviousFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "j4hxZmEo37wWcq7WLaoCtf8BjPDesTpAaR",
+                                "Sequence": 0,
+                                "Balance": "20000100000"
+                            }
+                        }
+                    },
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+                                "Sequence": 35,
+                                "Balance": "1080002506703"
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "PreviousFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+                                "Sequence": 35,
+                                "Balance": "1080002506702"
+                            }
+                        }
+                    }
+                ],
+                "TransactionIndex": 0,
+                "TransactionResult": "tesSUCCESS"
+            }
+        },
+    },
+    at1Tx1:{
+        hash: "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530B",
+        tx:{},
+    }
+}
+
+let blocks = {
+    block1:{
+        blockNumber: "107621",
+        hash: "2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF",
+        transactionsCount: 20,
+    }
+}
 
 module.exports = {
     servers,
@@ -590,5 +690,7 @@ module.exports = {
     addresses,
     data,
     token,
+    txs,
+    blocks,
     modes,
 }

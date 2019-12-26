@@ -5,7 +5,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 var utility = require("./testUtility.js")
-const { servers, chains, addresses, status, data, token, modes } = require("./config")
+const { servers, chains, addresses, status, data, token, txs, blocks, modes } = require("./config")
 const schema = require("./schema.js")
 
 describe('Jingtum测试', function () {
@@ -63,7 +63,7 @@ describe('Jingtum测试', function () {
         })
 
         it('test get transaction', function () {
-          return Promise.resolve(server.responseGetTx(mode.tx1.hash)).then(function (value) {
+          return Promise.resolve(server.responseGetTxByHash(mode.tx1.hash)).then(function (value) {
             checkResponse(true, value)
             expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
             expect(value.result.Account).to.be.equal(mode.tx1.Account)
@@ -76,13 +76,13 @@ describe('Jingtum测试', function () {
 
       })
 
-      describe.skip('用例测试', function () {
+      describe('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
           it('0010\t查询有效交易哈希-底层币\n', function () {
             let tx = data.chain.tx
-            return Promise.resolve(server.responseGetTx(
+            return Promise.resolve(server.responseGetTxByHash(
                 tx.hash,
             )).then(async function (value) {
               checkGetTxSuccess(tx, value)
@@ -91,7 +91,7 @@ describe('Jingtum测试', function () {
 
           it('0020\t查询有效交易哈希-token\n', function () {
             let tx = data.tx_token
-            return Promise.resolve(server.responseGetTx(
+            return Promise.resolve(server.responseGetTxByHash(
                 tx.hash,
             )).then(async function (value) {
               checkGetTxSuccess(tx, value)
@@ -100,7 +100,7 @@ describe('Jingtum测试', function () {
 
           it('0030\t查询有效交易哈希-memos\n', function () {
             let tx = data.tx_memo
-            return Promise.resolve(server.responseGetTx(
+            return Promise.resolve(server.responseGetTxByHash(
                 tx.hash,
             )).then(async function (value) {
               checkGetTxSuccess(tx, value)
@@ -108,7 +108,7 @@ describe('Jingtum测试', function () {
           })
 
           it('0040\t查询无效交易哈希:数字\n', function () {
-            return Promise.resolve(server.responseGetTx(
+            return Promise.resolve(server.responseGetTxByHash(
                 1231111,
             )).then(async function (value) {
               checkResponse(false, value)
@@ -117,7 +117,7 @@ describe('Jingtum测试', function () {
           })
 
           it('0040\t查询无效交易哈希:字符串\n', function () {
-            return Promise.resolve(server.responseGetTx(
+            return Promise.resolve(server.responseGetTxByHash(
                 "data.tx1.hash",
             )).then(async function (value) {
               checkResponse(false, value)
@@ -126,7 +126,7 @@ describe('Jingtum测试', function () {
           })
 
           it('0040\t查询无效交易哈希:参数为空\n', function () {
-            return Promise.resolve(server.responseGetTx(
+            return Promise.resolve(server.responseGetTxByHash(
                 null,
             )).then(async function (value) {
               checkResponse(false, value)
@@ -204,7 +204,6 @@ describe('Jingtum测试', function () {
             })
           })
 
-
         })
 
         describe('测试jt_getAccount\n', function () {
@@ -227,10 +226,237 @@ describe('Jingtum测试', function () {
           testGetBalanceByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
         })
 
-        describe('测试jt_sendTransaction', function () {
+        describe('测试jt_getTransactionByHash\n', function () {
+
+          it('0010\t有效交易哈希\n', function () {
+            let tx1 = txs.swtTx1.tx
+            let hash = tx1.hash
+            return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
+              checkResponse(true, response)
+              compareTx(tx1, response.result)
+            })
+          })
+
+          it('0020\t无效交易哈希\n：不存在的hash', function () {
+            let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
+            return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('can\'t find transaction')
+            })
+          })
+
+          it('0020\t无效交易哈希\n：hash长度超过标准', function () {
+            let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F"
+            return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('index out of range')
+            })
+          })
+
+        })
+
+        describe('测试responseGetTxByBlockHashAndIndex\n', function () {
+
+          it('0010\t有效区块哈希，有效交易索引\n', function () {
+            let tx1 = txs.swtTx1.tx
+            let blockHash = txs.swtTx1.blockHash
+            let index = tx1.meta.TransactionIndex.toString()
+            return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
+              checkResponse(true, response)
+              compareTx(tx1, response.result)
+            })
+          })
+
+          it('0010\t有效区块哈希，有效交易索引\n:查询有效区块编号，遍历所有有效交易索引\n', async function () {
+            let blockHash = blocks.block1.hash
+            await goThroughTxsInBlockByHash(server, blockHash)
+          })
+
+          it('0020\t有效区块哈希，无效交易索引\n无效交易索引:100', function () {
+            let blockHash = txs.swtTx1.blockHash
+            let index = "100"
+            return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('no such transaction in block')
+            })
+          })
+
+          it('0020\t有效区块哈希，无效交易索引\n无效交易索引:负数', function () {
+            let blockHash = txs.swtTx1.blockHash
+            let index = "-1"
+            return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('index out of range')
+            })
+          })
+
+          it('0020\t有效区块哈希，无效交易索引\n无效交易索引:乱码', function () {
+            let blockHash = txs.swtTx1.blockHash
+            let index = "asdf"
+            return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('invalid syntax')
+            })
+          })
+
+          it('0030\t无效区块哈希\n', function () {
+            let blockHash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
+            let index = "0"
+            return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('can\'t find block')
+            })
+          })
+
+        })
+
+        describe('测试jt_getTransactionByBlockNumberAndIndex\n', function () {
+
+          it('0010\t有效区块编号，有效交易索引\n\n', function () {
+            let tx1 = txs.swtTx1.tx
+            let blockNumber = tx1.ledger_index.toString()
+            let index = tx1.meta.TransactionIndex.toString()
+            return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
+              checkResponse(true, response)
+              compareTx(tx1, response.result)
+            })
+          })
+
+          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号，遍历所有有效交易索引\n', async function () {
+            let blockNumber = blocks.block1.blockNumber
+            await goThroughTxsInBlockByBlockNumber(server, blockNumber)
+          })
+
+          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号earliest，遍历所有有效交易索引\n', async function () {
+            let blockNumber = "earliest"
+            await goThroughTxsInBlockByBlockNumber(server, blockNumber)
+          })
+
+          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号latest，遍历所有有效交易索引\n', async function () {
+            let blockNumber = "latest"
+            await goThroughTxsInBlockByBlockNumber(server, blockNumber)
+          })
+
+          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号pending，遍历所有有效交易索引\n', async function () {
+            let blockNumber = "pending"
+            await goThroughTxsInBlockByBlockNumber(server, blockNumber)
+          })
+
+          it('0020\t有效区块编号，无效交易索引:100', function () {
+            let tx1 = txs.swtTx1.tx
+            let blockNumber = tx1.ledger_index.toString()
+            let index = "100"
+            return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('no such transaction in block')
+            })
+          })
+
+          it('0020\t有效区块编号，无效交易索引\n无效交易索引:负数', function () {
+            let tx1 = txs.swtTx1.tx
+            let blockNumber = tx1.ledger_index.toString()
+            let index = "-1"
+            return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('index out of range')
+            })
+          })
+
+          it('0020\t有效区块编号，无效交易索引\n无效交易索引:乱码', function () {
+            let tx1 = txs.swtTx1.tx
+            let blockNumber = tx1.ledger_index.toString()
+            let index = "asdf"
+            return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('invalid syntax')
+            })
+          })
+
+          it('0030\t无效区块编号\n', function () {
+            let blockNumber = "9999999"
+            let index = "0"
+            return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('can\'t find block')
+            })
+          })
+
+        })
+
+        describe('测试jt_getBlockTransactionCountByHash', function () {
+
+          it('0010\t查询有效区块哈希\n', function () {
+            let block = blocks.block1
+            let hash = block.hash
+            let txCount = block.transactionsCount
+            return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
+              checkResponse(true, response)
+              expect(txCount).to.equal(response.result)
+            })
+          })
+
+          it('0020\t无效交易哈希\n：不存在的hash', function () {
+            let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
+            return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('can\'t find block')
+            })
+          })
+
+          it('0020\t无效交易哈希\n：hash长度超过标准', function () {
+            let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F"
+            return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('index out of range')
+            })
+          })
+
+        })
+
+        describe('测试jt_getBlockTransactionCountByNumber', function () {
+
+          it('0010\t查询有效区块编号\n', function () {
+            let block = blocks.block1
+            let blockNumber = block.blockNumber
+            let txCount = block.transactionsCount
+            return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
+              checkResponse(true, response)
+              expect(txCount).to.equal(response.result)
+            })
+          })
+
+          it('0020\t无效交易编号\n：9999999', function () {
+            let blockNumber = "9999999"
+            return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('can\'t find block')
+            })
+          })
+
+          it('0020\t无效交易编号\n：负数', function () {
+            let blockNumber = "-100"
+            return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('invalid syntax')
+            })
+          })
+
+          it('0020\t无效交易编号\n：乱码', function () {
+            let blockNumber = "addeew"
+            return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
+              checkResponse(false, response)
+              expect(response.result).to.contains('invalid syntax')
+            })
+          })
+
+
+
+        })
+
+        describe.skip('测试jt_sendTransaction', function () {
 
           describe('测试底层币交易', function (){
-            let params = createTokenParams("底层币", addresses.sender1, addresses.receiver1,
+            let params = createTransactionParams("底层币", addresses.sender1, addresses.receiver1,
                 "swt", "telINSUF_FEE_P Fee insufficient")
             testBasicTransaction(server, params)
           })
@@ -238,7 +464,7 @@ describe('Jingtum测试', function () {
           describe('测试token交易', function (){
 
             describe('测试基本交易', function (){
-              let params = createTokenParams("token", addresses.sender3, addresses.receiver1,
+              let params = createTransactionParams("token", addresses.sender3, addresses.receiver1,
                   "at1", "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, params)
             })
@@ -254,7 +480,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -278,7 +504,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -303,7 +529,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -327,7 +553,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -351,7 +577,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -375,7 +601,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -399,7 +625,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -423,7 +649,7 @@ describe('Jingtum测试', function () {
               testCreateToken(server, params)
 
               //then test transaction of new token
-              let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+              let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                   params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
               testBasicTransaction(server, txParams)
 
@@ -448,10 +674,10 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        describe('测试token交易', function (){
+        describe.skip('测试token交易', function (){
 
           describe('测试基本交易', function (){
-            let params = createTokenParams("token", addresses.sender2, addresses.receiver1,
+            let params = createTransactionParams("token", addresses.sender2, addresses.receiver1,
                 null, "telINSUF_FUND Fund insufficient")
             testBasicTransaction(server, params)
           })
@@ -467,7 +693,7 @@ describe('Jingtum测试', function () {
             testCreateToken(server, params)
 
             //then test transaction of new token
-            let txParams = createTokenParams(params.type, addresses.sender1, addresses.receiver1,
+            let txParams = createTransactionParams(params.type, addresses.sender1, addresses.receiver1,
                 params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
             testBasicTransaction(server, txParams)
 
@@ -493,7 +719,7 @@ describe('Jingtum测试', function () {
 
   //region common test case
 
-  function createTokenParams(type, from, to, symbol, exceedingErrorMessage){
+  function createTransactionParams(type, from, to, symbol, exceedingErrorMessage){
     let showSymbol = (symbol || symbol == null) ? "" : ("/" + symbol)
     let params = {}
     params.type = type
@@ -524,6 +750,30 @@ describe('Jingtum测试', function () {
     return params
   }
 
+  async function testSendTxCases(cases){
+    for(let i = 0; i < cases.length; i++){
+      await testSingleSendTxCase(cases[i], i)
+    }
+  }
+
+  function testSingleSendTxCase(caseParams, index){
+    let title = caseParams.title
+    let server = caseParams.server
+    let commonParams = caseParams.commonParams
+    let retentiveParams = caseParams.retentiveParams
+    let isSuccess = caseParams.isSuccess
+    let expectedError = caseParams.expectedError
+    it("Case " + index + " [ " + title + " ]", function () {
+      return isSuccess ? checkSendTxSuccess(server, commonParams, retentiveParams)
+          : checkSendTxFailure(server, commonParams, retentiveParams, expectedError.isInResult, expectedError.content)
+    })
+
+    it('0010\t发起' + params.type + '有效交易_01', function () {
+      let commonParams = cloneParams(params)
+      return checkSendTxSuccess(server, commonParams, retentiveParams)
+    })
+  }
+
   function testBasicTransaction(server, params) {
     let retentiveParams = {}
 
@@ -534,10 +784,9 @@ describe('Jingtum测试', function () {
         return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
-      //todo check send tx continuously by with sequence
       it('0010\t发起' + params.type + '有效交易_01：连续交易', async function () {
         let commonParams = cloneParams(params)
-        let sendCount = 100
+        let sendCount = 20
         let finishCount = 0;
         await sendTxWithSequenceContinuously(server, commonParams, retentiveParams, sendCount).then(async (txHashes)=>{
           for(let i = 0; i < txHashes.length; i++){
@@ -1182,6 +1431,44 @@ describe('Jingtum测试', function () {
     })
 
   }
+
+  async function goThroughTxsInBlockByBlockNumber(server, blockNumber){
+    await server.responseGetTxCountByBlockNumber(blockNumber).then(async(countResponse)=>{
+      checkResponse(true, countResponse)
+      let txCount = Number(countResponse.result)
+      let finishCount = 0
+      for(let i = 0; i < txCount; i++){
+        await Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber.toString(), i.toString())).then(function (response) {
+          checkResponse(true, response)
+          finishCount++
+          if(finishCount == txCount){
+            logger.debug("遍历所有有效交易索引: " + txCount + " txs done!")
+            return "done!"
+          }
+        })
+      }
+    })
+  }
+
+  async function goThroughTxsInBlockByHash(server, blockHash){
+    await server.responseGetTxCountByHash(blockHash).then(async(countResponse)=>{
+      checkResponse(true, countResponse)
+      let txCount = Number(countResponse.result)
+      let finishCount = 0
+      for(let i = 0; i < txCount; i++){
+        await Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, i.toString())).then(function (response) {
+          checkResponse(true, response)
+          finishCount++
+          if(finishCount == txCount){
+            logger.debug("遍历所有有效交易索引: " + txCount + " txs done!")
+            return "done!"
+          }
+        })
+      }
+    })
+  }
+
+
   //endregion
 
   // region utility methods
@@ -1233,6 +1520,14 @@ describe('Jingtum测试', function () {
     })
   }
 
+  function compareTx(tx1, tx2){
+    expect(tx1.Account).to.be.equals(tx2.Account)
+    expect(tx1.Destination).to.be.equals(tx2.Destination)
+    expect(tx1.Fee).to.be.equals(tx2.Fee)
+    expect(tx1.Amount).to.be.equals(tx2.Amount)
+    expect(JSON.stringify(tx1.Memos)).to.be.equals(JSON.stringify(tx2.Memos))
+  }
+
   function checkSendTxFailure(server, commonParams, retentiveParams, isErrorInResult, expectedError){
     return Promise.resolve(sendTx(server, commonParams, retentiveParams)).then(function (value) {
       checkResponse(false, value)
@@ -1251,11 +1546,11 @@ describe('Jingtum测试', function () {
   }
 
   function checkSendTxResponse(server, hash, isRetry){
-    return server.responseGetTx(hash)
+    return server.responseGetTxByHash(hash)
         .then(async function (value) {
           //retry
           if(!isRetry && (value.result.toString().indexOf('can\'t find transaction') != -1 || value.result.toString().indexOf('no such transaction') != -1)){
-            logger.debug("===Try responseGetTx again!===")
+            logger.debug("===Try responseGetTxByHash again!===")
             await utility.timeout(data.retryPauseTime)
             return checkSendTxResponse(server, hash, true)
           }
