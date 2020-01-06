@@ -4,12 +4,9 @@ const expect = chai.expect
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-let HashMap = require('hashmap')
 var utility = require("./testUtility.js")
 const { servers, chains, addresses, status, data, token, txs, blocks, modes } = require("./config")
 const schema = require("./schema.js")
-
-let sequenceMap = new HashMap()
 
 describe('Jingtum测试', function () {
   this.timeout(20000)
@@ -677,227 +674,227 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        // describe('测试jt_signTransaction和jt_sendRawTransaction', function () {
-        //
-        //   let testFunction = signAndSendRaw
-        //
-        //   describe.skip('测试底层币交易：没有symbol，默认swt', function (){
-        //     let params = createTransactionParams("底层币", addresses.sender1, addresses.receiver1,
-        //         "swt", "telINSUF_FEE_P Fee insufficient")
-        //     testBasicTransaction(server, params, testFunction)
-        //   })
-        //
-        //   describe('测试token交易', function (){
-        //
-        //     describe.skip('测试基本交易', function (){
-        //       let params = createTransactionParams("token", addresses.sender3, addresses.receiver1,
-        //           "at1", "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, params, testFunction)
-        //     })
-        //
-        //     describe('测试发行一次性代币', function (){
-        //       //test create first
-        //       // let params = {}
-        //       // params.testType = "一次性代币"
-        //       // params.from = addresses.sender1
-        //       // params.config = token.config_normal
-        //       // params.existToken = token.existToken
-        //       // params.tokenName = getDynamicName()
-        //       let tokenParams = createIssueTokenParams("一次性代币", addresses.sender1, token.config_normal)
-        //       testCreateToken(server, tokenParams)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(tokenParams.testType, addresses.sender1, addresses.receiver1,
-        //           tokenParams.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       tokenParams.mintResult = false
-        //       testMintToken(server, tokenParams)
-        //
-        //       //then test burn
-        //       tokenParams.burnResult = false
-        //       testBurnToken(server, tokenParams)
-        //     })
-        //
-        //     describe('测试发行可增发的代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "可增发代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_mintable
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = true
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = false
-        //       testBurnToken(server, params)
-        //
-        //     })
-        //
-        //     describe('测试发行可销毁的代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "可销毁代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_burnable
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = false
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = true
-        //       testBurnToken(server, params)
-        //     })
-        //
-        //     describe('发行既可增发又可销毁的代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "可增发可销毁代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_mint_burn
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = true
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = true
-        //       testBurnToken(server, params)
-        //     })
-        //
-        //     describe('发行带issuer的一次性代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "带issuer的一次性代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_issuer_normal
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = false
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = false
-        //       testBurnToken(server, params)
-        //     })
-        //
-        //     describe('发行带issuer的可增发的代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "带issuer的可增发的代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_issuer_mintable
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = true
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = false
-        //       testBurnToken(server, params)
-        //     })
-        //
-        //     describe('发行带issuer的可销毁的代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "带issuer的可销毁的代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_issuer_burnable
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = false
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = true
-        //       testBurnToken(server, params)
-        //     })
-        //
-        //     describe('发行带issuer的可增发可销毁的代币', function (){
-        //       //test create first
-        //       let params = {}
-        //       params.testType = "带issuer的可增发可销毁的代币"
-        //       params.from = addresses.sender1
-        //       params.config = token.config_issuer_mint_burn
-        //       params.existToken = token.existToken
-        //       params.tokenName = getDynamicName()
-        //       testCreateToken(server, params)
-        //
-        //       //then test transaction of new token
-        //       let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
-        //           params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
-        //       testBasicTransaction(server, txParams, testFunction)
-        //
-        //       //then test mint
-        //       params.mintResult = true
-        //       testMintToken(server, params)
-        //
-        //       //then test burn
-        //       params.burnResult = true
-        //       testBurnToken(server, params)
-        //     })
-        //
-        //   })
-        //
-        //   afterEach(async function() {
-        //     //set timeout to ensure the next test which use the same sender address can pass the test
-        //     return await utility.timeout(data.defaultBlockTime)
-        //   })
-        // })
+        describe('测试jt_signTransaction和jt_sendRawTransaction', function () {
 
-        testBasicTransaction2(server)
+          let testFunction = signAndSendRaw
+
+          describe.skip('测试底层币交易：没有symbol，默认swt', function (){
+            let params = createTransactionParams("底层币", addresses.sender1, addresses.receiver1,
+                "swt", "telINSUF_FEE_P Fee insufficient")
+            testBasicTransaction(server, params, testFunction)
+          })
+
+          describe('测试token交易', function (){
+
+            describe.skip('测试基本交易', function (){
+              let params = createTransactionParams("token", addresses.sender3, addresses.receiver1,
+                  "at1", "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, params, testFunction)
+            })
+
+            describe('测试发行一次性代币', function (){
+              //test create first
+              // let params = {}
+              // params.testType = "一次性代币"
+              // params.from = addresses.sender1
+              // params.config = token.config_normal
+              // params.existToken = token.existToken
+              // params.tokenName = getDynamicName()
+              let tokenParams = createIssueTokenParams("一次性代币", addresses.sender1, token.config_normal)
+              testCreateToken(server, tokenParams)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(tokenParams.testType, addresses.sender1, addresses.receiver1,
+                  tokenParams.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              tokenParams.mintResult = false
+              testMintToken(server, tokenParams)
+
+              //then test burn
+              tokenParams.burnResult = false
+              testBurnToken(server, tokenParams)
+            })
+
+            describe('测试发行可增发的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "可增发代币"
+              params.from = addresses.sender1
+              params.config = token.config_mintable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+
+            })
+
+            describe('测试发行可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "可销毁代币"
+              params.from = addresses.sender1
+              params.config = token.config_burnable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+            describe('发行既可增发又可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "可增发可销毁代币"
+              params.from = addresses.sender1
+              params.config = token.config_mint_burn
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的一次性代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的一次性代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_normal
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的可增发的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的可增发的代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_mintable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的可销毁的代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_burnable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的可增发可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的可增发可销毁的代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_mint_burn
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams, testFunction)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+          })
+
+          afterEach(async function() {
+            //set timeout to ensure the next test which use the same sender address can pass the test
+            return await utility.timeout(data.defaultBlockTime)
+          })
+        })
+
+
 
       })
 
@@ -907,6 +904,38 @@ describe('Jingtum测试', function () {
   }
 
   //region fast test
+  function compareActualTxWithTxParams(commonParams, tx){
+    expect(tx.Account).to.be.equals(commonParams.from)
+    expect(tx.Destination).to.be.equals(commonParams.to)
+    expect(tx.Fee).to.be.equals(((commonParams.fee) ? commonParams.fee : 10).toString())
+    //check value
+    if(commonParams.symbol){
+      expect(tx.Amount.currency).to.be.equals(commonParams.symbol)
+      expect(tx.Amount.value + "/" + tx.Amount.currency).to.be.equals(commonParams.value)
+    }
+    else{
+      expect(tx.Amount).to.be.equals(commonParams.value)
+    }
+    //check memos
+    if(tx.Memos){
+      let memos = tx.Memos
+      let expectedMemos = commonParams.memos
+      for(let i = 0; i < expectedMemos.length; i++){
+        let expectedMemo = expectedMemos[i]
+        if(typeof expectedMemo == "string"){
+          expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
+        }
+        else if(expectedMemo.data){
+          expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
+        }
+        else{
+          expect(false).to.be.ok
+        }
+        //todo need check type and format also. need make type, format, data of memo function clear with weijia.
+      }
+    }
+
+  }
 
   function getTx(){
 
@@ -926,231 +955,6 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region common test case
-
-  //testcase
-  let testCase = {
-    type:"it",
-    title:"",
-    txParams:{},
-    txFunction: {},
-    sequence: 1,
-    needPass: true,
-    expecteResult: {
-      needPass: true,
-      errorLocation: "message", //or "result"
-      errorContent: "",
-    },
-    hasExecuted: false,
-    response: {},
-  }
-
-  function createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, needPass, expecteResult){
-    let testCase = {}
-    testCase.type = "it"
-    if(title) testCase.title = title
-    if(server) testCase.server = server
-    if(txFunctionName) testCase.txFunctionName = txFunctionName
-    if(txParams) testCase.txParams = txParams
-    if(executeFunction) testCase.executeFunction = executeFunction
-    if(checkFunction) testCase.checkFunction = checkFunction
-    if(needPass) testCase.needPass = needPass
-    if(expecteResult) testCase.expecteResult = expecteResult
-    testCase.hasExecuted = false
-    testCase.actualResult = {}
-    return testCase
-  }
-
-  function createTestCaseForTransfer(server){
-    return server.createTransferParams(addresses.sender1.address, addresses.sender1.secret, null,
-        addresses.receiver1.address, "1", 10, ['autotest'])
-  }
-
-  function createTestCaseForIssueToken(){
-
-  }
-
-  function executeTestCase(testCase){
-    // await testCase.sequence = Number(accountInfo.result.Sequence)
-    return new Promise(function(resolve){
-      let server = testCase.server
-      let data = testCase.txParams[0]
-      let from = data.from
-      getSequence(server, from).then(function(sequence){
-        data.sequence = sequence
-        executeTx(testCase).then(function(response){
-          if(response.status === status.success){
-            setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
-          }
-          testCase.hasExecuted = true
-          testCase.actualResult = response
-          resolve(testCase)
-        })
-      })
-    })
-  }
-
-  function executeTx(testCase){
-    return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-  }
-
-  async function checkTestCaseOfSendTransfer(testCase){
-    let responseOfSendTx = testCase.actualResult
-    checkResponse(true, responseOfSendTx)
-    expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-    let hash = responseOfSendTx.result[0]
-    let txParams = testCase.txParams[0]
-    await getTxByHash(testCase.server, hash, false).then(async function(responseOfGetTx){
-      checkResponse(true, responseOfGetTx)
-      // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-      expect(responseOfGetTx.result.hash).to.be.equal(hash)
-      await compareActualTxWithTxParams(txParams, responseOfGetTx.result)
-    })
-  }
-
-  function compareActualTxWithTxParams(commonParams, tx){
-    return new Promise(function(resolve){
-      expect(tx.Account).to.be.equals(commonParams.from)
-      expect(tx.Destination).to.be.equals(commonParams.to)
-      expect(tx.Fee).to.be.equals(((commonParams.fee) ? commonParams.fee : 10).toString())
-      //check value
-      if(commonParams.symbol){
-        expect(tx.Amount.currency).to.be.equals(commonParams.symbol)
-        expect(tx.Amount.value + "/" + tx.Amount.currency).to.be.equals(commonParams.value)
-      }
-      else{
-        expect(tx.Amount).to.be.equals(commonParams.value)
-      }
-      //check memos
-      if(tx.Memos){
-        let memos = tx.Memos
-        let expectedMemos = commonParams.memos
-        for(let i = 0; i < expectedMemos.length; i++){
-          let expectedMemo = expectedMemos[i]
-          if(typeof expectedMemo == "string"){
-            expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
-          }
-          else if(expectedMemo.data){
-            expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
-          }
-          else{
-            expect(false).to.be.ok
-          }
-          //todo need check type and format also. need make type, format, data of memo function clear with weijia.
-        }
-      }
-      // expect(false).to.be.ok
-      resolve("done!")
-    })
-  }
-
-  function getTxByHash(server, hash, isRetry){
-    return server.responseGetTxByHash(hash)
-        .then(async function (value) {
-          //retry
-          if(!isRetry && (value.result.toString().indexOf('can\'t find transaction') != -1
-              || value.result.toString().indexOf('no such transaction') != -1)){
-            logger.debug("===Try responseGetTxByHash again!===")
-            await utility.timeout(data.retryPauseTime)
-            return getTxByHash(server, hash, true)
-          }
-          return value
-        }).catch(function(error){
-          logger.debug(error)
-          expect(error).to.not.be.ok
-        })
-  }
-
-  function getSequence(server, from){
-    return new Promise(function (resolve){
-      if(sequenceMap.has(from)){
-        resolve(sequenceMap.get(from))
-      }
-      else{
-        Promise.resolve(server.responseGetAccount(from)).then(function (accountInfo) {
-          logger.debug("accountInfo:" + JSON.stringify(accountInfo))
-          let sequence = Number(accountInfo.result.Sequence)
-          setSequence(from, sequence)
-          resolve(sequence)
-        }).catch(function (error){
-          logger.debug("Error!!! " + error)
-        })
-      }
-    })
-  }
-
-  function setSequence(from, sequence){
-    sequenceMap.set(from, sequence)
-  }
-
-  function testBasicTransaction2(server) {
-    describe('测试基本交易', async function () {
-
-      let testCases = []
-      let title = '0010\t发起有效交易_01'
-      let txParams = createTestCaseForTransfer(server)
-      let txFunctionName = 'jt_sendTransaction'
-      let executeFunction = executeTestCase
-      let checkFunction = checkTestCaseOfSendTransfer
-      let testCase = createTestCase(title, server, txFunctionName, txParams,
-          executeFunction, checkFunction, true, null)
-      testCases.push(testCase)
-
-      testCase = createTestCase('0010	发起有效交易_02', server, txFunctionName, txParams,
-          executeFunction, checkFunction, false, null)
-      testCases.push(testCase)
-
-      before(async function() {
-        // await testCases.forEach(async function(testCase){
-        //   await testCase.executeFunction(testCase).then(function(value){
-        //     logger.debug("===" + JSON.stringify(value))
-        //     return "execute done!"
-        //   })
-        // })
-
-        execEachTestCase(testCases, 0)
-
-        // await testCase.executeFunction(testCases[0])
-        // await testCase.executeFunction(testCases[1])
-        await utility.timeout(data.defaultBlockTime)
-      })
-
-      testCases.forEach(async function(testCase){
-        it(testCase.title, async function () {
-          await testCase.checkFunction(testCase)
-        })
-      })
-
-      // before(async function() {
-      //   await testCase.executeFunction(testCase)
-      //   await utility.timeout(data.defaultBlockTime)
-      // })
-      //
-      // it(testCase.title, async function () {
-      //   await testCase.checkFunction(testCase)
-      // })
-
-
-    })
-  }
-
-  async function execEachTestCase(testCases, index){
-    if(index < testCases.length){
-      let testCase = testCases[index]
-      logger.debug("===1. index: " + index )
-      await testCase.executeFunction(testCase)
-
-      logger.debug("===2. index: " + index )
-      index++
-      execEachTestCase(testCases, index)
-      logger.debug("===3. index: " + index )
-    }
-  }
-
-
-
-
-
-
 
   function createTransactionParams(testType, from, to, symbol, exceedingErrorMessage){
     let showSymbol = (symbol || symbol == null || symbol == "swt" || symbol == "SWT") ? "" : ("/" + symbol)
@@ -2061,12 +1865,12 @@ describe('Jingtum测试', function () {
     return server.responseGetTxByHash(hash)
         .then(async function (value) {
           //retry
-          if(!isRetry && (value.result.toString().indexOf('can\'t find transaction') != -1
-              || value.result.toString().indexOf('no such transaction') != -1)){
+          if(!isRetry && (value.result.toString().indexOf('can\'t find transaction') != -1 || value.result.toString().indexOf('no such transaction') != -1)){
             logger.debug("===Try responseGetTxByHash again!===")
             await utility.timeout(data.retryPauseTime)
             return checkSendTxResponse(server, hash, true)
           }
+
           checkResponse(true, value)
           // expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
           expect(value.result.hash).to.be.equal(hash)
