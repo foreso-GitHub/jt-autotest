@@ -677,7 +677,16 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        testBasicTransaction2(server, "原生币swt")
+        let categoryName = '原生币swt'
+        let testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendTransaction')
+        testTestCases(server, categoryName, testCases)
+
+        // testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_signTransaction')
+        // testTestCases(server, categoryName, testCases)
+
+        // categoryName = '原生币swt压力测试'
+        // testCases = createTestCasesForPressureTest(server, categoryName, 100)
+        // testTestCases(server, categoryName, testCases)
 
       })
 
@@ -877,6 +886,14 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
+  //region utility
+  function isHex(context){
+    let number = parseInt(context, 16)
+    let context2 = hex2String(number)
+    return context === context2
+  }
+  //endregion
+
   function createTransactionParamsT(testType, from, to, symbol, exceedingErrorMessage){
     let showSymbol = (symbol || symbol == null || symbol == "swt" || symbol == "SWT") ? "" : ("/" + symbol)
     let params = {}
@@ -898,13 +915,33 @@ describe('Jingtum测试', function () {
     return params
   }
 
-  function createParams(server, categoryName){
+  function createTestCasesForBasicTransactoin(server, categoryName, txFunctionName){
     let testCases = []
     let txParams = createTestCaseForTransfer(server)
-    let txFunctionName = 'jt_sendTransaction'
+    // let txFunctionName = 'jt_sendTransaction'
     let executeFunction = executeTestCase
     let checkFunction = checkTestCaseOfSendTransfer
     let expecteResult = {}
+
+
+    // let txFunctionParams = {}
+    // txFunctionParams.txFunctionName = txFunctionName
+    // txFunctionParams.checkFunction = checkTestCaseOfSendTransfer
+    // let txFunctionParamsMap = new HashMap()
+    // txFunctionParamsMap.set(txFunctionName, txFunctionParams)
+
+    // if(txFunctionName === 'jt_sendTransaction'){
+    //
+    // }
+    // else if(txFunctionName === 'jt_signTransaction'){
+    //
+    // }
+    // else if(txFunctionName === 'jt_sendRawTransaction'){
+    //
+    // }
+    // else{
+    //   throw new Error('txFunctionName doesn\'t exist!')
+    // }
 
     let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server, txFunctionName, txParams,
         executeFunction, checkFunction, true, null)
@@ -937,7 +974,6 @@ describe('Jingtum测试', function () {
     testCase = createTestCase('0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2', server, txFunctionName, txParams,
         executeFunction, checkFunction, false, expecteResult)
     testCases.push(testCase)
-
 
 
     return testCases
@@ -1151,10 +1187,26 @@ describe('Jingtum测试', function () {
     })
   }
 
-  function testBasicTransaction2(server, categoryName) {
-    describe('测试基本交易: ' + categoryName, async function () {
+  // function testCases(server, categoryName, createTestCasesFunction, otherCreateParams) {
+  //   describe('测试基本交易: ' + categoryName, async function () {
+  //
+  //     let testCases = createTestCasesFunction(server, categoryName, otherCreateParams)
+  //
+  //     before(async function() {
+  //       execEachTestCase(testCases, 0)
+  //       await utility.timeout(data.defaultBlockTime)
+  //     })
+  //
+  //     testCases.forEach(async function(testCase){
+  //       it(testCase.title, async function () {
+  //         await testCase.checkFunction(testCase)
+  //       })
+  //     })
+  //   })
+  // }
 
-      let testCases = createParams(server, categoryName)
+  function testTestCases(server, categoryName, testCases) {
+    describe('测试基本交易: ' + categoryName, async function () {
 
       before(async function() {
         execEachTestCase(testCases, 0)
@@ -1169,6 +1221,25 @@ describe('Jingtum测试', function () {
     })
   }
 
+  //endregion
+
+  //region pressure test
+
+  function createTestCasesForPressureTest(server, categoryName, testCount){
+    let testCases = []
+    let txParams = createTestCaseForTransfer(server)
+    let txFunctionName = 'jt_sendTransaction'
+    let executeFunction = executeTestCase
+    let checkFunction = checkTestCaseOfSendTransfer
+    let expecteResult = {}
+
+    for(let i = 0; i <= testCount; i++){
+      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server, txFunctionName, txParams,
+          executeFunction, checkFunction, true, null)
+      testCases.push(testCase)
+    }
+    return testCases
+  }
 
 
   //endregion
