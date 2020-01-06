@@ -677,17 +677,22 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        let categoryName = '原生币swt'
-        let testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendTransaction')
+        let categoryName = ''
+        let testCases = []
+
+        categoryName = '原生币swt'
+        testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendTransaction')
         testTestCases(server, categoryName, testCases)
 
-        // testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_signTransaction')
+        testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_signTransaction')
+        testTestCases(server, categoryName, testCases)
+
+        // testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendRawTransaction')
         // testTestCases(server, categoryName, testCases)
 
         // categoryName = '原生币swt压力测试'
         // testCases = createTestCasesForPressureTest(server, categoryName, 100)
         // testTestCases(server, categoryName, testCases)
-
       })
 
     })
@@ -714,7 +719,7 @@ describe('Jingtum测试', function () {
     response: {},
   }
 
-  function createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, needPass, expecteResult){
+  function createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult){
     let testCase = {}
     testCase.type = "it"
     if(title) testCase.title = title
@@ -723,7 +728,6 @@ describe('Jingtum测试', function () {
     if(txParams) testCase.txParams = txParams
     if(executeFunction) testCase.executeFunction = executeFunction
     if(checkFunction) testCase.checkFunction = checkFunction
-    testCase.needPass = needPass
     if(expecteResult) testCase.expecteResult = expecteResult
     testCase.hasExecuted = false
     testCase.actualResult = {}
@@ -739,8 +743,9 @@ describe('Jingtum测试', function () {
 
   }
 
-  function createExpecteResult(isErrorInResult, expectedError){
+  function createExpecteResult(needPass, isErrorInResult, expectedError){
     let expecteResult = {}
+    expecteResult.needPass = needPass
     expecteResult.isErrorInResult = isErrorInResult
     expecteResult.expectedError = expectedError
     return expecteResult
@@ -786,10 +791,15 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region check test cases
+  //region check send tx result
   async function checkTestCaseOfSendTransfer(testCase){
     let responseOfSendTx = testCase.actualResult
-    checkResponse(testCase.needPass, responseOfSendTx)
-    if(testCase.needPass){
+    await checkResponseOfTransfer(testCase, responseOfSendTx)
+  }
+
+  async function checkResponseOfTransfer(testCase, responseOfSendTx){
+    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+    if(testCase.expecteResult.needPass){
       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
       let hash = responseOfSendTx.result[0]
       let txParams = testCase.txParams[0]
@@ -828,10 +838,10 @@ describe('Jingtum测试', function () {
         for(let i = 0; i < expectedMemos.length; i++){
           let expectedMemo = expectedMemos[i]
           if(typeof expectedMemo == "string"){
-            expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
+            expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
           }
           else if(expectedMemo.data){
-            expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
+            expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
           }
           else{
             expect(false).to.be.ok
@@ -862,6 +872,29 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
+  //region check sign tx result
+  async function checkTestCaseOfSignTransfer(testCase){
+    let responseOfSendTx = testCase.actualResult
+    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+    if(testCase.expecteResult.needPass){
+      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+      let signedTx = responseOfSendTx.result[0]
+      expect(typeof(signedTx) === 'string').to.be.ok
+      expect(isHex(signedTx)).to.be.ok
+    }
+    else{
+      let expecteResult = testCase.expecteResult
+      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+    }
+  }
+  //endregion
+
+  //region check send raw tx result
+
+  //endregion
+
+  //endregion
+
   //region process sequence
   function getSequence(server, from){
     return new Promise(function (resolve){
@@ -888,9 +921,9 @@ describe('Jingtum测试', function () {
 
   //region utility
   function isHex(context){
-    let number = parseInt(context, 16)
-    let context2 = hex2String(number)
-    return context === context2
+    let context2 = hex2String(context)
+    let hex = string2Hex(context2)
+    return context === hex
   }
   //endregion
 
@@ -917,64 +950,77 @@ describe('Jingtum测试', function () {
 
   function createTestCasesForBasicTransactoin(server, categoryName, txFunctionName){
     let testCases = []
+    let title = ''
     let txParams = createTestCaseForTransfer(server)
     // let txFunctionName = 'jt_sendTransaction'
     let executeFunction = executeTestCase
     let checkFunction = checkTestCaseOfSendTransfer
-    let expecteResult = {}
+    let expecteResult = createExpecteResult(true)
+    let testCase = {}
 
+    if(txFunctionName === 'jt_sendTransaction') {checkFunction = checkTestCaseOfSendTransfer}
+    else if(txFunctionName === 'jt_signTransaction'){checkFunction = checkTestCaseOfSignTransfer}
+    else if(txFunctionName === 'jt_sendRawTransaction'){}
+    else{throw new Error('txFunctionName doesn\'t exist!')}
 
-    // let txFunctionParams = {}
-    // txFunctionParams.txFunctionName = txFunctionName
-    // txFunctionParams.checkFunction = checkTestCaseOfSendTransfer
-    // let txFunctionParamsMap = new HashMap()
-    // txFunctionParamsMap.set(txFunctionName, txFunctionParams)
+    title = '0010\t发起' + categoryName + '有效交易_01'
+    {
+      if(txFunctionName === 'jt_sendTransaction') expecteResult = createExpecteResult(true)
+      else if(txFunctionName === 'jt_signTransaction') expecteResult = createExpecteResult(true)
+      else if(txFunctionName === 'jt_sendRawTransaction') expecteResult = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      testCases.push(testCase)
+    }
 
-    // if(txFunctionName === 'jt_sendTransaction'){
-    //
-    // }
-    // else if(txFunctionName === 'jt_signTransaction'){
-    //
-    // }
-    // else if(txFunctionName === 'jt_sendRawTransaction'){
-    //
-    // }
-    // else{
-    //   throw new Error('txFunctionName doesn\'t exist!')
-    // }
+    title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + txParams[0].value + '"等'
+    {
+      txParams = createTestCaseForTransfer(server)
+      txParams[0].value = "123/swt"
+      if(txFunctionName === 'jt_sendTransaction') expecteResult = createExpecteResult(true)
+      else if(txFunctionName === 'jt_signTransaction') expecteResult = createExpecteResult(true)
+      else if(txFunctionName === 'jt_sendRawTransaction') expecteResult = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      testCases.push(testCase)
+    }
 
-    let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server, txFunctionName, txParams,
-        executeFunction, checkFunction, true, null)
-    testCases.push(testCase)
+    title = '0030\t发起' + categoryName + '无效交易_01: 没有秘钥'
+    {
+      txParams = createTestCaseForTransfer(server)
+      txParams[0].secret = null
+      if(txFunctionName === 'jt_sendTransaction') expecteResult = createExpecteResult(false, true, 'No secret found for')
+      else if(txFunctionName === 'jt_signTransaction') expecteResult = createExpecteResult(false, true, 'No secret found for')
+      else if(txFunctionName === 'jt_sendRawTransaction') expecteResult = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      testCases.push(testCase)
+    }
 
-    txParams = createTestCaseForTransfer(server)
-    txParams[0].value = "123/swt"
-    testCase = createTestCase('0020\t发起' + categoryName + '有效交易_02: 交易额填"'
-        + txParams[0].value + '"等', server, txFunctionName, txParams,
-        executeFunction, checkFunction, true, null)
-    testCases.push(testCase)
+    title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
+    {
+      txParams = createTestCaseForTransfer(server)
+      txParams[0].secret = '错误的秘钥'
+      if(txFunctionName === 'jt_sendTransaction')
+        expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
+      else if(txFunctionName === 'jt_signTransaction')
+        expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
+      else if(txFunctionName === 'jt_sendRawTransaction')
+        expecteResult = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      testCases.push(testCase)
+    }
 
-    txParams = createTestCaseForTransfer(server)
-    txParams[0].secret = null
-    expecteResult = createExpecteResult(true, 'No secret found for')
-    testCase = createTestCase('0030\t发起' + categoryName + '无效交易_01: 没有秘钥', server, txFunctionName, txParams,
-        executeFunction, checkFunction, false, expecteResult)
-    testCases.push(testCase)
-
-    txParams = createTestCaseForTransfer(server)
-    txParams[0].secret = '错误的秘钥'
-    expecteResult = createExpecteResult(true, 'Bad Base58 string')
-    testCase = createTestCase('0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1', server, txFunctionName, txParams,
-        executeFunction, checkFunction, false, expecteResult)
-    testCases.push(testCase)
-
-    txParams = createTestCaseForTransfer(server)
-    txParams[0].secret = txParams[0].secret + '1'
-    expecteResult = createExpecteResult(true, 'Bad Base58 checksum')
-    testCase = createTestCase('0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2', server, txFunctionName, txParams,
-        executeFunction, checkFunction, false, expecteResult)
-    testCases.push(testCase)
-
+    title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
+    {
+      txParams = createTestCaseForTransfer(server)
+      txParams[0].secret = txParams[0].secret + '1'
+      if(txFunctionName === 'jt_sendTransaction')
+        expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+      else if(txFunctionName === 'jt_signTransaction')
+        expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+      else if(txFunctionName === 'jt_sendRawTransaction')
+        expecteResult = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      testCases.push(testCase)
+    }
 
     return testCases
   }
@@ -1186,24 +1232,6 @@ describe('Jingtum测试', function () {
 
     })
   }
-
-  // function testCases(server, categoryName, createTestCasesFunction, otherCreateParams) {
-  //   describe('测试基本交易: ' + categoryName, async function () {
-  //
-  //     let testCases = createTestCasesFunction(server, categoryName, otherCreateParams)
-  //
-  //     before(async function() {
-  //       execEachTestCase(testCases, 0)
-  //       await utility.timeout(data.defaultBlockTime)
-  //     })
-  //
-  //     testCases.forEach(async function(testCase){
-  //       it(testCase.title, async function () {
-  //         await testCase.checkFunction(testCase)
-  //       })
-  //     })
-  //   })
-  // }
 
   function testTestCases(server, categoryName, testCases) {
     describe('测试基本交易: ' + categoryName, async function () {
@@ -2109,10 +2137,10 @@ describe('Jingtum测试', function () {
           for(let i = 0; i < expectedMemos.length; i++){
             let expectedMemo = expectedMemos[i]
             if(typeof expectedMemo == "string"){
-              expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
+              expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
             }
             else if(expectedMemo.data){
-              expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
+              expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
             }
             else{
               expect(false).to.be.ok
@@ -2355,12 +2383,18 @@ describe('Jingtum测试', function () {
     return result
   }
 
-  function hex2String(hex){
-    return new Buffer.from(hex, 'hex').toString('utf8')
+  function hex2Utf8(hex){
+    return new Buffer.from(hex.toString(), 'hex').toString('utf8')
   }
 
-  function string2hex(string){
-    return new Buffer(string, 'base64').toString('hex')
+  function hex2String(hex){
+    // return new Buffer.from(hex.toString(), 'hex').toString('utf8')
+    return new Buffer.from(hex.toString(), 'hex').toString('base64')
+  }
+
+  function string2Hex(string){
+    // return new Buffer.from(string, 'utf8').toString('hex')
+    return new Buffer.from(string, 'base64').toString('hex')
   }
 
   //endregion
