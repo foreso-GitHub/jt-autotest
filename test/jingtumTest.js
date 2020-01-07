@@ -681,14 +681,11 @@ describe('Jingtum测试', function () {
         let testCases = []
 
         categoryName = '原生币swt'
-        // testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendTransaction')
-        // testTestCases(server, categoryName, testCases)
+        testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendTransaction')
+        testTestCases(server, categoryName, testCases)
 
         testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_signTransaction')
         testTestCases(server, categoryName, testCases)
-
-        // testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendRawTransaction')
-        // testTestCases(server, categoryName, testCases)
 
         // categoryName = '原生币swt压力测试'
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
@@ -703,6 +700,7 @@ describe('Jingtum测试', function () {
   //region fast sendTx case
 
   //region create test cases
+
   let testCase = {
     type:"it",
     title:"",
@@ -751,11 +749,39 @@ describe('Jingtum测试', function () {
     return expecteResult
   }
 
+  //region common create method for sendTx and signTx
+
+  function addTestCaseForSendRawTx(testCaseOfSignTx, expecteResultOfSendRawTx){
+    let txFunctionName = 'jt_sendRawTransaction'
+    let testCaseOfSendRawTx = createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
+        txFunctionName, null,null, null, expecteResultOfSendRawTx)
+    testCaseOfSignTx.subTestCases = []
+    testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
+  }
+
+  function createBothTestCaseWhenCanNotPassSign(){
+
+  }
+
+  function createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult){
+    let testCase = {}
+    if(txFunctionName === 'jt_sendTransaction') {
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+    }
+    else if(txFunctionName === 'jt_signTransaction') {
+      let expecteResultOfSignTx = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResultOfSignTx)
+      addTestCaseForSendRawTx(testCase, expecteResult)
+    }
+    return testCase
+  }
+  //endregion
+
   //endregion
 
   //region execute test cases
 
-  //region execute the function which will write block like jt_sendTransaction/jt_sendRawTransaction
+  //region execute the function of jt_sendTransaction
 
   function executeTestCaseOfSendTx(testCase){
     return new Promise(function(resolve){
@@ -776,46 +802,9 @@ describe('Jingtum测试', function () {
     })
   }
 
-  // function executeTestCaseOfWriteBlockFunction(testCase){
-  //   return new Promise(async function(resolve){
-  //     await executeWriteBlockFunction(testCase.server, testCase.txFunctionName, testCase.txParams).then(function(response){
-  //       testCase.hasExecuted = true
-  //       testCase.actualResult.push(response)
-  //       resolve(response)
-  //     })
-  //   })
-  // }
-  //
-  // function executeWriteBlockFunction(server, txFunctionName, txParams){
-  //   return new Promise(function(resolve){
-  //     let from = txParams[0].from
-  //     getSequence(server, from).then(function(sequence){
-  //       txParams[0].sequence = sequence
-  //       executeTx(server, txFunctionName, txParams).then(function(response){
-  //         if(response.status === status.success){
-  //           setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
-  //         }
-  //         resolve(response)
-  //       })
-  //     })
-  //   })
-  // }
-
   //endregion
 
-  //region execute the function which will NOT write block like jt_signTransaction
-
-  function executeTestCaseOfCommonFunction(testCase){
-    return new Promise(function(resolve){
-      executeTxByTestCase(testCase).then(function(response){
-        testCase.hasExecuted = true
-        testCase.actualResult.push(response)
-        resolve(response)
-      })
-    })
-  }
-
-  //endregion
+  //region execute the function of jt_signTransaction
 
   function executeTestCaseOfSignTxAndSendRawTx(testCase){
     return new Promise(function(resolve){
@@ -865,34 +854,7 @@ describe('Jingtum测试', function () {
     })
   }
 
-  function executeTestCaseOfSignTx2(testCase){
-    return new Promise(function(resolve){
-      executeTestCaseOfCommonFunction(testCase).then(function(responseOfSign){
-        if(testCase.expecteResult.needPass){
-          let rawTx = testCase.actualResult[0].result[0]
-          if(rawTx && rawTx.length > 0){
-            let server = testCase.server
-            let data = []
-            data.push(rawTx)
-            let testCaseOfSendRawTx = testCase.subTestCases[0]
-            testCaseOfSendRawTx.txParams = data
-            executeWriteBlockFunction(server, data).then(function(responseOfSendRawTx){
-              testCaseOfSendRawTx.hasExecuted = true
-              testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
-              resolve(responseOfSendRawTx)
-            })
-          }
-          else{
-            testCase.executionResult = false
-            resolve(responseOfSign)
-          }
-        }
-        else{
-          resolve(responseOfSign)
-        }
-      })
-    })
-  }
+  //endregion
 
   //region common execute
 
@@ -900,9 +862,19 @@ describe('Jingtum测试', function () {
     return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
   }
 
-  // function executeTx(server, txFunctionName, txParams){
-  //   return server.getResponse(txFunctionName, txParams)
-  // }
+  //region execute the function which will NOT write block like jt_signTransaction
+
+  function executeTestCaseOfCommonFunction(testCase){
+    return new Promise(function(resolve){
+      executeTxByTestCase(testCase).then(function(response){
+        testCase.hasExecuted = true
+        testCase.actualResult.push(response)
+        resolve(response)
+      })
+    })
+  }
+
+  //endregion
 
   async function execEachTestCase(testCases, index){
     if(index < testCases.length){
@@ -1003,7 +975,7 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
-  //region check sign tx result
+  //region check sign and send raw tx result
   async function checkTestCaseOfSignTxAndSendRawTx(testCase){
     //check sign result
     let responseOfSendTx = testCase.actualResult[0]
@@ -1024,10 +996,6 @@ describe('Jingtum测试', function () {
       expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
     }
   }
-  //endregion
-
-  //region check send raw tx result
-
   //endregion
 
   //endregion
@@ -1056,52 +1024,17 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
-  //region utility
-  function isHex(context){
-    let context2 = hex2String(context)
-    let hex = string2Hex(context2)
-    return context === hex
-  }
-  //endregion
-
-  function addTestCaseForSendRawTx(testCaseOfSignTx, expecteResultOfSendRawTx){
-    let txFunctionName = 'jt_sendRawTransaction'
-    let testCaseOfSendRawTx = createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
-        txFunctionName, null,null, null, expecteResultOfSendRawTx)
-    testCaseOfSignTx.subTestCases = []
-    testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
-  }
-
-  function createTransactionParamsT(testType, from, to, symbol, exceedingErrorMessage){
-    let showSymbol = (symbol || symbol == null || symbol == "swt" || symbol == "SWT") ? "" : ("/" + symbol)
-    let params = {}
-    params.testType = testType
-    params.from = from.address
-    params.secret = from.secret
-    params.to = to.address
-    params.symbol = symbol
-    params.showSymbol = showSymbol
-    params.value = "1" + showSymbol
-    params.value2 = "123/" + ((symbol || symbol == null) ? "swt" : symbol)
-    params.exceedingValue = "999999999999999" + showSymbol
-    params.exceedingErrorMessage = exceedingErrorMessage
-    params.nagetiveValue = "-100" + showSymbol
-    params.stringValue = "aawrwfsfs"
-    params.below1DecimalValue = "0.1" + showSymbol
-    params.over1DecimalValue = "1.1" + showSymbol
-    params.negativeDecimalValue = "-0.1" + showSymbol
-    return params
-  }
-
   function createTestCasesForBasicTransactoin(server, categoryName, txFunctionName){
     let testCases = []
     let title = ''
     let txParams = createTestCaseForTransfer(server)
-    // let txFunctionName = 'jt_sendTransaction'
     let executeFunction = executeTestCaseOfSendTx
     let checkFunction = checkTestCaseOfSendTx
     let expecteResult = createExpecteResult(true)
     let testCase = {}
+
+    let symbol = txParams[0].symbol
+    let showSymbol = (symbol || symbol == null || symbol == "swt" || symbol == "SWT") ? "" : ("/" + symbol)
 
     if(txFunctionName === 'jt_sendTransaction') {
       executeFunction = executeTestCaseOfSendTx
@@ -1113,93 +1046,207 @@ describe('Jingtum测试', function () {
     }
     else{throw new Error('txFunctionName doesn\'t exist!')}
 
+    //region test cases
+    let testAll = false
+    if(testAll){
 
-
-    title = '0010\t发起' + categoryName + '有效交易_01'
-    {
-      if(txFunctionName === 'jt_sendTransaction') {
+      title = '0010\t发起' + categoryName + '有效交易_01'
+      {
         expecteResult = createExpecteResult(true)
         testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        if(txFunctionName === 'jt_signTransaction') {
+          //add sub test case of sendRawTx, just after signTx.
+          let expecteResultOfSendRawTx = createExpecteResult(true)
+          addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
+        }
+        testCases.push(testCase)
       }
-      else if(txFunctionName === 'jt_signTransaction') {
+
+      title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + txParams[0].value + '"等'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "123/swt"
         expecteResult = createExpecteResult(true)
         testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        if(txFunctionName === 'jt_signTransaction') {
+          let expecteResultOfSendRawTx = createExpecteResult(true)
+          addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
+        }
+        testCases.push(testCase)
+      }
+
+      title = '0030\t发起' + categoryName + '无效交易_01: 没有秘钥'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].secret = null
+        expecteResult = createExpecteResult(false, true, 'No secret found for')
+        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].secret = '错误的秘钥'
+        expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
+        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].secret = txParams[0].secret + '1'
+        expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0040\t发起' + categoryName + '无效交易_02: 错误的发起钱包地址（乱码字符串）'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].from = txParams[0].from + '1'
+        expecteResult = createExpecteResult(false, true, 'Bad account address:')
+        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0050\t发起' + categoryName + '无效交易_03: 错误的接收钱包地址（乱码字符串）'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].to = txParams[0].to + '1'
+        expecteResult = createExpecteResult(false, true, 'Bad account address:')
+        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0060\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "999999999999999" + showSymbol
+        expecteResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0070\t发起' + categoryName + '无效交易_05: 交易额为负数'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "-100" + showSymbol
+        expecteResult = createExpecteResult(false, false, 'temBAD_AMOUNT Can only send positive amounts')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0080\t发起' + categoryName + '无效交易_06: 交易额为空'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = null
+        expecteResult = createExpecteResult(false, true, 'Invalid Number')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0080\t发起' + categoryName + '无效交易_06: 交易额为字符串'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "aawrwfsfs"
+        expecteResult = createExpecteResult(false, true, 'Invalid Number')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于1的正小数'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "0.1" + showSymbol
+        expecteResult = createExpecteResult(false, true, 'value must be integer type')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于1的小数'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "1.1" + showSymbol
+        expecteResult = createExpecteResult(false, true, 'value must be integer type')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+
+      title = '0110\t发起' + categoryName + '无效交易_09: 交易额为负小数：-0.1、-1.23等'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].value = "-0.1" + showSymbol
+        expecteResult = createExpecteResult(false, true, 'value must be integer type')
+        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+            executeFunction, checkFunction, expecteResult)
+        testCases.push(testCase)
+      }
+    }
+    //endregion
+
+    if(!testAll){
+
+      //todo how to add description?
+
+      title = '0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]'
+      {
+        txParams = createTestCaseForTransfer(server)
+        txParams[0].memos = ["大家好"]
+        expecteResult = createExpecteResult(true)
+        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+        if(txFunctionName === 'jt_signTransaction') {
+          //add sub test case of sendRawTx, just after signTx.
+          let expecteResultOfSendRawTx = createExpecteResult(true)
+          addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
+        }
+        testCases.push(testCase)
+      }
+
+
+    }
+
+
+    //region examples
+    title = 'sign成功，sendraw成功'
+    {
+      expecteResult = createExpecteResult(true)
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      if(txFunctionName === 'jt_signTransaction') {
         //add sub test case of sendRawTx, just after signTx.
         let expecteResultOfSendRawTx = createExpecteResult(true)
         addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
       }
-      testCases.push(testCase)
+      // testCases.push(testCase)
+    }
+
+    title = 'sign失败，无需sendraw'
+    {
+      txParams = createTestCaseForTransfer(server)
+      txParams[0].from = txParams[0].from + '1'
+      expecteResult = createExpecteResult(false, true, 'Bad account address:')
+      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
+      // testCases.push(testCase)
     }
 
 
-
-
-
-    //region temp
-
-    // title = '0010\t发起' + categoryName + '有效交易_01'
-    // {
-    //   if(txFunctionName === 'jt_sendTransaction') expecteResult = createExpecteResult(true)
-    //   else if(txFunctionName === 'jt_signTransaction') expecteResult = createExpecteResult(true)
-    //   else if(txFunctionName === 'jt_sendRawTransaction') expecteResult = createExpecteResult(true)
-    //   testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-    //   testCases.push(testCase)
-    // }
-    //
-    // title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + txParams[0].value + '"等'
-    // {
-    //   txParams = createTestCaseForTransfer(server)
-    //   txParams[0].value = "123/swt"
-    //   if(txFunctionName === 'jt_sendTransaction') expecteResult = createExpecteResult(true)
-    //   else if(txFunctionName === 'jt_signTransaction') expecteResult = createExpecteResult(true)
-    //   else if(txFunctionName === 'jt_sendRawTransaction') expecteResult = createExpecteResult(true)
-    //   testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-    //   testCases.push(testCase)
-    // }
-    //
-    // title = '0030\t发起' + categoryName + '无效交易_01: 没有秘钥'
-    // {
-    //   txParams = createTestCaseForTransfer(server)
-    //   txParams[0].secret = null
-    //   if(txFunctionName === 'jt_sendTransaction') expecteResult = createExpecteResult(false, true, 'No secret found for')
-    //   else if(txFunctionName === 'jt_signTransaction') expecteResult = createExpecteResult(false, true, 'No secret found for')
-    //   else if(txFunctionName === 'jt_sendRawTransaction') expecteResult = createExpecteResult(true)
-    //   testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-    //   testCases.push(testCase)
-    // }
-    //
-    // title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
-    // {
-    //   txParams = createTestCaseForTransfer(server)
-    //   txParams[0].secret = '错误的秘钥'
-    //   if(txFunctionName === 'jt_sendTransaction')
-    //     expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
-    //   else if(txFunctionName === 'jt_signTransaction')
-    //     expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
-    //   else if(txFunctionName === 'jt_sendRawTransaction')
-    //     expecteResult = createExpecteResult(true)
-    //   testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-    //   testCases.push(testCase)
-    // }
-    //
-    // title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
-    // {
-    //   txParams = createTestCaseForTransfer(server)
-    //   txParams[0].secret = txParams[0].secret + '1'
-    //   if(txFunctionName === 'jt_sendTransaction')
-    //     expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
-    //   else if(txFunctionName === 'jt_signTransaction')
-    //     expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
-    //   else if(txFunctionName === 'jt_sendRawTransaction')
-    //     expecteResult = createExpecteResult(true)
-    //   testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-    //   testCases.push(testCase)
-    // }
-
+    title = 'sign成功，sendraw失败'
+    {
+      txParams = createTestCaseForTransfer(server)
+      txParams[0].memos = ["大家好"]
+      expecteResult = createExpecteResult(false, true, 'value must be integer type')
+      let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
+          executeFunction, checkFunction, expecteResult)
+      // testCases.push(testCase)
+    }
     //endregion
-
-
-
 
     return testCases
   }
@@ -1207,86 +1254,6 @@ describe('Jingtum测试', function () {
   function testBasicTransactionT(server, params, func) {
     let retentiveParams = {}
     retentiveParams.function = func
-
-    describe('测试基本交易', function () {
-
-      it('0010\t发起' + params.testType + '有效交易_01：连续交易', async function () {
-        let commonParams = cloneParams(params)
-        let sendCount = 20
-        let finishCount = 0;
-        await sendTxWithSequenceContinuously(server, commonParams, retentiveParams, sendCount).then(async (txHashes)=>{
-          for(let i = 0; i < txHashes.length; i++){
-            let value = txHashes[i]
-            checkResponse(true, value)
-            expect(value).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            let hash = value.result[0]
-            await checkSendTxResponse(server, hash)
-            finishCount++
-            if(finishCount == sendCount) {
-              logger.debug("=== sendTxWithSequenceContinuously: " + finishCount + " checks done! ===")
-              return txHashes
-            }
-          }
-        })
-      })
-
-
-      it('0040\t发起' + params.testType + '无效交易_02: 错误的发起钱包地址（乱码字符串）', function () {
-        let commonParams = cloneParams(params)
-        commonParams.from = commonParams.from + '1'
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Bad account address:')
-      })
-
-      it('0050\t发起' + params.testType + '无效交易_03: 错误的接收钱包地址（乱码字符串）', function () {
-        let commonParams = cloneParams(params)
-        commonParams.to = commonParams.to + '1'
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Bad account address:')
-      })
-
-      it('0060\t发起' + params.testType + '无效交易_04: 交易额超过发起钱包余额', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = params.exceedingValue
-        return checkSendTxFailure(server, commonParams, retentiveParams, false, params.exceedingErrorMessage)
-      })
-
-      it('0070\t发起' + params.testType + '无效交易_05: 交易额为负数', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = params.nagetiveValue
-        return checkSendTxFailure(server, commonParams, retentiveParams, false, 'temBAD_AMOUNT Can only send positive amounts')
-      })
-
-      it('0080\t发起' + params.testType + '无效交易_06: 交易额为空', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = null
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Invalid Number')
-      })
-
-      it('0080\t发起' + params.testType + '无效交易_06: 交易额为字符串', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = params.stringValue
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'Invalid Number')
-      })
-
-      it('0090\t发起' + params.testType + '无效交易_07: 交易额为小于1的正小数', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = params.below1DecimalValue
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'value must be integer type')
-      })
-
-      it('0100\t发起' + params.testType + '无效交易_08: 交易额为大于1的小数', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = params.over1DecimalValue
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'value must be integer type')
-      })
-
-      it('0110\t发起' + params.testType + '无效交易_09: 交易额为负小数：-0.1、-1.23等', function () {
-        let commonParams = cloneParams(params)
-        commonParams.value = params.negativeDecimalValue
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'value must be integer type')
-      })
-
-
-    })
 
     describe('测试带memo的交易', function () {
 
@@ -1388,7 +1355,7 @@ describe('Jingtum测试', function () {
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
-      it('0220\t发起带无效fee的交易_04\n: fee为大于发起钱包' + params.testType + '余额的整数\n', function () {
+      it('0220\t发起带无效fee的交易_04\n: fee为大于发起钱包' + categoryName + '余额的整数\n', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = 999999999999999
         return checkSendTxFailure(server, commonParams, retentiveParams, false,
@@ -2537,6 +2504,12 @@ describe('Jingtum测试', function () {
   function string2Hex(string){
     // return new Buffer.from(string, 'utf8').toString('hex')
     return new Buffer.from(string, 'base64').toString('hex')
+  }
+
+  function isHex(context){
+    let context2 = hex2String(context)
+    let hex = string2Hex(context2)
+    return context === hex
   }
 
   //endregion
