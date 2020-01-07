@@ -691,7 +691,7 @@ describe('Jingtum测试', function () {
         // testTestCases(server, categoryName, testCases)
 
         // categoryName = '原生币swt压力测试'
-        // testCases = createTestCasesForPressureTest(server, categoryName, 100)
+        // testCases = createTestCasesForPressureTest(server, categoryName, 20)
         // testTestCases(server, categoryName, testCases)
       })
 
@@ -730,7 +730,7 @@ describe('Jingtum测试', function () {
     if(checkFunction) testCase.checkFunction = checkFunction
     if(expecteResult) testCase.expecteResult = expecteResult
     testCase.hasExecuted = false
-    testCase.actualResult = {}
+    testCase.actualResult = []
     return testCase
   }
 
@@ -753,28 +753,103 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region execute test cases
-  function executeTestCase(testCase){
-    // await testCase.sequence = Number(accountInfo.result.Sequence)
+
+  //region execute the function which will write block like jt_sendTransaction/jt_sendRawTransaction
+
+  // function executeTestCaseOfWriteBlockFunction(testCase){
+  //   return new Promise(function(resolve){
+  //     let server = testCase.server
+  //     let data = testCase.txParams[0]
+  //     let from = data.from
+  //     getSequence(server, from).then(function(sequence){
+  //       data.sequence = sequence
+  //       executeTx(testCase).then(function(response){
+  //         if(response.status === status.success){
+  //           setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
+  //         }
+  //         testCase.hasExecuted = true
+  //         testCase.actualResult.push(response)
+  //         resolve(testCase)
+  //       })
+  //     })
+  //   })
+  // }
+
+  function executeTestCaseOfWriteBlockFunction(testCase){
+    return new Promise(async function(resolve){
+      await executeWriteBlockFunction(testCase.server, testCase.txFunctionName, testCase.txParams).then(function(response){
+        testCase.hasExecuted = true
+        testCase.actualResult.push(response)
+        resolve(testCase)
+      })
+    })
+  }
+
+  function executeWriteBlockFunction(server, txFunctionName, txParams){
     return new Promise(function(resolve){
-      let server = testCase.server
-      let data = testCase.txParams[0]
-      let from = data.from
+      let from = txParams[0].from
       getSequence(server, from).then(function(sequence){
-        data.sequence = sequence
-        executeTx(testCase).then(function(response){
+        txParams[0].sequence = sequence
+        executeTx(server, txFunctionName, txParams).then(function(response){
           if(response.status === status.success){
             setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
           }
-          testCase.hasExecuted = true
-          testCase.actualResult = response
-          resolve(testCase)
+          resolve(response)
         })
       })
     })
   }
 
-  function executeTx(testCase){
+  //endregion
+
+  //region execute the function which will NOT write block like jt_signTransaction
+
+  function executeTestCaseOfCommonFunction(testCase){
+    return new Promise(function(resolve){
+      executeTxByTestCase(testCase).then(function(response){
+        testCase.hasExecuted = true
+        testCase.actualResult.push(response)
+        resolve(testCase)
+      })
+    })
+  }
+
+  //endregion
+
+  function executeTestCaseOfSignTx(testCase){
+    return new Promise(function(resolve){
+      executeTestCaseOfCommonFunction(testCase).then(function(responseOfSign){
+        testCase.hasExecuted = true
+        if(testCase.expecteResult.needPass){
+          let rawTx = testCase.actualResult[0].result
+          if(rawTx && rawTx.length > 0){
+            let server = testCase.server
+            let data = []
+            data.push(rawTx)
+            executeWriteBlockFunction(server, data).then(function(responseOfSendRawTx){
+              testCase.hasExecuted = true
+              testCase.actualResult.push(responseOfSendRawTx)
+              resolve(testCase)
+            })
+          }
+          else{
+            testCase.executionResult = false
+            resolve(testCase)
+          }
+        }
+        else{
+          resolve(testCase)
+        }
+      })
+    })
+  }
+
+  function executeTxByTestCase(testCase){
     return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+  }
+
+  function executeTx(server, txFunctionName, txParams){
+    return server.getResponse(txFunctionName, txParams)
   }
 
   async function execEachTestCase(testCases, index){
@@ -788,12 +863,14 @@ describe('Jingtum测试', function () {
       // logger.debug("===3. index: " + index )
     }
   }
+
   //endregion
 
   //region check test cases
+
   //region check send tx result
   async function checkTestCaseOfSendTransfer(testCase){
-    let responseOfSendTx = testCase.actualResult
+    let responseOfSendTx = testCase.actualResult[0]
     await checkResponseOfTransfer(testCase, responseOfSendTx)
   }
 
@@ -874,13 +951,17 @@ describe('Jingtum测试', function () {
 
   //region check sign tx result
   async function checkTestCaseOfSignTransfer(testCase){
-    let responseOfSendTx = testCase.actualResult
+    //check sign result
+    let responseOfSendTx = testCase.actualResult[0]
     checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
     if(testCase.expecteResult.needPass){
       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
       let signedTx = responseOfSendTx.result[0]
       expect(typeof(signedTx) === 'string').to.be.ok
       expect(isHex(signedTx)).to.be.ok
+
+      //check send raw tx result
+
     }
     else{
       let expecteResult = testCase.expecteResult
@@ -953,13 +1034,19 @@ describe('Jingtum测试', function () {
     let title = ''
     let txParams = createTestCaseForTransfer(server)
     // let txFunctionName = 'jt_sendTransaction'
-    let executeFunction = executeTestCase
+    let executeFunction = executeTestCaseOfWriteBlockFunction
     let checkFunction = checkTestCaseOfSendTransfer
     let expecteResult = createExpecteResult(true)
     let testCase = {}
 
-    if(txFunctionName === 'jt_sendTransaction') {checkFunction = checkTestCaseOfSendTransfer}
-    else if(txFunctionName === 'jt_signTransaction'){checkFunction = checkTestCaseOfSignTransfer}
+    if(txFunctionName === 'jt_sendTransaction') {
+      executeFunction = executeTestCaseOfWriteBlockFunction
+      checkFunction = checkTestCaseOfSendTransfer
+    }
+    else if(txFunctionName === 'jt_signTransaction'){
+      executeFunction = executeTestCaseOfSignTx
+      checkFunction = checkTestCaseOfSignTransfer
+    }
     else if(txFunctionName === 'jt_sendRawTransaction'){}
     else{throw new Error('txFunctionName doesn\'t exist!')}
 
@@ -1257,13 +1344,13 @@ describe('Jingtum测试', function () {
     let testCases = []
     let txParams = createTestCaseForTransfer(server)
     let txFunctionName = 'jt_sendTransaction'
-    let executeFunction = executeTestCase
+    let executeFunction = executeTestCaseOfWriteBlockFunction
     let checkFunction = checkTestCaseOfSendTransfer
-    let expecteResult = {}
+    let expecteResult = createExpecteResult(true)
 
     for(let i = 0; i <= testCount; i++){
       let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server, txFunctionName, txParams,
-          executeFunction, checkFunction, true, null)
+          executeFunction, checkFunction, expecteResult)
       testCases.push(testCase)
     }
     return testCases
@@ -2077,43 +2164,6 @@ describe('Jingtum测试', function () {
   }
 
   //region normal response check
-
-  // function checkSendTxSuccess(server, commonParams, retentiveParams){
-  //   return Promise.resolve(sendTx(server, commonParams, retentiveParams)).then(async function (value) {
-  //     await checkCommonSendTxSuccess(server, value).then((tx)=>{
-  //       expect(tx.Account).to.be.equals(commonParams.from)
-  //       expect(tx.Destination).to.be.equals(commonParams.to)
-  //       expect(tx.Fee).to.be.equals(((commonParams.fee) ? commonParams.fee : 10).toString())
-  //       //check value
-  //       if(commonParams.showSymbol && commonParams.showSymbol != ""){
-  //         expect(tx.Amount.currency).to.be.equals(commonParams.symbol)
-  //         expect(tx.Amount.value + "/" + tx.Amount.currency).to.be.equals(commonParams.value)
-  //       }
-  //       else{
-  //         expect(tx.Amount).to.be.equals(commonParams.value)
-  //       }
-  //       //check memos
-  //       if(tx.Memos){
-  //         let memos = tx.Memos
-  //         let expectedMemos = commonParams.memos
-  //         for(let i = 0; i < expectedMemos.length; i++){
-  //           let expectedMemo = expectedMemos[i]
-  //           if(typeof expectedMemo == "string"){
-  //             expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
-  //           }
-  //           else if(expectedMemo.data){
-  //             expect(hex2String(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
-  //           }
-  //           else{
-  //             expect(false).to.be.ok
-  //           }
-  //           //todo need check type and format also. need make type, format, data of memo function clear with weijia.
-  //         }
-  //       }
-  //     })
-  //   })
-  // }
-
 
   function checkSendTxSuccess(server, commonParams, retentiveParams){
     let func = (!retentiveParams || !retentiveParams.function) ? sendTx : retentiveParams.function
