@@ -83,7 +83,7 @@ describe('Jingtum测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
-          it('0010\t查询有效交易哈希-底层币\n', function () {
+          it('0010\t查询有效交易哈希-底层币', function () {
             let tx = data.chain.tx
             return Promise.resolve(server.responseGetTxByHash(
                 tx.hash,
@@ -92,7 +92,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t查询有效交易哈希-token\n', function () {
+          it('0020\t查询有效交易哈希-token', function () {
             let tx = data.tx_token
             return Promise.resolve(server.responseGetTxByHash(
                 tx.hash,
@@ -101,7 +101,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0030\t查询有效交易哈希-memos\n', function () {
+          it('0030\t查询有效交易哈希-memos', function () {
             let tx = data.tx_memo
             return Promise.resolve(server.responseGetTxByHash(
                 tx.hash,
@@ -110,7 +110,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0040\t查询无效交易哈希:数字\n', function () {
+          it('0040\t查询无效交易哈希:数字', function () {
             return Promise.resolve(server.responseGetTxByHash(
                 1231111,
             )).then(async function (value) {
@@ -119,7 +119,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0040\t查询无效交易哈希:字符串\n', function () {
+          it('0040\t查询无效交易哈希:字符串', function () {
             return Promise.resolve(server.responseGetTxByHash(
                 "data.tx1.hash",
             )).then(async function (value) {
@@ -128,7 +128,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0040\t查询无效交易哈希:参数为空\n', function () {
+          it('0040\t查询无效交易哈希:参数为空', function () {
             return Promise.resolve(server.responseGetTxByHash(
                 null,
             )).then(async function (value) {
@@ -141,7 +141,7 @@ describe('Jingtum测试', function () {
 
         describe('测试jt_blockNumber', function () {
 
-          it('0010\t查询最新区块号\n', function () {
+          it('0010\t查询最新区块号', function () {
             return Promise.resolve(server.responseBlockNumber()).then(function (value) {
               checkResponse(true, value)
               expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
@@ -151,7 +151,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求\n', function () {
+          it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
             return Promise.resolve(get2BlockNumber(server)).then(function (value) {
               expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
               expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
@@ -162,7 +162,7 @@ describe('Jingtum测试', function () {
 
         })
 
-        describe('测试jt_createAccount\n', function () {
+        describe('测试jt_createAccount', function () {
 
           it('0010\t创建有效的账户', function () {
             let nickName = getDynamicName().symbol
@@ -209,7 +209,7 @@ describe('Jingtum测试', function () {
 
         })
 
-        describe('测试jt_getAccount\n', function () {
+        describe('测试jt_getAccount', function () {
 
           testGetAccountByTag(server, null)
           testGetAccountByTag(server, "current")
@@ -219,7 +219,7 @@ describe('Jingtum测试', function () {
           testGetAccountByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
         })
 
-        describe('测试jt_getBalance\n', function () {
+        describe('测试jt_getBalance', function () {
 
           testGetBalanceByTag(server, null)
           testGetBalanceByTag(server, "current")
@@ -229,9 +229,9 @@ describe('Jingtum测试', function () {
           testGetBalanceByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
         })
 
-        describe('测试jt_getTransactionByHash\n', function () {
+        describe('测试jt_getTransactionByHash', function () {
 
-          it('0010\t有效交易哈希\n', function () {
+          it('0010\t有效交易哈希', function () {
             let tx1 = txs.swtTx1.tx
             let hash = tx1.hash
             return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
@@ -240,7 +240,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易哈希\n：不存在的hash', function () {
+          it('0020\t无效交易哈希：不存在的hash', function () {
             let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
             return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
               checkResponse(false, response)
@@ -248,7 +248,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易哈希\n：hash长度超过标准', function () {
+          it('0020\t无效交易哈希：hash长度超过标准', function () {
             let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F"
             return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
               checkResponse(false, response)
@@ -258,9 +258,9 @@ describe('Jingtum测试', function () {
 
         })
 
-        describe('测试jt_getTransactionByBlockHashAndIndex\n', function () {
+        describe('测试jt_getTransactionByBlockHashAndIndex', function () {
 
-          it('0010\t有效区块哈希，有效交易索引\n', function () {
+          it('0010\t有效区块哈希，有效交易索引', function () {
             let tx1 = txs.swtTx1.tx
             let blockHash = txs.swtTx1.blockHash
             let index = tx1.meta.TransactionIndex.toString()
@@ -270,12 +270,12 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0010\t有效区块哈希，有效交易索引\n:查询有效区块编号，遍历所有有效交易索引\n', async function () {
+          it('0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引', async function () {
             let blockHash = blocks.block1.hash
             await goThroughTxsInBlockByHash(server, blockHash)
           })
 
-          it('0020\t有效区块哈希，无效交易索引\n无效交易索引:100', function () {
+          it('0020\t有效区块哈希，无效交易索引无效交易索引:100', function () {
             let blockHash = txs.swtTx1.blockHash
             let index = "100"
             return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
@@ -284,7 +284,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t有效区块哈希，无效交易索引\n无效交易索引:负数', function () {
+          it('0020\t有效区块哈希，无效交易索引无效交易索引:负数', function () {
             let blockHash = txs.swtTx1.blockHash
             let index = "-1"
             return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
@@ -293,7 +293,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t有效区块哈希，无效交易索引\n无效交易索引:乱码', function () {
+          it('0020\t有效区块哈希，无效交易索引无效交易索引:乱码', function () {
             let blockHash = txs.swtTx1.blockHash
             let index = "asdf"
             return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
@@ -302,7 +302,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0030\t无效区块哈希\n', function () {
+          it('0030\t无效区块哈希', function () {
             let blockHash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
             let index = "0"
             return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
@@ -313,9 +313,9 @@ describe('Jingtum测试', function () {
 
         })
 
-        describe('测试jt_getTransactionByBlockNumberAndIndex\n', function () {
+        describe('测试jt_getTransactionByBlockNumberAndIndex', function () {
 
-          it('0010\t有效区块编号，有效交易索引\n\n', function () {
+          it('0010\t有效区块编号，有效交易索引', function () {
             let tx1 = txs.swtTx1.tx
             let blockNumber = tx1.ledger_index.toString()
             let index = tx1.meta.TransactionIndex.toString()
@@ -325,22 +325,22 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号，遍历所有有效交易索引\n', async function () {
+          it('0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引', async function () {
             let blockNumber = blocks.block1.blockNumber
             await goThroughTxsInBlockByBlockNumber(server, blockNumber)
           })
 
-          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号earliest，遍历所有有效交易索引\n', async function () {
+          it('0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引', async function () {
             let blockNumber = "earliest"
             await goThroughTxsInBlockByBlockNumber(server, blockNumber)
           })
 
-          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号latest，遍历所有有效交易索引\n', async function () {
+          it('0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引', async function () {
             let blockNumber = "latest"
             await goThroughTxsInBlockByBlockNumber(server, blockNumber)
           })
 
-          it('0010\t有效区块编号，有效交易索引\n:查询有效区块编号pending，遍历所有有效交易索引\n', async function () {
+          it('0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引', async function () {
             let blockNumber = "pending"
             await goThroughTxsInBlockByBlockNumber(server, blockNumber)
           })
@@ -355,7 +355,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t有效区块编号，无效交易索引\n无效交易索引:负数', function () {
+          it('0020\t有效区块编号，无效交易索引无效交易索引:负数', function () {
             let tx1 = txs.swtTx1.tx
             let blockNumber = tx1.ledger_index.toString()
             let index = "-1"
@@ -365,7 +365,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t有效区块编号，无效交易索引\n无效交易索引:乱码', function () {
+          it('0020\t有效区块编号，无效交易索引无效交易索引:乱码', function () {
             let tx1 = txs.swtTx1.tx
             let blockNumber = tx1.ledger_index.toString()
             let index = "asdf"
@@ -375,7 +375,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0030\t无效区块编号\n', function () {
+          it('0030\t无效区块编号', function () {
             let blockNumber = "9999999"
             let index = "0"
             return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
@@ -388,7 +388,7 @@ describe('Jingtum测试', function () {
 
         describe('测试jt_getBlockTransactionCountByHash', function () {
 
-          it('0010\t查询有效区块哈希\n', function () {
+          it('0010\t查询有效区块哈希', function () {
             let block = blocks.block1
             let hash = block.hash
             let txCount = block.transactionsCount
@@ -398,7 +398,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易哈希\n：不存在的hash', function () {
+          it('0020\t无效交易哈希：不存在的hash', function () {
             let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
             return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
               checkResponse(false, response)
@@ -406,7 +406,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易哈希\n：hash长度超过标准', function () {
+          it('0020\t无效交易哈希：hash长度超过标准', function () {
             let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F"
             return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
               checkResponse(false, response)
@@ -418,7 +418,7 @@ describe('Jingtum测试', function () {
 
         describe('测试jt_getBlockTransactionCountByNumber', function () {
 
-          it('0010\t查询有效区块编号\n', function () {
+          it('0010\t查询有效区块编号', function () {
             let block = blocks.block1
             let blockNumber = block.blockNumber
             let txCount = block.transactionsCount
@@ -428,7 +428,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易编号\n：9999999', function () {
+          it('0020\t无效交易编号：9999999', function () {
             let blockNumber = "9999999"
             return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
               checkResponse(false, response)
@@ -436,7 +436,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易编号\n：负数', function () {
+          it('0020\t无效交易编号：负数', function () {
             let blockNumber = "-100"
             return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
               checkResponse(false, response)
@@ -444,7 +444,7 @@ describe('Jingtum测试', function () {
             })
           })
 
-          it('0020\t无效交易编号\n：乱码', function () {
+          it('0020\t无效交易编号：乱码', function () {
             let blockNumber = "addeew"
             return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
               checkResponse(false, response)
@@ -678,14 +678,18 @@ describe('Jingtum测试', function () {
       describe('is working', function () {
 
         let categoryName = ''
-        let testCases = []
+        let txFunctionName = ''
 
         categoryName = '原生币swt'
-        testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_sendTransaction')
-        testTestCases(server, categoryName, testCases)
+        txFunctionName = 'jt_sendTransaction'
+        describe(categoryName + '测试：' + txFunctionName, async function () {
+          testForTransfer(server, categoryName, txFunctionName)
+        })
 
-        testCases = createTestCasesForBasicTransactoin(server, categoryName, 'jt_signTransaction')
-        testTestCases(server, categoryName, testCases)
+        txFunctionName = 'jt_signTransaction'
+        describe(categoryName + '测试：' + txFunctionName, async function () {
+          testForTransfer(server, categoryName, txFunctionName)
+        })
 
         // categoryName = '原生币swt压力测试'
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
@@ -717,6 +721,7 @@ describe('Jingtum测试', function () {
     response: {},
   }
 
+  //region assistant create methods
   function createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult){
     let testCase = {}
     testCase.type = "it"
@@ -732,12 +737,17 @@ describe('Jingtum测试', function () {
     return testCase
   }
 
-  function createTestCaseForTransfer(server){
+  function createTestCaseByParams(testCaseParams){
+    return createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
+        testCaseParams.txParams, testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expecteResult)
+  }
+
+  function createTxParamsForTransfer(server){
     return server.createTransferParams(addresses.sender1.address, addresses.sender1.secret, null,
         addresses.receiver1.address, "1", 10, ['autotest'])
   }
 
-  function createTestCaseForIssueToken(){
+  function createTxParamsForIssueToken(){
 
   }
 
@@ -748,6 +758,7 @@ describe('Jingtum测试', function () {
     expecteResult.expectedError = expectedError
     return expecteResult
   }
+  //endregion
 
   //region common create method for sendTx and signTx
 
@@ -759,22 +770,499 @@ describe('Jingtum测试', function () {
     testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
   }
 
-  function createBothTestCaseWhenCanNotPassSign(){
-
-  }
-
-  function createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult){
-    let testCase = {}
-    if(txFunctionName === 'jt_sendTransaction') {
-      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-    }
-    else if(txFunctionName === 'jt_signTransaction') {
-      let expecteResultOfSignTx = createExpecteResult(true)
-      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResultOfSignTx)
-      addTestCaseForSendRawTx(testCase, expecteResult)
+  //当jt_sendTransaction和jt_signTransaction都通过测试时
+  function createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction){
+    testCaseParams.txParams = createTxParamsForTransfer(testCaseParams.server)
+    updateTxParamsFunction()
+    testCaseParams.expecteResult = createExpecteResult(true)
+    let testCase = createTestCaseByParams(testCaseParams)
+    if(testCaseParams.txFunctionName === 'jt_signTransaction') {
+      let expecteResultOfSendRawTx = createExpecteResult(true)
+      addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
     }
     return testCase
   }
+
+  //当jt_sendTransaction和jt_signTransaction都通不过测试时
+  function createEitherTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction){
+    testCaseParams.txParams = createTxParamsForTransfer(testCaseParams.server)
+    updateTxParamsFunction()
+    let testCase = createTestCaseByParams(testCaseParams)
+    return testCase
+  }
+
+  //当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
+  function createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction){
+    testCaseParams.txParams = createTxParamsForTransfer(testCaseParams.server)
+    updateTxParamsFunction()
+    let testCase = createTestCaseByParams(testCaseParams)
+    if(testCaseParams.txFunctionName === 'jt_signTransaction') {
+      let expecteResultOfSignTx = createExpecteResult(true)
+      testCase = createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
+          testCaseParams.txParams, testCaseParams.executeFunction, testCaseParams.checkFunction, expecteResultOfSignTx)
+      addTestCaseForSendRawTx(testCase, testCaseParams.expecteResult)
+    }
+    return testCase
+  }
+
+  //endregion
+
+  //region main create methods
+
+  //region transfer tx
+
+  function createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName){
+    let testCaseParams = {}
+    testCaseParams.server = server
+    testCaseParams.categoryName = categoryName
+    testCaseParams.txFunctionName = txFunctionName
+    testCaseParams.title = ''
+    testCaseParams.txParams = createTxParamsForTransfer(server)
+    testCaseParams.executeFunction = executeTestCaseOfSendTx
+    testCaseParams.checkFunction = checkTestCaseOfSendTx
+    testCaseParams.expecteResult = createExpecteResult(true)
+    testCaseParams.testCase = {}
+    testCaseParams.symbol = testCaseParams.txParams[0].symbol
+    testCaseParams.showSymbol = (testCaseParams.symbol || testCaseParams.symbol == null
+        || testCaseParams.symbol == "swt" || testCaseParams.symbol == "SWT") ? "" : ("/" + testCaseParams.symbol)
+    if(txFunctionName === 'jt_sendTransaction') {
+      testCaseParams.executeFunction = executeTestCaseOfSendTx
+      testCaseParams.checkFunction = checkTestCaseOfSendTx
+    }
+    else if(txFunctionName === 'jt_signTransaction'){
+      testCaseParams.executeFunction = executeTestCaseOfSignTxAndSendRawTx
+      testCaseParams.checkFunction = checkTestCaseOfSignTxAndSendRawTx
+    }
+    else{
+      throw new Error('txFunctionName doesn\'t exist!')
+    }
+
+    return testCaseParams
+  }
+
+  function createTestCasesForBasicTransaction(server, categoryName, txFunctionName){
+    let testCases = []
+    let testCaseParams = createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName)
+
+    //region test cases for basic transfer
+    testCaseParams.title = '0010\t发起' + testCaseParams.categoryName + '有效交易_01'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + testCaseParams.txParams[0].value + '"等'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "123/swt"
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 没有秘钥'
+    {
+      let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+        testCaseParams.txParams[0].secret = null
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'No secret found for')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
+    {
+      let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+        testCaseParams.txParams[0].secret = '错误的秘钥'
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
+    {
+      let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+        testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0040\t发起' + categoryName + '无效交易_02: 错误的发起钱包地址（乱码字符串）'
+    {
+      let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+        testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad account address:')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0050\t发起' + categoryName + '无效交易_03: 错误的接收钱包地址（乱码字符串）'
+    {
+      let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+        testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad account address:')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0060\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "999999999999999" + testCaseParams.showSymbol
+        testCaseParams.expecteResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0070\t发起' + categoryName + '无效交易_05: 交易额为负数'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "-100" + testCaseParams.showSymbol
+        testCaseParams.expecteResult = createExpecteResult(false, false,
+            'temBAD_AMOUNT Can only send positive amounts')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0080\t发起' + categoryName + '无效交易_06: 交易额为空'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = null
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'Invalid Number')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0080\t发起' + categoryName + '无效交易_06: 交易额为字符串'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "aawrwfsfs"
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'Invalid Number')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于1的正小数'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "0.1" + testCaseParams.showSymbol
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于1的小数'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "1.1" + testCaseParams.showSymbol
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0110\t发起' + categoryName + '无效交易_09: 交易额为负小数：-0.1、-1.23等'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].value = "-0.1" + testCaseParams.showSymbol
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
+      })
+      testCases.push(testCase)
+    }
+
+    //endregion
+
+    return testCases
+  }
+
+  function createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName){
+    let testCases = []
+    let testCaseParams = createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName)
+
+    //region test cases
+    testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].memos = ["大家好"]
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].memos = ["12345"]
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].memos = ["123456"]
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].memos = ["E5A4A7E5AEB6E5A5BDff"]
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0130\t发起带有效memo的交易_02: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0140\t发起带无效memo的交易_01: memo内容使整个交易内容超过900K'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        let memos = "E5A4A7E5AEB6E5A5BD"
+        for(let i = 0; i < 18; i++){
+          memos += memos;
+        }
+        testCaseParams.txParams[0].memos = memos
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0150\t发起带无效memo的交易_02: memo内容使整个交易内容超过900K'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        let memos = "E5A4A7E5AEB6E5A5BD"
+        for(let i = 0; i < 18; i++){
+          memos += memos;
+        }
+        testCaseParams.txParams[0].memos = {"type":"ok","format":"utf8","data":memos}
+        testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
+      })
+      testCases.push(testCase)
+    }
+    //endregion
+
+    return testCases
+  }
+
+  function createTestCasesForTransactionWithFee(server, categoryName, txFunctionName){
+    let testCases = []
+    let testCaseParams = createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName)
+
+    //region test cases
+    testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为默认值12'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = data.defaultFee
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为null'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = 11
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0180\t发起带有效fee的交易_03: fee比12大但小于钱包余额'
+    {
+      let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = 110
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0190\t发起带无效fee的交易_01: fee比12小（比如5），但是不足以发起成功的交易'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = 5
+        testCaseParams.expecteResult = createExpecteResult(false, false,
+            'tecINSUFF_FEE Insufficient balance to pay fee')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0200\t发起带无效fee的交易_02: fee为0'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = 0
+        testCaseParams.expecteResult = createExpecteResult(false, false,
+            'tecINSUFF_FEE Insufficient balance to pay fee')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0210\t发起带无效fee的交易_03: fee为大于0的小数，比如12.5、5.5'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = 12.5
+        testCaseParams.expecteResult = createExpecteResult(false, false,
+            'tecINSUFF_FEE Insufficient balance to pay fee')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0220\t发起带无效fee的交易_04: fee为大于发起钱包' + categoryName + '余额的整数'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = 999999999999999
+        testCaseParams.expecteResult = createExpecteResult(false, false,
+            'telINSUF_FEE_P Fee insufficient')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0230\t发起带无效fee的交易_05: fee为负数，比如-3.5、-555等'
+    {
+      let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = -35
+        testCaseParams.expecteResult = createExpecteResult(false, false,
+            'tecINSUFF_FEE Insufficient balance to pay fee')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0240\t发起带无效fee的交易_06: fee为字符串'
+    {
+      let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+        testCaseParams.txParams[0].fee = "35"
+        testCaseParams.expecteResult = createExpecteResult(false, true,
+            'interface conversion: interface {} is string, not float64')
+      })
+      testCases.push(testCase)
+    }
+    //endregion
+
+    return testCases
+  }
+
+  //endregion
+
+  //region issue token tx
+
+  //endregion
+
+  function example(server, categoryName, txFunctionName){
+    let testCases = []
+    let testCaseParams = createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName)
+
+    //region test cases
+    let testAll = true
+    if(testAll){
+
+      testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为默认值12'
+      {
+        let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = data.defaultFee
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为null'
+      {
+        let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易'
+      {
+        let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = 11
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0180\t发起带有效fee的交易_03: fee比12大但小于钱包余额'
+      {
+        let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = 110
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0190\t发起带无效fee的交易_01: fee比12小（比如5），但是不足以发起成功的交易'
+      {
+        let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = 5
+          testCaseParams.expecteResult = createExpecteResult(false, false,
+              'tecINSUFF_FEE Insufficient balance to pay fee')
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0200\t发起带无效fee的交易_02: fee为0'
+      {
+        let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = 0
+          testCaseParams.expecteResult = createExpecteResult(false, false,
+              'tecINSUFF_FEE Insufficient balance to pay fee')
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0210\t发起带无效fee的交易_03: fee为大于0的小数，比如12.5、5.5'
+      {
+        let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = 12.5
+          testCaseParams.expecteResult = createExpecteResult(false, false,
+              'tecINSUFF_FEE Insufficient balance to pay fee')
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0220\t发起带无效fee的交易_04: fee为大于发起钱包' + categoryName + '余额的整数'
+      {
+        let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = 999999999999999
+          testCaseParams.expecteResult = createExpecteResult(false, false,
+              'telINSUF_FEE_P Fee insufficient')
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0230\t发起带无效fee的交易_05: fee为负数，比如-3.5、-555等'
+      {
+        let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = -35
+          testCaseParams.expecteResult = createExpecteResult(false, false,
+              'tecINSUFF_FEE Insufficient balance to pay fee')
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0240\t发起带无效fee的交易_06: fee为字符串'
+      {
+        let testCase = createEitherTestCaseWhenSignFail(testCaseParams, function(){
+          testCaseParams.txParams[0].fee = "35"
+          testCaseParams.expecteResult = createExpecteResult(false, true,
+              'interface conversion: interface {} is string, not float64')
+        })
+        testCases.push(testCase)
+      }
+
+
+    }
+    //endregion
+
+
+    return testCases
+  }
+
+
   //endregion
 
   //endregion
@@ -848,7 +1336,9 @@ describe('Jingtum测试', function () {
               resolve(responseOfSign)
             }
           }
-          resolve(responseOfSign)
+          else{
+            resolve(responseOfSign)
+          }
         })
       })
     })
@@ -859,6 +1349,7 @@ describe('Jingtum测试', function () {
   //region common execute
 
   function executeTxByTestCase(testCase){
+    logger.debug(testCase.title)
     return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
   }
 
@@ -1004,11 +1495,12 @@ describe('Jingtum测试', function () {
   function getSequence(server, from){
     return new Promise(function (resolve){
       if(sequenceMap.has(from)){
+        logger.debug("===sequence   sequenceMap:" + sequenceMap.get(from))
         resolve(sequenceMap.get(from))
       }
       else{
         Promise.resolve(server.responseGetAccount(from)).then(function (accountInfo) {
-          logger.debug("accountInfo:" + JSON.stringify(accountInfo))
+          logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
           let sequence = Number(accountInfo.result.Sequence)
           setSequence(from, sequence)
           resolve(sequence)
@@ -1024,363 +1516,8 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
-  function createTestCasesForBasicTransactoin(server, categoryName, txFunctionName){
-    let testCases = []
-    let title = ''
-    let txParams = createTestCaseForTransfer(server)
-    let executeFunction = executeTestCaseOfSendTx
-    let checkFunction = checkTestCaseOfSendTx
-    let expecteResult = createExpecteResult(true)
-    let testCase = {}
-
-    let symbol = txParams[0].symbol
-    let showSymbol = (symbol || symbol == null || symbol == "swt" || symbol == "SWT") ? "" : ("/" + symbol)
-
-    if(txFunctionName === 'jt_sendTransaction') {
-      executeFunction = executeTestCaseOfSendTx
-      checkFunction = checkTestCaseOfSendTx
-    }
-    else if(txFunctionName === 'jt_signTransaction'){
-      executeFunction = executeTestCaseOfSignTxAndSendRawTx
-      checkFunction = checkTestCaseOfSignTxAndSendRawTx
-    }
-    else{throw new Error('txFunctionName doesn\'t exist!')}
-
-    //region test cases
-    let testAll = false
-    if(testAll){
-
-      title = '0010\t发起' + categoryName + '有效交易_01'
-      {
-        expecteResult = createExpecteResult(true)
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        if(txFunctionName === 'jt_signTransaction') {
-          //add sub test case of sendRawTx, just after signTx.
-          let expecteResultOfSendRawTx = createExpecteResult(true)
-          addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
-        }
-        testCases.push(testCase)
-      }
-
-      title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + txParams[0].value + '"等'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "123/swt"
-        expecteResult = createExpecteResult(true)
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        if(txFunctionName === 'jt_signTransaction') {
-          let expecteResultOfSendRawTx = createExpecteResult(true)
-          addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
-        }
-        testCases.push(testCase)
-      }
-
-      title = '0030\t发起' + categoryName + '无效交易_01: 没有秘钥'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].secret = null
-        expecteResult = createExpecteResult(false, true, 'No secret found for')
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].secret = '错误的秘钥'
-        expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].secret = txParams[0].secret + '1'
-        expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0040\t发起' + categoryName + '无效交易_02: 错误的发起钱包地址（乱码字符串）'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].from = txParams[0].from + '1'
-        expecteResult = createExpecteResult(false, true, 'Bad account address:')
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0050\t发起' + categoryName + '无效交易_03: 错误的接收钱包地址（乱码字符串）'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].to = txParams[0].to + '1'
-        expecteResult = createExpecteResult(false, true, 'Bad account address:')
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0060\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "999999999999999" + showSymbol
-        expecteResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0070\t发起' + categoryName + '无效交易_05: 交易额为负数'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "-100" + showSymbol
-        expecteResult = createExpecteResult(false, false, 'temBAD_AMOUNT Can only send positive amounts')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0080\t发起' + categoryName + '无效交易_06: 交易额为空'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = null
-        expecteResult = createExpecteResult(false, true, 'Invalid Number')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0080\t发起' + categoryName + '无效交易_06: 交易额为字符串'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "aawrwfsfs"
-        expecteResult = createExpecteResult(false, true, 'Invalid Number')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于1的正小数'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "0.1" + showSymbol
-        expecteResult = createExpecteResult(false, true, 'value must be integer type')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于1的小数'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "1.1" + showSymbol
-        expecteResult = createExpecteResult(false, true, 'value must be integer type')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-
-      title = '0110\t发起' + categoryName + '无效交易_09: 交易额为负小数：-0.1、-1.23等'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].value = "-0.1" + showSymbol
-        expecteResult = createExpecteResult(false, true, 'value must be integer type')
-        let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-            executeFunction, checkFunction, expecteResult)
-        testCases.push(testCase)
-      }
-    }
-    //endregion
-
-    if(!testAll){
-
-      //todo how to add description?
-
-      title = '0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]'
-      {
-        txParams = createTestCaseForTransfer(server)
-        txParams[0].memos = ["大家好"]
-        expecteResult = createExpecteResult(true)
-        testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-        if(txFunctionName === 'jt_signTransaction') {
-          //add sub test case of sendRawTx, just after signTx.
-          let expecteResultOfSendRawTx = createExpecteResult(true)
-          addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
-        }
-        testCases.push(testCase)
-      }
-
-
-    }
-
-
-    //region examples
-    title = 'sign成功，sendraw成功'
-    {
-      expecteResult = createExpecteResult(true)
-      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-      if(txFunctionName === 'jt_signTransaction') {
-        //add sub test case of sendRawTx, just after signTx.
-        let expecteResultOfSendRawTx = createExpecteResult(true)
-        addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
-      }
-      // testCases.push(testCase)
-    }
-
-    title = 'sign失败，无需sendraw'
-    {
-      txParams = createTestCaseForTransfer(server)
-      txParams[0].from = txParams[0].from + '1'
-      expecteResult = createExpecteResult(false, true, 'Bad account address:')
-      testCase = createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult)
-      // testCases.push(testCase)
-    }
-
-
-    title = 'sign成功，sendraw失败'
-    {
-      txParams = createTestCaseForTransfer(server)
-      txParams[0].memos = ["大家好"]
-      expecteResult = createExpecteResult(false, true, 'value must be integer type')
-      let testCase = createEitherTestCaseWhenCanPassSign(title, server, txFunctionName, txParams,
-          executeFunction, checkFunction, expecteResult)
-      // testCases.push(testCase)
-    }
-    //endregion
-
-    return testCases
-  }
-
-  function testBasicTransactionT(server, params, func) {
-    let retentiveParams = {}
-    retentiveParams.function = func
-
-    describe('测试带memo的交易', function () {
-
-      it('0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]', function () {
-        let commonParams = cloneParams(params)
-        commonParams.memos = ["大家好"]
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0120\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]', function () {
-        let commonParams = cloneParams(params)
-        commonParams.memos = ["12345"]
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0120\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]', function () {
-        let commonParams = cloneParams(params)
-        commonParams.memos = ["123456"]
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0120\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]', function () {
-        let commonParams = cloneParams(params)
-        commonParams.memos = ["E5A4A7E5AEB6E5A5BDff"]
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0130\t发起带有效memo的交易_02\n: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]', function () {
-        let commonParams = cloneParams(params)
-        commonParams.memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0140\t发起带无效memo的交易_01\n: memo内容使整个交易内容超过900K', function () {
-        //memo内容使整个交易内容超过900K
-        let memos = "E5A4A7E5AEB6E5A5BD"
-        for(let i = 0; i < 18; i++){
-          memos += memos;
-        }
-        let commonParams = cloneParams(params)
-        commonParams.memos = memos
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'memos data error')
-      })
-
-      it('0150\t发起带无效memo的交易_02: memo内容使整个交易内容超过900K', function () {
-        //memo内容使整个交易内容超过900K
-        let memos = "E5A4A7E5AEB6E5A5BD"
-        for(let i = 0; i < 18; i++){
-          memos += memos;
-        }
-        let commonParams = cloneParams(params)
-        commonParams.memos = memos
-        return checkSendTxFailure(server, commonParams, retentiveParams, true, 'memos data error')
-      })
-
-    })
-
-    describe('测试交易fee', function (){
-
-      it('0160\t发起带有效fee的交易_01: fee为默认值12', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = data.defaultFee
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0160\t发起带有效fee的交易_01: fee为null', function () {
-        let commonParams = cloneParams(params)
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = 11
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0180\t发起带有效fee的交易_03\n: fee比12大但小于钱包余额', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = 110
-        return checkSendTxSuccess(server, commonParams, retentiveParams)
-      })
-
-      it('0190\t发起带无效fee的交易_01\n: fee比12小（比如5），但是不足以发起成功的交易\n', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = 5
-        return checkSendTxFailure(server, commonParams, retentiveParams, false, 'tecINSUFF_FEE Insufficient balance to pay fee')
-      })
-
-      it('0200\t发起带无效fee的交易_02\n: fee为0\n', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = 0
-        return checkSendTxFailure(server, commonParams, retentiveParams, false, 'tecINSUFF_FEE Insufficient balance to pay fee')
-      })
-
-      it('0210\t发起带无效fee的交易_03\n: fee为大于0的小数，比如12.5、5.5\n', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = 12.5
-        return checkSendTxFailure(server, commonParams, retentiveParams, false,
-            'tecINSUFF_FEE Insufficient balance to pay fee')
-      })
-
-      it('0220\t发起带无效fee的交易_04\n: fee为大于发起钱包' + categoryName + '余额的整数\n', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = 999999999999999
-        return checkSendTxFailure(server, commonParams, retentiveParams, false,
-            'telINSUF_FEE_P Fee insufficient')
-      })
-
-      it('0230\t发起带无效fee的交易_05\n: fee为负数，比如-3.5、-555等\n', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = -35
-        return checkSendTxFailure(server, commonParams, retentiveParams, false,
-            'tecINSUFF_FEE Insufficient balance to pay fee')
-      })
-
-      it('0240\t发起带无效fee的交易_06\n: fee为字符串\n', function () {
-        let commonParams = cloneParams(params)
-        commonParams.fee = "35"
-        return checkSendTxFailure(server, commonParams, retentiveParams, true,
-            'interface conversion: interface {} is string, not float64')
-      })
-
-    })
-  }
-
-  function testTestCases(server, categoryName, testCases) {
-    describe('测试基本交易: ' + categoryName, async function () {
+  function testTestCases(server, describeTitle, testCases) {
+    describe(describeTitle, async function () {
 
       before(async function() {
         execEachTestCase(testCases, 0)
@@ -1395,13 +1532,51 @@ describe('Jingtum测试', function () {
     })
   }
 
+  function testTestCasesByDescribes(server, describeTitle, descriptions) {
+
+    describe(describeTitle, async function () {
+
+      before(async function() {
+        execEachTestCase(testCases, 0)
+        await utility.timeout(data.defaultBlockTime)
+      })
+
+      testCases.forEach(async function(testCase){
+        it(testCase.title, async function () {
+          await testCase.checkFunction(testCase)
+        })
+      })
+    })
+  }
+
+  function testForTransfer(server, categoryName, txFunctionName){
+    let testName = ''
+    let describeTitle = ''
+    let testCases = []
+
+    testName = '测试基本交易'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName)
+    testTestCases(server, describeTitle, testCases)
+
+    testName = '测试交易memo'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName)
+    testTestCases(server, describeTitle, testCases)
+
+    testName = '测试交易Fee'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName)
+    testTestCases(server, describeTitle, testCases)
+  }
+
   //endregion
 
   //region pressure test
 
   function createTestCasesForPressureTest(server, categoryName, testCount){
     let testCases = []
-    let txParams = createTestCaseForTransfer(server)
+    let txParams = createTxParamsForTransfer(server)
     let txFunctionName = 'jt_sendTransaction'
     let executeFunction = executeTestCaseOfSendTx
     let checkFunction = checkTestCaseOfSendTx
@@ -1414,7 +1589,6 @@ describe('Jingtum测试', function () {
     }
     return testCases
   }
-
 
   //endregion
 
@@ -1638,13 +1812,13 @@ describe('Jingtum测试', function () {
         return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
-      it('0130\t发起带有效memo的交易_02\n: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]', function () {
+      it('0130\t发起带有效memo的交易_02: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]', function () {
         let commonParams = cloneParams(params)
         commonParams.memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
         return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
-      it('0140\t发起带无效memo的交易_01\n: memo内容使整个交易内容超过900K', function () {
+      it('0140\t发起带无效memo的交易_01: memo内容使整个交易内容超过900K', function () {
         //memo内容使整个交易内容超过900K
         let memos = "E5A4A7E5AEB6E5A5BD"
         for(let i = 0; i < 18; i++){
@@ -1687,46 +1861,46 @@ describe('Jingtum测试', function () {
         return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
-      it('0180\t发起带有效fee的交易_03\n: fee比12大但小于钱包余额', function () {
+      it('0180\t发起带有效fee的交易_03: fee比12大但小于钱包余额', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = 110
         return checkSendTxSuccess(server, commonParams, retentiveParams)
       })
 
-      it('0190\t发起带无效fee的交易_01\n: fee比12小（比如5），但是不足以发起成功的交易\n', function () {
+      it('0190\t发起带无效fee的交易_01: fee比12小（比如5），但是不足以发起成功的交易', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = 5
         return checkSendTxFailure(server, commonParams, retentiveParams, false, 'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
-      it('0200\t发起带无效fee的交易_02\n: fee为0\n', function () {
+      it('0200\t发起带无效fee的交易_02: fee为0', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = 0
         return checkSendTxFailure(server, commonParams, retentiveParams, false, 'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
-      it('0210\t发起带无效fee的交易_03\n: fee为大于0的小数，比如12.5、5.5\n', function () {
+      it('0210\t发起带无效fee的交易_03: fee为大于0的小数，比如12.5、5.5', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = 12.5
         return checkSendTxFailure(server, commonParams, retentiveParams, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
-      it('0220\t发起带无效fee的交易_04\n: fee为大于发起钱包' + params.testType + '余额的整数\n', function () {
+      it('0220\t发起带无效fee的交易_04: fee为大于发起钱包' + params.testType + '余额的整数', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = 999999999999999
         return checkSendTxFailure(server, commonParams, retentiveParams, false,
             'telINSUF_FEE_P Fee insufficient')
       })
 
-      it('0230\t发起带无效fee的交易_05\n: fee为负数，比如-3.5、-555等\n', function () {
+      it('0230\t发起带无效fee的交易_05: fee为负数，比如-3.5、-555等', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = -35
         return checkSendTxFailure(server, commonParams, retentiveParams, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
 
-      it('0240\t发起带无效fee的交易_06\n: fee为字符串\n', function () {
+      it('0240\t发起带无效fee的交易_06: fee为字符串', function () {
         let commonParams = cloneParams(params)
         commonParams.fee = "35"
         return checkSendTxFailure(server, commonParams, retentiveParams, true,
@@ -1753,7 +1927,7 @@ describe('Jingtum测试', function () {
       //   return checkSendTxSuccess(server, commonParams, retentiveParams)
       // })
 
-      it('0270\t发行' + type + '\n', function () {
+      it('0270\t发行' + type + '', function () {
         let commonParams = cloneParams(params)
         return checkSendTxSuccess(server, commonParams, retentiveParams)
 
@@ -1775,7 +1949,7 @@ describe('Jingtum测试', function () {
 
       })
 
-      it('0290\t发行' + type + '_无效的type参数\n', function () {
+      it('0290\t发行' + type + '_无效的type参数', function () {
         return Promise.resolve(server.responseIssueToken(
             "issuecoin",
             from.address,
@@ -1793,7 +1967,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0300\t发行' + type + '_无效的from参数\n', function () {
+      it('0300\t发行' + type + '_无效的from参数', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             "from.address",
@@ -1847,7 +2021,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0320\t发行' + type + '_无效的symbol参数\n:很长的字符串', function () {
+      it('0320\t发行' + type + '_无效的symbol参数:很长的字符串', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1865,7 +2039,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0320\t发行' + type + '_无效的symbol参数\n:被已有代币使用过的name', function () {
+      it('0320\t发行' + type + '_无效的symbol参数:被已有代币使用过的name', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1883,7 +2057,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0330\t发行' + type + '_无效的decimals参数\n:字符串', function () {
+      it('0330\t发行' + type + '_无效的decimals参数:字符串', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1901,7 +2075,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0330\t发行' + type + '_无效的decimals参数\n:负数', function () {
+      it('0330\t发行' + type + '_无效的decimals参数:负数', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1919,7 +2093,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0330\t发行' + type + '_无效的decimals参数\n:小数', function () {
+      it('0330\t发行' + type + '_无效的decimals参数:小数', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1937,7 +2111,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0340\t发行' + type + '_无效的total_supply参数\n:字符串', function () {
+      it('0340\t发行' + type + '_无效的total_supply参数:字符串', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1955,7 +2129,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0340\t发行' + type + '_无效的total_supply参数\n:负数', function () {
+      it('0340\t发行' + type + '_无效的total_supply参数:负数', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -1973,7 +2147,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0340\t发行' + type + '_无效的total_supply参数\n:小数', function () {
+      it('0340\t发行' + type + '_无效的total_supply参数:小数', function () {
         return Promise.resolve(server.responseIssueToken(
             config.type,
             from.address,
@@ -2004,7 +2178,7 @@ describe('Jingtum测试', function () {
 
     describe('测试' + type + '增发', function () {
 
-      it('0370\t增发可增发的代币\n', async function () {
+      it('0370\t增发可增发的代币', async function () {
         let oldBalance = await server.getBalance(from.address, tokenName.symbol)
         return Promise.resolve(server.responseIssueToken(
             config.type,
@@ -2043,7 +2217,7 @@ describe('Jingtum测试', function () {
 
     describe('测试' + type + '销毁', function () {
 
-      it('0380\t销毁' + type + '\n', async function () {
+      it('0380\t销毁' + type + '', async function () {
         let oldBalance = await server.getBalance(from.address, tokenName.symbol)
         let value = 0 - (Math.floor(Number(oldBalance.value) / 10));
 
@@ -2072,7 +2246,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0420\t无效地销毁' + type + '\n', async function () {
+      it('0420\t无效地销毁' + type + '', async function () {
         let oldBalance = await server.getBalance(from.address, tokenName.symbol)
         let value = 0 - (Number(oldBalance.value) * 10);
 
@@ -2101,7 +2275,7 @@ describe('Jingtum测试', function () {
         })
       })
 
-      it('0380\t销毁所有' + type + '\n', async function () {
+      it('0380\t销毁所有' + type + '', async function () {
         let oldBalance = await server.getBalance(from.address, tokenName.symbol)
         let value = 0 - (Number(oldBalance.value));
 
@@ -2149,7 +2323,6 @@ describe('Jingtum测试', function () {
       checkAccountOnWrongFormatAccount(server, wrongFormatAddress, tag)
       checkAccountOnWrongFormatAccount(server, wrongFormatNickName, tag)
     })
-
   }
 
   function testGetBalanceByTag(server, tag){
@@ -2168,7 +2341,6 @@ describe('Jingtum测试', function () {
       checkBalanceOnWrongFormatAccount(server, wrongFormatAddress, tag)
       checkBalanceOnWrongFormatAccount(server, wrongFormatNickName, tag)
     })
-
   }
 
   async function goThroughTxsInBlockByBlockNumber(server, blockNumber){
@@ -2324,7 +2496,7 @@ describe('Jingtum测试', function () {
   }
 
   function checkBalanceOnActiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内有底层币和代币\n', function () {
+    it('0010\t查询有效的地址_01:地址内有底层币和代币', function () {
       return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
         checkResponse(true, value)
         expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
@@ -2336,7 +2508,7 @@ describe('Jingtum测试', function () {
   }
 
   function checkBalanceOnInactiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币\n', function () {
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
       return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
         checkResponse(false, value)
         expect(value.message).to.contains('no such account')
@@ -2347,7 +2519,7 @@ describe('Jingtum测试', function () {
   }
 
   function checkBalanceOnWrongFormatAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币\n', function () {
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
       return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
         checkResponse(false, value)
         expect(value.message).to.contains('no such account')
@@ -2361,7 +2533,7 @@ describe('Jingtum测试', function () {
 
   //region account check
   function checkAccountOnActiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内有底层币和代币\n', function () {
+    it('0010\t查询有效的地址_01:地址内有底层币和代币', function () {
       return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
         checkResponse(true, value)
         // expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
@@ -2373,7 +2545,7 @@ describe('Jingtum测试', function () {
   }
 
   function checkAccountOnInactiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币\n', function () {
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
       return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
         checkResponse(false, value)
         expect(value.result).to.contains('Bad account address:')
@@ -2384,7 +2556,7 @@ describe('Jingtum测试', function () {
   }
 
   function checkAccountOnWrongFormatAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币\n', function () {
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
       return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
         checkResponse(false, value)
         expect(value.result).to.contains('Bad account address:')
