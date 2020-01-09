@@ -109,6 +109,10 @@ let addresses = {
         address:"inactiveAccounts[0].address",
         secret:"inactiveAccounts[0].secret",
         nickName:"inactiveAccounts[0].nickName",
+    },
+    defaultIssuer:{
+        address: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+        secret: ''
     }
 }
 
