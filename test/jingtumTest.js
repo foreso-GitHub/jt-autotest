@@ -680,20 +680,40 @@ describe('Jingtum测试', function () {
         let categoryName = ''
         let txFunctionName = ''
 
-        categoryName = '原生币swt'
-        txFunctionName = 'jt_sendTransaction'
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForTransfer(server, categoryName, txFunctionName)
-        })
+        //region basic test
 
-        txFunctionName = 'jt_signTransaction'
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForTransfer(server, categoryName, txFunctionName)
-        })
+        // categoryName = '原生币swt'
+        // txFunctionName = 'jt_sendTransaction'
+        // describe(categoryName + '测试：' + txFunctionName, async function () {
+        //   testForTransfer(server, categoryName, txFunctionName)
+        // })
+        //
+        // txFunctionName = 'jt_signTransaction'
+        // describe(categoryName + '测试：' + txFunctionName, async function () {
+        //   testForTransfer(server, categoryName, txFunctionName)
+        // })
 
         // categoryName = '原生币swt压力测试'
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
         // testTestCases(server, categoryName, testCases)
+
+        //endregion
+
+        //region token test
+
+        categoryName = '一次性代币'
+        txFunctionName = 'jt_sendTransaction'
+        describe(categoryName + '测试：' + txFunctionName, async function () {
+          testForIssueToken(server, categoryName, txFunctionName)
+        })
+
+        txFunctionName = 'jt_signTransaction'
+        describe(categoryName + '测试：' + txFunctionName, async function () {
+          testForIssueToken(server, categoryName, txFunctionName)
+        })
+
+        //endregion
+
       })
 
     })
@@ -747,8 +767,16 @@ describe('Jingtum测试', function () {
         addresses.receiver1.address, "1", 10, ['autotest'])
   }
 
-  function createTxParamsForIssueToken(){
-
+  function createTxParamsForIssueToken(server){
+    // 参考”发起底层币无效交易“的测试用例
+    // "flags":        float64(data.TxCoinMintable | data.TxCoinBurnable)
+    // TxCoinMintable  TransactionFlag = 0x00010000 (65536)
+    // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
+    // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
+    // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
+    // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
+    return server.createIssueTokenParams(addresses.sender2.address, addresses.sender2.secret, null,
+        'TestCoin', 'TC', 8, '9876543210', false, 0)
   }
 
   function createExpecteResult(needPass, isErrorInResult, expectedError){
@@ -770,7 +798,8 @@ describe('Jingtum测试', function () {
     testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
   }
 
-  //当jt_sendTransaction和jt_signTransaction都通过测试时
+  //region 当jt_sendTransaction和jt_signTransaction都通过测试时
+
   function createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction){
     testCaseParams.txParams = createTxParamsForTransfer(testCaseParams.server)
     updateTxParamsFunction()
@@ -782,6 +811,20 @@ describe('Jingtum测试', function () {
     }
     return testCase
   }
+
+  function createEitherTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, updateTxParamsFunction){
+    testCaseParams.txParams = createTxParamsForTransfer(testCaseParams.server)
+    updateTxParamsFunction()
+    testCaseParams.expecteResult = createExpecteResult(true)
+    let testCase = createTestCaseByParams(testCaseParams)
+    if(testCaseParams.txFunctionName === 'jt_signTransaction') {
+      let expecteResultOfSendRawTx = createExpecteResult(true)
+      addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
+    }
+    return testCase
+  }
+
+  //endregion
 
   //当jt_sendTransaction和jt_signTransaction都通不过测试时
   function createEitherTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction){
@@ -809,15 +852,13 @@ describe('Jingtum测试', function () {
 
   //region main create methods
 
-  //region transfer tx
-
-  function createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName){
+  function createTestCaseParams(server, categoryName, txFunctionName, createTxParamsFunction){
     let testCaseParams = {}
     testCaseParams.server = server
     testCaseParams.categoryName = categoryName
     testCaseParams.txFunctionName = txFunctionName
     testCaseParams.title = ''
-    testCaseParams.txParams = createTxParamsForTransfer(server)
+    testCaseParams.txParams = createTxParamsFunction(server)
     testCaseParams.executeFunction = executeTestCaseOfSendTx
     testCaseParams.checkFunction = checkTestCaseOfSendTx
     testCaseParams.expecteResult = createExpecteResult(true)
@@ -839,6 +880,43 @@ describe('Jingtum测试', function () {
 
     return testCaseParams
   }
+
+
+
+  //region transfer tx
+
+  function createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName){
+    return createTestCaseParams(server, categoryName, txFunctionName, createTxParamsForTransfer)
+  }
+
+  // function createTestCaseParamsForCommonTransfer(server, categoryName, txFunctionName){
+  //   let testCaseParams = {}
+  //   testCaseParams.server = server
+  //   testCaseParams.categoryName = categoryName
+  //   testCaseParams.txFunctionName = txFunctionName
+  //   testCaseParams.title = ''
+  //   testCaseParams.txParams = createTxParamsForTransfer(server)
+  //   testCaseParams.executeFunction = executeTestCaseOfSendTx
+  //   testCaseParams.checkFunction = checkTestCaseOfSendTx
+  //   testCaseParams.expecteResult = createExpecteResult(true)
+  //   testCaseParams.testCase = {}
+  //   testCaseParams.symbol = testCaseParams.txParams[0].symbol
+  //   testCaseParams.showSymbol = (testCaseParams.symbol || testCaseParams.symbol == null
+  //       || testCaseParams.symbol == "swt" || testCaseParams.symbol == "SWT") ? "" : ("/" + testCaseParams.symbol)
+  //   if(txFunctionName === 'jt_sendTransaction') {
+  //     testCaseParams.executeFunction = executeTestCaseOfSendTx
+  //     testCaseParams.checkFunction = checkTestCaseOfSendTx
+  //   }
+  //   else if(txFunctionName === 'jt_signTransaction'){
+  //     testCaseParams.executeFunction = executeTestCaseOfSignTxAndSendRawTx
+  //     testCaseParams.checkFunction = checkTestCaseOfSignTxAndSendRawTx
+  //   }
+  //   else{
+  //     throw new Error('txFunctionName doesn\'t exist!')
+  //   }
+  //
+  //   return testCaseParams
+  // }
 
   function createTestCasesForBasicTransaction(server, categoryName, txFunctionName){
     let testCases = []
@@ -1152,6 +1230,305 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region issue token tx
+
+  function createTestCaseParamsForIssueToken(server, categoryName, txFunctionName){
+    return createTestCaseParams(server, categoryName, txFunctionName, createTxParamsForIssueToken)
+  }
+
+  function createTestCasesForCreateToken(server, categoryName, txFunctionName){
+    let testCases = []
+    let testCaseParams = createTestCaseParamsForIssueToken(server, categoryName, txFunctionName)
+
+    //region test cases
+    let testAll = true
+    if(testAll){
+
+
+    }
+    //endregion
+
+    if(testAll){
+
+      testCaseParams.title = '0270\t发行' + testCaseParams.categoryName
+      {
+        let testCase = createEitherTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, function(){
+        })
+        testCases.push(testCase)
+      }
+
+      testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
+      {
+        let testCase = createEitherTestCaseWhenSignPassButSendRawTxFail(testCaseParams, function(){
+          testCaseParams.txParams[0].type = "issuecoin"
+          testCaseParams.expecteResult = createExpecteResult(false, true,
+              'Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
+        })
+        testCases.push(testCase)
+      }
+    }
+
+
+    return testCases
+  }
+
+  function testCreateToken(server, params, func){
+    let type = params.testType
+    // let from = params.from
+    // let config = params.config
+    // let existToken = params.existToken
+    // let tokenName = params.tokenName
+
+    let retentiveParams = {}
+    retentiveParams.function = func
+
+    describe('测试' + type + '发行', function () {
+
+      // it('0010\t发起' + params.testType + '有效交易_01', function () {
+      //   let commonParams = cloneParams(params)
+      //   return checkSendTxSuccess(server, commonParams, retentiveParams)
+      // })
+
+      it('0270\t发行' + type + '', function () {
+        let commonParams = cloneParams(params)
+        return checkSendTxSuccess(server, commonParams, retentiveParams)
+
+        // return Promise.resolve(server.responseIssueToken(
+        //     config.type,
+        //     from.address,
+        //     from.secret,
+        //     tokenName.name,
+        //     tokenName.symbol,
+        //     config.decimals,
+        //     config.total_supply,
+        //     config.local,
+        //     config.flags,
+        //     config.fee,
+        // )).then(async function (value) {
+        //   await checkSendTxSuccess(server, value)
+        //   return await checkBalanceChange(server, from.address, tokenName.symbol, Number(config.total_supply))
+        // })
+
+      })
+
+      it('0290\t发行' + type + '_无效的type参数', function () {
+        return Promise.resolve(server.responseIssueToken(
+            "issuecoin",
+            from.address,
+            from.secret,
+            tokenName.name,
+            tokenName.symbol,
+            config.decimals,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
+        })
+      })
+
+      it('0300\t发行' + type + '_无效的from参数', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            "from.address",
+            from.secret,
+            tokenName.name,
+            tokenName.symbol,
+            config.decimals,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('Bad account address: from.address: Bad Base58 string: from.address')
+        })
+      })
+
+      it('0310\t发行' + type + '_无效的name参数:很长的字符串', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            "tokenName.name12345678901234567890",
+            tokenName.symbol,
+            config.decimals,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.message).to.contains('failed to submit transaction')
+        })
+      })
+
+      it('0310\t发行' + type + '_无效的name参数:被已有代币使用过的name', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            existToken.name,
+            tokenName.symbol,
+            config.decimals,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.message).to.contains('failed to submit transaction')
+        })
+      })
+
+      it('0320\t发行' + type + '_无效的symbol参数:很长的字符串', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            "tokenName.symbol",
+            config.decimals,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('runtime error: invalid memory address or nil pointer dereference')
+        })
+      })
+
+      it('0320\t发行' + type + '_无效的symbol参数:被已有代币使用过的name', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            token.name,
+            existToken.symbol,
+            config.decimals,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('no name')
+        })
+      })
+
+      it('0330\t发行' + type + '_无效的decimals参数:字符串', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            tokenName.symbol,
+            "config.decimals",
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('nterface conversion: interface {} is string, not float64')
+        })
+      })
+
+      it('0330\t发行' + type + '_无效的decimals参数:负数', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            tokenName.symbol,
+            -8,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.message).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
+        })
+      })
+
+      it('0330\t发行' + type + '_无效的decimals参数:小数', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            tokenName.symbol,
+            11.64,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.message).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
+        })
+      })
+
+      it('0340\t发行' + type + '_无效的total_supply参数:字符串', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            tokenName.symbol,
+            config.decimals,
+            "config.total_supply",
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('strconv.ParseInt: parsing')
+        })
+      })
+
+      it('0340\t发行' + type + '_无效的total_supply参数:负数', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            config.decimals,
+            -10000000,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('interface conversion: interface {} is float64, not string')
+        })
+      })
+
+      it('0340\t发行' + type + '_无效的total_supply参数:小数', function () {
+        return Promise.resolve(server.responseIssueToken(
+            config.type,
+            from.address,
+            from.secret,
+            tokenName.name,
+            config.decimals,
+            10000.12345678,
+            config.total_supply,
+            config.local,
+            config.flags,
+            config.fee,
+        )).then(async function (value) {
+          checkResponse(false, value)
+          expect(value.result).to.contains('interface conversion: interface {} is float64, not string')
+        })
+      })
+
+    })
+
+  }
 
   //endregion
 
@@ -1568,6 +1945,18 @@ describe('Jingtum测试', function () {
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName)
     testTestCases(server, describeTitle, testCases)
+  }
+
+  function testForIssueToken(server, categoryName, txFunctionName){
+    let testName = ''
+    let describeTitle = ''
+    let testCases = []
+
+    testName = '测试创建token'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName)
+    testTestCases(server, describeTitle, testCases)
+
   }
 
   //endregion
