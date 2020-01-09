@@ -119,7 +119,7 @@ let addresses = {
 let data = {
     defaultBlockTime: 5000,
     retryPauseTime: 5000,  //todo sometimes get tx will fail because the tx has not been written in block yet.  in such case, can retry get tx after 1s, for 3 times.
-    defaultFee: 12,
+    defaultFee: "12",
     chain:{
         tx:{
             "TransactionType": "Payment",
