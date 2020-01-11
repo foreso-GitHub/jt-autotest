@@ -687,12 +687,12 @@ describe('Jingtum测试', function () {
         categoryName = '原生币swt'
         txFunctionName = consts.rpcFunctions.sendTx
         txParams = createTxParamsForTransfer(server)
-
         describe(categoryName + '测试：' + txFunctionName, async function () {
           testForTransfer(server, categoryName, txFunctionName, txParams)
         })
 
         txFunctionName = consts.rpcFunctions.signTx
+        txParams = createTxParamsForTransfer(server)
         describe(categoryName + '测试：' + txFunctionName, async function () {
           testForTransfer(server, categoryName, txFunctionName, txParams)
         })
@@ -713,6 +713,7 @@ describe('Jingtum测试', function () {
         })
 
         txFunctionName = consts.rpcFunctions.signTx
+        txParams = createTxParamsForIssueToken(server)
         describe(categoryName + '测试：' + txFunctionName, async function () {
           testForIssueToken(server, categoryName, txFunctionName, txParams)
         })
@@ -828,6 +829,11 @@ describe('Jingtum测试', function () {
     tokenParams[0].showSymbol = showSymbol
     tokenParams[0].value = '1' + showSymbol
     return tokenParams
+  }
+
+  function createTxParamsForMintToken(server, name, symbol){
+    return server.createIssueTokenParams(addresses.sender2.address, addresses.sender2.secret, null,
+        name, symbol, 8, '9', true, 65536)
   }
 
   function createExpecteResult(needPass, isErrorInResult, expectedError){
@@ -1375,12 +1381,44 @@ describe('Jingtum测试', function () {
     return testCases
   }
 
-  function createTestCasesForMintToken(server, categoryName, txFunctionName){
+  function createTestCasesForMintToken(server, categoryName, txFunctionName, txParams){
     let testCases = []
-    let testCaseParams = createTestCaseParamsForIssueToken(server, categoryName, txFunctionName)
+    let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
+    testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
 
     //region test cases
-    let testAll = true
+    let testAll = false
+    if(testAll){
+
+    }
+    //endregion
+
+    if(!testAll){
+      testCaseParams.title = '0370\t增发可增发的代币' + testCaseParams.categoryName
+      {
+        testCaseParams.txParams[0].total_supply = '9'
+        testCaseParams.oldBalance = '9876543210'
+        let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
+            createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            })
+            :
+            createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+              testCaseParams.expecteResult = createExpecteResult(false, true,
+                  'tefNO_PERMISSION_ISSUE No permission issue')
+            })
+        testCases.push(testCase)
+      }
+    }
+    return testCases
+  }
+
+  function createTestCasesForBurnToken(server, categoryName, txFunctionName, txParams){
+    let testCases = []
+    let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
+    testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
+
+    //region test cases
+    let testAll = false
     if(testAll){
 
     }
@@ -1388,13 +1426,52 @@ describe('Jingtum测试', function () {
 
     if(!testAll){
 
+      testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
+      {
+        testCaseParams.txParams[0].total_supply = '-18'
+        testCaseParams.oldBalance = '9876543219'
+        let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
+            createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            })
+            :
+            createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+              testCaseParams.expecteResult = createExpecteResult(false, true,
+                  'tefNO_PERMISSION_ISSUE No permission issue')
+            })
+        testCases.push(testCase)
+      }
 
+      testCaseParams.title = '0380\t销毁所有' + testCaseParams.categoryName
+      {
+        testCaseParams.txParams[0].total_supply = '-9876543219'
+        testCaseParams.oldBalance = '9876543219'
+        let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
+            createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            })
+            :
+            createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+              testCaseParams.expecteResult = createExpecteResult(false, true,
+                  'tefNO_PERMISSION_ISSUE No permission issue')
+            })
+        testCases.push(testCase)
+      }
 
+      testCaseParams.title = '0420\t无效地销毁' + testCaseParams.categoryName
+      {
+        testCaseParams.txParams[0].total_supply = '-98765432100'
+        testCaseParams.oldBalance = '9876543219'
+        let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+          testCaseParams.expecteResult = createExpecteResult(false, true,
+              'tefNO_PERMISSION_ISSUE No permission issue')
+        })
+        testCases.push(testCase)
+      }
 
     }
-
     return testCases
   }
+
+
 
   //endregion
 
@@ -1609,6 +1686,33 @@ describe('Jingtum测试', function () {
           expect(error).to.not.be.ok
         })
   }
+
+  async function checkTestCaseOfMintOrBurn(testCase){
+    let responseOfSendTx = testCase.actualResult[0]
+    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+    if(testCase.expecteResult.needPass){
+      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+      let hash = responseOfSendTx.result[0]
+      // let params = txParams[0]
+      await getTxByHash(testCase.server, hash, false).then(async function(responseOfGetTx){
+        checkResponse(true, responseOfGetTx)
+        // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+        expect(responseOfGetTx.result.hash).to.be.equal(hash)
+        let server = testCase.server
+        let address = testCase.txParams[0].from
+        let symbol = testCase.txParams[0].symbol
+        let expectedBalance =  Number(testCase.oldBalance) +  Number(testCase.txParams[0].total_supply)
+        await checkBalanceChange(server, address, symbol,expectedBalance)
+        // await compareActualTxWithTxParams(params, responseOfGetTx.result)
+      }, function (err) {
+        expect(err).to.be.ok
+      })
+    }
+    else{
+      let expecteResult = testCase.expecteResult
+      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+    }
+  }
   //endregion
 
   //region check sign and send raw tx result
@@ -1696,18 +1800,33 @@ describe('Jingtum测试', function () {
     let describeTitle = ''
     let testCases = []
 
+    //create token
     testName = '测试创建token'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
     testTestCases(server, describeTitle, testCases)
 
+    //set created token properties
+    let name = testCases[0].txParams[0].name
     let symbol = testCases[0].txParams[0].symbol
     let issuer = testCases[0].txParams[0].from
-    let tokenParams = createTxParamsForTokenTransfer(server, symbol, issuer)
-    describeTitle = '测试基本交易-[币种:' + tokenParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, tokenParams)
+
+    //token transfer
+    let transferTxParams = createTxParamsForTokenTransfer(server, symbol, issuer)
+    describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, transferTxParams)
     testTestCases(server, describeTitle, testCases)
 
+    //mint token
+    let mintTxParams = createTxParamsForMintToken(server, name, symbol)
+    describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
+    testTestCases(server, describeTitle, testCases)
+
+    //burn token
+    describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+    testTestCases(server, describeTitle, testCases)
   }
   //endregion
 
