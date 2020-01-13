@@ -675,50 +675,68 @@ describe('Jingtum测试', function () {
           })
         })
 
+        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
+          let categoryName = ''
+          let txFunctionName = ''
+          let txParams = {}
+
+          //region basic test
+
+          categoryName = '原生币swt'
+          txFunctionName = consts.rpcFunctions.sendTx
+          txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams)
+          })
+
+          txFunctionName = consts.rpcFunctions.signTx
+          txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams)
+          })
+
+          categoryName = '原生币swt压力测试'
+          testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          testTestCases(server, categoryName, testCases)
+
+          //endregion
+
+          //region token test
+
+          categoryName = '一次性代币'
+          txFunctionName = consts.rpcFunctions.sendTx
+          txParams = createTxParamsForIssueToken(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForIssueToken(server, categoryName, txFunctionName, txParams)
+          })
+
+          txFunctionName = consts.rpcFunctions.signTx
+          txParams = createTxParamsForIssueToken(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForIssueToken(server, categoryName, txFunctionName, txParams)
+          })
+
+          //endregion
+        })
+
       })
 
       describe('is working', function () {
-        let categoryName = ''
-        let txFunctionName = ''
-        let txParams = {}
 
-        //region basic test
+        describe('测试jt_sendTransaction', function () {
 
-        categoryName = '原生币swt'
-        txFunctionName = consts.rpcFunctions.sendTx
-        txParams = createTxParamsForTransfer(server)
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForTransfer(server, categoryName, txFunctionName, txParams)
+          describe('测试底层币交易：没有symbol，默认swt', function (){
+            let params = createTransactionParams("底层币", addresses.sender1, addresses.receiver1,
+                "swt", "telINSUF_FEE_P Fee insufficient")
+            testBasicTransaction(server, params)
+          })
+
+          afterEach(async function() {
+            //set timeout to ensure the next test which use the same sender address can pass the test
+            return await utility.timeout(data.defaultBlockTime)
+          })
         })
 
-        txFunctionName = consts.rpcFunctions.signTx
-        txParams = createTxParamsForTransfer(server)
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForTransfer(server, categoryName, txFunctionName, txParams)
-        })
-
-        categoryName = '原生币swt压力测试'
-        testCases = createTestCasesForPressureTest(server, categoryName, 20)
-        testTestCases(server, categoryName, testCases)
-
-        //endregion
-
-        //region token test
-
-        categoryName = '一次性代币'
-        txFunctionName = consts.rpcFunctions.sendTx
-        txParams = createTxParamsForIssueToken(server)
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForIssueToken(server, categoryName, txFunctionName, txParams)
-        })
-
-        txFunctionName = consts.rpcFunctions.signTx
-        txParams = createTxParamsForIssueToken(server)
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForIssueToken(server, categoryName, txFunctionName, txParams)
-        })
-
-        //endregion
 
       })
 
@@ -2827,15 +2845,17 @@ describe('Jingtum测试', function () {
   }
 
   function sendTxWithSequence(server, commonParams, retentiveParams){
-    return Promise.resolve(server.responseSendTx(
-        commonParams.from,
-        commonParams.secret,
-        retentiveParams.sequence,
-        commonParams.to,
-        commonParams.value,
-        commonParams.fee,
-        commonParams.memos,
-    )).then(async function (value) {
+    let params = {}
+    params.from = commonParams.from
+    params.secret = commonParams.secret
+    params.sequence = retentiveParams.sequence
+    params.to = commonParams.to
+    params.value = commonParams.value
+    params.fee = commonParams.fee
+    params.memos = commonParams.memos
+    let data = []
+    data.push(params)
+    return Promise.resolve(server.responseSendTx(data)).then(async function (value) {
       if(value.status === status.success){
         retentiveParams.sequence++ //if send tx successfully, then sequence need plus 1
       }
