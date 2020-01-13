@@ -119,7 +119,9 @@ let addresses = {
 let data = {
     defaultBlockTime: 5000,
     retryPauseTime: 5000,  //todo sometimes get tx will fail because the tx has not been written in block yet.  in such case, can retry get tx after 1s, for 3 times.
+    retryMaxCount: 2,
     defaultFee: "12",
+
     chain:{
         tx:{
             "TransactionType": "Payment",
@@ -509,7 +511,7 @@ let token = {
         total_supply: "9876543210",
         local:false,
         flags: 0,
-        fee: 20,
+        fee: "10",
     },
     config_mintable:{
         type: "IssueCoin",
@@ -519,7 +521,7 @@ let token = {
         total_supply: "9876543210",
         local:false,
         flags: 65536,
-        fee: 20,
+        fee: "10",
     },
     config_burnable:{
         type: "IssueCoin",
@@ -529,7 +531,7 @@ let token = {
         total_supply: "9876543210",
         local:false,
         flags: 131072,
-        fee: 20,
+        fee: "10",
     },
     config_mint_burn:{
         type: "IssueCoin",
@@ -539,7 +541,7 @@ let token = {
         total_supply: "9876543210",
         local:false,
         flags: 196608,
-        fee: 20,
+        fee: "10",
     },
     config_issuer_normal:{
         type: "IssueCoin",
@@ -549,7 +551,7 @@ let token = {
         total_supply: "9876543210",
         local:true,
         flags: 0,
-        fee: 20,
+        fee: "10",
     },
     config_issuer_mintable:{
         type: "IssueCoin",
@@ -559,7 +561,7 @@ let token = {
         total_supply: "9876543210",
         local:true,
         flags: 65536,
-        fee: 20,
+        fee: "10",
     },
     config_issuer_burnable:{
         type: "IssueCoin",
@@ -569,7 +571,7 @@ let token = {
         total_supply: "9876543210",
         local:true,
         flags: 131072,
-        fee: 20,
+        fee: "10",
     },
     config_issuer_mint_burn:{
         type: "IssueCoin",
@@ -579,7 +581,7 @@ let token = {
         total_supply: "9876543210",
         local:true,
         flags: 196608,
-        fee: 20,
+        fee: "10",
     },
     existToken:{
         name: "TestCoin1576652216",

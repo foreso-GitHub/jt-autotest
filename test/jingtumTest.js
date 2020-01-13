@@ -723,12 +723,215 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        describe('测试jt_sendTransaction', function () {
+        describe.skip('测试jt_sendTransaction', function () {
 
-          describe('测试底层币交易：没有symbol，默认swt', function (){
+          describe.skip('测试底层币交易：没有symbol，默认swt', function (){
             let params = createTransactionParams("底层币", addresses.sender1, addresses.receiver1,
                 "swt", "telINSUF_FEE_P Fee insufficient")
             testBasicTransaction(server, params)
+          })
+
+          describe('测试token交易', function (){
+
+            describe.skip('测试基本交易', function (){
+              let params = createTransactionParams("token", addresses.sender3, addresses.receiver1,
+                  "at1", "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, params)
+            })
+
+            describe.skip('测试发行一次性代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "一次性代币"
+              params.from = addresses.sender1
+              params.config = token.config_normal
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+            })
+
+            describe('测试发行可增发的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "可增发代币"
+              params.from = addresses.sender1
+              params.config = token.config_mintable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              // testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+
+            })
+
+            describe('测试发行可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "可销毁代币"
+              params.from = addresses.sender1
+              params.config = token.config_burnable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+            describe('发行既可增发又可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "可增发可销毁代币"
+              params.from = addresses.sender1
+              params.config = token.config_mint_burn
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的一次性代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的一次性代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_normal
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的可增发的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的可增发的代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_mintable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = false
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的可销毁的代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_burnable
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = false
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
+            describe('发行带issuer的可增发可销毁的代币', function (){
+              //test create first
+              let params = {}
+              params.testType = "带issuer的可增发可销毁的代币"
+              params.from = addresses.sender1
+              params.config = token.config_issuer_mint_burn
+              params.existToken = token.existToken
+              params.tokenName = getDynamicName()
+              testCreateToken(server, params)
+
+              //then test transaction of new token
+              let txParams = createTransactionParams(params.testType, addresses.sender1, addresses.receiver1,
+                  params.tokenName.symbol, "telINSUF_FUND Fund insufficient")
+              testBasicTransaction(server, txParams)
+
+              //then test mint
+              params.mintResult = true
+              testMintToken(server, params)
+
+              //then test burn
+              params.burnResult = true
+              testBurnToken(server, params)
+            })
+
           })
 
           afterEach(async function() {
@@ -737,6 +940,49 @@ describe('Jingtum测试', function () {
           })
         })
 
+        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
+          let categoryName = ''
+          let txFunctionName = ''
+          let txParams = {}
+
+          //region basic test
+
+          // categoryName = '原生币swt'
+          // txFunctionName = consts.rpcFunctions.sendTx
+          // txParams = createTxParamsForTransfer(server)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams)
+          // })
+          //
+          // txFunctionName = consts.rpcFunctions.signTx
+          // txParams = createTxParamsForTransfer(server)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams)
+          // })
+          //
+          // categoryName = '原生币swt压力测试'
+          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          // testTestCases(server, categoryName, testCases)
+
+          //endregion
+
+          //region token test
+
+          categoryName = '一次性代币'
+          txFunctionName = consts.rpcFunctions.sendTx
+          txParams = createTxParamsForIssueToken(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForIssueToken(server, categoryName, txFunctionName, txParams)
+          })
+
+          txFunctionName = consts.rpcFunctions.signTx
+          txParams = createTxParamsForIssueToken(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForIssueToken(server, categoryName, txFunctionName, txParams)
+          })
+
+          //endregion
+        })
 
       })
 
@@ -775,6 +1021,7 @@ describe('Jingtum测试', function () {
     testCaseParams.title = ''
     testCaseParams.originalTxParams = txParams
     testCaseParams.txParams = cloneParamsAarry(txParams)
+    testCaseParams.otherParams = {}
     testCaseParams.executeFunction = executeTestCaseOfSendTx
     testCaseParams.checkFunction = checkTestCaseOfSendTx
     testCaseParams.expecteResult = createExpecteResult(true)
@@ -799,13 +1046,14 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region assistant create methods
-  function createTestCase(title, server, txFunctionName, txParams, executeFunction, checkFunction, expecteResult){
+  function createTestCase(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expecteResult){
     let testCase = {}
     testCase.type = "it"
     if(title) testCase.title = title
     if(server) testCase.server = server
     if(txFunctionName) testCase.txFunctionName = txFunctionName
     if(txParams) testCase.txParams = txParams
+    if(otherParams) testCase.otherParams = otherParams
     if(executeFunction) testCase.executeFunction = executeFunction
     if(checkFunction) testCase.checkFunction = checkFunction
     if(expecteResult) testCase.expecteResult = expecteResult
@@ -815,8 +1063,9 @@ describe('Jingtum测试', function () {
   }
 
   function createTestCaseByParams(testCaseParams){
-    return createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
-        testCaseParams.txParams, testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expecteResult)
+    return createTestCase(testCaseParams.title, testCaseParams.server,
+        testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
+        testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expecteResult)
   }
 
   function createTxParamsForTransfer(server){
@@ -835,7 +1084,7 @@ describe('Jingtum测试', function () {
 
     let tokenName = getDynamicName()
     return server.createIssueTokenParams(addresses.sender2.address, addresses.sender2.secret, null,
-        tokenName.name, tokenName.symbol, 8, '9876543210', true, 0)
+        tokenName.name, tokenName.symbol, 8, '9876543210', false, 65536)
   }
 
   function createTxParamsForTokenTransfer(server, symbol, issuer){
@@ -849,9 +1098,12 @@ describe('Jingtum测试', function () {
     return tokenParams
   }
 
+  // example
+  // {"jsonrpc":"2.0","id":7,"method":"jt_sendTransaction","params":[{"type":"IssueCoin","from":"jPdevNK8NeYSkg3TrWZa8eT6BrSp2oteUh","secret":"ssSLJReyitmAELQ3E3zYpZti1YuRe","name":"TestCoin1578886708","symbol":"5e1be634","decimals":8,"total_supply":"9876543210","local":false,"flags":65536,"fee":"10",
+  //   "sequence":5620	}]}
   function createTxParamsForMintToken(server, name, symbol){
     return server.createIssueTokenParams(addresses.sender2.address, addresses.sender2.secret, null,
-        name, symbol, 8, '9', true, 65536)
+        name, symbol, 8, '9', false, 65536)
   }
 
   function createExpecteResult(needPass, isErrorInResult, expectedError){
@@ -868,7 +1120,7 @@ describe('Jingtum测试', function () {
   function addTestCaseForSendRawTx(testCaseOfSignTx, expecteResultOfSendRawTx){
     let txFunctionName = consts.rpcFunctions.sendRawTx
     let testCaseOfSendRawTx = createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
-        txFunctionName, null,null, null, expecteResultOfSendRawTx)
+        txFunctionName, null,null, null, null, expecteResultOfSendRawTx)
     testCaseOfSignTx.subTestCases = []
     testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
   }
@@ -1414,13 +1666,14 @@ describe('Jingtum测试', function () {
     if(!testAll){
       testCaseParams.title = '0370\t增发可增发的代币' + testCaseParams.categoryName
       {
-        testCaseParams.txParams[0].total_supply = '9'
-        testCaseParams.oldBalance = '9876543210'
+        testCaseParams.otherParams.oldBalance = '49382716050'
         let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
             createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+              testCaseParams.txParams[0].total_supply = '9'
             })
             :
             createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+              testCaseParams.txParams[0].total_supply = '9'
               testCaseParams.expecteResult = createExpecteResult(false, true,
                   'tefNO_PERMISSION_ISSUE No permission issue')
             })
@@ -1446,42 +1699,45 @@ describe('Jingtum测试', function () {
 
       testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
       {
-        testCaseParams.txParams[0].total_supply = '-18'
-        testCaseParams.oldBalance = '9876543219'
-        let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
+        testCaseParams.otherParams.oldBalance = '49382716059'
+        let testCase = (testCaseParams.txParams[0].flags == 131072 ||testCaseParams.txParams[0].flags == 196608 ) ?
             createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+              testCaseParams.txParams[0].total_supply = '-18'
             })
             :
             createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+              testCaseParams.txParams[0].total_supply = '-18'
               testCaseParams.expecteResult = createExpecteResult(false, true,
                   'tefNO_PERMISSION_ISSUE No permission issue')
             })
+        testCases.push(testCase)
+      }
+
+
+      testCaseParams.title = '0420\t无效地销毁' + testCaseParams.categoryName
+      {
+        testCaseParams.otherParams.oldBalance = '49382716041'
+        let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+          testCaseParams.txParams[0].total_supply = '-9876543210000'
+          testCaseParams.expecteResult = createExpecteResult(false, true,
+              'tefNO_PERMISSION_ISSUE No permission issue')
+        })
         testCases.push(testCase)
       }
 
       testCaseParams.title = '0380\t销毁所有' + testCaseParams.categoryName
       {
-        testCaseParams.txParams[0].total_supply = '-9876543219'
-        testCaseParams.oldBalance = '9876543219'
-        let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
+        testCaseParams.otherParams.oldBalance = '49382716041'
+        let testCase = (testCaseParams.txParams[0].flags == 131072 ||testCaseParams.txParams[0].flags == 196608 ) ?
             createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+              testCaseParams.txParams[0].total_supply = '-49382716041'
             })
             :
             createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+              testCaseParams.txParams[0].total_supply = '-49382716041'
               testCaseParams.expecteResult = createExpecteResult(false, true,
                   'tefNO_PERMISSION_ISSUE No permission issue')
             })
-        testCases.push(testCase)
-      }
-
-      testCaseParams.title = '0420\t无效地销毁' + testCaseParams.categoryName
-      {
-        testCaseParams.txParams[0].total_supply = '-98765432100'
-        testCaseParams.oldBalance = '9876543219'
-        let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-          testCaseParams.expecteResult = createExpecteResult(false, true,
-              'tefNO_PERMISSION_ISSUE No permission issue')
-        })
         testCases.push(testCase)
       }
 
@@ -1620,18 +1876,18 @@ describe('Jingtum测试', function () {
     await checkResponseOfTransfer(testCase, testCase.txParams)
   }
 
-  async function checkResponseOfTransfer(testCase, txParams){
+  async function checkResponseOfCommon(testCase, txParams, checkFunction){
     let responseOfSendTx = testCase.actualResult[0]
     checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
     if(testCase.expecteResult.needPass){
       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
       let hash = responseOfSendTx.result[0]
       let params = txParams[0]
-      await getTxByHash(testCase.server, hash, false).then(async function(responseOfGetTx){
+      await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
         checkResponse(true, responseOfGetTx)
         // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
         expect(responseOfGetTx.result.hash).to.be.equal(hash)
-        await compareActualTxWithTxParams(params, responseOfGetTx.result)
+        await checkFunction(testCase, txParams, responseOfGetTx.result)
       }, function (err) {
         expect(err).to.be.ok
       })
@@ -1641,6 +1897,70 @@ describe('Jingtum测试', function () {
       expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
     }
   }
+
+  async function checkResponseOfTransfer(testCase, txParams){
+    await checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
+      await compareActualTxWithTxParams(txParams[0], tx)
+    })
+  }
+
+  async function checkTestCaseOfMintOrBurn(testCase){
+    await checkResponseOfCommon(testCase, testCase.txParams, function(testCase, txParams, tx){
+      let expectedBalance = Number(testCase.otherParams.oldBalance) + Number(txParams[0].total_supply)
+      let newBalance = Number(testCase.otherParams.newBalance)
+      expect(newBalance).to.be.equal(expectedBalance)
+      // expect(true).to.be.ok
+    })
+  }
+
+  // async function checkResponseOfTransfer(testCase, txParams){
+  //   let responseOfSendTx = testCase.actualResult[0]
+  //   checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+  //   if(testCase.expecteResult.needPass){
+  //     expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+  //     let hash = responseOfSendTx.result[0]
+  //     let params = txParams[0]
+  //     await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+  //       checkResponse(true, responseOfGetTx)
+  //       // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+  //       expect(responseOfGetTx.result.hash).to.be.equal(hash)
+  //       await compareActualTxWithTxParams(params, responseOfGetTx.result)
+  //     }, function (err) {
+  //       expect(err).to.be.ok
+  //     })
+  //   }
+  //   else{
+  //     let expecteResult = testCase.expecteResult
+  //     expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+  //   }
+  // }
+
+  // async function checkTestCaseOfMintOrBurn(testCase){
+  //   let responseOfSendTx = testCase.actualResult[0]
+  //   checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+  //   if(testCase.expecteResult.needPass){
+  //     expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+  //     let hash = responseOfSendTx.result[0]
+  //     // let params = txParams[0]
+  //     await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+  //       checkResponse(true, responseOfGetTx)
+  //       // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+  //       expect(responseOfGetTx.result.hash).to.be.equal(hash)
+  //       let server = testCase.server
+  //       let address = testCase.txParams[0].from
+  //       let symbol = testCase.txParams[0].symbol
+  //       let expectedBalance =  Number(testCase.otherParams.oldBalance) +  Number(testCase.txParams[0].total_supply)
+  //       await checkBalanceChange(server, address, symbol,expectedBalance)
+  //       // await compareActualTxWithTxParams(params, responseOfGetTx.result)
+  //     }, function (err) {
+  //       expect(err).to.be.ok
+  //     })
+  //   }
+  //   else{
+  //     let expecteResult = testCase.expecteResult
+  //     expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+  //   }
+  // }
 
   function compareActualTxWithTxParams(txParams, tx){
     return new Promise(function(resolve){
@@ -1688,15 +2008,16 @@ describe('Jingtum测试', function () {
     })
   }
 
-  function getTxByHash(server, hash, isRetry){
+  function getTxByHash(server, hash, retryCount){
     return server.responseGetTxByHash(hash)
         .then(async function (value) {
           //retry
-          if(!isRetry && (value.result.toString().indexOf('can\'t find transaction') != -1
+          if(retryCount < data.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
               || value.result.toString().indexOf('no such transaction') != -1)){
-            logger.debug("===Try responseGetTxByHash again!===")
+            retryCount++
+            logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
             await utility.timeout(data.retryPauseTime)
-            return getTxByHash(server, hash, true)
+            return getTxByHash(server, hash, retryCount)
           }
           return value
         }).catch(function(error){
@@ -1705,32 +2026,6 @@ describe('Jingtum测试', function () {
         })
   }
 
-  async function checkTestCaseOfMintOrBurn(testCase){
-    let responseOfSendTx = testCase.actualResult[0]
-    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
-    if(testCase.expecteResult.needPass){
-      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-      let hash = responseOfSendTx.result[0]
-      // let params = txParams[0]
-      await getTxByHash(testCase.server, hash, false).then(async function(responseOfGetTx){
-        checkResponse(true, responseOfGetTx)
-        // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-        expect(responseOfGetTx.result.hash).to.be.equal(hash)
-        let server = testCase.server
-        let address = testCase.txParams[0].from
-        let symbol = testCase.txParams[0].symbol
-        let expectedBalance =  Number(testCase.oldBalance) +  Number(testCase.txParams[0].total_supply)
-        await checkBalanceChange(server, address, symbol,expectedBalance)
-        // await compareActualTxWithTxParams(params, responseOfGetTx.result)
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    }
-    else{
-      let expecteResult = testCase.expecteResult
-      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
-    }
-  }
   //endregion
 
   //region check sign and send raw tx result
@@ -1828,6 +2123,7 @@ describe('Jingtum测试', function () {
     let name = testCases[0].txParams[0].name
     let symbol = testCases[0].txParams[0].symbol
     let issuer = testCases[0].txParams[0].from
+    logger.debug("===create token: " + symbol)
 
     //token transfer
     let transferTxParams = createTxParamsForTokenTransfer(server, symbol, issuer)
@@ -1861,7 +2157,8 @@ describe('Jingtum测试', function () {
     let expecteResult = createExpecteResult(true)
 
     for(let i = 0; i <= testCount; i++){
-      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server, txFunctionName, txParams,
+      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server,
+          txFunctionName, txParams, null,
           executeFunction, checkFunction, expecteResult)
       testCases.push(testCase)
     }
@@ -1894,44 +2191,19 @@ describe('Jingtum测试', function () {
     return params
   }
 
-  function createIssueTokenParams(testType, account, config){
-    let token = getDynamicName()
+  function cloneTokenParams(bigParams){
     let params = {}
-    params.testType = testType
-    params.from = account.address
-    params.secret = account.secret
-    params.name = token.name
-    params.symbol = token.symbol
-    params.decimals = config.decimals
-    params.total_supply = config.total_supply
-    params.local = config.local
-    params.flags = config.flags
-    params.fee = config.fee
+    params.type = bigParams.config.type
+    params.from = bigParams.from.address
+    params.secret = bigParams.from.secret
+    params.name = bigParams.tokenName.name
+    params.symbol = bigParams.tokenName.symbol
+    params.decimals = bigParams.config.decimals
+    params.total_supply = bigParams.config.total_supply
+    params.local = bigParams.config.local
+    params.flags = bigParams.config.flags
+    params.fee = bigParams.config.fee
     return params
-  }
-
-  async function testSendTxCases(cases){
-    for(let i = 0; i < cases.length; i++){
-      await testSingleSendTxCase(cases[i], i)
-    }
-  }
-
-  function testSingleSendTxCase(caseParams, index){
-    let title = caseParams.title
-    let server = caseParams.server
-    let commonParams = caseParams.commonParams
-    let retentiveParams = caseParams.retentiveParams
-    let isSuccess = caseParams.isSuccess
-    let expectedError = caseParams.expectedError
-    it("Case " + index + " [ " + title + " ]", function () {
-      return isSuccess ? checkSendTxSuccess(server, commonParams, retentiveParams)
-          : checkSendTxFailure(server, commonParams, retentiveParams, expectedError.isInResult, expectedError.content)
-    })
-
-    it('0010\t发起' + params.testType + '有效交易_01', function () {
-      let commonParams = cloneParams(params)
-      return checkSendTxSuccess(server, commonParams, retentiveParams)
-    })
   }
 
   function testBasicTransaction(server, params, func) {
@@ -2182,248 +2454,219 @@ describe('Jingtum测试', function () {
 
     describe('测试' + type + '发行', function () {
 
-      // it('0010\t发起' + params.testType + '有效交易_01', function () {
-      //   let commonParams = cloneParams(params)
-      //   return checkSendTxSuccess(server, commonParams, retentiveParams)
-      // })
-
       it('0270\t发行' + type + '', function () {
-        let commonParams = cloneParams(params)
+        let commonParams = cloneTokenParams(params)
         return checkSendTxSuccess(server, commonParams, retentiveParams)
-
-        // return Promise.resolve(server.responseIssueToken(
-        //     config.type,
-        //     from.address,
-        //     from.secret,
-        //     tokenName.name,
-        //     tokenName.symbol,
-        //     config.decimals,
-        //     config.total_supply,
-        //     config.local,
-        //     config.flags,
-        //     config.fee,
-        // )).then(async function (value) {
-        //   await checkSendTxSuccess(server, value)
-        //   return await checkBalanceChange(server, from.address, tokenName.symbol, Number(config.total_supply))
-        // })
-
       })
 
       it('0290\t发行' + type + '_无效的type参数', function () {
-        return Promise.resolve(server.responseIssueToken(
-            "issuecoin",
-            from.address,
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
+        let commonParams = cloneTokenParams(params)
+        commonParams.type = 'issuetoken'
+        let data = []
+        data.push(commonParams)
+        return Promise.resolve(server.responseSendTx(data)).then(async function (value) {
           checkResponse(false, value)
           expect(value.result).to.contains('Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
         })
       })
 
-      it('0300\t发行' + type + '_无效的from参数', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            "from.address",
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('Bad account address: from.address: Bad Base58 string: from.address')
-        })
-      })
-
-      it('0310\t发行' + type + '_无效的name参数:很长的字符串', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            "tokenName.name12345678901234567890",
-            tokenName.symbol,
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.message).to.contains('failed to submit transaction')
-        })
-      })
-
-      it('0310\t发行' + type + '_无效的name参数:被已有代币使用过的name', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            existToken.name,
-            tokenName.symbol,
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.message).to.contains('failed to submit transaction')
-        })
-      })
-
-      it('0320\t发行' + type + '_无效的symbol参数:很长的字符串', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            "tokenName.symbol",
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('runtime error: invalid memory address or nil pointer dereference')
-        })
-      })
-
-      it('0320\t发行' + type + '_无效的symbol参数:被已有代币使用过的name', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            token.name,
-            existToken.symbol,
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('no name')
-        })
-      })
-
-      it('0330\t发行' + type + '_无效的decimals参数:字符串', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            "config.decimals",
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('nterface conversion: interface {} is string, not float64')
-        })
-      })
-
-      it('0330\t发行' + type + '_无效的decimals参数:负数', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            -8,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.message).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
-        })
-      })
-
-      it('0330\t发行' + type + '_无效的decimals参数:小数', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            11.64,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.message).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
-        })
-      })
-
-      it('0340\t发行' + type + '_无效的total_supply参数:字符串', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            config.decimals,
-            "config.total_supply",
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('strconv.ParseInt: parsing')
-        })
-      })
-
-      it('0340\t发行' + type + '_无效的total_supply参数:负数', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            config.decimals,
-            -10000000,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('interface conversion: interface {} is float64, not string')
-        })
-      })
-
-      it('0340\t发行' + type + '_无效的total_supply参数:小数', function () {
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            config.decimals,
-            10000.12345678,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('interface conversion: interface {} is float64, not string')
-        })
-      })
+      // it('0300\t发行' + type + '_无效的from参数', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       "from.address",
+      //       from.secret,
+      //       tokenName.name,
+      //       tokenName.symbol,
+      //       config.decimals,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('Bad account address: from.address: Bad Base58 string: from.address')
+      //   })
+      // })
+      //
+      // it('0310\t发行' + type + '_无效的name参数:很长的字符串', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       "tokenName.name12345678901234567890",
+      //       tokenName.symbol,
+      //       config.decimals,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.message).to.contains('failed to submit transaction')
+      //   })
+      // })
+      //
+      // it('0310\t发行' + type + '_无效的name参数:被已有代币使用过的name', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       existToken.name,
+      //       tokenName.symbol,
+      //       config.decimals,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.message).to.contains('failed to submit transaction')
+      //   })
+      // })
+      //
+      // it('0320\t发行' + type + '_无效的symbol参数:很长的字符串', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       "tokenName.symbol",
+      //       config.decimals,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('runtime error: invalid memory address or nil pointer dereference')
+      //   })
+      // })
+      //
+      // it('0320\t发行' + type + '_无效的symbol参数:被已有代币使用过的name', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       token.name,
+      //       existToken.symbol,
+      //       config.decimals,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('no name')
+      //   })
+      // })
+      //
+      // it('0330\t发行' + type + '_无效的decimals参数:字符串', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       tokenName.symbol,
+      //       "config.decimals",
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('nterface conversion: interface {} is string, not float64')
+      //   })
+      // })
+      //
+      // it('0330\t发行' + type + '_无效的decimals参数:负数', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       tokenName.symbol,
+      //       -8,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.message).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
+      //   })
+      // })
+      //
+      // it('0330\t发行' + type + '_无效的decimals参数:小数', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       tokenName.symbol,
+      //       11.64,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.message).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
+      //   })
+      // })
+      //
+      // it('0340\t发行' + type + '_无效的total_supply参数:字符串', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       tokenName.symbol,
+      //       config.decimals,
+      //       "config.total_supply",
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('strconv.ParseInt: parsing')
+      //   })
+      // })
+      //
+      // it('0340\t发行' + type + '_无效的total_supply参数:负数', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       config.decimals,
+      //       -10000000,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('interface conversion: interface {} is float64, not string')
+      //   })
+      // })
+      //
+      // it('0340\t发行' + type + '_无效的total_supply参数:小数', function () {
+      //   return Promise.resolve(server.responseIssueToken(
+      //       config.type,
+      //       from.address,
+      //       from.secret,
+      //       tokenName.name,
+      //       config.decimals,
+      //       10000.12345678,
+      //       config.total_supply,
+      //       config.local,
+      //       config.flags,
+      //       config.fee,
+      //   )).then(async function (value) {
+      //     checkResponse(false, value)
+      //     expect(value.result).to.contains('interface conversion: interface {} is float64, not string')
+      //   })
+      // })
 
     })
 
@@ -2440,18 +2683,34 @@ describe('Jingtum测试', function () {
 
       it('0370\t增发可增发的代币', async function () {
         let oldBalance = await server.getBalance(from.address, tokenName.symbol)
-        return Promise.resolve(server.responseIssueToken(
-            config.type,
-            from.address,
-            from.secret,
-            tokenName.name,
-            tokenName.symbol,
-            config.decimals,
-            config.total_supply,
-            config.local,
-            config.flags,
-            config.fee,
-        )).then(async function (value) {
+        // return Promise.resolve(server.responseIssueToken(
+        //     config.type,
+        //     from.address,
+        //     from.secret,
+        //     tokenName.name,
+        //     tokenName.symbol,
+        //     config.decimals,
+        //     config.total_supply,
+        //     config.local,
+        //     config.flags,
+        //     config.fee,
+        // )).then(async function (value) {
+        //   if(mintResult){
+        //     await checkSendTxSuccess(server, value)
+        //     return await checkBalanceChange(server, from.address, tokenName.symbol,
+        //         Number(oldBalance.value) + Number(config.total_supply))
+        //   }
+        //   else{
+        //     checkResponse(false, value)
+        //     expect(value.result).to.contains('tefNO_PERMISSION_ISSUE No permission issue')
+        //     return value
+        //   }
+        // })
+
+        let commonParams = cloneTokenParams(params)
+        let data = []
+        data.push(commonParams)
+        return Promise.resolve(server.responseSendTx(data)).then(async function (value) {
           if(mintResult){
             await checkSendTxSuccess(server, value)
             return await checkBalanceChange(server, from.address, tokenName.symbol,
@@ -2846,6 +3105,7 @@ describe('Jingtum测试', function () {
 
   function sendTxWithSequence(server, commonParams, retentiveParams){
     let params = {}
+    params.type = commonParams.type
     params.from = commonParams.from
     params.secret = commonParams.secret
     params.sequence = retentiveParams.sequence
@@ -2853,6 +3113,13 @@ describe('Jingtum测试', function () {
     params.value = commonParams.value
     params.fee = commonParams.fee
     params.memos = commonParams.memos
+    params.name = commonParams.name
+    params.symbol = commonParams.symbol
+    params.decimals = commonParams.decimals
+    params.total_supply = commonParams.total_supply
+    params.local = commonParams.local
+    params.flags = commonParams.flags
+    params.fee = commonParams.fee
     let data = []
     data.push(params)
     return Promise.resolve(server.responseSendTx(data)).then(async function (value) {
@@ -2983,19 +3250,19 @@ describe('Jingtum测试', function () {
   //region clone params
   function cloneParams(originalParams){
     let params = {}
-    if(originalParams.from) params.from = originalParams.from
-    if(originalParams.secret) params.secret = originalParams.secret
-    if(originalParams.to) params.to = originalParams.to
-    if(originalParams.value) params.value = originalParams.value
-    if(originalParams.fee) params.fee = originalParams.fee
-    if(originalParams.memos) params.memos = originalParams.memos  //todo memos is an array, may need clone, not assign
-    if(originalParams.type) params.type = originalParams.type
-    if(originalParams.name) params.name = originalParams.name
-    if(originalParams.symbol) params.symbol = originalParams.symbol
-    if(originalParams.decimals) params.decimals = originalParams.decimals
-    if(originalParams.total_supply) params.total_supply = originalParams.total_supply
-    if(originalParams.local) params.local = originalParams.local
-    if(originalParams.flags) params.flags = originalParams.flags
+    if(originalParams.from != null) params.from = originalParams.from
+    if(originalParams.secret != null) params.secret = originalParams.secret
+    if(originalParams.to != null) params.to = originalParams.to
+    if(originalParams.value != null) params.value = originalParams.value
+    if(originalParams.fee != null) params.fee = originalParams.fee
+    if(originalParams.memos != null) params.memos = originalParams.memos  //todo memos is an array, may need clone, not assign
+    if(originalParams.type != null) params.type = originalParams.type
+    if(originalParams.name != null) params.name = originalParams.name
+    if(originalParams.symbol != null) params.symbol = originalParams.symbol
+    if(originalParams.decimals != null) params.decimals = originalParams.decimals
+    if(originalParams.total_supply != null) params.total_supply = originalParams.total_supply
+    if(originalParams.local != null) params.local = originalParams.local
+    if(originalParams.flags != null) params.flags = originalParams.flags
     return params
   }
 
