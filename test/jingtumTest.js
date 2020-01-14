@@ -14,6 +14,10 @@ let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
 
 describe('Jingtum测试', function () {
+
+  logger.debug("======Start testing!======")
+  let start = new Date();
+
   this.timeout(20000)
 
   for(let mode of modes){
@@ -81,7 +85,7 @@ describe('Jingtum测试', function () {
 
       })
 
-      describe.skip('用例测试', function () {
+      describe('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -465,38 +469,35 @@ describe('Jingtum测试', function () {
 
           //region basic test
 
-          categoryName = '原生币swt'
-          txFunctionName = consts.rpcFunctions.sendTx
-          txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams)
-          })
-
-          txFunctionName = consts.rpcFunctions.signTx
-          txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams)
-          })
-
-          categoryName = '原生币swt压力测试'
-          testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          testTestCases(server, categoryName, testCases)
+          // categoryName = '原生币swt'
+          // txFunctionName = consts.rpcFunctions.sendTx
+          // txParams = createTxParamsForTransfer(server)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams)
+          // })
+          //
+          // txFunctionName = consts.rpcFunctions.signTx
+          // txParams = createTxParamsForTransfer(server)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams)
+          // })
+          //
+          // categoryName = '原生币swt压力测试'
+          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          // testTestCases(server, categoryName, testCases)
 
           //endregion
 
           //region token test
 
-          categoryName = '一次性代币'
           txFunctionName = consts.rpcFunctions.sendTx
-          txParams = createTxParamsForIssueToken(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, categoryName, txFunctionName, txParams)
+          describe('代币测试：' + txFunctionName, async function () {
+            testForIssueTokenInComplexMode(server, txFunctionName)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
-          txParams = createTxParamsForIssueToken(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, categoryName, txFunctionName, txParams)
+          describe('代币测试：' + txFunctionName, async function () {
+            testForIssueTokenInComplexMode(server, txFunctionName)
           })
 
           //endregion
@@ -506,49 +507,6 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
-          let categoryName = ''
-          let txFunctionName = ''
-          let txParams = {}
-
-          //region basic test
-
-          categoryName = '原生币swt'
-          txFunctionName = consts.rpcFunctions.sendTx
-          txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams)
-          })
-
-          txFunctionName = consts.rpcFunctions.signTx
-          txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams)
-          })
-
-          categoryName = '原生币swt压力测试'
-          testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          testTestCases(server, categoryName, testCases)
-
-          //endregion
-
-          //region token test
-
-          categoryName = '一次性代币'
-          txFunctionName = consts.rpcFunctions.sendTx
-          txParams = createTxParamsForIssueToken(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, categoryName, txFunctionName, txParams)
-          })
-
-          txFunctionName = consts.rpcFunctions.signTx
-          txParams = createTxParamsForIssueToken(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, categoryName, txFunctionName, txParams)
-          })
-
-          //endregion
-        })
 
       })
 
@@ -557,25 +515,29 @@ describe('Jingtum测试', function () {
 
   }
 
+  logger.debug("======End testing!======")
+  let end = new Date();
+  logger.debug("Consume time: " + (end - start))
+
   //region fast sendTx case
 
   //region 1. create test cases
 
-  let testCase = {
-    type:"it",
-    title:"",
-    txParams:{},
-    txFunction: {},
-    sequence: 1,
-    needPass: true,
-    expecteResult: {
-      needPass: true,
-      errorLocation: "message", //or "result"
-      errorContent: "",
-    },
-    hasExecuted: false,
-    response: {},
-  }
+  // let testCase = {
+  //   type:"it",
+  //   title:"",
+  //   txParams:{},
+  //   txFunction: {},
+  //   sequence: 1,
+  //   needPass: true,
+  //   expecteResult: {
+  //     needPass: true,
+  //     errorLocation: "message", //or "result"
+  //     errorContent: "",
+  //   },
+  //   hasExecuted: false,
+  //   response: {},
+  // }
 
   //region create txParams
 
@@ -609,9 +571,6 @@ describe('Jingtum测试', function () {
     return testCaseParams
   }
 
-  //endregion
-
-  //region assistant create methods
   function createTestCase(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expecteResult){
     let testCase = {}
     testCase.type = "it"
@@ -639,7 +598,7 @@ describe('Jingtum测试', function () {
         addresses.receiver1.address, "1", "10", ['autotest'])
   }
 
-  function createTxParamsForIssueToken(server){
+  function createTxParamsForIssueToken(server, account, token){
     // 参考”发起底层币无效交易“的测试用例
     // "flags":        float64(data.TxCoinMintable | data.TxCoinBurnable)
     // TxCoinMintable  TransactionFlag = 0x00010000 (65536)
@@ -649,8 +608,8 @@ describe('Jingtum测试', function () {
     // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
 
     let tokenName = getDynamicName()
-    return server.createIssueTokenParams(addresses.sender2.address, addresses.sender2.secret, null,
-        tokenName.name, tokenName.symbol, 8, '9876543210', false, 65536)
+    return server.createIssueTokenParams(account.address, account.secret, null,
+        tokenName.name, tokenName.symbol, token.decimals, token.total_supply, token.local, token.flags)
   }
 
   function createTxParamsForTokenTransfer(server, symbol, issuer){
@@ -667,9 +626,9 @@ describe('Jingtum测试', function () {
   // example
   // {"jsonrpc":"2.0","id":7,"method":"jt_sendTransaction","params":[{"type":"IssueCoin","from":"jPdevNK8NeYSkg3TrWZa8eT6BrSp2oteUh","secret":"ssSLJReyitmAELQ3E3zYpZti1YuRe","name":"TestCoin1578886708","symbol":"5e1be634","decimals":8,"total_supply":"9876543210","local":false,"flags":65536,"fee":"10",
   //   "sequence":5620	}]}
-  function createTxParamsForMintToken(server, name, symbol){
-    return server.createIssueTokenParams(addresses.sender2.address, addresses.sender2.secret, null,
-        name, symbol, 8, '9', false, 65536)
+  function createTxParamsForMintToken(server, account, token, tokenName, tokenSymbol){
+    return server.createIssueTokenParams(account.address, account.secret, null,
+        tokenName, tokenSymbol, token.decimals, token.total_supply, token.local, token.flags)
   }
 
   function createExpecteResult(needPass, isErrorInResult, expectedError){
@@ -743,7 +702,7 @@ describe('Jingtum测试', function () {
     if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
       let expecteResultOfSignTx = createExpecteResult(true)
       testCase = createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
-          testCaseParams.txParams, testCaseParams.executeFunction, testCaseParams.checkFunction, expecteResultOfSignTx)
+          testCaseParams.txParams, {}, testCaseParams.executeFunction, testCaseParams.checkFunction, expecteResultOfSignTx)
       addTestCaseForSendRawTx(testCase, testCaseParams.expecteResult)
     }
     return testCase
@@ -1220,94 +1179,84 @@ describe('Jingtum测试', function () {
   function createTestCasesForMintToken(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
-    testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
+    // testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
+
+    // await utility.timeout(1)  //make sure create token done first!
 
     //region test cases
-    let testAll = false
-    if(testAll){
-
+    testCaseParams.title = '0370\t增发可增发的代币' + testCaseParams.categoryName
+    {
+      let testCase = (testCaseParams.txParams[0].flags == consts.flags.mintable ||testCaseParams.txParams[0].flags == consts.flags.both) ?
+          createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            testCaseParams.txParams[0].total_supply = '9'
+          })
+          :
+          createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+            testCaseParams.txParams[0].total_supply = '9'
+            testCaseParams.expecteResult = createExpecteResult(false, true,
+                'tefNO_PERMISSION_ISSUE No permission issue')
+          })
+      testCases.push(testCase)
     }
     //endregion
 
-    if(!testAll){
-      testCaseParams.title = '0370\t增发可增发的代币' + testCaseParams.categoryName
-      {
-        testCaseParams.otherParams.oldBalance = '49382716050'
-        let testCase = (testCaseParams.txParams[0].flags == 65536 ||testCaseParams.txParams[0].flags == 196608 ) ?
-            createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-              testCaseParams.txParams[0].total_supply = '9'
-            })
-            :
-            createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-              testCaseParams.txParams[0].total_supply = '9'
-              testCaseParams.expecteResult = createExpecteResult(false, true,
-                  'tefNO_PERMISSION_ISSUE No permission issue')
-            })
-        testCases.push(testCase)
-      }
-    }
     return testCases
   }
 
   function createTestCasesForBurnToken(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
-    testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
+    // testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
 
     //region test cases
-    let testAll = false
-    if(testAll){
+    testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
+    {
+      let testCase = (testCaseParams.txParams[0].flags == consts.flags.burnable ||testCaseParams.txParams[0].flags == consts.flags.both) ?
+          createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            testCaseParams.txParams[0].total_supply = '-9'
+          })
+          :
+          createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+            testCaseParams.txParams[0].total_supply = '-9'
+            testCaseParams.expecteResult = createExpecteResult(false, true,
+                'tefNO_PERMISSION_ISSUE No permission issue')
+          })
+      testCases.push(testCase)
+    }
 
+    testCaseParams.title = '0420\t无效地销毁' + testCaseParams.categoryName
+    {
+      testCaseParams.otherParams.oldBalance = '49382716041'
+      let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+        testCaseParams.txParams[0].total_supply = '-9876543210000'
+        testCaseParams.expecteResult = createExpecteResult(false, true,
+            'tefNO_PERMISSION_ISSUE No permission issue')
+      })
+      testCases.push(testCase)
+    }
+
+    testCaseParams.title = '0380\t销毁所有' + testCaseParams.categoryName
+    {
+      let testCase = (testCaseParams.txParams[0].flags == consts.flags.burnable || testCaseParams.txParams[0].flags == consts.flags.both) ?
+          createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            // if(testCaseParams.txParams[0].flags == consts.flags.burnable){
+            //   testCaseParams.txParams[0].total_supply = '-49382716041'
+            // }
+            // else if(testCaseParams.txParams[0].flags == consts.flags.both){  //it minted 9 more in above test case, so need add it.
+            //   testCaseParams.txParams[0].total_supply =  '-49382716050'
+            // }
+            testCaseParams.txParams[0].total_supply =  '-49382716041'
+          })
+          :
+          createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+            testCaseParams.txParams[0].total_supply =  '-49382716041'
+            testCaseParams.expecteResult = createExpecteResult(false, true,
+                'tefNO_PERMISSION_ISSUE No permission issue')
+          })
+      testCases.push(testCase)
     }
     //endregion
 
-    if(!testAll){
-
-      testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
-      {
-        testCaseParams.otherParams.oldBalance = '49382716059'
-        let testCase = (testCaseParams.txParams[0].flags == 131072 ||testCaseParams.txParams[0].flags == 196608 ) ?
-            createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-              testCaseParams.txParams[0].total_supply = '-18'
-            })
-            :
-            createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-              testCaseParams.txParams[0].total_supply = '-18'
-              testCaseParams.expecteResult = createExpecteResult(false, true,
-                  'tefNO_PERMISSION_ISSUE No permission issue')
-            })
-        testCases.push(testCase)
-      }
-
-
-      testCaseParams.title = '0420\t无效地销毁' + testCaseParams.categoryName
-      {
-        testCaseParams.otherParams.oldBalance = '49382716041'
-        let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-          testCaseParams.txParams[0].total_supply = '-9876543210000'
-          testCaseParams.expecteResult = createExpecteResult(false, true,
-              'tefNO_PERMISSION_ISSUE No permission issue')
-        })
-        testCases.push(testCase)
-      }
-
-      testCaseParams.title = '0380\t销毁所有' + testCaseParams.categoryName
-      {
-        testCaseParams.otherParams.oldBalance = '49382716041'
-        let testCase = (testCaseParams.txParams[0].flags == 131072 ||testCaseParams.txParams[0].flags == 196608 ) ?
-            createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-              testCaseParams.txParams[0].total_supply = '-49382716041'
-            })
-            :
-            createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-              testCaseParams.txParams[0].total_supply = '-49382716041'
-              testCaseParams.expecteResult = createExpecteResult(false, true,
-                  'tefNO_PERMISSION_ISSUE No permission issue')
-            })
-        testCases.push(testCase)
-      }
-
-    }
     return testCases
   }
 
@@ -1321,82 +1270,77 @@ describe('Jingtum测试', function () {
 
   //region 2. execute test cases
 
-  //region execute the function of jt_sendTransaction
-
-  function executeTestCaseOfSendTx(testCase){
+  function executeTestCaseOfCommon(testCase, specialExecuteFunction){
     return new Promise(function(resolve){
       let server = testCase.server
       let data = testCase.txParams[0]
       let from = data.from
       getSequence(server, from).then(function(sequence){
         data.sequence = sequence
-        executeTxByTestCase(testCase).then(function(response){
-          if(response.status === status.success){
-            setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
-          }
-          testCase.hasExecuted = true
-          testCase.actualResult.push(response)
-          resolve(testCase)
+        server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
+          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution: 0
+          logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
+          executeTxByTestCase(testCase).then(function(response){
+            if(response.status === status.success){
+              setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
+            }
+            specialExecuteFunction(testCase, response, resolve)
+          })
         })
+
       })
     })
   }
 
-  //endregion
-
-  //region execute the function of jt_signTransaction
+  function executeTestCaseOfSendTx(testCase){
+    return executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
+      testCase.hasExecuted = true
+      testCase.actualResult.push(response)
+      resolve(testCase)
+    })
+  }
 
   function executeTestCaseOfSignTxAndSendRawTx(testCase){
-    return new Promise(function(resolve){
-      let server = testCase.server
-      let data = testCase.txParams[0]
-      let from = data.from
-      getSequence(server, from).then(function(sequence){
-        data.sequence = sequence
-        executeTxByTestCase(testCase).then(function(responseOfSign){
-          testCase.hasExecuted = true
-          testCase.actualResult.push(responseOfSign)
-          if(responseOfSign.status === status.success){
-            if(testCase.expecteResult.needPass){
-              if(!testCase.subTestCases || testCase.subTestCases.length == 0){
-                testCase.executionResult = false
-                resolve(responseOfSign)
-              }
-              else{
-                let rawTx = testCase.actualResult[0].result[0]
-                if(rawTx && rawTx.length > 0){
-                  let data = []
-                  data.push(rawTx)
-                  let testCaseOfSendRawTx = testCase.subTestCases[0]
-                  testCaseOfSendRawTx.txParams = data
-                  executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
-                    testCaseOfSendRawTx.hasExecuted = true
-                    testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
-                    if(responseOfSendRawTx.status === status.success){
-                      setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
-                    }
-                    resolve(responseOfSendRawTx)
-                  })
+    return executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
+      testCase.hasExecuted = true
+      testCase.actualResult.push(responseOfSign)
+      if(responseOfSign.status === status.success){
+        if(testCase.expecteResult.needPass){
+          if(!testCase.subTestCases || testCase.subTestCases.length == 0){
+            testCase.executionResult = false
+            resolve(responseOfSign)
+          }
+          else{
+            let rawTx = testCase.actualResult[0].result[0]
+            if(rawTx && rawTx.length > 0){
+              let data = []
+              data.push(rawTx)
+              let testCaseOfSendRawTx = testCase.subTestCases[0]
+              testCaseOfSendRawTx.txParams = data
+              executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
+                testCaseOfSendRawTx.hasExecuted = true
+                testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
+                if(responseOfSendRawTx.status === status.success){
+                  setSequence(testCase.txParams[0].from, testCase.txParams[0].sequence + 1)  //if send tx successfully, then sequence need plus 1
                 }
-                else{
-                  testCase.executionResult = false
-                  resolve(responseOfSign)
-                }
-              }
+                resolve(responseOfSendRawTx)
+              })
             }
             else{
+              testCase.executionResult = false
               resolve(responseOfSign)
             }
           }
-          else{
-            resolve(responseOfSign)
-          }
-        })
-      })
+        }
+        else{
+          resolve(responseOfSign)
+        }
+      }
+      else{
+        resolve(responseOfSign)
+      }
     })
   }
-
-  //endregion
 
   //region common execute
 
@@ -1448,7 +1392,6 @@ describe('Jingtum测试', function () {
     if(testCase.expecteResult.needPass){
       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
       let hash = responseOfSendTx.result[0]
-      let params = txParams[0]
       await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
         checkResponse(true, responseOfGetTx)
         // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
@@ -1466,15 +1409,45 @@ describe('Jingtum测试', function () {
 
   async function checkResponseOfTransfer(testCase, txParams){
     await checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
-      await compareActualTxWithTxParams(txParams[0], tx)
+      let params = txParams[0]
+      await compareActualTxWithTxParams(params, tx)
     })
   }
 
+  function getBalanceValue(balanceObject){
+    if(balanceObject){
+      if(balanceObject.value){
+        return Number(balanceObject.value.toString())
+      }
+      else{
+        return Number(balanceObject.toString())
+      }
+    }
+    else{
+      return 0
+    }
+  }
+
   async function checkTestCaseOfMintOrBurn(testCase){
-    await checkResponseOfCommon(testCase, testCase.txParams, function(testCase, txParams, tx){
-      let expectedBalance = Number(testCase.otherParams.oldBalance) + Number(txParams[0].total_supply)
-      let newBalance = Number(testCase.otherParams.newBalance)
-      expect(newBalance).to.be.equal(expectedBalance)
+    await checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
+      let params = txParams[0]
+      await testCase.server.getBalance(params.from, params.symbol).then(function(balanceAfterExecution){
+        testCase.balanceAfterExecution = balanceAfterExecution
+        oldBalance = getBalanceValue(testCase.balanceBeforeExecution)
+        newBalance = getBalanceValue(testCase.balanceAfterExecution)
+        if(params.type === consts.rpcParamConsts.issueCoin){
+          expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
+        }
+        else{
+          expect(newBalance).to.be.equals(newBalance + Number(params.value))
+        }
+
+        logger.debug("balanceAfterExecution:" + JSON.stringify(testCase))
+        logger.debug("balanceAfterExecution, symbol:" + params.symbol)
+        logger.debug("balanceAfterExecution:" + JSON.stringify(balanceAfterExecution))
+
+        expect(false).to.be.ok
+      })
       // expect(true).to.be.ok
     })
   }
@@ -1625,31 +1598,32 @@ describe('Jingtum测试', function () {
     testTestCases(server, describeTitle, testCases)
   }
 
-  function testForIssueToken(server, categoryName, txFunctionName, txParams){
+  function testForIssueToken(server, categoryName, txFunctionName, account, configToken){
     let testName = ''
     let describeTitle = ''
     let testCases = []
+    let txParams = {}
 
     //create token
     testName = '测试创建token'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    txParams = createTxParamsForIssueToken(server, account, configToken)
     testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
     testTestCases(server, describeTitle, testCases)
 
     //set created token properties
-    let name = testCases[0].txParams[0].name
-    let symbol = testCases[0].txParams[0].symbol
-    let issuer = testCases[0].txParams[0].from
-    logger.debug("===create token: " + symbol)
+    let tokenName = testCases[0].txParams[0].name
+    let tokenSymbol = testCases[0].txParams[0].symbol
+    let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
+    logger.debug("===create token: " + tokenSymbol)
 
     //token transfer
-    let transferTxParams = createTxParamsForTokenTransfer(server, symbol, issuer)
+    let transferTxParams = createTxParamsForTokenTransfer(server, tokenSymbol, issuer)
     describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, transferTxParams)
-    testTestCases(server, describeTitle, testCases)
+    testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
     //mint token
-    let mintTxParams = createTxParamsForMintToken(server, name, symbol)
+    let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
     describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
     testTestCases(server, describeTitle, testCases)
@@ -1658,6 +1632,50 @@ describe('Jingtum测试', function () {
     describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
     testTestCases(server, describeTitle, testCases)
+  }
+
+  function testForIssueTokenInComplexMode(server, txFunctionName){
+    let account = addresses.sender2
+    let configToken = token.config_normal
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_mintable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_burnable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_mint_burn
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_issuer_normal
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_issuer_mintable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_issuer_burnable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
+    configToken = token.config_issuer_mint_burn
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+    })
+
   }
   //endregion
 
