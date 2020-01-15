@@ -29,6 +29,64 @@ describe('Jingtum测试', function () {
 
     describe('测试模式: ' + server.getName(), function () {
 
+      describe.skip('test demo', function () {
+
+        //region common test
+
+        // it('test create wallet', function () {
+        //   return Promise.resolve(server.responseCreateWallet()).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
+        //     expect(value.result.address).to.match(/^j/)
+        //     expect(value.result.secret).to.match(/^s/)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test get balance', function () {
+        //   return Promise.resolve(server.responseBalance(addresses.balanceAccount.address)).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
+        //     expect(Number(value.result.balance)).to.be.above(0)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test get block number', function () {
+        //   return Promise.resolve(server.responseBlockNumber()).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
+        //     expect(server.processBlockNumberResponse(value)).to.be.above(4000)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test 5s create a new block', function () {
+        //   return Promise.resolve(get2BlockNumber(server)).then(function (value) {
+        //     expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
+        //     expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test get transaction', function () {
+        //   return Promise.resolve(server.responseGetTxByHash(mode.tx1.hash)).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
+        //     expect(value.result.Account).to.be.equal(mode.tx1.Account)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+
+        //endregion
+
+      })
+
       describe('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
