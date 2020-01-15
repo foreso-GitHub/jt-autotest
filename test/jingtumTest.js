@@ -1,3 +1,4 @@
+//region require
 const chai = require("chai")
 chai.use(require("chai-json-schema"))
 const expect = chai.expect
@@ -9,6 +10,7 @@ var utility = require("./testUtility.js")
 const { servers, chains, addresses, status, data, token, txs, blocks, modes } = require("./config")
 const schema = require("./schema.js")
 const consts = require('../lib/rpc/consts')
+//endregion
 
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
@@ -26,64 +28,6 @@ describe('Jingtum测试', function () {
     server.setUrl(mode.url)
 
     describe('测试模式: ' + server.getName(), function () {
-
-      describe.skip('test demo', function () {
-
-        //region common test
-
-        // it('test create wallet', function () {
-        //   return Promise.resolve(server.responseCreateWallet()).then(function (value) {
-        //     checkResponse(true, value)
-        //     expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
-        //     expect(value.result.address).to.match(/^j/)
-        //     expect(value.result.secret).to.match(/^s/)
-        //   }, function (err) {
-        //     expect(err).to.be.ok
-        //   })
-        // })
-        //
-        // it('test get balance', function () {
-        //   return Promise.resolve(server.responseBalance(addresses.balanceAccount.address)).then(function (value) {
-        //     checkResponse(true, value)
-        //     expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
-        //     expect(Number(value.result.balance)).to.be.above(0)
-        //   }, function (err) {
-        //     expect(err).to.be.ok
-        //   })
-        // })
-        //
-        // it('test get block number', function () {
-        //   return Promise.resolve(server.responseBlockNumber()).then(function (value) {
-        //     checkResponse(true, value)
-        //     expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
-        //     expect(server.processBlockNumberResponse(value)).to.be.above(4000)
-        //   }, function (err) {
-        //     expect(err).to.be.ok
-        //   })
-        // })
-        //
-        // it('test 5s create a new block', function () {
-        //   return Promise.resolve(get2BlockNumber(server)).then(function (value) {
-        //     expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
-        //     expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
-        //   }, function (err) {
-        //     expect(err).to.be.ok
-        //   })
-        // })
-        //
-        // it('test get transaction', function () {
-        //   return Promise.resolve(server.responseGetTxByHash(mode.tx1.hash)).then(function (value) {
-        //     checkResponse(true, value)
-        //     expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
-        //     expect(value.result.Account).to.be.equal(mode.tx1.Account)
-        //   }, function (err) {
-        //     expect(err).to.be.ok
-        //   })
-        // })
-
-        //endregion
-
-      })
 
       describe('用例测试', function () {
 
@@ -465,6 +409,7 @@ describe('Jingtum测试', function () {
           let categoryName = ''
           let txFunctionName = ''
           let txParams = {}
+          let testCases = []
 
           //region basic test
 
@@ -476,7 +421,7 @@ describe('Jingtum测试', function () {
           })
 
           txFunctionName = consts.rpcFunctions.signTx
-          txParams = createTxParamsForTransfer(server)
+          // txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
             testForTransfer(server, categoryName, txFunctionName, txParams)
           })
@@ -500,11 +445,13 @@ describe('Jingtum测试', function () {
           })
 
           //endregion
+
         })
 
       })
 
       describe('is working', function () {
+
 
 
       })
@@ -522,22 +469,6 @@ describe('Jingtum测试', function () {
 
   //region 1. create test cases
 
-  // let testCase = {
-  //   type:"it",
-  //   title:"",
-  //   txParams:{},
-  //   txFunction: {},
-  //   sequence: 1,
-  //   needPass: true,
-  //   expecteResult: {
-  //     needPass: true,
-  //     errorLocation: "message", //or "result"
-  //     errorContent: "",
-  //   },
-  //   hasExecuted: false,
-  //   response: {},
-  // }
-
   //region create txParams
 
   function createTestCaseParams(server, categoryName, txFunctionName, txParams){
@@ -554,7 +485,7 @@ describe('Jingtum测试', function () {
     testCaseParams.expecteResult = createExpecteResult(true)
     testCaseParams.testCase = {}
     testCaseParams.symbol = testCaseParams.txParams[0].symbol
-    testCaseParams.showSymbol = testCaseParams.txParams[0].showSymbol
+    testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
     if(txFunctionName === consts.rpcFunctions.sendTx) {
       testCaseParams.executeFunction = executeTestCaseOfSendTx
       testCaseParams.checkFunction = checkTestCaseOfSendTx
@@ -611,14 +542,13 @@ describe('Jingtum测试', function () {
         tokenName.name, tokenName.symbol, token.decimals, token.total_supply, token.local, token.flags)
   }
 
-  function createTxParamsForTokenTransfer(server, symbol, issuer){
-    let tokenParams = server.createTransferParams(addresses.sender2.address, addresses.sender2.secret, null,
+  function createTxParamsForTokenTransfer(server, account, symbol, issuer){
+    let tokenParams = server.createTransferParams(account.address, account.secret, null,
         addresses.receiver1.address, '1', '10', ['autotest'])
     tokenParams[0].symbol = symbol
     tokenParams[0].issuer = issuer
-    let showSymbol = getShowSymbol(symbol, issuer)
-    tokenParams[0].showSymbol = showSymbol
-    tokenParams[0].value = '1' + showSymbol
+    tokenParams[0].showSymbol = getShowSymbol(symbol, issuer)
+    tokenParams[0].value = '1' + tokenParams[0].showSymbol
     return tokenParams
   }
 
@@ -1280,19 +1210,16 @@ describe('Jingtum测试', function () {
           testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution: 0
           logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
           executeTxByTestCase(testCase).then(function(response){
-            if(response.status === status.success){
-              setSequence(from, sequence + 1)  //if send tx successfully, then sequence need plus 1
-            }
             specialExecuteFunction(testCase, response, resolve)
           })
         })
-
       })
     })
   }
 
   function executeTestCaseOfSendTx(testCase){
     return executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
+      addSequenceAfterResponseSuccess(response, testCase.txParams[0])
       testCase.hasExecuted = true
       testCase.actualResult.push(response)
       resolve(testCase)
@@ -1319,9 +1246,7 @@ describe('Jingtum测试', function () {
               executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
                 testCaseOfSendRawTx.hasExecuted = true
                 testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
-                if(responseOfSendRawTx.status === status.success){
-                  setSequence(testCase.txParams[0].from, testCase.txParams[0].sequence + 1)  //if send tx successfully, then sequence need plus 1
-                }
+                addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase.txParams[0])
                 resolve(responseOfSendRawTx)
               })
             }
@@ -1339,6 +1264,13 @@ describe('Jingtum测试', function () {
         resolve(responseOfSign)
       }
     })
+  }
+
+  //if send tx successfully, then sequence need plus 1
+  function addSequenceAfterResponseSuccess(response, data){
+    if(response.status === status.success){
+      setSequence(data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+    }
   }
 
   //region common execute
@@ -1617,7 +1549,7 @@ describe('Jingtum测试', function () {
     logger.debug("===create token: " + tokenSymbol)
 
     //token transfer
-    let transferTxParams = createTxParamsForTokenTransfer(server, tokenSymbol, issuer)
+    let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
     describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
@@ -1634,7 +1566,7 @@ describe('Jingtum测试', function () {
   }
 
   function testForIssueTokenInComplexMode(server, txFunctionName){
-    let account = addresses.sender2
+    let account = addresses.sender3
     let configToken = token.config_normal
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
       testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
@@ -1899,6 +1831,7 @@ describe('Jingtum测试', function () {
 
   //region common functions
 
+  //region dynamic token name
   function getDynamicName(){
     let timeSeed = (_LastDynamicalTimeSeed) ? _LastDynamicalTimeSeed : Math.round(new Date().getTime()/1000)
     _LastDynamicalTimeSeed = ++timeSeed
@@ -1908,6 +1841,7 @@ describe('Jingtum测试', function () {
     logger.debug("getDynamicName: " + JSON.stringify(result))
     return result
   }
+  //endregion
 
   //region hex relative
 
@@ -1958,8 +1892,6 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
-  //endregion
-
   //region clone params
   function cloneParams(originalParams){
     let params = {}
@@ -1991,6 +1923,8 @@ describe('Jingtum测试', function () {
   function getShowSymbol(symbol, issuer){
     return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
   }
+  //endregion
+
   //endregion
 
   // endregion
