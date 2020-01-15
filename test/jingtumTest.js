@@ -31,55 +31,55 @@ describe('Jingtum测试', function () {
 
         //region common test
 
-        it('test create wallet', function () {
-          return Promise.resolve(server.responseCreateWallet()).then(function (value) {
-            checkResponse(true, value)
-            expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
-            expect(value.result.address).to.match(/^j/)
-            expect(value.result.secret).to.match(/^s/)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
-
-        it('test get balance', function () {
-          return Promise.resolve(server.responseBalance(addresses.balanceAccount.address)).then(function (value) {
-            checkResponse(true, value)
-            expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
-            expect(Number(value.result.balance)).to.be.above(0)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
-
-        it('test get block number', function () {
-          return Promise.resolve(server.responseBlockNumber()).then(function (value) {
-            checkResponse(true, value)
-            expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
-            expect(server.processBlockNumberResponse(value)).to.be.above(4000)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
-
-        it('test 5s create a new block', function () {
-          return Promise.resolve(get2BlockNumber(server)).then(function (value) {
-            expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
-            expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
-
-        it('test get transaction', function () {
-          return Promise.resolve(server.responseGetTxByHash(mode.tx1.hash)).then(function (value) {
-            checkResponse(true, value)
-            expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
-            expect(value.result.Account).to.be.equal(mode.tx1.Account)
-          }, function (err) {
-            expect(err).to.be.ok
-          })
-        })
+        // it('test create wallet', function () {
+        //   return Promise.resolve(server.responseCreateWallet()).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
+        //     expect(value.result.address).to.match(/^j/)
+        //     expect(value.result.secret).to.match(/^s/)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test get balance', function () {
+        //   return Promise.resolve(server.responseBalance(addresses.balanceAccount.address)).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
+        //     expect(Number(value.result.balance)).to.be.above(0)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test get block number', function () {
+        //   return Promise.resolve(server.responseBlockNumber()).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
+        //     expect(server.processBlockNumberResponse(value)).to.be.above(4000)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test 5s create a new block', function () {
+        //   return Promise.resolve(get2BlockNumber(server)).then(function (value) {
+        //     expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
+        //     expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
+        //
+        // it('test get transaction', function () {
+        //   return Promise.resolve(server.responseGetTxByHash(mode.tx1.hash)).then(function (value) {
+        //     checkResponse(true, value)
+        //     expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
+        //     expect(value.result.Account).to.be.equal(mode.tx1.Account)
+        //   }, function (err) {
+        //     expect(err).to.be.ok
+        //   })
+        // })
 
         //endregion
 
@@ -196,11 +196,10 @@ describe('Jingtum测试', function () {
           })
 
           it('0020\t创建无效的账户:超过长度的字符串数字', function () {
-            let nickName = getDynamicName().name
-                + getDynamicName().name
-                + getDynamicName().name
-                + getDynamicName().name
-                + getDynamicName().name
+            let nickName = getDynamicName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
 
             return Promise.resolve(server.responseCreateAccount(
                 nickName,
@@ -469,22 +468,22 @@ describe('Jingtum测试', function () {
 
           //region basic test
 
-          // categoryName = '原生币swt'
-          // txFunctionName = consts.rpcFunctions.sendTx
-          // txParams = createTxParamsForTransfer(server)
-          // describe(categoryName + '测试：' + txFunctionName, async function () {
-          //   testForTransfer(server, categoryName, txFunctionName, txParams)
-          // })
-          //
-          // txFunctionName = consts.rpcFunctions.signTx
-          // txParams = createTxParamsForTransfer(server)
-          // describe(categoryName + '测试：' + txFunctionName, async function () {
-          //   testForTransfer(server, categoryName, txFunctionName, txParams)
-          // })
-          //
-          // categoryName = '原生币swt压力测试'
-          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          // testTestCases(server, categoryName, testCases)
+          categoryName = '原生币swt'
+          txFunctionName = consts.rpcFunctions.sendTx
+          txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams)
+          })
+
+          txFunctionName = consts.rpcFunctions.signTx
+          txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams)
+          })
+
+          categoryName = '原生币swt压力测试'
+          testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          testTestCases(server, categoryName, testCases)
 
           //endregion
 
