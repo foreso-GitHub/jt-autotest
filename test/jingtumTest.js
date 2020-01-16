@@ -415,6 +415,14 @@ describe('Jingtum测试', function () {
           testGetBlockByHash(server)
         })
 
+        describe('测试jt_accounts', function () {
+          testGetAccounts(server)
+        })
+
+        describe('测试jt_getTransactionReceipt', function () {
+          testGetTransactionReceipt(server)
+        })
+
         describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
           let categoryName = ''
           let txFunctionName = ''
@@ -460,7 +468,7 @@ describe('Jingtum测试', function () {
 
       })
 
-      describe('is working', function () {
+      describe.skip('is working', function () {
 
 
       })
@@ -1753,6 +1761,70 @@ describe('Jingtum测试', function () {
         expect(value.result).to.contains('Bad account address:')
       }, function (err) {
         expect(err).to.be.ok
+      })
+    })
+  }
+  //endregion
+
+  //region accounts check
+  function testGetAccounts(server){
+    it('0010\tjt_accounts', function () {
+      return Promise.resolve(server.responseGetAccounts()).then(function (value) {
+        checkResponse(true, value)
+        // expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
+        let accounts = value.result
+        let rootAccount = 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh:root'
+        // logger.debug(JSON.stringify(accounts))
+        expect(accounts.length).to.be.above(0)
+        expect(accounts).to.be.contains(rootAccount)
+      }, function (err) {
+        expect(err).to.be.ok
+      })
+    })
+  }
+  //endregion
+
+  //region tx receipt check
+  function testGetTransactionReceipt(server){
+    let testNumber = '0010'
+    let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E7'
+    let needPass = true
+    let expectedError = ''
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+
+    testNumber = '0020'
+    needPass = false
+    hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
+    expectedError = 'can\'t find transaction'
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+
+    hash = '100093'
+    expectedError = 'NewHash256: Wrong length'
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+
+    hash = '1231dsfafwrwerwer'
+    expectedError = 'invalid byte'
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+  }
+
+  function checkGetReceipt(server, testNumber, blockNumberOrHash, needPass, expectedError){
+    it(testNumber + '\t'+ (needPass ? '有' : '无') + '效区块', function () {
+      return Promise.resolve(server.responseGetTransactionReceipt(blockNumberOrHash)).then(function (value) {
+        checkResponse(needPass, value)
+        if(needPass){
+          // expect(value.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
+          let affectedNodes = value.result.AffectedNodes
+          let from = affectedNodes[1].ModifiedNode.FinalFields.Account
+          let to = affectedNodes[2].ModifiedNode.FinalFields.Account
+          expect(from).to.be.equals(addresses.sender2.address)
+          expect(to).to.be.equals(addresses.receiver1.address)
+        }
+        else{
+          expect(value.result).to.contains(expectedError)
+        }
+      }, function (err) {
+        logger.debug(err)
+        expect(false).to.be.ok
       })
     })
   }
