@@ -17,8 +17,10 @@ let _LastDynamicalTimeSeed = 0
 
 describe('Jingtum测试', function () {
 
+  //region ===record start time===
   logger.debug("======Start testing!======")
   let start = new Date();
+  //endregion
 
   this.timeout(20000)
 
@@ -405,6 +407,14 @@ describe('Jingtum测试', function () {
 
         })
 
+        describe('测试jt_getBlockByNumber', function () {
+          testGetBlockByNumber(server)
+        })
+
+        describe('测试jt_getBlockByHash', function () {
+          testGetBlockByHash(server)
+        })
+
         describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
           let categoryName = ''
           let txFunctionName = ''
@@ -453,7 +463,6 @@ describe('Jingtum测试', function () {
       describe('is working', function () {
 
 
-
       })
 
     })
@@ -461,9 +470,11 @@ describe('Jingtum测试', function () {
 
   }
 
+  //region ===record start time===
   logger.debug("======End testing!======")
   let end = new Date();
   logger.debug("Consume time: " + (end - start))
+  //endregion
 
   //region fast sendTx case
 
@@ -1635,26 +1646,7 @@ describe('Jingtum测试', function () {
 
   //region common test case
 
-  //testcase
-
-  function testGetAccountByTag(server, tag){
-    describe('测试jt_getAccount, tag: ' + tag, function () {
-      let address = addresses.balanceAccount.address
-      let nickName = addresses.balanceAccount.nickName
-      let inactiveAddress = addresses.inactiveAccount1.address
-      let inactiveNickName = addresses.inactiveAccount1.nickName
-      let wrongFormatAddress = addresses.wrongFormatAccount1.address
-      let wrongFormatNickName = addresses.wrongFormatAccount1.nickName
-
-      checkAccountOnActiveAccount(server, address, tag)
-      checkAccountOnActiveAccount(server, nickName, tag)
-      checkAccountOnInactiveAccount(server, inactiveAddress, tag)
-      checkAccountOnInactiveAccount(server, inactiveNickName, tag)
-      checkAccountOnWrongFormatAccount(server, wrongFormatAddress, tag)
-      checkAccountOnWrongFormatAccount(server, wrongFormatNickName, tag)
-    })
-  }
-
+  //region balance check
   function testGetBalanceByTag(server, tag){
     describe('测试jt_getBalance, tag: ' + tag, function () {
       let address = addresses.balanceAccount.address
@@ -1673,6 +1665,100 @@ describe('Jingtum测试', function () {
     })
   }
 
+  function checkBalanceOnActiveAccount(server, addressOrName, tag){
+    it('0010\t查询有效的地址_01:地址内有底层币和代币', function () {
+      return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
+        checkResponse(true, value)
+        expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
+        expect(Number(value.result.balance)).to.be.above(0)
+      }, function (err) {
+        logger.debug(err)
+        expect(false).to.be.ok
+      })
+    })
+  }
+
+  function checkBalanceOnInactiveAccount(server, addressOrName, tag){
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
+      return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
+        checkResponse(false, value)
+        expect(value.message).to.contains('no such account')
+      }, function (err) {
+        logger.debug(err)
+        expect(false).to.be.ok
+      })
+    })
+  }
+
+  function checkBalanceOnWrongFormatAccount(server, addressOrName, tag){
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
+      return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
+        checkResponse(false, value)
+        expect(value.message).to.contains('no such account')
+      }, function (err) {
+        logger.debug(err)
+        expect(false).to.be.ok
+      })
+    })
+  }
+
+  //endregion
+
+  //region account check
+  function testGetAccountByTag(server, tag){
+    describe('测试jt_getAccount, tag: ' + tag, function () {
+      let address = addresses.balanceAccount.address
+      let nickName = addresses.balanceAccount.nickName
+      let inactiveAddress = addresses.inactiveAccount1.address
+      let inactiveNickName = addresses.inactiveAccount1.nickName
+      let wrongFormatAddress = addresses.wrongFormatAccount1.address
+      let wrongFormatNickName = addresses.wrongFormatAccount1.nickName
+
+      checkAccountOnActiveAccount(server, address, tag)
+      checkAccountOnActiveAccount(server, nickName, tag)
+      checkAccountOnInactiveAccount(server, inactiveAddress, tag)
+      checkAccountOnInactiveAccount(server, inactiveNickName, tag)
+      checkAccountOnWrongFormatAccount(server, wrongFormatAddress, tag)
+      checkAccountOnWrongFormatAccount(server, wrongFormatNickName, tag)
+    })
+  }
+
+  function checkAccountOnActiveAccount(server, addressOrName, tag){
+    it('0010\t查询有效的地址_01:地址内有底层币和代币', function () {
+      return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
+        checkResponse(true, value)
+        // expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
+        expect(Number(value.result.Balance)).to.be.above(0)
+      }, function (err) {
+        expect(err).to.be.ok
+      })
+    })
+  }
+
+  function checkAccountOnInactiveAccount(server, addressOrName, tag){
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
+      return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
+        checkResponse(false, value)
+        expect(value.result).to.contains('Bad account address:')
+      }, function (err) {
+        expect(err).to.be.ok
+      })
+    })
+  }
+
+  function checkAccountOnWrongFormatAccount(server, addressOrName, tag){
+    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
+      return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
+        checkResponse(false, value)
+        expect(value.result).to.contains('Bad account address:')
+      }, function (err) {
+        expect(err).to.be.ok
+      })
+    })
+  }
+  //endregion
+
+  //region tx count check
   async function goThroughTxsInBlockByBlockNumber(server, blockNumber){
     await server.responseGetTxCountByBlockNumber(blockNumber).then(async(countResponse)=>{
       checkResponse(true, countResponse)
@@ -1708,10 +1794,148 @@ describe('Jingtum测试', function () {
       }
     })
   }
+  //endregion
+
+  //region block check
+  function testGetBlockByNumber(server){
+    let testNumber = '0010'
+    let blockNumber = '107621'
+    let showFullTx = false
+    let needPass = true
+    let expectedError = ''
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0020'
+    blockNumber = '107621'
+    showFullTx = true
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0030'
+    blockNumber = 'earliest'
+    showFullTx = true
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0040'
+    blockNumber = 'earliest'
+    showFullTx = false
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0050'
+    blockNumber = 'latest'
+    showFullTx = true
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0060'
+    blockNumber = 'latest'
+    showFullTx = false
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0090'
+    blockNumber = 'pending'
+    showFullTx = true
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0100'
+    blockNumber = 'pending'
+    showFullTx = false
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0110'
+    blockNumber = '9990000000'
+    showFullTx = false
+    needPass = false
+    expectedError = 'value out of range'
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0110'
+    blockNumber = '99900000'
+    showFullTx = false
+    needPass = false
+    expectedError = 'can\'t find block'
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0120'
+    blockNumber = '-1000'
+    showFullTx = false
+    needPass = false
+    expectedError = 'invalid syntax'
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+
+    testNumber = '0120'
+    blockNumber = 'abcdefg'
+    showFullTx = false
+    needPass = false
+    expectedError = 'invalid syntax'
+    checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
+  }
+
+  function checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError){
+    checkGetBlock(server, testNumber, true, blockNumber, showFullTx, needPass, expectedError)
+  }
+
+  function testGetBlockByHash(server){
+    let testNumber = '0010'
+    let blockHash = '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF'
+    let showFullTx = false
+    let needPass = true
+    let expectedError = ''
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    showFullTx = true
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    testNumber = '0020'
+    blockHash = '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF'
+    showFullTx = false
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    showFullTx = true
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    needPass = false
+    blockHash = '1231'
+    showFullTx = false
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    showFullTx = true
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    blockHash = 'abcdefgeegsadfa'
+    showFullTx = false
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+
+    showFullTx = true
+    checkGetBlockByHash(server, testNumber, blockHash, showFullTx, needPass, expectedError)
+  }
+
+  function checkGetBlockByHash(server, testNumber, blockNumber, showFullTx, needPass, expectedError){
+    checkGetBlock(server, testNumber, false, blockNumber, showFullTx, needPass, expectedError)
+  }
+
+  function checkGetBlock(server, testNumber, isNumber, blockNumberOrHash, showFullTx, needPass, expectedError){
+    it(testNumber + '\t'+ (needPass ? '有' : '无') + '效区块编号，' + (showFullTx ? '' : '不') + '需要返回所有交易详情', function () {
+      return Promise.resolve(isNumber ? server.responseGetBlockByNumber(blockNumberOrHash, showFullTx)
+          : server.responseGetBlockByHash(blockNumberOrHash, showFullTx)).then(function (value) {
+        checkResponse(needPass, value)
+        if(needPass){
+          expect(value.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
+          expect(isNumber ? value.result.ledger_index : value.result.ledger_hash).to.be.equals(blockNumberOrHash)
+        }
+        else{
+          expect(value.result).to.contains(expectedError)
+        }
+      }, function (err) {
+        logger.debug(err)
+        expect(false).to.be.ok
+      })
+    })
+  }
+  //endregion
 
   //endregion
 
   // region utility methods
+
   async function get2BlockNumber (server) {
     return new Promise(async (resolve, reject) => {
       if(!server) reject("Server cannot be null!")
@@ -1721,6 +1945,12 @@ describe('Jingtum测试', function () {
       result.blockNumber2 = await server.getBlockNumber()
       resolve(result)
     })
+  }
+
+  async function checkBalanceChange(server, from, symbol, expectedBalance){
+    let balance = await server.getBalance(from, symbol)
+    expect(Number(balance.value)).to.be.equal(expectedBalance)
+    return balance
   }
 
   //region normal response check
@@ -1747,86 +1977,6 @@ describe('Jingtum测试', function () {
     expect(value.result.hash).to.be.equal(tx.hash)
   }
 
-  //endregion
-
-  //region balance check
-
-  async function checkBalanceChange(server, from, symbol, expectedBalance){
-    let balance = await server.getBalance(from, symbol)
-    expect(Number(balance.value)).to.be.equal(expectedBalance)
-    return balance
-  }
-
-  function checkBalanceOnActiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内有底层币和代币', function () {
-      return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
-        checkResponse(true, value)
-        expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
-        expect(Number(value.result.balance)).to.be.above(0)
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-  }
-
-  function checkBalanceOnInactiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
-      return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
-        checkResponse(false, value)
-        expect(value.message).to.contains('no such account')
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-  }
-
-  function checkBalanceOnWrongFormatAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
-      return Promise.resolve(server.responseBalance(addressOrName, null, tag)).then(function (value) {
-        checkResponse(false, value)
-        expect(value.message).to.contains('no such account')
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-  }
-
-  //endregion
-
-  //region account check
-  function checkAccountOnActiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内有底层币和代币', function () {
-      return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
-        checkResponse(true, value)
-        // expect(value.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
-        expect(Number(value.result.Balance)).to.be.above(0)
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-  }
-
-  function checkAccountOnInactiveAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
-      return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
-        checkResponse(false, value)
-        expect(value.result).to.contains('Bad account address:')
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-  }
-
-  function checkAccountOnWrongFormatAccount(server, addressOrName, tag){
-    it('0010\t查询有效的地址_01:地址内没有有底层币和代币', function () {
-      return Promise.resolve(server.responseGetAccount(addressOrName, null, tag)).then(function (value) {
-        checkResponse(false, value)
-        expect(value.result).to.contains('Bad account address:')
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-  }
   //endregion
 
   //region common functions
