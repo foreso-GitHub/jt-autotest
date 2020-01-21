@@ -7,15 +7,22 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 var utility = require("./testUtility.js")
-const { servers, chains, addresses, status, testConfig, data, token, txs, blocks, modes } = require("./config")
 const schema = require("./schema.js")
-const enums = require('./enums.js')
 const consts = require('../lib/rpc/consts')
+const { chains, addresses, data, token, txs, blocks } = require("./testData")
+const { servers, testConfig, modes } = require("./config")
+const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
+const status = responseStatus
+const testModeEnums = testMode
 //endregion
 
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
-let _testMode = testConfig.testMode
+
+//region config
+let _TestMode = testConfig.testMode
+let _RestrictedLevel = restrictedLevel.L2
+//endregion
 
 describe('Jingtum测试', function () {
 
@@ -27,9 +34,9 @@ describe('Jingtum测试', function () {
   this.timeout(20000)
 
   for(let mode of modes){
-
+    
     let server = mode.server
-    server.setUrl(mode.url)
+    server.setUrl(mode.url)    
 
     describe('测试模式: ' + server.getName(), function () {
 
@@ -437,18 +444,18 @@ describe('Jingtum测试', function () {
           txFunctionName = consts.rpcFunctions.sendTx
           txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams)
+            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
           // txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams)
+            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
           })
 
           categoryName = '原生币swt压力测试'
           testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          testTestCases(server, categoryName, testCases)
+          testTestCases(server, categoryName, testCases, _TestMode)
 
           //endregion
 
@@ -456,12 +463,12 @@ describe('Jingtum测试', function () {
 
           txFunctionName = consts.rpcFunctions.sendTx
           describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName)
+            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
           describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName)
+            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
           })
 
           //endregion
@@ -478,28 +485,24 @@ describe('Jingtum测试', function () {
           let txParams = {}
           let testCases = []
 
-          //region config
-
-          //endregion
-
           //region basic test
 
           categoryName = '原生币swt'
           txFunctionName = consts.rpcFunctions.sendTx
           txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _testMode)
+            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
           // txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _testMode)
+            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
           })
 
           categoryName = '原生币swt压力测试'
           testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          testTestCases(server, categoryName, testCases, _testMode)
+          testTestCases(server, categoryName, testCases, _TestMode)
 
           //endregion
 
@@ -507,12 +510,12 @@ describe('Jingtum测试', function () {
 
           txFunctionName = consts.rpcFunctions.sendTx
           describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName, _testMode)
+            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
           describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName, _testMode)
+            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
           })
 
           //endregion
@@ -532,7 +535,7 @@ describe('Jingtum测试', function () {
   logger.debug("Consume time: " + (end - start))
   //endregion
 
-  //region batch test mode
+  //region auto test framework
 
   //region 1. create test cases
 
@@ -937,7 +940,7 @@ describe('Jingtum测试', function () {
     testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为默认值12'
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-        testCaseParams.txParams[0].fee = data.defaultFee
+        testCaseParams.txParams[0].fee = testConfig.defaultFee
       })
       testCases.push(testCase)
     }
@@ -1500,11 +1503,11 @@ describe('Jingtum测试', function () {
     return server.responseGetTxByHash(hash)
         .then(async function (value) {
           //retry
-          if(retryCount < data.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+          if(retryCount < testConfig.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
               || value.result.toString().indexOf('no such transaction') != -1)){
             retryCount++
             logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
-            await utility.timeout(data.retryPauseTime)
+            await utility.timeout(testConfig.retryPauseTime)
             return getTxByHash(server, hash, retryCount)
           }
           return value
@@ -1545,10 +1548,10 @@ describe('Jingtum测试', function () {
 
   //region common
   function testTestCases(server, describeTitle, testCases, testMode) {
-    if(!testMode || testMode == enums.testMode.batchMode){
+    if(!testMode || testMode == testModeEnums.batchMode){
       testBatchTestCases(server, describeTitle, testCases)
     }
-    else if (testMode == enums.testMode.singleMode) {
+    else if (testMode == testModeEnums.singleMode) {
       testSingleTestCases(server, describeTitle, testCases)
     }
     else{
@@ -1561,7 +1564,7 @@ describe('Jingtum测试', function () {
 
       before(async function() {
         execEachTestCase(testCases, 0)
-        await utility.timeout(data.defaultBlockTime)
+        await utility.timeout(testConfig.defaultBlockTime)
       })
 
       testCases.forEach(async function(testCase){
@@ -1589,7 +1592,7 @@ describe('Jingtum测试', function () {
 
       before(async function() {
         execEachTestCase(testCases, 0)
-        await utility.timeout(data.defaultBlockTime)
+        await utility.timeout(testConfig.defaultBlockTime)
       })
 
       testCases.forEach(async function(testCase){
@@ -2087,7 +2090,7 @@ describe('Jingtum测试', function () {
       if(!server) reject("Server cannot be null!")
       let result = {}
       result.blockNumber1 = await server.getBlockNumber()
-      await utility.timeout(data.defaultBlockTime)
+      await utility.timeout(testConfig.defaultBlockTime)
       result.blockNumber2 = await server.getBlockNumber()
       resolve(result)
     })
