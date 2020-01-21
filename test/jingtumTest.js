@@ -44,7 +44,7 @@ describe('Jingtum测试', function () {
 
     describe('测试模式: ' + server.getName(), function () {
 
-      describe('用例测试', function () {
+      describe.skip('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -483,7 +483,48 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
+        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
+          let categoryName = ''
+          let txFunctionName = ''
+          let txParams = {}
+          let testCases = []
 
+          //region basic test
+
+          categoryName = '原生币swt'
+          txFunctionName = consts.rpcFunctions.sendTx
+          txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
+          })
+
+          // txFunctionName = consts.rpcFunctions.signTx
+          // // txParams = createTxParamsForTransfer(server)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
+          // })
+          //
+          // categoryName = '原生币swt压力测试'
+          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          // testTestCases(server, categoryName, testCases, _TestMode)
+
+          //endregion
+
+          //region token test
+
+          // txFunctionName = consts.rpcFunctions.sendTx
+          // describe('代币测试：' + txFunctionName, async function () {
+          //   testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
+          // })
+          //
+          // txFunctionName = consts.rpcFunctions.signTx
+          // describe('代币测试：' + txFunctionName, async function () {
+          //   testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
+          // })
+
+          //endregion
+
+        })
 
       })
 
@@ -530,13 +571,9 @@ describe('Jingtum测试', function () {
     else{
       throw new Error('txFunctionName doesn\'t exist!')
     }
-
     testCaseParams.restrictedLevel = restrictedLevel.L2
     testCaseParams.supportedServices = []
-    testCaseParams.supportedServices.push(serviceType.newChain)
     testCaseParams.supportedInterfaces = []
-    testCaseParams.supportedInterfaces.push(interfaceType.rpc)
-
     return testCaseParams
   }
 
@@ -713,6 +750,10 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "123/swt"
+        // testCaseParams.supportedServices = addItemInEmptyArray(serviceType.newChain)
+        // testCaseParams.supportedServices = addItemInArray(testCaseParams.supportedServices, serviceType.ipfs)
+        // testCaseParams.supportedInterfaces = addItemInEmptyArray(interfaceType.rpc)
+        // testCaseParams.supportedInterfaces = addItemInArray(testCaseParams.supportedInterfaces, interfaceType.websocket)
       })
       addTestCase(testCases, testCase)
     }
@@ -1864,6 +1905,28 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region tx receipt check
+  function testGetTransactionReceipt2(server){
+    let testNumber = '0010'
+    let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E7'
+    let needPass = true
+    let expectedError = ''
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+
+    testNumber = '0020'
+    needPass = false
+    hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
+    expectedError = 'can\'t find transaction'
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+
+    hash = '100093'
+    expectedError = 'NewHash256: Wrong length'
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+
+    hash = '1231dsfafwrwerwer'
+    expectedError = 'invalid byte'
+    checkGetReceipt(server, testNumber, hash, needPass, expectedError)
+  }
+
   function testGetTransactionReceipt(server){
     let testNumber = '0010'
     let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E7'
@@ -2238,6 +2301,17 @@ describe('Jingtum测试', function () {
     })
 
     return result
+  }
+
+  function addItemInEmptyArray(item){
+    let array = []
+    array.push(item)
+    return array
+  }
+
+  function addItemInArray(array, item){
+    array.push(item)
+    return array
   }
   //endregion
 
