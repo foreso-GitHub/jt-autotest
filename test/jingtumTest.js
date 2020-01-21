@@ -21,7 +21,9 @@ let _LastDynamicalTimeSeed = 0
 
 //region config
 let _TestMode = testConfig.testMode
-let _RestrictedLevel = restrictedLevel.L2
+let _CurrentRestrictedLevel = restrictedLevel.L2
+let _CurrentService = serviceType.unknown
+let _CurrentInterface = interfaceType.unknown
 //endregion
 
 describe('Jingtum测试', function () {
@@ -36,7 +38,9 @@ describe('Jingtum测试', function () {
   for(let mode of modes){
     
     let server = mode.server
-    server.setUrl(mode.url)    
+    server.setUrl(mode.url)
+    _CurrentService = mode.service
+    _CurrentInterface = mode.interface
 
     describe('测试模式: ' + server.getName(), function () {
 
@@ -487,31 +491,31 @@ describe('Jingtum测试', function () {
 
           //region basic test
 
-          categoryName = '原生币swt'
-          txFunctionName = consts.rpcFunctions.sendTx
-          txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
-          })
-
-          txFunctionName = consts.rpcFunctions.signTx
+          // categoryName = '原生币swt'
+          // txFunctionName = consts.rpcFunctions.sendTx
           // txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
-          })
-
-          categoryName = '原生币swt压力测试'
-          testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          testTestCases(server, categoryName, testCases, _TestMode)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
+          // })
+          //
+          // txFunctionName = consts.rpcFunctions.signTx
+          // // txParams = createTxParamsForTransfer(server)
+          // describe(categoryName + '测试：' + txFunctionName, async function () {
+          //   testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
+          // })
+          //
+          // categoryName = '原生币swt压力测试'
+          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          // testTestCases(server, categoryName, testCases, _TestMode)
 
           //endregion
 
           //region token test
 
-          txFunctionName = consts.rpcFunctions.sendTx
-          describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
-          })
+          // txFunctionName = consts.rpcFunctions.sendTx
+          // describe('代币测试：' + txFunctionName, async function () {
+          //   testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
+          // })
 
           txFunctionName = consts.rpcFunctions.signTx
           describe('代币测试：' + txFunctionName, async function () {
@@ -568,10 +572,17 @@ describe('Jingtum测试', function () {
       throw new Error('txFunctionName doesn\'t exist!')
     }
 
+    testCaseParams.restrictedLevel = restrictedLevel.L2
+    testCaseParams.supportedServices = []
+    testCaseParams.supportedServices.push(serviceType.newChain)
+    testCaseParams.supportedInterfaces = []
+    testCaseParams.supportedInterfaces.push(interfaceType.rpc)
+
     return testCaseParams
   }
 
-  function createTestCase(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expecteResult){
+  function createTestCase(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expecteResult,
+                          restrictedLv, supportedServices, supportedInterfaces){
     let testCase = {}
     testCase.type = "it"
     if(title) testCase.title = title
@@ -584,13 +595,17 @@ describe('Jingtum测试', function () {
     if(expecteResult) testCase.expecteResult = expecteResult
     testCase.hasExecuted = false
     testCase.actualResult = []
+    testCase.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
+    testCase.supportedServices = (supportedServices) ? cloneArray(supportedServices) : []
+    testCase.supportedInterfaces = (supportedInterfaces) ? cloneArray(supportedInterfaces) : []
     return testCase
   }
 
   function createTestCaseByParams(testCaseParams){
     return createTestCase(testCaseParams.title, testCaseParams.server,
         testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
-        testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expecteResult)
+        testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expecteResult,
+        testCaseParams.restrictedLevel, testCaseParams.supportedServices, testCaseParams.supportedInterfaces)
   }
 
   function createTxParamsForTransfer(server){
@@ -644,7 +659,8 @@ describe('Jingtum测试', function () {
   function addTestCaseForSendRawTx(testCaseOfSignTx, expecteResultOfSendRawTx){
     let txFunctionName = consts.rpcFunctions.sendRawTx
     let testCaseOfSendRawTx = createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
-        txFunctionName, null,null, null, null, expecteResultOfSendRawTx)
+        txFunctionName, null,null, null, null, expecteResultOfSendRawTx,
+        testCaseOfSignTx.restrictedLevel, testCaseOfSignTx.supportedServices, testCaseOfSignTx.supportedInterfaces)
     testCaseOfSignTx.subTestCases = []
     testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
   }
@@ -700,8 +716,9 @@ describe('Jingtum测试', function () {
     let testCase = createTestCaseByParams(testCaseParams)
     if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
       let expecteResultOfSignTx = createExpecteResult(true)
-      testCase = createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
-          testCaseParams.txParams, {}, testCaseParams.executeFunction, testCaseParams.checkFunction, expecteResultOfSignTx)
+      testCase.expecteResult = expecteResultOfSignTx
+      // testCase = createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
+      //     testCaseParams.txParams, {}, testCaseParams.executeFunction, testCaseParams.checkFunction, expecteResultOfSignTx)
       addTestCaseForSendRawTx(testCase, testCaseParams.expecteResult)
     }
     return testCase
@@ -910,6 +927,7 @@ describe('Jingtum测试', function () {
           memos += memos;
         }
         testCaseParams.txParams[0].memos = memos
+        testCaseParams.restrictedLevel = restrictedLevel.L4
         testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
       })
       testCases.push(testCase)
@@ -923,11 +941,12 @@ describe('Jingtum测试', function () {
           memos += memos;
         }
         testCaseParams.txParams[0].memos = {"type":"ok","format":"utf8","data":memos}
+        testCaseParams.restrictedLevel = restrictedLevel.L4
         testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
       })
       testCases.push(testCase)
     }
-    //endregion
+    // endregion
 
     return testCases
   }
@@ -1265,6 +1284,14 @@ describe('Jingtum测试', function () {
 
   //endregion
 
+  //region common
+  function addTestCase(testCases, testCase){
+    if(ifNeedExecuteOrCheck(testCase)){
+      testCases.push(testCase)
+    }
+  }
+  //endregion
+
   //endregion
 
   //region 2. execute test cases
@@ -1367,9 +1394,11 @@ describe('Jingtum测试', function () {
   async function execEachTestCase(testCases, index){
     if(index < testCases.length){
       let testCase = testCases[index]
-      // logger.debug("===1. index: " + index )
-      await testCase.executeFunction(testCase)
-      // logger.debug("===2. index: " + index )
+      if(ifNeedExecuteOrCheck(testCase)){
+        // logger.debug("===1. index: " + index )
+        await testCase.executeFunction(testCase)
+        // logger.debug("===2. index: " + index )
+      }
       index++
       execEachTestCase(testCases, index)
       // logger.debug("===3. index: " + index )
@@ -1465,7 +1494,7 @@ describe('Jingtum测试', function () {
         expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
         expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
         expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : addresses.defaultIssuer.address)
-        //expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
+        if(_CurrentRestrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
       }
       else{
         if(txParams.symbol){
@@ -1568,9 +1597,11 @@ describe('Jingtum测试', function () {
       })
 
       testCases.forEach(async function(testCase){
-        it(testCase.title, async function () {
-          await testCase.checkFunction(testCase)
-        })
+        if(ifNeedExecuteOrCheck(testCase)) {
+          it(testCase.title, async function () {
+            await testCase.checkFunction(testCase)
+          })
+        }
       })
     })
   }
@@ -1578,29 +1609,48 @@ describe('Jingtum测试', function () {
   function testSingleTestCases(server, describeTitle, testCases) {
     describe(describeTitle, async function () {
       testCases.forEach(async function(testCase){
-        it(testCase.title, async function () {
-          await testCase.executeFunction(testCase)
-          await testCase.checkFunction(testCase)
-        })
+        if(ifNeedExecuteOrCheck(testCase)){
+          it(testCase.title, async function () {
+            await testCase.executeFunction(testCase)
+            await testCase.checkFunction(testCase)
+          })
+        }
       })
     })
   }
 
+  function ifNeedExecuteOrCheck(testCase){
+    if(_CurrentRestrictedLevel < testCase.restrictedLevel){
+      return false
+    }
+    else if(!(!testCase.supportedServices || testCase.supportedServices.length == 0)
+        && !ifArrayHas(testCase.supportedServices, _CurrentService)){
+      return false
+    }
+    else if(!(!testCase.supportedInterfaces || testCase.supportedInterfaces.length == 0)
+        && !ifArrayHas(testCase.supportedInterfaces, _CurrentInterface)){
+      return false
+    }
+    else{
+      return true
+    }
+  }
+
   function testTestCasesByDescribes(server, describeTitle, descriptions) {
 
-    describe(describeTitle, async function () {
-
-      before(async function() {
-        execEachTestCase(testCases, 0)
-        await utility.timeout(testConfig.defaultBlockTime)
-      })
-
-      testCases.forEach(async function(testCase){
-        it(testCase.title, async function () {
-          await testCase.checkFunction(testCase)
-        })
-      })
-    })
+    // describe(describeTitle, async function () {
+    //
+    //   before(async function() {
+    //     execEachTestCase(testCases, 0)
+    //     await utility.timeout(testConfig.defaultBlockTime)
+    //   })
+    //
+    //   testCases.forEach(async function(testCase){
+    //     it(testCase.title, async function () {
+    //       await testCase.checkFunction(testCase)
+    //     })
+    //   })
+    // })
   }
   //endregion
 
@@ -1668,40 +1718,40 @@ describe('Jingtum测试', function () {
       testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
-    configToken = token.config_mintable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_burnable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_mint_burn
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_normal
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_mintable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_burnable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_mint_burn
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
+    // configToken = token.config_mintable
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
+    //
+    // configToken = token.config_burnable
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
+    //
+    // configToken = token.config_mint_burn
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
+    //
+    // configToken = token.config_issuer_normal
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
+    //
+    // configToken = token.config_issuer_mintable
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
+    //
+    // configToken = token.config_issuer_burnable
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
+    //
+    // configToken = token.config_issuer_mint_burn
+    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    // })
 
   }
   //endregion
@@ -1721,7 +1771,8 @@ describe('Jingtum测试', function () {
     for(let i = 0; i <= testCount; i++){
       let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server,
           txFunctionName, txParams, null,
-          executeFunction, checkFunction, expecteResult)
+          executeFunction, checkFunction, expecteResult,
+          restrictedLevel.L0)
       testCases.push(testCase)
     }
     return testCases
@@ -2215,6 +2266,27 @@ describe('Jingtum测试', function () {
     paramsAarry.push(cloneParams(originalParamsAarry[0]))
     return paramsAarry
 
+  }
+  //endregion
+
+  //region array operation
+  function cloneArray(originalArray){
+    let newArray = []
+    originalArray.forEach((item) => {
+      newArray.push(item)
+    })
+    return newArray
+  }
+
+  function ifArrayHas(array, specialItem){
+    let result = false
+    array.forEach((item) => {
+      if(item == specialItem){
+        result = true
+      }
+    })
+
+    return result
   }
   //endregion
 

@@ -22,11 +22,15 @@ let modes = [
     {
         server: rpc_9545,
         url: RPC_URL_9545,
+        service: serviceType.newChain,
+        interface: interfaceType.rpc,
         tx1: data.chain.tx,
     },
     // {
     //     server: rpc_7545,
     //     url: RPC_URL_7545,
+    //     service: serviceType.ipfs,
+    //     interface: interfaceType.rpc,
     //     tx1: data.ipfs.tx,
     // },
 ]
