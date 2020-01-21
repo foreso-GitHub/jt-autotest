@@ -7,13 +7,15 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 var utility = require("./testUtility.js")
-const { servers, chains, addresses, status, data, token, txs, blocks, modes } = require("./config")
+const { servers, chains, addresses, status, testConfig, data, token, txs, blocks, modes } = require("./config")
 const schema = require("./schema.js")
+const enums = require('./enums.js')
 const consts = require('../lib/rpc/consts')
 //endregion
 
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
+let _testMode = testConfig.testMode
 
 describe('Jingtum测试', function () {
 
@@ -31,7 +33,7 @@ describe('Jingtum测试', function () {
 
     describe('测试模式: ' + server.getName(), function () {
 
-      describe('用例测试', function () {
+      describe.skip('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -468,8 +470,54 @@ describe('Jingtum测试', function () {
 
       })
 
-      describe.skip('is working', function () {
+      describe('is working', function () {
 
+        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
+          let categoryName = ''
+          let txFunctionName = ''
+          let txParams = {}
+          let testCases = []
+
+          //region config
+
+          //endregion
+
+          //region basic test
+
+          categoryName = '原生币swt'
+          txFunctionName = consts.rpcFunctions.sendTx
+          txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams, _testMode)
+          })
+
+          txFunctionName = consts.rpcFunctions.signTx
+          // txParams = createTxParamsForTransfer(server)
+          describe(categoryName + '测试：' + txFunctionName, async function () {
+            testForTransfer(server, categoryName, txFunctionName, txParams, _testMode)
+          })
+
+          categoryName = '原生币swt压力测试'
+          testCases = createTestCasesForPressureTest(server, categoryName, 20)
+          testTestCases(server, categoryName, testCases, _testMode)
+
+          //endregion
+
+          //region token test
+
+          txFunctionName = consts.rpcFunctions.sendTx
+          describe('代币测试：' + txFunctionName, async function () {
+            testForIssueTokenInComplexMode(server, txFunctionName, _testMode)
+          })
+
+          txFunctionName = consts.rpcFunctions.signTx
+          describe('代币测试：' + txFunctionName, async function () {
+            testForIssueTokenInComplexMode(server, txFunctionName, _testMode)
+          })
+
+          //endregion
+
+        })
 
       })
 
@@ -484,7 +532,7 @@ describe('Jingtum测试', function () {
   logger.debug("Consume time: " + (end - start))
   //endregion
 
-  //region fast sendTx case
+  //region batch test mode
 
   //region 1. create test cases
 
@@ -1494,7 +1542,21 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region 4. test test cases
-  function testTestCases(server, describeTitle, testCases) {
+
+  //region common
+  function testTestCases(server, describeTitle, testCases, testMode) {
+    if(!testMode || testMode == enums.testMode.batchMode){
+      testBatchTestCases(server, describeTitle, testCases)
+    }
+    else if (testMode == enums.testMode.singleMode) {
+      testSingleTestCases(server, describeTitle, testCases)
+    }
+    else{
+      logger.debug("No special test mode!")
+    }
+  }
+
+  function testBatchTestCases(server, describeTitle, testCases) {
     describe(describeTitle, async function () {
 
       before(async function() {
@@ -1504,6 +1566,17 @@ describe('Jingtum测试', function () {
 
       testCases.forEach(async function(testCase){
         it(testCase.title, async function () {
+          await testCase.checkFunction(testCase)
+        })
+      })
+    })
+  }
+
+  function testSingleTestCases(server, describeTitle, testCases) {
+    describe(describeTitle, async function () {
+      testCases.forEach(async function(testCase){
+        it(testCase.title, async function () {
+          await testCase.executeFunction(testCase)
           await testCase.checkFunction(testCase)
         })
       })
@@ -1526,8 +1599,9 @@ describe('Jingtum测试', function () {
       })
     })
   }
+  //endregion
 
-  function testForTransfer(server, categoryName, txFunctionName, txParams){
+  function testForTransfer(server, categoryName, txFunctionName, txParams, testMode){
     let testName = ''
     let describeTitle = ''
     let testCases = []
@@ -1535,20 +1609,20 @@ describe('Jingtum测试', function () {
     testName = '测试基本交易'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases)
+    testTestCases(server, describeTitle, testCases, testMode)
 
     testName = '测试交易memo'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases)
+    testTestCases(server, describeTitle, testCases, testMode)
 
     testName = '测试交易Fee'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases)
+    testTestCases(server, describeTitle, testCases, testMode)
   }
 
-  function testForIssueToken(server, categoryName, txFunctionName, account, configToken){
+  function testForIssueToken(server, categoryName, txFunctionName, account, configToken, testMode){
     let testName = ''
     let describeTitle = ''
     let testCases = []
@@ -1559,7 +1633,7 @@ describe('Jingtum测试', function () {
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     txParams = createTxParamsForIssueToken(server, account, configToken)
     testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases)
+    testTestCases(server, describeTitle, testCases, testMode)
 
     //set created token properties
     let tokenName = testCases[0].txParams[0].name
@@ -1570,60 +1644,60 @@ describe('Jingtum测试', function () {
     //token transfer
     let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
     describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+    testForTransfer(server, categoryName, txFunctionName, transferTxParams, testMode)
 
     //mint token
     let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
     describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
-    testTestCases(server, describeTitle, testCases)
+    testTestCases(server, describeTitle, testCases, testMode)
 
     //burn token
     describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-    testTestCases(server, describeTitle, testCases)
+    testTestCases(server, describeTitle, testCases, testMode)
   }
 
-  function testForIssueTokenInComplexMode(server, txFunctionName){
+  function testForIssueTokenInComplexMode(server, txFunctionName, testMode){
     let account = addresses.sender3
     let configToken = token.config_normal
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_mintable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_burnable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_mint_burn
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_issuer_normal
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_issuer_mintable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_issuer_burnable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
     configToken = token.config_issuer_mint_burn
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
   }

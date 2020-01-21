@@ -1,19 +1,6 @@
-var rpc = require('../lib/rpc/interfaces.js')
 const consts = require('../lib/rpc/consts')
-const enums = require('./enums')
 
-const RPC_URL_7545 = 'http://139.198.191.254:7545/v1/jsonrpc'
-const RPC_URL_9545 = 'http://139.198.177.59:9545/v1/jsonrpc'
-
-let rpc_7545 = new rpc()
-let rpc_9545 = new rpc()
-let servers = [rpc_7545, rpc_9545]
 let chains = ['swt', 'bwt']
-
-let status = {
-    success: "success",
-    error: "error",
-}
 
 let accounts = [
     {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
@@ -118,16 +105,7 @@ let addresses = {
     }
 }
 
-let testConfig = {
-    testMode: enums.testMode.batchMode,
-}
-
 let data = {
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultFee: "10",
-
     chain:{
         tx:{
             "TransactionType": "Payment",
@@ -603,19 +581,6 @@ let token = {
     },
 }
 
-let modes = [
-    {
-        server: rpc_9545,
-        url: RPC_URL_9545,
-        tx1: data.chain.tx,
-    },
-    // {
-    //     server: rpc_7545,
-    //     url: RPC_URL_7545,
-    //     tx1: data.ipfs.tx,
-    // },
-]
-
 let txs = {
     swtTx1:{
         hash: "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530B",
@@ -717,15 +682,11 @@ let blocks = {
 }
 
 module.exports = {
-    servers,
-    status,
     chains,
     accounts,
     addresses,
-    testConfig,
     data,
     token,
     txs,
     blocks,
-    modes,
 }
