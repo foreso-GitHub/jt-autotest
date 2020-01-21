@@ -12,6 +12,7 @@ let servers = [rpc_7545, rpc_9545]
 
 let testConfig = {
     testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L2,
     defaultBlockTime: 5000,
     retryPauseTime: 1000,
     retryMaxCount: 16,

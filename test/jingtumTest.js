@@ -21,7 +21,7 @@ let _LastDynamicalTimeSeed = 0
 
 //region config
 let _TestMode = testConfig.testMode
-let _CurrentRestrictedLevel = restrictedLevel.L2
+let _CurrentRestrictedLevel = testConfig.restrictedLevel
 let _CurrentService = serviceType.unknown
 let _CurrentInterface = interfaceType.unknown
 //endregion
@@ -44,7 +44,7 @@ describe('Jingtum测试', function () {
 
     describe('测试模式: ' + server.getName(), function () {
 
-      describe.skip('用例测试', function () {
+      describe('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -483,48 +483,7 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
-          let categoryName = ''
-          let txFunctionName = ''
-          let txParams = {}
-          let testCases = []
 
-          //region basic test
-
-          // categoryName = '原生币swt'
-          // txFunctionName = consts.rpcFunctions.sendTx
-          // txParams = createTxParamsForTransfer(server)
-          // describe(categoryName + '测试：' + txFunctionName, async function () {
-          //   testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
-          // })
-          //
-          // txFunctionName = consts.rpcFunctions.signTx
-          // // txParams = createTxParamsForTransfer(server)
-          // describe(categoryName + '测试：' + txFunctionName, async function () {
-          //   testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
-          // })
-          //
-          // categoryName = '原生币swt压力测试'
-          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          // testTestCases(server, categoryName, testCases, _TestMode)
-
-          //endregion
-
-          //region token test
-
-          // txFunctionName = consts.rpcFunctions.sendTx
-          // describe('代币测试：' + txFunctionName, async function () {
-          //   testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
-          // })
-
-          txFunctionName = consts.rpcFunctions.signTx
-          describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
-          })
-
-          //endregion
-
-        })
 
       })
 
@@ -717,8 +676,6 @@ describe('Jingtum测试', function () {
     if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
       let expecteResultOfSignTx = createExpecteResult(true)
       testCase.expecteResult = expecteResultOfSignTx
-      // testCase = createTestCase(testCaseParams.title, testCaseParams.server, testCaseParams.txFunctionName,
-      //     testCaseParams.txParams, {}, testCaseParams.executeFunction, testCaseParams.checkFunction, expecteResultOfSignTx)
       addTestCaseForSendRawTx(testCase, testCaseParams.expecteResult)
     }
     return testCase
@@ -749,7 +706,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + testCaseParams.txParams[0].value + '"等'
@@ -757,7 +714,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "123/swt"
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 没有秘钥'
@@ -766,7 +723,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].secret = null
         testCaseParams.expecteResult = createExpecteResult(false, true, 'No secret found for')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
@@ -775,7 +732,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].secret = '错误的秘钥'
         testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
@@ -784,7 +741,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
         testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0040\t发起' + categoryName + '无效交易_02: 错误的发起钱包地址（乱码字符串）'
@@ -793,7 +750,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
         testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad account address:')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0050\t发起' + categoryName + '无效交易_03: 错误的接收钱包地址（乱码字符串）'
@@ -802,7 +759,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
         testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad account address:')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0060\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
@@ -811,7 +768,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].value = "999999999999999" + testCaseParams.showSymbol
         testCaseParams.expecteResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0070\t发起' + categoryName + '无效交易_05: 交易额为负数'
@@ -821,7 +778,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'temBAD_AMOUNT Can only send positive amounts')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0080\t发起' + categoryName + '无效交易_06: 交易额为空'
@@ -830,7 +787,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].value = null
         testCaseParams.expecteResult = createExpecteResult(false, true, 'Invalid Number')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0080\t发起' + categoryName + '无效交易_06: 交易额为字符串'
@@ -839,7 +796,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].value = "aawrwfsfs"
         testCaseParams.expecteResult = createExpecteResult(false, true, 'Invalid Number')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于1的正小数'
@@ -848,7 +805,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].value = "0.1" + testCaseParams.showSymbol
         testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于1的小数'
@@ -857,7 +814,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].value = "1.1" + testCaseParams.showSymbol
         testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0110\t发起' + categoryName + '无效交易_09: 交易额为负小数：-0.1、-1.23等'
@@ -866,7 +823,7 @@ describe('Jingtum测试', function () {
         testCaseParams.txParams[0].value = "-0.1" + testCaseParams.showSymbol
         testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     //endregion
@@ -884,7 +841,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].memos = ["大家好"]
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]'
@@ -892,7 +849,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].memos = ["12345"]
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]'
@@ -900,7 +857,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].memos = ["123456"]
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
@@ -908,7 +865,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].memos = ["E5A4A7E5AEB6E5A5BDff"]
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0130\t发起带有效memo的交易_02: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]'
@@ -916,7 +873,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0140\t发起带无效memo的交易_01: memo内容使整个交易内容超过900K'
@@ -930,7 +887,7 @@ describe('Jingtum测试', function () {
         testCaseParams.restrictedLevel = restrictedLevel.L4
         testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0150\t发起带无效memo的交易_02: memo内容使整个交易内容超过900K'
@@ -944,7 +901,7 @@ describe('Jingtum测试', function () {
         testCaseParams.restrictedLevel = restrictedLevel.L4
         testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
     // endregion
 
@@ -961,14 +918,14 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = testConfig.defaultFee
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为null'
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易'
@@ -976,7 +933,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "11"
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0180\t发起带有效fee的交易_03: fee比12大但小于钱包余额'
@@ -984,7 +941,7 @@ describe('Jingtum测试', function () {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "110"
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0190\t发起带无效fee的交易_01: fee比12小（比如5），但是不足以发起成功的交易'
@@ -994,7 +951,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0200\t发起带无效fee的交易_02: fee为0'
@@ -1004,7 +961,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0210\t发起带无效fee的交易_03: fee为大于0的小数，比如12.5、5.5'
@@ -1014,7 +971,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0220\t发起带无效fee的交易_04: fee为大于发起钱包' + categoryName + '余额的整数'
@@ -1024,7 +981,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'telINSUF_FEE_P Fee insufficient')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0230\t发起带无效fee的交易_05: fee为负数，比如-3.5、-555等'
@@ -1034,7 +991,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0240\t发起带无效fee的交易_06: fee为数字'
@@ -1044,7 +1001,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
     //endregion
 
@@ -1065,7 +1022,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
@@ -1075,7 +1032,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0300\t发行' + testCaseParams.categoryName + '_无效的from参数'
@@ -1085,7 +1042,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'Bad account address: from.address: Bad Base58 string: from.address')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_无效的name参数:很长的字符串'
@@ -1095,7 +1052,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'failed to submit transaction')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_无效的name参数:被已有代币使用过的name'
@@ -1105,7 +1062,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, false,
             'failed to submit transaction')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:很长的字符串'
@@ -1115,7 +1072,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'runtime error: invalid memory address or nil pointer dereference')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     //todo it will cause no response, looks like no response from server.request
@@ -1126,7 +1083,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'no name')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:字符串'
@@ -1136,7 +1093,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'nterface conversion: interface {} is string, not float64')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
@@ -1146,7 +1103,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'tefNO_PERMISSION_ISSUE No permission issue')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
@@ -1156,7 +1113,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'tefNO_PERMISSION_ISSUE No permission issue')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:字符串'
@@ -1166,7 +1123,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'strconv.ParseInt: parsing')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:字符串'
@@ -1176,7 +1133,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
@@ -1186,7 +1143,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     //endregion
@@ -1214,7 +1171,7 @@ describe('Jingtum测试', function () {
             testCaseParams.expecteResult = createExpecteResult(false, true,
                 'tefNO_PERMISSION_ISSUE No permission issue')
           })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
     //endregion
 
@@ -1239,7 +1196,7 @@ describe('Jingtum测试', function () {
             testCaseParams.expecteResult = createExpecteResult(false, true,
                 'tefNO_PERMISSION_ISSUE No permission issue')
           })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0420\t无效地销毁' + testCaseParams.categoryName
@@ -1250,7 +1207,7 @@ describe('Jingtum测试', function () {
         testCaseParams.expecteResult = createExpecteResult(false, true,
             'tefNO_PERMISSION_ISSUE No permission issue')
       })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
 
     testCaseParams.title = '0380\t销毁所有' + testCaseParams.categoryName
@@ -1271,7 +1228,7 @@ describe('Jingtum测试', function () {
             testCaseParams.expecteResult = createExpecteResult(false, true,
                 'tefNO_PERMISSION_ISSUE No permission issue')
           })
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
     //endregion
 
@@ -1394,11 +1351,9 @@ describe('Jingtum测试', function () {
   async function execEachTestCase(testCases, index){
     if(index < testCases.length){
       let testCase = testCases[index]
-      if(ifNeedExecuteOrCheck(testCase)){
-        // logger.debug("===1. index: " + index )
-        await testCase.executeFunction(testCase)
-        // logger.debug("===2. index: " + index )
-      }
+      // logger.debug("===1. index: " + index )
+      await testCase.executeFunction(testCase)
+      // logger.debug("===2. index: " + index )
       index++
       execEachTestCase(testCases, index)
       // logger.debug("===3. index: " + index )
@@ -1597,11 +1552,9 @@ describe('Jingtum测试', function () {
       })
 
       testCases.forEach(async function(testCase){
-        if(ifNeedExecuteOrCheck(testCase)) {
-          it(testCase.title, async function () {
-            await testCase.checkFunction(testCase)
-          })
-        }
+        it(testCase.title, async function () {
+          await testCase.checkFunction(testCase)
+        })
       })
     })
   }
@@ -1609,12 +1562,10 @@ describe('Jingtum测试', function () {
   function testSingleTestCases(server, describeTitle, testCases) {
     describe(describeTitle, async function () {
       testCases.forEach(async function(testCase){
-        if(ifNeedExecuteOrCheck(testCase)){
-          it(testCase.title, async function () {
-            await testCase.executeFunction(testCase)
-            await testCase.checkFunction(testCase)
-          })
-        }
+        it(testCase.title, async function () {
+          await testCase.executeFunction(testCase)
+          await testCase.checkFunction(testCase)
+        })
       })
     })
   }
@@ -1718,40 +1669,40 @@ describe('Jingtum测试', function () {
       testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
     })
 
-    // configToken = token.config_mintable
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
-    //
-    // configToken = token.config_burnable
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
-    //
-    // configToken = token.config_mint_burn
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
-    //
-    // configToken = token.config_issuer_normal
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
-    //
-    // configToken = token.config_issuer_mintable
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
-    //
-    // configToken = token.config_issuer_burnable
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
-    //
-    // configToken = token.config_issuer_mint_burn
-    // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-    //   testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    // })
+    configToken = token.config_mintable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_burnable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_mint_burn
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_normal
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_mintable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_burnable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_mint_burn
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
 
   }
   //endregion
@@ -1773,7 +1724,7 @@ describe('Jingtum测试', function () {
           txFunctionName, txParams, null,
           executeFunction, checkFunction, expecteResult,
           restrictedLevel.L0)
-      testCases.push(testCase)
+      addTestCase(testCases, testCase)
     }
     return testCases
   }
