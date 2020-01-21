@@ -44,7 +44,7 @@ describe('Jingtum测试', function () {
 
     describe('测试模式: ' + server.getName(), function () {
 
-      describe.skip('用例测试', function () {
+      describe('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -150,7 +150,7 @@ describe('Jingtum测试', function () {
                 nickName,
             )).then(async function (value) {
               checkResponse(false, value)
-              expect(value.result).to.equal('the nickname already exists.')
+              expect(value.result).to.contains('the nickname already exists')
             })
           })
 
@@ -483,48 +483,7 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
-          let categoryName = ''
-          let txFunctionName = ''
-          let txParams = {}
-          let testCases = []
 
-          //region basic test
-
-          categoryName = '原生币swt'
-          txFunctionName = consts.rpcFunctions.sendTx
-          txParams = createTxParamsForTransfer(server)
-          describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
-          })
-
-          // txFunctionName = consts.rpcFunctions.signTx
-          // // txParams = createTxParamsForTransfer(server)
-          // describe(categoryName + '测试：' + txFunctionName, async function () {
-          //   testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
-          // })
-          //
-          // categoryName = '原生币swt压力测试'
-          // testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          // testTestCases(server, categoryName, testCases, _TestMode)
-
-          //endregion
-
-          //region token test
-
-          // txFunctionName = consts.rpcFunctions.sendTx
-          // describe('代币测试：' + txFunctionName, async function () {
-          //   testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
-          // })
-          //
-          // txFunctionName = consts.rpcFunctions.signTx
-          // describe('代币测试：' + txFunctionName, async function () {
-          //   testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
-          // })
-
-          //endregion
-
-        })
 
       })
 
