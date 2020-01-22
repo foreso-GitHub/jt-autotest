@@ -44,7 +44,7 @@ describe('Jingtum测试', function () {
 
     describe('测试模式: ' + server.getName(), function () {
 
-      describe('用例测试', function () {
+      describe.skip('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -483,7 +483,9 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-
+        describe('测试jt_blockNumber', function () {
+          testForGetBlockNumber(server, _TestMode)
+        })
 
       })
 
@@ -689,7 +691,514 @@ describe('Jingtum测试', function () {
 
   //endregion
 
-  //region main create methods
+  //region common
+  function addTestCase(testCases, testCase){
+    if(ifNeedExecuteOrCheck(testCase)){
+      testCases.push(testCase)
+    }
+  }
+  //endregion
+
+  //endregion
+
+  //region 2. execute test cases
+
+  //region for send
+  function executeTestCaseOfCommon(testCase, specialExecuteFunction){
+    return new Promise(function(resolve){
+      let server = testCase.server
+      let data = testCase.txParams[0]
+      let from = data.from
+      getSequence(server, from).then(function(sequence){
+        data.sequence = sequence
+        server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
+          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution: 0
+          logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
+          executeTxByTestCase(testCase).then(function(response){
+            specialExecuteFunction(testCase, response, resolve)
+          })
+        })
+      })
+    })
+  }
+
+  function executeTestCaseOfSendTx(testCase){
+    return executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
+      addSequenceAfterResponseSuccess(response, testCase.txParams[0])
+      testCase.hasExecuted = true
+      testCase.actualResult.push(response)
+      resolve(testCase)
+    })
+  }
+
+  function executeTestCaseOfSignTxAndSendRawTx(testCase){
+    return executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
+      testCase.hasExecuted = true
+      testCase.actualResult.push(responseOfSign)
+      if(responseOfSign.status === status.success){
+        if(testCase.expecteResult.needPass){
+          if(!testCase.subTestCases || testCase.subTestCases.length == 0){
+            testCase.executionResult = false
+            resolve(responseOfSign)
+          }
+          else{
+            let rawTx = testCase.actualResult[0].result[0]
+            if(rawTx && rawTx.length > 0){
+              let data = []
+              data.push(rawTx)
+              let testCaseOfSendRawTx = testCase.subTestCases[0]
+              testCaseOfSendRawTx.txParams = data
+              executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
+                testCaseOfSendRawTx.hasExecuted = true
+                testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
+                addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase.txParams[0])
+                resolve(responseOfSendRawTx)
+              })
+            }
+            else{
+              testCase.executionResult = false
+              resolve(responseOfSign)
+            }
+          }
+        }
+        else{
+          resolve(responseOfSign)
+        }
+      }
+      else{
+        resolve(responseOfSign)
+      }
+    })
+  }
+
+  //if send tx successfully, then sequence need plus 1
+  function addSequenceAfterResponseSuccess(response, data){
+    if(response.status === status.success){
+      setSequence(data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+    }
+  }
+  //endregion
+
+  //region for get
+  function executeTestCaseForGet(testCase){
+    executeTxByTestCase(testCase).then(function(response){
+      testCase.hasExecuted = true
+      testCase.actualResult.push(response)
+    }, function (error) {
+      logger.debug(error)
+      expect(false).to.be.ok
+    })
+  }
+
+  //endregion
+
+  //region common execute
+
+  function executeTxByTestCase(testCase){
+    logger.debug(testCase.title)
+    return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+  }
+
+  //region execute the function which will NOT write block like jt_signTransaction
+
+  function executeTestCaseOfCommonFunction(testCase){
+    return new Promise(function(resolve){
+      executeTxByTestCase(testCase).then(function(response){
+        testCase.hasExecuted = true
+        testCase.actualResult.push(response)
+        resolve(response)
+      })
+    })
+  }
+
+  //endregion
+
+  async function execEachTestCase(testCases, index){
+    if(index < testCases.length){
+      let testCase = testCases[index]
+      // logger.debug("===1. index: " + index )
+      await testCase.executeFunction(testCase)
+      // logger.debug("===2. index: " + index )
+      index++
+      execEachTestCase(testCases, index)
+      // logger.debug("===3. index: " + index )
+    }
+  }
+
+  //endregion
+
+  //endregion
+
+  //region 3. check test cases
+
+  //region check send tx result
+  async function checkTestCaseOfSendTx(testCase){
+    await checkResponseOfTransfer(testCase, testCase.txParams)
+  }
+
+  async function checkResponseOfCommon(testCase, txParams, checkFunction){
+    let responseOfSendTx = testCase.actualResult[0]
+    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+    if(testCase.expecteResult.needPass){
+      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+      let hash = responseOfSendTx.result[0]
+      await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+        checkResponse(true, responseOfGetTx)
+        // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+        expect(responseOfGetTx.result.hash).to.be.equal(hash)
+        await checkFunction(testCase, txParams, responseOfGetTx.result)
+      }, function (err) {
+        expect(err).to.be.ok
+      })
+    }
+    else{
+      let expecteResult = testCase.expecteResult
+      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+    }
+  }
+
+  async function checkResponseOfTransfer(testCase, txParams){
+    await checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
+      let params = txParams[0]
+      await compareActualTxWithTxParams(params, tx)
+    })
+  }
+
+  function getBalanceValue(balanceObject){
+    if(balanceObject){
+      if(balanceObject.value){
+        return Number(balanceObject.value.toString())
+      }
+      else{
+        return Number(balanceObject.toString())
+      }
+    }
+    else{
+      return 0
+    }
+  }
+
+  async function checkTestCaseOfMintOrBurn(testCase){
+    await checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
+      let params = txParams[0]
+      await testCase.server.getBalance(params.from, params.symbol).then(function(balanceAfterExecution){
+        testCase.balanceAfterExecution = balanceAfterExecution
+        oldBalance = getBalanceValue(testCase.balanceBeforeExecution)
+        newBalance = getBalanceValue(testCase.balanceAfterExecution)
+        if(params.type === consts.rpcParamConsts.issueCoin){
+          expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
+        }
+        else{
+          expect(newBalance).to.be.equals(newBalance + Number(params.value))
+        }
+
+        logger.debug("balanceAfterExecution:" + JSON.stringify(testCase))
+        logger.debug("balanceAfterExecution, symbol:" + params.symbol)
+        logger.debug("balanceAfterExecution:" + JSON.stringify(balanceAfterExecution))
+
+        expect(false).to.be.ok
+      })
+      // expect(true).to.be.ok
+    })
+  }
+
+  function compareActualTxWithTxParams(txParams, tx){
+    return new Promise(function(resolve){
+      expect(tx.Account).to.be.equals(txParams.from)
+      expect(tx.Destination).to.be.equals(txParams.to)
+      expect(tx.Fee).to.be.equals(((txParams.fee) ? txParams.fee : 10).toString())
+      //check value
+      if(txParams.type == consts.rpcParamConsts.issueCoin){
+        expect(tx.Name).to.be.equals(txParams.name)
+        expect(tx.Decimals).to.be.equals(txParams.decimals)
+        expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
+        expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
+        expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : addresses.defaultIssuer.address)
+        if(_CurrentRestrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
+      }
+      else{
+        if(txParams.symbol){
+          expect(tx.Amount.currency).to.be.equals(txParams.symbol)
+          expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
+        }
+        else{
+          expect(tx.Amount).to.be.equals(txParams.value)
+        }
+      }
+      //check memos
+      if(tx.Memos){
+        let memos = tx.Memos
+        let expectedMemos = txParams.memos
+        for(let i = 0; i < expectedMemos.length; i++){
+          let expectedMemo = expectedMemos[i]
+          if(typeof expectedMemo == "string"){
+            expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
+          }
+          else if(expectedMemo.data){
+            expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
+          }
+          else{
+            expect(false).to.be.ok
+          }
+          //todo need check type and format also. need make type, format, data of memo function clear with weijia.
+        }
+      }
+      // expect(false).to.be.ok
+      resolve("done!")
+    })
+  }
+
+  function getTxByHash(server, hash, retryCount){
+    return server.responseGetTxByHash(hash)
+        .then(async function (value) {
+          //retry
+          if(retryCount < testConfig.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+              || value.result.toString().indexOf('no such transaction') != -1)){
+            retryCount++
+            logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
+            await utility.timeout(testConfig.retryPauseTime)
+            return getTxByHash(server, hash, retryCount)
+          }
+          return value
+        }).catch(function(error){
+          logger.debug(error)
+          expect(error).to.not.be.ok
+        })
+  }
+
+  //endregion
+
+  //region check sign and send raw tx result
+  async function checkTestCaseOfSignTxAndSendRawTx(testCase){
+    //check sign result
+    let responseOfSendTx = testCase.actualResult[0]
+    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
+    if(testCase.expecteResult.needPass){
+      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+      let signedTx = responseOfSendTx.result[0]
+      expect(typeof(signedTx) === 'string').to.be.ok
+      expect(isHex(signedTx)).to.be.ok
+
+      //check send raw tx result
+      let txParams = testCase.txParams
+      let testCaseOfSendRawTx = testCase.subTestCases[0]
+      await checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
+    }
+    else{
+      let expecteResult = testCase.expecteResult
+      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+    }
+  }
+  //endregion
+
+  //endregion
+
+  //region 4. test test cases
+
+  //region common
+  function testTestCases(server, describeTitle, testCases, testMode) {
+    if(!testMode || testMode == testModeEnums.batchMode){
+      testBatchTestCases(server, describeTitle, testCases)
+    }
+    else if (testMode == testModeEnums.singleMode) {
+      testSingleTestCases(server, describeTitle, testCases)
+    }
+    else{
+      logger.debug("No special test mode!")
+    }
+  }
+
+  function testBatchTestCases(server, describeTitle, testCases) {
+    describe(describeTitle, async function () {
+
+      before(async function() {
+        execEachTestCase(testCases, 0)
+        await utility.timeout(testConfig.defaultBlockTime)
+      })
+
+      testCases.forEach(async function(testCase){
+        it(testCase.title, async function () {
+          await testCase.checkFunction(testCase)
+        })
+      })
+    })
+  }
+
+  function testSingleTestCases(server, describeTitle, testCases) {
+    describe(describeTitle, async function () {
+      testCases.forEach(async function(testCase){
+        it(testCase.title, async function () {
+          await testCase.executeFunction(testCase)
+          await testCase.checkFunction(testCase)
+        })
+      })
+    })
+  }
+
+  function ifNeedExecuteOrCheck(testCase){
+    if(_CurrentRestrictedLevel < testCase.restrictedLevel){
+      return false
+    }
+    else if(!(!testCase.supportedServices || testCase.supportedServices.length == 0)
+        && !ifArrayHas(testCase.supportedServices, _CurrentService)){
+      return false
+    }
+    else if(!(!testCase.supportedInterfaces || testCase.supportedInterfaces.length == 0)
+        && !ifArrayHas(testCase.supportedInterfaces, _CurrentInterface)){
+      return false
+    }
+    else{
+      return true
+    }
+  }
+
+  function testTestCasesByDescribes(server, describeTitle, descriptions) {
+
+    // describe(describeTitle, async function () {
+    //
+    //   before(async function() {
+    //     execEachTestCase(testCases, 0)
+    //     await utility.timeout(testConfig.defaultBlockTime)
+    //   })
+    //
+    //   testCases.forEach(async function(testCase){
+    //     it(testCase.title, async function () {
+    //       await testCase.checkFunction(testCase)
+    //     })
+    //   })
+    // })
+  }
+  //endregion
+
+  function testForTransfer(server, categoryName, txFunctionName, txParams, testMode){
+    let testName = ''
+    let describeTitle = ''
+    let testCases = []
+
+    testName = '测试基本交易'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams)
+    testTestCases(server, describeTitle, testCases, testMode)
+
+    testName = '测试交易memo'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
+    testTestCases(server, describeTitle, testCases, testMode)
+
+    testName = '测试交易Fee'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName, txParams)
+    testTestCases(server, describeTitle, testCases, testMode)
+  }
+
+  function testForIssueToken(server, categoryName, txFunctionName, account, configToken, testMode){
+    let testName = ''
+    let describeTitle = ''
+    let testCases = []
+    let txParams = {}
+
+    //create token
+    testName = '测试创建token'
+    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+    txParams = createTxParamsForIssueToken(server, account, configToken)
+    testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
+    testTestCases(server, describeTitle, testCases, testMode)
+
+    //set created token properties
+    let tokenName = testCases[0].txParams[0].name
+    let tokenSymbol = testCases[0].txParams[0].symbol
+    let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
+    logger.debug("===create token: " + tokenSymbol)
+
+    //token transfer
+    let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+    describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+    testForTransfer(server, categoryName, txFunctionName, transferTxParams, testMode)
+
+    //mint token
+    let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+    describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
+    testTestCases(server, describeTitle, testCases, testMode)
+
+    //burn token
+    describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+    testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+    testTestCases(server, describeTitle, testCases, testMode)
+  }
+
+  function testForIssueTokenInComplexMode(server, txFunctionName, testMode){
+    let account = addresses.sender3
+    let configToken = token.config_normal
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_mintable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_burnable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_mint_burn
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_normal
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_mintable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_burnable
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+    configToken = token.config_issuer_mint_burn
+    describe(configToken.testName + '测试：' + txFunctionName, async function () {
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+    })
+
+  }
+  //endregion
+
+  //endregion
+
+  //region pressure test
+
+  function createTestCasesForPressureTest(server, categoryName, testCount){
+    let testCases = []
+    let txParams = createTxParamsForTransfer(server)
+    let txFunctionName = consts.rpcFunctions.sendTx
+    let executeFunction = executeTestCaseOfSendTx
+    let checkFunction = checkTestCaseOfSendTx
+    let expecteResult = createExpecteResult(true)
+
+    for(let i = 0; i <= testCount; i++){
+      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server,
+          txFunctionName, txParams, null,
+          executeFunction, checkFunction, expecteResult,
+          restrictedLevel.L0)
+      addTestCase(testCases, testCase)
+    }
+    return testCases
+  }
+
+  //endregion
+
+  //region common test case
+
+  //region create tx test case
 
   //region transfer tx
 
@@ -1241,497 +1750,45 @@ describe('Jingtum测试', function () {
 
   //endregion
 
-  //region common
-  function addTestCase(testCases, testCase){
-    if(ifNeedExecuteOrCheck(testCase)){
-      testCases.push(testCase)
-    }
-  }
-  //endregion
+  //region create blockNumber test case
 
-  //endregion
-
-  //region 2. execute test cases
-
-  function executeTestCaseOfCommon(testCase, specialExecuteFunction){
-    return new Promise(function(resolve){
-      let server = testCase.server
-      let data = testCase.txParams[0]
-      let from = data.from
-      getSequence(server, from).then(function(sequence){
-        data.sequence = sequence
-        server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
-          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution: 0
-          logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
-          executeTxByTestCase(testCase).then(function(response){
-            specialExecuteFunction(testCase, response, resolve)
-          })
-        })
-      })
-    })
-  }
-
-  function executeTestCaseOfSendTx(testCase){
-    return executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
-      addSequenceAfterResponseSuccess(response, testCase.txParams[0])
-      testCase.hasExecuted = true
-      testCase.actualResult.push(response)
-      resolve(testCase)
-    })
-  }
-
-  function executeTestCaseOfSignTxAndSendRawTx(testCase){
-    return executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
-      testCase.hasExecuted = true
-      testCase.actualResult.push(responseOfSign)
-      if(responseOfSign.status === status.success){
-        if(testCase.expecteResult.needPass){
-          if(!testCase.subTestCases || testCase.subTestCases.length == 0){
-            testCase.executionResult = false
-            resolve(responseOfSign)
-          }
-          else{
-            let rawTx = testCase.actualResult[0].result[0]
-            if(rawTx && rawTx.length > 0){
-              let data = []
-              data.push(rawTx)
-              let testCaseOfSendRawTx = testCase.subTestCases[0]
-              testCaseOfSendRawTx.txParams = data
-              executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
-                testCaseOfSendRawTx.hasExecuted = true
-                testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
-                addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase.txParams[0])
-                resolve(responseOfSendRawTx)
-              })
-            }
-            else{
-              testCase.executionResult = false
-              resolve(responseOfSign)
-            }
-          }
-        }
-        else{
-          resolve(responseOfSign)
-        }
-      }
-      else{
-        resolve(responseOfSign)
-      }
-    })
-  }
-
-  //if send tx successfully, then sequence need plus 1
-  function addSequenceAfterResponseSuccess(response, data){
-    if(response.status === status.success){
-      setSequence(data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
-    }
-  }
-
-  //region common execute
-
-  function executeTxByTestCase(testCase){
-    logger.debug(testCase.title)
-    return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-  }
-
-  //region execute the function which will NOT write block like jt_signTransaction
-
-  function executeTestCaseOfCommonFunction(testCase){
-    return new Promise(function(resolve){
-      executeTxByTestCase(testCase).then(function(response){
-        testCase.hasExecuted = true
-        testCase.actualResult.push(response)
-        resolve(response)
-      })
-    })
-  }
-
-  //endregion
-
-  async function execEachTestCase(testCases, index){
-    if(index < testCases.length){
-      let testCase = testCases[index]
-      // logger.debug("===1. index: " + index )
-      await testCase.executeFunction(testCase)
-      // logger.debug("===2. index: " + index )
-      index++
-      execEachTestCase(testCases, index)
-      // logger.debug("===3. index: " + index )
-    }
-  }
-
-  //endregion
-
-  //endregion
-
-  //region 3. check test cases
-
-  //region check send tx result
-  async function checkTestCaseOfSendTx(testCase){
-    await checkResponseOfTransfer(testCase, testCase.txParams)
-  }
-
-  async function checkResponseOfCommon(testCase, txParams, checkFunction){
-    let responseOfSendTx = testCase.actualResult[0]
-    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
-    if(testCase.expecteResult.needPass){
-      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-      let hash = responseOfSendTx.result[0]
-      await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-        checkResponse(true, responseOfGetTx)
-        // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-        expect(responseOfGetTx.result.hash).to.be.equal(hash)
-        await checkFunction(testCase, txParams, responseOfGetTx.result)
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    }
-    else{
-      let expecteResult = testCase.expecteResult
-      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
-    }
-  }
-
-  async function checkResponseOfTransfer(testCase, txParams){
-    await checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
-      let params = txParams[0]
-      await compareActualTxWithTxParams(params, tx)
-    })
-  }
-
-  function getBalanceValue(balanceObject){
-    if(balanceObject){
-      if(balanceObject.value){
-        return Number(balanceObject.value.toString())
-      }
-      else{
-        return Number(balanceObject.toString())
-      }
-    }
-    else{
-      return 0
-    }
-  }
-
-  async function checkTestCaseOfMintOrBurn(testCase){
-    await checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
-      let params = txParams[0]
-      await testCase.server.getBalance(params.from, params.symbol).then(function(balanceAfterExecution){
-        testCase.balanceAfterExecution = balanceAfterExecution
-        oldBalance = getBalanceValue(testCase.balanceBeforeExecution)
-        newBalance = getBalanceValue(testCase.balanceAfterExecution)
-        if(params.type === consts.rpcParamConsts.issueCoin){
-          expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
-        }
-        else{
-          expect(newBalance).to.be.equals(newBalance + Number(params.value))
-        }
-
-        logger.debug("balanceAfterExecution:" + JSON.stringify(testCase))
-        logger.debug("balanceAfterExecution, symbol:" + params.symbol)
-        logger.debug("balanceAfterExecution:" + JSON.stringify(balanceAfterExecution))
-
-        expect(false).to.be.ok
-      })
-      // expect(true).to.be.ok
-    })
-  }
-
-  function compareActualTxWithTxParams(txParams, tx){
-    return new Promise(function(resolve){
-      expect(tx.Account).to.be.equals(txParams.from)
-      expect(tx.Destination).to.be.equals(txParams.to)
-      expect(tx.Fee).to.be.equals(((txParams.fee) ? txParams.fee : 10).toString())
-      //check value
-      if(txParams.type == consts.rpcParamConsts.issueCoin){
-        expect(tx.Name).to.be.equals(txParams.name)
-        expect(tx.Decimals).to.be.equals(txParams.decimals)
-        expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
-        expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
-        expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : addresses.defaultIssuer.address)
-        if(_CurrentRestrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
-      }
-      else{
-        if(txParams.symbol){
-          expect(tx.Amount.currency).to.be.equals(txParams.symbol)
-          expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
-        }
-        else{
-          expect(tx.Amount).to.be.equals(txParams.value)
-        }
-      }
-      //check memos
-      if(tx.Memos){
-        let memos = tx.Memos
-        let expectedMemos = txParams.memos
-        for(let i = 0; i < expectedMemos.length; i++){
-          let expectedMemo = expectedMemos[i]
-          if(typeof expectedMemo == "string"){
-            expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
-          }
-          else if(expectedMemo.data){
-            expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
-          }
-          else{
-            expect(false).to.be.ok
-          }
-          //todo need check type and format also. need make type, format, data of memo function clear with weijia.
-        }
-      }
-      // expect(false).to.be.ok
-      resolve("done!")
-    })
-  }
-
-  function getTxByHash(server, hash, retryCount){
-    return server.responseGetTxByHash(hash)
-        .then(async function (value) {
-          //retry
-          if(retryCount < testConfig.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
-              || value.result.toString().indexOf('no such transaction') != -1)){
-            retryCount++
-            logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
-            await utility.timeout(testConfig.retryPauseTime)
-            return getTxByHash(server, hash, retryCount)
-          }
-          return value
-        }).catch(function(error){
-          logger.debug(error)
-          expect(error).to.not.be.ok
-        })
-  }
-
-  //endregion
-
-  //region check sign and send raw tx result
-  async function checkTestCaseOfSignTxAndSendRawTx(testCase){
-    //check sign result
-    let responseOfSendTx = testCase.actualResult[0]
-    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
-    if(testCase.expecteResult.needPass){
-      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-      let signedTx = responseOfSendTx.result[0]
-      expect(typeof(signedTx) === 'string').to.be.ok
-      expect(isHex(signedTx)).to.be.ok
-
-      //check send raw tx result
-      let txParams = testCase.txParams
-      let testCaseOfSendRawTx = testCase.subTestCases[0]
-      await checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
-    }
-    else{
-      let expecteResult = testCase.expecteResult
-      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
-    }
-  }
-  //endregion
-
-  //endregion
-
-  //region 4. test test cases
-
-  //region common
-  function testTestCases(server, describeTitle, testCases, testMode) {
-    if(!testMode || testMode == testModeEnums.batchMode){
-      testBatchTestCases(server, describeTitle, testCases)
-    }
-    else if (testMode == testModeEnums.singleMode) {
-      testSingleTestCases(server, describeTitle, testCases)
-    }
-    else{
-      logger.debug("No special test mode!")
-    }
-  }
-
-  function testBatchTestCases(server, describeTitle, testCases) {
-    describe(describeTitle, async function () {
-
-      before(async function() {
-        execEachTestCase(testCases, 0)
-        await utility.timeout(testConfig.defaultBlockTime)
-      })
-
-      testCases.forEach(async function(testCase){
-        it(testCase.title, async function () {
-          await testCase.checkFunction(testCase)
-        })
-      })
-    })
-  }
-
-  function testSingleTestCases(server, describeTitle, testCases) {
-    describe(describeTitle, async function () {
-      testCases.forEach(async function(testCase){
-        it(testCase.title, async function () {
-          await testCase.executeFunction(testCase)
-          await testCase.checkFunction(testCase)
-        })
-      })
-    })
-  }
-
-  function ifNeedExecuteOrCheck(testCase){
-    if(_CurrentRestrictedLevel < testCase.restrictedLevel){
-      return false
-    }
-    else if(!(!testCase.supportedServices || testCase.supportedServices.length == 0)
-        && !ifArrayHas(testCase.supportedServices, _CurrentService)){
-      return false
-    }
-    else if(!(!testCase.supportedInterfaces || testCase.supportedInterfaces.length == 0)
-        && !ifArrayHas(testCase.supportedInterfaces, _CurrentInterface)){
-      return false
-    }
-    else{
-      return true
-    }
-  }
-
-  function testTestCasesByDescribes(server, describeTitle, descriptions) {
-
-    // describe(describeTitle, async function () {
-    //
-    //   before(async function() {
-    //     execEachTestCase(testCases, 0)
-    //     await utility.timeout(testConfig.defaultBlockTime)
-    //   })
-    //
-    //   testCases.forEach(async function(testCase){
-    //     it(testCase.title, async function () {
-    //       await testCase.checkFunction(testCase)
-    //     })
-    //   })
-    // })
-  }
-  //endregion
-
-  function testForTransfer(server, categoryName, txFunctionName, txParams, testMode){
-    let testName = ''
-    let describeTitle = ''
+  function createTestCasesForGetBlockNumber(server){
     let testCases = []
+    let testCase = {}
+    let title = ''
 
-    testName = '测试基本交易'
-    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    //region test cases for basic transfer
 
-    testName = '测试交易memo'
-    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
-
-    testName = '测试交易Fee'
-    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
-  }
-
-  function testForIssueToken(server, categoryName, txFunctionName, account, configToken, testMode){
-    let testName = ''
-    let describeTitle = ''
-    let testCases = []
-    let txParams = {}
-
-    //create token
-    testName = '测试创建token'
-    describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-    txParams = createTxParamsForIssueToken(server, account, configToken)
-    testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
-
-    //set created token properties
-    let tokenName = testCases[0].txParams[0].name
-    let tokenSymbol = testCases[0].txParams[0].symbol
-    let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
-    logger.debug("===create token: " + tokenSymbol)
-
-    //token transfer
-    let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-    describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testForTransfer(server, categoryName, txFunctionName, transferTxParams, testMode)
-
-    //mint token
-    let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-    describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
-    testTestCases(server, describeTitle, testCases, testMode)
-
-    //burn token
-    describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-    testTestCases(server, describeTitle, testCases, testMode)
-  }
-
-  function testForIssueTokenInComplexMode(server, txFunctionName, testMode){
-    let account = addresses.sender3
-    let configToken = token.config_normal
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_mintable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_burnable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_mint_burn
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_normal
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_mintable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_burnable
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-    configToken = token.config_issuer_mint_burn
-    describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
-    })
-
-  }
-  //endregion
-
-  //endregion
-
-  //region pressure test
-
-  function createTestCasesForPressureTest(server, categoryName, testCount){
-    let testCases = []
-    let txParams = createTxParamsForTransfer(server)
-    let txFunctionName = consts.rpcFunctions.sendTx
-    let executeFunction = executeTestCaseOfSendTx
-    let checkFunction = checkTestCaseOfSendTx
-    let expecteResult = createExpecteResult(true)
-
-    for(let i = 0; i <= testCount; i++){
-      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server,
-          txFunctionName, txParams, null,
-          executeFunction, checkFunction, expecteResult,
-          restrictedLevel.L0)
+    title = '0010\t查询最新区块号'
+    {
+      testCase = createTestCase(title, server, consts.rpcFunctions.getBlockNumber, null,
+          null, executeTestCaseForGet, checkBlockNumber, null,
+          restrictedLevel.L2, [], [])
       addTestCase(testCases, testCase)
     }
+
+    //endregion
+
     return testCases
   }
 
-  //endregion
+  function checkBlockNumber(testCase){
+    let response = testCase.actualResult[0]
+    checkResponse(true, response)
+    expect(response.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
+    expect(response.result).to.be.above(100)
+  }
 
-  //region common test case
+  function testForGetBlockNumber(server, testMode){
+    let describeTitle = ''
+    let testCases = []
+
+    describeTitle = '测试获取区块高度'
+    testCases = createTestCasesForGetBlockNumber(server)
+    testTestCases(server, describeTitle, testCases, testMode)
+  }
+
+  //endregion
 
   //region balance check
   function testGetBalanceByTag(server, tag){
