@@ -1,5 +1,4 @@
-var rpc = require('../lib/rpc/interfaces.js')
-const consts = require('../lib/rpc/consts')
+let rpc = require('../lib/rpc/interfaces.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
 

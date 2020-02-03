@@ -1,4 +1,4 @@
-const consts = require('../lib/rpc/consts')
+const consts = require('../lib/consts')
 
 let chains = ['swt', 'bwt']
 

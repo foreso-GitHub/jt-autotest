@@ -8,13 +8,15 @@ let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 var utility = require("./testUtility.js")
 const schema = require("./schema.js")
-const consts = require('../lib/rpc/consts')
+const consts = require('../lib/consts')
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
 const { servers, testConfig, modes } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
 const testModeEnums = testMode
 //endregion
+
+let swtclib = require('../lib/swtclib/swtclib-interface.js')
 
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
@@ -484,7 +486,12 @@ describe('Jingtum测试', function () {
       describe('is working', function () {
 
         describe('测试jt_blockNumber', function () {
-          testForGetBlockNumber(server, _TestMode)
+
+          let server1 = new swtclib()
+          testForGetBlockNumber(server1, _TestMode)
+
+          // testForGetBlockNumber(server, _TestMode)
+
         })
 
       })
@@ -1198,7 +1205,7 @@ describe('Jingtum测试', function () {
 
   //region common test case
 
-  //region create tx test case
+  //region tx test case
 
   //region transfer tx
 
@@ -1750,7 +1757,7 @@ describe('Jingtum测试', function () {
 
   //endregion
 
-  //region create blockNumber test case
+  //region blockNumber test case
 
   function createTestCasesForGetBlockNumber(server){
     let testCases = []
