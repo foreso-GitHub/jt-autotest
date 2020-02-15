@@ -1,4 +1,5 @@
 let rpc = require('../lib/rpc/interfaces.js')
+let swtclib = require('../lib/swtclib/swtclib-interface.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
 
@@ -7,9 +8,11 @@ const RPC_URL_9545 = 'http://139.198.177.59:9545/v1/jsonrpc'
 
 let rpc_7545 = new rpc()
 let rpc_9545 = new rpc()
-let servers = [rpc_7545, rpc_9545]
+let lib_main = new swtclib()
+let lib_test = new swtclib()
+let servers = [rpc_7545, rpc_9545, lib_main]
 
-let testConfig = {
+let testConfig_newChain = {
     testMode: testMode.batchMode,
     restrictedLevel: restrictedLevel.L2,
     defaultBlockTime: 5000,
@@ -18,12 +21,23 @@ let testConfig = {
     defaultFee: "10",
 }
 
+let testConfig_oldChain = {
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L2,
+    defaultBlockTime: 10000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultFee: "10",
+}
+
 let modes = [
     {
         server: rpc_9545,
-        url: RPC_URL_9545,
+        initParams: {url:'http://139.198.177.59:9545/v1/jsonrpc'},
+        // url: RPC_URL_9545,
         service: serviceType.newChain,
         interface: interfaceType.rpc,
+        testConfig: testConfig_newChain,
         tx1: data.chain.tx,
     },
     // {
@@ -33,11 +47,18 @@ let modes = [
     //     interface: interfaceType.rpc,
     //     tx1: data.ipfs.tx,
     // },
+    {
+        server: lib_main,
+        initParams: {url:'wss://c05.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
+        service: serviceType.oldChain,
+        interface: interfaceType.websocket,
+        testConfig: testConfig_oldChain,
+        tx1: data.chain.tx,
+    },
 ]
 
 
 module.exports = {
     servers,
-    testConfig,
     modes,
 }

@@ -10,20 +10,17 @@ var utility = require("./testUtility.js")
 const schema = require("./schema.js")
 const consts = require('../lib/consts')
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
-const { servers, testConfig, modes } = require("./config")
+const { servers, modes } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
 const testModeEnums = testMode
 //endregion
 
-let swtclib = require('../lib/swtclib/swtclib-interface.js')
-
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
 
 //region config
-let _TestMode = testConfig.testMode
-let _CurrentRestrictedLevel = testConfig.restrictedLevel
+let _CurrentRestrictedLevel
 let _CurrentService = serviceType.unknown
 let _CurrentInterface = interfaceType.unknown
 //endregion
@@ -40,12 +37,14 @@ describe('Jingtum测试', function () {
   for(let mode of modes){
     
     let server = mode.server
-    server.setUrl(mode.url)
+    server.init(mode)
+    _CurrentRestrictedLevel = mode.testConfig.restrictedLevel
     _CurrentService = mode.service
     _CurrentInterface = mode.interface
 
     describe('测试模式: ' + server.getName(), function () {
 
+      /*
       describe.skip('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
@@ -108,15 +107,7 @@ describe('Jingtum测试', function () {
 
         describe('测试jt_blockNumber', function () {
 
-          it('0010\t查询最新区块号', function () {
-            return Promise.resolve(server.responseBlockNumber()).then(function (value) {
-              checkResponse(true, value)
-              expect(value.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
-              expect(server.processBlockNumberResponse(value)).to.be.above(100)
-            }, function (err) {
-              expect(err).to.be.ok
-            })
-          })
+          testForGetBlockNumber(server, _TestMode)
 
           it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
             return Promise.resolve(get2BlockNumber(server)).then(function (value) {
@@ -479,20 +470,37 @@ describe('Jingtum测试', function () {
 
           //endregion
 
+
+
         })
 
       })
+      //*/
 
       describe('is working', function () {
 
         describe('测试jt_blockNumber', function () {
 
-          let server1 = new swtclib()
-          testForGetBlockNumber(server1, _TestMode)
+          // let server1 = new swtclib()
+          // server1.init({url: 'wss://c05.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})
+          // server1.connect()
 
-          // testForGetBlockNumber(server, _TestMode)
+          //testForGetBlockNumber(server1, _TestMode)
+
+          testForGetBlockNumber(server)
+
+          it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
+            return Promise.resolve(get2BlockNumber(server)).then(function (value) {
+              expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
+              expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
+            }, function (err) {
+              expect(err).to.be.ok
+            })
+          })
 
         })
+
+
 
       })
 
@@ -959,11 +967,11 @@ describe('Jingtum测试', function () {
     return server.responseGetTxByHash(hash)
         .then(async function (value) {
           //retry
-          if(retryCount < testConfig.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+          if(retryCount < server.getTestConfig().retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
               || value.result.toString().indexOf('no such transaction') != -1)){
             retryCount++
             logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
-            await utility.timeout(testConfig.retryPauseTime)
+            await utility.timeout(server.getTestConfig().retryPauseTime)
             return getTxByHash(server, hash, retryCount)
           }
           return value
@@ -1003,7 +1011,8 @@ describe('Jingtum测试', function () {
   //region 4. test test cases
 
   //region common
-  function testTestCases(server, describeTitle, testCases, testMode) {
+  function testTestCases(server, describeTitle, testCases) {
+    let testMode = server.getMode().testConfig.testMode
     if(!testMode || testMode == testModeEnums.batchMode){
       testBatchTestCases(server, describeTitle, testCases)
     }
@@ -1020,7 +1029,7 @@ describe('Jingtum测试', function () {
 
       before(async function() {
         execEachTestCase(testCases, 0)
-        await utility.timeout(testConfig.defaultBlockTime)
+        await utility.timeout(server.getTestConfig().defaultBlockTime)
       })
 
       testCases.forEach(async function(testCase){
@@ -1065,7 +1074,7 @@ describe('Jingtum测试', function () {
     //
     //   before(async function() {
     //     execEachTestCase(testCases, 0)
-    //     await utility.timeout(testConfig.defaultBlockTime)
+    //     await utility.timeout(server.getTestConfig().defaultBlockTime)
     //   })
     //
     //   testCases.forEach(async function(testCase){
@@ -1432,7 +1441,7 @@ describe('Jingtum测试', function () {
     testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为默认值12'
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-        testCaseParams.txParams[0].fee = testConfig.defaultFee
+        testCaseParams.txParams[0].fee = server.getTestConfig().defaultFee
       })
       addTestCase(testCases, testCase)
     }
@@ -1768,9 +1777,18 @@ describe('Jingtum测试', function () {
 
     title = '0010\t查询最新区块号'
     {
-      testCase = createTestCase(title, server, consts.rpcFunctions.getBlockNumber, null,
-          null, executeTestCaseForGet, checkBlockNumber, null,
-          restrictedLevel.L2, [], [])
+      testCase = createTestCase(
+          title,
+          server,
+          consts.rpcFunctions.getBlockNumber,
+          null,
+          null,
+          executeTestCaseForGet,
+          checkBlockNumber,
+          null,
+          restrictedLevel.L2,
+          [serviceType.newChain, serviceType.oldChain],
+          [interfaceType.rpc, interfaceType.websocket])
       addTestCase(testCases, testCase)
     }
 
@@ -1786,13 +1804,13 @@ describe('Jingtum测试', function () {
     expect(response.result).to.be.above(100)
   }
 
-  function testForGetBlockNumber(server, testMode){
+  function testForGetBlockNumber(server){
     let describeTitle = ''
     let testCases = []
 
     describeTitle = '测试获取区块高度'
     testCases = createTestCasesForGetBlockNumber(server)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
   }
 
   //endregion
@@ -2178,7 +2196,8 @@ describe('Jingtum测试', function () {
       if(!server) reject("Server cannot be null!")
       let result = {}
       result.blockNumber1 = await server.getBlockNumber()
-      await utility.timeout(testConfig.defaultBlockTime)
+      //logger.debug("defaultBlockTime: " + server.getTestConfig().defaultBlockTime)
+      await utility.timeout(server.getTestConfig().defaultBlockTime)
       result.blockNumber2 = await server.getBlockNumber()
       resolve(result)
     })
