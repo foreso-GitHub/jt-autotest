@@ -38,14 +38,18 @@ describe('Jingtum测试', function () {
     
     let server = mode.server
     server.init(mode)
-    _CurrentRestrictedLevel = mode.testConfig.restrictedLevel
+    _CurrentRestrictedLevel = mode.restrictedLevel
     _CurrentService = mode.service
     _CurrentInterface = mode.interface
 
     describe('测试模式: ' + server.getName(), function () {
 
+      before(async function() {
+        await server.connect()
+      })
+
       /*
-      describe.skip('用例测试', function () {
+      describe('用例测试', function () {
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -107,7 +111,7 @@ describe('Jingtum测试', function () {
 
         describe('测试jt_blockNumber', function () {
 
-          testForGetBlockNumber(server, _TestMode)
+          testForGetBlockNumber(server)
 
           it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
             return Promise.resolve(get2BlockNumber(server)).then(function (value) {
@@ -441,18 +445,18 @@ describe('Jingtum测试', function () {
           txFunctionName = consts.rpcFunctions.sendTx
           txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
+            testForTransfer(server, categoryName, txFunctionName, txParams)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
           // txParams = createTxParamsForTransfer(server)
           describe(categoryName + '测试：' + txFunctionName, async function () {
-            testForTransfer(server, categoryName, txFunctionName, txParams, _TestMode)
+            testForTransfer(server, categoryName, txFunctionName, txParams)
           })
 
           categoryName = '原生币swt压力测试'
           testCases = createTestCasesForPressureTest(server, categoryName, 20)
-          testTestCases(server, categoryName, testCases, _TestMode)
+          testTestCases(server, categoryName, testCases)
 
           //endregion
 
@@ -460,12 +464,12 @@ describe('Jingtum测试', function () {
 
           txFunctionName = consts.rpcFunctions.sendTx
           describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
+            testForIssueTokenInComplexMode(server, txFunctionName)
           })
 
           txFunctionName = consts.rpcFunctions.signTx
           describe('代币测试：' + txFunctionName, async function () {
-            testForIssueTokenInComplexMode(server, txFunctionName, _TestMode)
+            testForIssueTokenInComplexMode(server, txFunctionName)
           })
 
           //endregion
@@ -479,28 +483,18 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        describe('测试jt_blockNumber', function () {
+        ///*
 
-          // let server1 = new swtclib()
-          // server1.init({url: 'wss://c05.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})
-          // server1.connect()
-
-          //testForGetBlockNumber(server1, _TestMode)
-
-          testForGetBlockNumber(server)
-
-          it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
-            return Promise.resolve(get2BlockNumber(server)).then(function (value) {
-              expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
-              expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
-            }, function (err) {
-              expect(err).to.be.ok
-            })
-          })
-
+        describe('测试jt_getBlockByNumber', function () {
+          // testGetBlockByNumber(server)
+          testForGetBlockByNumber(server)
         })
 
+        describe('测试jt_getBlockByHash', function () {
+          testForGetBlockByHash(server)
+        })
 
+        //*/
 
       })
 
@@ -532,7 +526,7 @@ describe('Jingtum测试', function () {
     testCaseParams.otherParams = {}
     testCaseParams.executeFunction = executeTestCaseOfSendTx
     testCaseParams.checkFunction = checkTestCaseOfSendTx
-    testCaseParams.expecteResult = createExpecteResult(true)
+    testCaseParams.expectedResult = createExpecteResult(true)
     testCaseParams.testCase = {}
     testCaseParams.symbol = testCaseParams.txParams[0].symbol
     testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
@@ -553,7 +547,7 @@ describe('Jingtum测试', function () {
     return testCaseParams
   }
 
-  function createTestCase(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expecteResult,
+  function createTestCase(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expectedResult,
                           restrictedLv, supportedServices, supportedInterfaces){
     let testCase = {}
     testCase.type = "it"
@@ -564,7 +558,7 @@ describe('Jingtum测试', function () {
     if(otherParams) testCase.otherParams = otherParams
     if(executeFunction) testCase.executeFunction = executeFunction
     if(checkFunction) testCase.checkFunction = checkFunction
-    if(expecteResult) testCase.expecteResult = expecteResult
+    if(expectedResult) testCase.expectedResult = expectedResult
     testCase.hasExecuted = false
     testCase.actualResult = []
     testCase.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
@@ -576,7 +570,7 @@ describe('Jingtum测试', function () {
   function createTestCaseByParams(testCaseParams){
     return createTestCase(testCaseParams.title, testCaseParams.server,
         testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
-        testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expecteResult,
+        testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expectedResult,
         testCaseParams.restrictedLevel, testCaseParams.supportedServices, testCaseParams.supportedInterfaces)
   }
 
@@ -618,20 +612,20 @@ describe('Jingtum测试', function () {
   }
 
   function createExpecteResult(needPass, isErrorInResult, expectedError){
-    let expecteResult = {}
-    expecteResult.needPass = needPass
-    expecteResult.isErrorInResult = isErrorInResult
-    expecteResult.expectedError = expectedError
-    return expecteResult
+    let expectedResult = {}
+    expectedResult.needPass = needPass
+    expectedResult.isErrorInResult = isErrorInResult
+    expectedResult.expectedError = expectedError
+    return expectedResult
   }
   //endregion
 
   //region common create method for sendTx and signTx
 
-  function addTestCaseForSendRawTx(testCaseOfSignTx, expecteResultOfSendRawTx){
+  function addTestCaseForSendRawTx(testCaseOfSignTx, expectedResultOfSendRawTx){
     let txFunctionName = consts.rpcFunctions.sendRawTx
     let testCaseOfSendRawTx = createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
-        txFunctionName, null,null, null, null, expecteResultOfSendRawTx,
+        txFunctionName, null,null, null, null, expectedResultOfSendRawTx,
         testCaseOfSignTx.restrictedLevel, testCaseOfSignTx.supportedServices, testCaseOfSignTx.supportedInterfaces)
     testCaseOfSignTx.subTestCases = []
     testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
@@ -642,11 +636,11 @@ describe('Jingtum测试', function () {
   function createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction){
     testCaseParams.txParams = cloneParamsAarry(testCaseParams.originalTxParams)
     updateTxParamsFunction()
-    testCaseParams.expecteResult = createExpecteResult(true)
+    testCaseParams.expectedResult = createExpecteResult(true)
     let testCase = createTestCaseByParams(testCaseParams)
     if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
-      let expecteResultOfSendRawTx = createExpecteResult(true)
-      addTestCaseForSendRawTx(testCase, expecteResultOfSendRawTx)
+      let expectedResultOfSendRawTx = createExpecteResult(true)
+      addTestCaseForSendRawTx(testCase, expectedResultOfSendRawTx)
     }
     return testCase
   }
@@ -687,9 +681,9 @@ describe('Jingtum测试', function () {
     updateTxParamsFunction()
     let testCase = createTestCaseByParams(testCaseParams)
     if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
-      let expecteResultOfSignTx = createExpecteResult(true)
-      testCase.expecteResult = expecteResultOfSignTx
-      addTestCaseForSendRawTx(testCase, testCaseParams.expecteResult)
+      let expectedResultOfSignTx = createExpecteResult(true)
+      testCase.expectedResult = expectedResultOfSignTx
+      addTestCaseForSendRawTx(testCase, testCaseParams.expectedResult)
     }
     return testCase
   }
@@ -751,7 +745,7 @@ describe('Jingtum测试', function () {
       testCase.hasExecuted = true
       testCase.actualResult.push(responseOfSign)
       if(responseOfSign.status === status.success){
-        if(testCase.expecteResult.needPass){
+        if(testCase.expectedResult.needPass){
           if(!testCase.subTestCases || testCase.subTestCases.length == 0){
             testCase.executionResult = false
             resolve(responseOfSign)
@@ -796,12 +790,15 @@ describe('Jingtum测试', function () {
 
   //region for get
   function executeTestCaseForGet(testCase){
-    executeTxByTestCase(testCase).then(function(response){
-      testCase.hasExecuted = true
-      testCase.actualResult.push(response)
-    }, function (error) {
-      logger.debug(error)
-      expect(false).to.be.ok
+    return new Promise(async (resolve, reject) => {
+      executeTxByTestCase(testCase).then(function(response){
+        testCase.hasExecuted = true
+        testCase.actualResult.push(response)
+        resolve(testCase)
+      }, function (error) {
+        logger.debug(error)
+        expect(false).to.be.ok
+      })
     })
   }
 
@@ -835,7 +832,7 @@ describe('Jingtum测试', function () {
       await testCase.executeFunction(testCase)
       // logger.debug("===2. index: " + index )
       index++
-      execEachTestCase(testCases, index)
+      await execEachTestCase(testCases, index)
       // logger.debug("===3. index: " + index )
     }
   }
@@ -853,8 +850,8 @@ describe('Jingtum测试', function () {
 
   async function checkResponseOfCommon(testCase, txParams, checkFunction){
     let responseOfSendTx = testCase.actualResult[0]
-    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
-    if(testCase.expecteResult.needPass){
+    checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
+    if(testCase.expectedResult.needPass){
       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
       let hash = responseOfSendTx.result[0]
       await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
@@ -867,8 +864,8 @@ describe('Jingtum测试', function () {
       })
     }
     else{
-      let expecteResult = testCase.expecteResult
-      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+      let expectedResult = testCase.expectedResult
+      expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
     }
   }
 
@@ -967,11 +964,11 @@ describe('Jingtum测试', function () {
     return server.responseGetTxByHash(hash)
         .then(async function (value) {
           //retry
-          if(retryCount < server.getTestConfig().retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+          if(retryCount < server.getMode().retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
               || value.result.toString().indexOf('no such transaction') != -1)){
             retryCount++
             logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
-            await utility.timeout(server.getTestConfig().retryPauseTime)
+            await utility.timeout(server.getMode().retryPauseTime)
             return getTxByHash(server, hash, retryCount)
           }
           return value
@@ -987,8 +984,8 @@ describe('Jingtum测试', function () {
   async function checkTestCaseOfSignTxAndSendRawTx(testCase){
     //check sign result
     let responseOfSendTx = testCase.actualResult[0]
-    checkResponse(testCase.expecteResult.needPass, responseOfSendTx)
-    if(testCase.expecteResult.needPass){
+    checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
+    if(testCase.expectedResult.needPass){
       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
       let signedTx = responseOfSendTx.result[0]
       expect(typeof(signedTx) === 'string').to.be.ok
@@ -1000,8 +997,8 @@ describe('Jingtum测试', function () {
       await checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
     }
     else{
-      let expecteResult = testCase.expecteResult
-      expect((expecteResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expecteResult.expectedError)
+      let expectedResult = testCase.expectedResult
+      expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
     }
   }
   //endregion
@@ -1012,7 +1009,7 @@ describe('Jingtum测试', function () {
 
   //region common
   function testTestCases(server, describeTitle, testCases) {
-    let testMode = server.getMode().testConfig.testMode
+    let testMode = server.getMode().testMode
     if(!testMode || testMode == testModeEnums.batchMode){
       testBatchTestCases(server, describeTitle, testCases)
     }
@@ -1028,12 +1025,14 @@ describe('Jingtum测试', function () {
     describe(describeTitle, async function () {
 
       before(async function() {
-        execEachTestCase(testCases, 0)
-        await utility.timeout(server.getTestConfig().defaultBlockTime)
+        await execEachTestCase(testCases, 0)
+        //logger.debug('aaa')
+        // await utility.timeout(server.getMode().defaultBlockTime)
       })
 
       testCases.forEach(async function(testCase){
         it(testCase.title, async function () {
+          //logger.debug('bbb: ' + testCase.title + "     " + testCase.hasExecuted)
           await testCase.checkFunction(testCase)
         })
       })
@@ -1074,7 +1073,7 @@ describe('Jingtum测试', function () {
     //
     //   before(async function() {
     //     execEachTestCase(testCases, 0)
-    //     await utility.timeout(server.getTestConfig().defaultBlockTime)
+    //     await utility.timeout(server.getMode().defaultBlockTime)
     //   })
     //
     //   testCases.forEach(async function(testCase){
@@ -1086,7 +1085,7 @@ describe('Jingtum测试', function () {
   }
   //endregion
 
-  function testForTransfer(server, categoryName, txFunctionName, txParams, testMode){
+  function testForTransfer(server, categoryName, txFunctionName, txParams){
     let testName = ''
     let describeTitle = ''
     let testCases = []
@@ -1094,20 +1093,20 @@ describe('Jingtum测试', function () {
     testName = '测试基本交易'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
 
     testName = '测试交易memo'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
 
     testName = '测试交易Fee'
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
   }
 
-  function testForIssueToken(server, categoryName, txFunctionName, account, configToken, testMode){
+  function testForIssueToken(server, categoryName, txFunctionName, account, configToken){
     let testName = ''
     let describeTitle = ''
     let testCases = []
@@ -1118,7 +1117,7 @@ describe('Jingtum测试', function () {
     describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
     txParams = createTxParamsForIssueToken(server, account, configToken)
     testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
 
     //set created token properties
     let tokenName = testCases[0].txParams[0].name
@@ -1129,60 +1128,60 @@ describe('Jingtum测试', function () {
     //token transfer
     let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
     describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-    testForTransfer(server, categoryName, txFunctionName, transferTxParams, testMode)
+    testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
     //mint token
     let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
     describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
 
     //burn token
     describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
     testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-    testTestCases(server, describeTitle, testCases, testMode)
+    testTestCases(server, describeTitle, testCases)
   }
 
-  function testForIssueTokenInComplexMode(server, txFunctionName, testMode){
+  function testForIssueTokenInComplexMode(server, txFunctionName){
     let account = addresses.sender3
     let configToken = token.config_normal
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_mintable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_burnable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_mint_burn
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_issuer_normal
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_issuer_mintable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_issuer_burnable
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
     configToken = token.config_issuer_mint_burn
     describe(configToken.testName + '测试：' + txFunctionName, async function () {
-      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken, testMode)
+      testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
     })
 
   }
@@ -1198,12 +1197,12 @@ describe('Jingtum测试', function () {
     let txFunctionName = consts.rpcFunctions.sendTx
     let executeFunction = executeTestCaseOfSendTx
     let checkFunction = checkTestCaseOfSendTx
-    let expecteResult = createExpecteResult(true)
+    let expectedResult = createExpecteResult(true)
 
     for(let i = 0; i <= testCount; i++){
       let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server,
           txFunctionName, txParams, null,
-          executeFunction, checkFunction, expecteResult,
+          executeFunction, checkFunction, expectedResult,
           restrictedLevel.L0)
       addTestCase(testCases, testCase)
     }
@@ -1246,7 +1245,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].secret = null
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'No secret found for')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'No secret found for')
       })
       addTestCase(testCases, testCase)
     }
@@ -1255,7 +1254,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].secret = '错误的秘钥'
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad Base58 string')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 string')
       })
       addTestCase(testCases, testCase)
     }
@@ -1264,7 +1263,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 checksum')
       })
       addTestCase(testCases, testCase)
     }
@@ -1273,7 +1272,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad account address:')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad account address:')
       })
       addTestCase(testCases, testCase)
     }
@@ -1282,7 +1281,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'Bad account address:')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad account address:')
       })
       addTestCase(testCases, testCase)
     }
@@ -1291,7 +1290,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "999999999999999" + testCaseParams.showSymbol
-        testCaseParams.expecteResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
+        testCaseParams.expectedResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
       })
       addTestCase(testCases, testCase)
     }
@@ -1300,7 +1299,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "-100" + testCaseParams.showSymbol
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'temBAD_AMOUNT Can only send positive amounts')
       })
       addTestCase(testCases, testCase)
@@ -1310,7 +1309,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = null
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'Invalid Number')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'Invalid Number')
       })
       addTestCase(testCases, testCase)
     }
@@ -1319,7 +1318,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "aawrwfsfs"
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'Invalid Number')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'Invalid Number')
       })
       addTestCase(testCases, testCase)
     }
@@ -1328,7 +1327,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "0.1" + testCaseParams.showSymbol
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
       })
       addTestCase(testCases, testCase)
     }
@@ -1337,7 +1336,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "1.1" + testCaseParams.showSymbol
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
       })
       addTestCase(testCases, testCase)
     }
@@ -1346,7 +1345,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "-0.1" + testCaseParams.showSymbol
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'value must be integer type')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
       })
       addTestCase(testCases, testCase)
     }
@@ -1410,7 +1409,7 @@ describe('Jingtum测试', function () {
         }
         testCaseParams.txParams[0].memos = memos
         testCaseParams.restrictedLevel = restrictedLevel.L4
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'memos data error')
       })
       addTestCase(testCases, testCase)
     }
@@ -1424,7 +1423,7 @@ describe('Jingtum测试', function () {
         }
         testCaseParams.txParams[0].memos = {"type":"ok","format":"utf8","data":memos}
         testCaseParams.restrictedLevel = restrictedLevel.L4
-        testCaseParams.expecteResult = createExpecteResult(false, true, 'memos data error')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'memos data error')
       })
       addTestCase(testCases, testCase)
     }
@@ -1441,7 +1440,7 @@ describe('Jingtum测试', function () {
     testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为默认值12'
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-        testCaseParams.txParams[0].fee = server.getTestConfig().defaultFee
+        testCaseParams.txParams[0].fee = server.getMode().defaultFee
       })
       addTestCase(testCases, testCase)
     }
@@ -1473,7 +1472,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "5"
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -1483,7 +1482,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "0"
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -1493,7 +1492,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "12.5"
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -1503,7 +1502,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "999999999999999"
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'telINSUF_FEE_P Fee insufficient')
       })
       addTestCase(testCases, testCase)
@@ -1513,7 +1512,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "-35"
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -1523,7 +1522,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = 35
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
       addTestCase(testCases, testCase)
@@ -1554,7 +1553,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].type = "issuecoin"
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
       })
       addTestCase(testCases, testCase)
@@ -1564,7 +1563,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].from = "from.address"
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'Bad account address: from.address: Bad Base58 string: from.address')
       })
       addTestCase(testCases, testCase)
@@ -1574,7 +1573,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].name = "tokenName.name12345678901234567890"
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'failed to submit transaction')
       })
       addTestCase(testCases, testCase)
@@ -1584,7 +1583,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].name = token.existToken.name
-        testCaseParams.expecteResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, false,
             'failed to submit transaction')
       })
       addTestCase(testCases, testCase)
@@ -1594,7 +1593,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].symbol = "tokenName.symbolymboltokenN"
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'runtime error: invalid memory address or nil pointer dereference')
       })
       addTestCase(testCases, testCase)
@@ -1605,7 +1604,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].symbol = token.existToken.symbol
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'no name')
       })
       addTestCase(testCases, testCase)
@@ -1615,7 +1614,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].decimals = "config.decimals"
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'nterface conversion: interface {} is string, not float64')
       })
       addTestCase(testCases, testCase)
@@ -1625,7 +1624,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].decimals = -8
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tefNO_PERMISSION_ISSUE No permission issue')
       })
       addTestCase(testCases, testCase)
@@ -1635,7 +1634,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].decimals = 11.64
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tefNO_PERMISSION_ISSUE No permission issue')
       })
       addTestCase(testCases, testCase)
@@ -1645,7 +1644,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].total_supply = "config.total_supply"
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'strconv.ParseInt: parsing')
       })
       addTestCase(testCases, testCase)
@@ -1655,7 +1654,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].total_supply = -10000000
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
       addTestCase(testCases, testCase)
@@ -1665,7 +1664,7 @@ describe('Jingtum测试', function () {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].total_supply = 10000.12345678
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
       addTestCase(testCases, testCase)
@@ -1693,7 +1692,7 @@ describe('Jingtum测试', function () {
           :
           createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
             testCaseParams.txParams[0].total_supply = '9'
-            testCaseParams.expecteResult = createExpecteResult(false, true,
+            testCaseParams.expectedResult = createExpecteResult(false, true,
                 'tefNO_PERMISSION_ISSUE No permission issue')
           })
       addTestCase(testCases, testCase)
@@ -1718,7 +1717,7 @@ describe('Jingtum测试', function () {
           :
           createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
             testCaseParams.txParams[0].total_supply = '-9'
-            testCaseParams.expecteResult = createExpecteResult(false, true,
+            testCaseParams.expectedResult = createExpecteResult(false, true,
                 'tefNO_PERMISSION_ISSUE No permission issue')
           })
       addTestCase(testCases, testCase)
@@ -1729,7 +1728,7 @@ describe('Jingtum测试', function () {
       testCaseParams.otherParams.oldBalance = '49382716041'
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].total_supply = '-9876543210000'
-        testCaseParams.expecteResult = createExpecteResult(false, true,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tefNO_PERMISSION_ISSUE No permission issue')
       })
       addTestCase(testCases, testCase)
@@ -1750,7 +1749,7 @@ describe('Jingtum测试', function () {
           :
           createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
             testCaseParams.txParams[0].total_supply =  '-49382716041'
-            testCaseParams.expecteResult = createExpecteResult(false, true,
+            testCaseParams.expectedResult = createExpecteResult(false, true,
                 'tefNO_PERMISSION_ISSUE No permission issue')
           })
       addTestCase(testCases, testCase)
@@ -1787,8 +1786,9 @@ describe('Jingtum测试', function () {
           checkBlockNumber,
           null,
           restrictedLevel.L2,
-          [serviceType.newChain, serviceType.oldChain],
-          [interfaceType.rpc, interfaceType.websocket])
+          [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+          [],//[interfaceType.rpc, interfaceType.websocket]
+      )
       addTestCase(testCases, testCase)
     }
 
@@ -2054,14 +2054,13 @@ describe('Jingtum测试', function () {
   //region block check
   function testGetBlockByNumber(server){
     let testNumber = '0010'
-    let blockNumber = '107621'
+    let blockNumber = server.getMode().blockNumber
     let showFullTx = false
     let needPass = true
     let expectedError = ''
     checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
 
     testNumber = '0020'
-    blockNumber = '107621'
     showFullTx = true
     checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
 
@@ -2106,21 +2105,21 @@ describe('Jingtum测试', function () {
     blockNumber = '99900000'
     showFullTx = false
     needPass = false
-    expectedError = 'can\'t find block'
+    expectedError = 'ledgerNotFound'
     checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
 
     testNumber = '0120'
     blockNumber = '-1000'
     showFullTx = false
     needPass = false
-    expectedError = 'invalid syntax'
+    expectedError = 'invalid ledger_index'
     checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
 
     testNumber = '0120'
     blockNumber = 'abcdefg'
     showFullTx = false
     needPass = false
-    expectedError = 'invalid syntax'
+    expectedError = 'invalid ledger_index'
     checkGetBlockByNumber(server, testNumber, blockNumber, showFullTx, needPass, expectedError)
   }
 
@@ -2185,6 +2184,166 @@ describe('Jingtum测试', function () {
       })
     })
   }
+
+
+
+  function createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx,
+                                                   needPass, expectedError){
+
+    let txParams = []
+    txParams.push(numberOrHash)
+    txParams.push(showFullTx)
+
+    let expectedResult = {}
+    expectedResult.needPass = needPass
+    expectedResult.isErrorInResult = true
+    expectedResult.expectedError = expectedError
+    
+    let title = testNumber + '\t'+ (needPass ? '有' : '无') + '效区块编号，' + (showFullTx ? '' : '不') + '需要返回所有交易详情'
+
+    let testCase = createTestCase(
+        title,
+        server,
+        functionName,
+        txParams,
+        null,
+        executeTestCaseForGet,
+        checkBlock,
+        expectedResult,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    )
+
+    return testCase
+  }
+
+  function createTestCasesForGetBlock(server, functionName, numberOrHash){
+    let testCases = []
+    let testNumber = '0010'
+    let showFullTx = false
+    let needPass = true
+    let expectedError = ''
+    let testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testNumber = '0020'
+    showFullTx = true
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testNumber = '0030'
+    numberOrHash = 'earliest'
+    showFullTx = true
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0040'
+    numberOrHash = 'earliest'
+    showFullTx = false
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0050'
+    numberOrHash = 'latest'
+    showFullTx = true
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0060'
+    numberOrHash = 'latest'
+    showFullTx = false
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0090'
+    numberOrHash = 'pending'
+    showFullTx = true
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0100'
+    numberOrHash = 'pending'
+    showFullTx = false
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0110'
+    numberOrHash = '9990000000'
+    showFullTx = false
+    needPass = false
+    expectedError = 'value out of range'
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
+
+    testNumber = '0110'
+    numberOrHash = '99900000'
+    showFullTx = false
+    needPass = false
+    expectedError = 'ledgerNotFound'
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testNumber = '0120'
+    numberOrHash = '-1000'
+    showFullTx = false
+    needPass = false
+    expectedError = 'invalid ledger_index'
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testNumber = '0120'
+    numberOrHash = 'abcdefg'
+    showFullTx = false
+    needPass = false
+    expectedError = 'invalid ledger_index'
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    return testCases
+  }
+
+  function checkBlock(testCase){
+    let response = testCase.actualResult[0]
+    let needPass = testCase.expectedResult.needPass
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
+      let functionName = testCase.txFunctionName
+      let blockNumberOrHash = testCase.txParams[0]
+      expect((functionName === consts.rpcFunctions.getBlockByNumber) ? response.result.ledger_index : response.result.ledger_hash)
+          .to.be.equals(blockNumberOrHash)
+    }
+    else{
+      expect(response.result).to.contains(testCase.expectedResult.expectedError)
+    }
+  }
+
+  function testForGetBlockByNumber(server){
+    let describeTitle = '测试jt_getBlockByNumber'
+    let functionName = consts.rpcFunctions.getBlockByNumber
+    let blockNumber = server.getMode().blockNumber
+    let testCases = createTestCasesForGetBlock(server, functionName, blockNumber)
+    testTestCases(server, describeTitle, testCases)
+  }
+
+  function testForGetBlockByHash(server){
+    let describeTitle = '测试jt_getBlockByHash'
+    let functionName = consts.rpcFunctions.getBlockByHash
+    let blockNumber = server.getMode().blockHash
+    let testCases = createTestCasesForGetBlock(server, functionName, blockNumber)
+    testTestCases(server, describeTitle, testCases)
+  }
+
+
   //endregion
 
   //endregion
@@ -2196,8 +2355,8 @@ describe('Jingtum测试', function () {
       if(!server) reject("Server cannot be null!")
       let result = {}
       result.blockNumber1 = await server.getBlockNumber()
-      //logger.debug("defaultBlockTime: " + server.getTestConfig().defaultBlockTime)
-      await utility.timeout(server.getTestConfig().defaultBlockTime)
+      //logger.debug("defaultBlockTime: " + server.getMode().defaultBlockTime)
+      await utility.timeout(server.getMode().defaultBlockTime)
       result.blockNumber2 = await server.getBlockNumber()
       resolve(result)
     })
@@ -2321,7 +2480,6 @@ describe('Jingtum测试', function () {
     let paramsAarry = []
     paramsAarry.push(cloneParams(originalParamsAarry[0]))
     return paramsAarry
-
   }
   //endregion
 
