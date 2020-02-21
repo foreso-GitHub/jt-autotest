@@ -49,7 +49,133 @@ describe('Jingtum测试', function () {
       })
 
       /*
-      describe('用例测试', function () {
+      describe.skip('用例测试', function () {
+
+        describe('测试jt_blockNumber', function () {
+
+          testForGetBlockNumber(server)
+
+          it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
+            return Promise.resolve(get2BlockNumber(server)).then(function (value) {
+              expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
+              expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
+            }, function (err) {
+              expect(err).to.be.ok
+            })
+          })
+
+        })
+
+        describe('测试jt_getBlockByNumber', function () {
+          testForGetBlockByNumber(server)
+        })
+
+        describe('测试jt_getBlockByHash', function () {
+          testForGetBlockByHash(server)
+        })
+
+        describe('测试jt_createAccount', function () {
+          testForCreateAccount(server)
+        })
+
+        describe('测试jt_getAccount', function () {
+          testForGetAccount(server)
+        })
+
+        describe('测试jt_accounts', function () {
+          testForGetAccounts(server)
+        })
+
+        describe('测试jt_getBalance', function () {
+          testForGetBalance(server)
+        })
+
+
+
+
+
+        describe('测试jt_getBlockByNumber', function () {
+          testGetBlockByNumber(server)
+        })
+
+        describe('测试jt_getBlockByHash', function () {
+          testGetBlockByHash(server)
+        })
+
+        describe('测试jt_createAccount', function () {
+
+          it('0010\t创建有效的账户', function () {
+            let nickName = getDynamicName().symbol
+            return Promise.resolve(server.responseCreateAccount(
+                nickName,
+            )).then(async function (value) {
+              checkResponse(true, value)
+              let account = value.result[0]
+              // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
+              expect(account.address).to.match(/^j/)
+              expect(account.secret).to.match(/^s/)
+              expect(account.nickname).to.equal(nickName)  //todo: bug, nickname should be nickName
+            })
+          })
+
+          it('0020\t创建无效的账户:重复的名字', function () {
+            let nickName = "autotest_1"
+
+            return Promise.resolve(server.responseCreateAccount(
+                nickName,
+            )).then(async function (value) {
+              checkResponse(false, value)
+              expect(value.result).to.contains('the nickname already exists')
+            })
+          })
+
+          it('0020\t创建无效的账户:超过长度的字符串数字', function () {
+            let nickName = getDynamicName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+
+            return Promise.resolve(server.responseCreateAccount(
+                nickName,
+            )).then(async function (value) {
+              checkResponse(false, value)
+              // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
+              // expect(value.result.address).to.match(/^j/)
+              // expect(value.result.secret).to.match(/^s/)
+              // expect(value.result.nickName).to.equal(nickName)
+            })
+          })
+
+        })
+
+        describe('测试jt_getAccount', function () {
+          testGetAccountByTag(server, null)
+          testGetAccountByTag(server, "current")
+          testGetAccountByTag(server, "validated")
+          testGetAccountByTag(server, "closed")
+          // testGetAccountByTag(server, "4136")  //block number  //todo: always timeout, need restore
+          testGetAccountByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
+        })
+
+        describe('测试jt_accounts', function () {
+          testGetAccounts(server)
+        })
+
+        describe('测试jt_getBalance', function () {
+          testGetBalanceByTag(server, null)
+          testGetBalanceByTag(server, "current")
+          testGetBalanceByTag(server, "validated")
+          testGetBalanceByTag(server, "closed")
+          // testGetBalanceByTag(server, "4136")  //block number  //todo: always timeout, need restore
+          testGetBalanceByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
+        })
+
+
+
+
+        describe('测试jt_getTransactionReceipt', function () {
+          testGetTransactionReceipt(server)
+        })
 
         describe('测试jt_getTransactionByHash', function () {
 
@@ -107,87 +233,6 @@ describe('Jingtum测试', function () {
             })
           })
 
-        })
-
-        describe('测试jt_blockNumber', function () {
-
-          testForGetBlockNumber(server)
-
-          it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
-            return Promise.resolve(get2BlockNumber(server)).then(function (value) {
-              expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
-              expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
-            }, function (err) {
-              expect(err).to.be.ok
-            })
-          })
-
-        })
-
-        describe('测试jt_createAccount', function () {
-
-          it('0010\t创建有效的账户', function () {
-            let nickName = getDynamicName().symbol
-            return Promise.resolve(server.responseCreateAccount(
-                nickName,
-            )).then(async function (value) {
-              checkResponse(true, value)
-              let account = value.result[0]
-              // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
-              expect(account.address).to.match(/^j/)
-              expect(account.secret).to.match(/^s/)
-              expect(account.nickname).to.equal(nickName)  //todo: bug, nickname should be nickName
-            })
-          })
-
-          it('0020\t创建无效的账户:重复的名字', function () {
-            let nickName = "autotest_1"
-
-            return Promise.resolve(server.responseCreateAccount(
-                nickName,
-            )).then(async function (value) {
-              checkResponse(false, value)
-              expect(value.result).to.contains('the nickname already exists')
-            })
-          })
-
-          it('0020\t创建无效的账户:超过长度的字符串数字', function () {
-            let nickName = getDynamicName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-
-            return Promise.resolve(server.responseCreateAccount(
-                nickName,
-            )).then(async function (value) {
-              checkResponse(false, value)
-              // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
-              // expect(value.result.address).to.match(/^j/)
-              // expect(value.result.secret).to.match(/^s/)
-              // expect(value.result.nickName).to.equal(nickName)
-            })
-          })
-
-        })
-
-        describe('测试jt_getAccount', function () {
-
-          testGetAccountByTag(server, null)
-          testGetAccountByTag(server, "current")
-          testGetAccountByTag(server, "validated")
-          testGetAccountByTag(server, "closed")
-          // testGetAccountByTag(server, "4136")  //block number  //todo: always timeout, need restore
-          testGetAccountByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
-        })
-
-        describe('测试jt_getBalance', function () {
-
-          testGetBalanceByTag(server, null)
-          testGetBalanceByTag(server, "current")
-          testGetBalanceByTag(server, "validated")
-          testGetBalanceByTag(server, "closed")
-          // testGetBalanceByTag(server, "4136")  //block number  //todo: always timeout, need restore
-          testGetBalanceByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
         })
 
         describe('测试jt_getTransactionByHash', function () {
@@ -417,23 +462,11 @@ describe('Jingtum测试', function () {
 
         })
 
-        describe('测试jt_getBlockByNumber', function () {
-          testGetBlockByNumber(server)
-        })
 
-        describe('测试jt_getBlockByHash', function () {
-          testGetBlockByHash(server)
-        })
 
-        describe('测试jt_accounts', function () {
-          testGetAccounts(server)
-        })
 
-        describe('测试jt_getTransactionReceipt', function () {
-          testGetTransactionReceipt(server)
-        })
 
-        describe('测试jt_sendTransaction和jt_signTransaction fast mode', function (){
+        describe('测试jt_sendTransaction和jt_signTransaction', function (){
           let categoryName = ''
           let txFunctionName = ''
           let txParams = {}
@@ -474,8 +507,6 @@ describe('Jingtum测试', function () {
 
           //endregion
 
-
-
         })
 
       })
@@ -483,18 +514,18 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        ///*
+        /*
 
-        describe('测试jt_getBlockByNumber', function () {
-          // testGetBlockByNumber(server)
-          testForGetBlockByNumber(server)
-        })
-
-        describe('测试jt_getBlockByHash', function () {
-          testForGetBlockByHash(server)
+        describe('测试jt_accounts', function () {
+          testForGetAccounts(server)
         })
 
         //*/
+
+
+        describe('测试jt_getBalance', function () {
+          testForGetBalance(server)
+        })
 
       })
 
@@ -1871,9 +1902,108 @@ describe('Jingtum测试', function () {
     })
   }
 
+
+  function testForGetBalance(server){
+    let symbol = null
+    testForGetBalanceByTag(server, symbol, null)
+    testForGetBalanceByTag(server, symbol, 'current')
+    testForGetBalanceByTag(server, symbol, 'validated')
+    testForGetBalanceByTag(server, symbol, 'closed')
+    testForGetBalanceByTag(server, symbol, '4136')  //block number  //todo: always timeout, need restore
+    testForGetBalanceByTag(server, symbol, 'C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91')  //block 4136
+  }
+
+  function testForGetBalanceByTag(server, symbol, tag){
+
+    let testCases = []
+    let describeTitle = '测试jt_getBalance，tag为' + tag
+
+    let title = '0010\t查询有效的地址_01:地址内有底层币和代币'
+    let addressOrName = addresses.balanceAccount.address
+    let needPass = true
+    let expectedError = ''
+    let testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内有底层币和代币'
+    addressOrName = addresses.balanceAccount.nickName
+    testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.inactiveAccount1.address
+    needPass = false
+    expectedError = 'no such account'
+    testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.inactiveAccount1.nickName
+    expectedError = 'Bad account address:'
+    testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.wrongFormatAccount1.address
+    testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.wrongFormatAccount1.nickName
+    testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testTestCases(server, describeTitle, testCases)
+  }
+
+  function createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError){
+
+    let functionName = consts.rpcFunctions.getBalance
+    let txParams = []
+    txParams.push(addressOrName)
+    if(symbol != null) txParams.push(symbol)
+    if(tag != null) txParams.push(tag)
+    let expectedResult = {}
+    expectedResult.needPass = needPass
+    expectedResult.isErrorInResult = true
+    expectedResult.expectedError = expectedError
+
+    let testCase = createTestCase(
+        title,
+        server,
+        functionName,
+        txParams,
+        null,
+        executeTestCaseForGet,
+        checkGetBalance,
+        expectedResult,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    )
+
+    return testCase
+  }
+
+  function checkGetBalance(testCase){
+    let response = testCase.actualResult[0]
+    let needPass = testCase.expectedResult.needPass
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
+      expect(Number(response.result.balance)).to.be.above(0)
+    }
+    else{
+      expect(response.result).to.contains(testCase.expectedResult.expectedError)
+    }
+  }
+
+
   //endregion
 
   //region account check
+  /*
+
   function testGetAccountByTag(server, tag){
     describe('测试jt_getAccount, tag: ' + tag, function () {
       let address = addresses.balanceAccount.address
@@ -1925,9 +2055,174 @@ describe('Jingtum测试', function () {
       })
     })
   }
+
+   */
   //endregion
 
-  //region accounts check
+  //region account check
+  //region create account
+  function testForCreateAccount(server){
+    let testCases = []
+    let describeTitle = '测试jt_createAccount'
+
+    let title = '0010\t创建有效的账户'
+    let nickName = getDynamicName().symbol
+    let needPass = true
+    let expectedError = ''
+    let testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0020\t创建无效的账户:重复的名字'
+    nickName = 'autotest_1'
+    needPass = false
+    expectedError = 'the nickname already exists'
+    testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0020\t创建无效的账户:超过长度的字符串数字'
+    nickName = getDynamicName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+        + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+        + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+        + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+    needPass = false
+    expectedError = ''
+    testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testTestCases(server, describeTitle, testCases)
+  }
+
+  function createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError){
+
+    let functionName = consts.rpcFunctions.createAccount
+    let txParams = []
+    txParams.push(nickName)
+    let expectedResult = {}
+    expectedResult.needPass = needPass
+    expectedResult.isErrorInResult = true
+    expectedResult.expectedError = expectedError
+
+    let testCase = createTestCase(
+        title,
+        server,
+        functionName,
+        txParams,
+        null,
+        executeTestCaseForGet,
+        checkCreateAccount,
+        expectedResult,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    )
+
+    return testCase
+  }
+
+  function checkCreateAccount(testCase){
+    let response = testCase.actualResult[0]
+    let needPass = testCase.expectedResult.needPass
+    checkResponse(needPass, response)
+    if(needPass){
+      let account = response.result[0]
+      let nickName = testCase.txParams[0]
+      // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
+      expect(account.address).to.match(/^j/)
+      expect(account.secret).to.match(/^s/)
+      expect(account.nickname).to.equal(nickName)  //todo: bug, nickname should be nickName
+    }
+    else{
+      expect(response.result).to.contains(testCase.expectedResult.expectedError)
+    }
+  }
+  //endregion
+
+  //region get account
+  function testForGetAccount(server){
+    let testCases = []
+    let describeTitle = '测试jt_createAccount'
+
+    let title = '0010\t查询有效的地址_01:地址内有底层币和代币'
+    let addressOrName = addresses.balanceAccount.address
+    let needPass = true
+    let expectedError = ''
+    let testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内有底层币和代币'
+    addressOrName = addresses.balanceAccount.nickName
+    testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.inactiveAccount1.address
+    needPass = false
+    expectedError = 'no such account'
+    testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.inactiveAccount1.nickName
+    expectedError = 'Bad account address:'
+    testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.wrongFormatAccount1.address
+    testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    title = '0010\t查询有效的地址_01:地址内没有有底层币和代币'
+    addressOrName = addresses.wrongFormatAccount1.nickName
+    testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    addTestCase(testCases, testCase)
+
+    testTestCases(server, describeTitle, testCases)
+  }
+
+  function createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError){
+
+    let functionName = consts.rpcFunctions.getAccount
+    let txParams = []
+    txParams.push(addressOrName)
+    let expectedResult = {}
+    expectedResult.needPass = needPass
+    expectedResult.isErrorInResult = true
+    expectedResult.expectedError = expectedError
+
+    let testCase = createTestCase(
+        title,
+        server,
+        functionName,
+        txParams,
+        null,
+        executeTestCaseForGet,
+        checkGetAccount,
+        expectedResult,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    )
+
+    return testCase
+  }
+
+  function checkGetAccount(testCase){
+    let response = testCase.actualResult[0]
+    let needPass = testCase.expectedResult.needPass
+    checkResponse(needPass, response)
+    if(needPass){
+      // expect(response.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
+      expect(Number(response.result.Balance)).to.be.above(0)
+    }
+    else{
+      expect(response.result).to.contains(testCase.expectedResult.expectedError)
+    }
+  }
+  //endregion
+
+  //region get accounts
+  /*
   function testGetAccounts(server){
     it('0010\tjt_accounts', function () {
       return Promise.resolve(server.responseGetAccounts()).then(function (value) {
@@ -1943,6 +2238,52 @@ describe('Jingtum测试', function () {
       })
     })
   }
+  */
+
+  function testForGetAccounts(server){
+    let testCases = []
+    let describeTitle = '测试jt_createAccounts'
+
+    let title = '0010\tjt_accounts'
+    let functionName = consts.rpcFunctions.getAccounts
+    let txParams = []
+    let expectedResult = {}
+    expectedResult.needPass = true
+
+    let testCase = createTestCase(
+        title,
+        server,
+        functionName,
+        txParams,
+        null,
+        executeTestCaseForGet,
+        checkGetAccounts,
+        expectedResult,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    )
+    addTestCase(testCases, testCase)
+    testTestCases(server, describeTitle, testCases)
+  }
+
+  function checkGetAccounts(testCase){
+    let response = testCase.actualResult[0]
+    let needPass = testCase.expectedResult.needPass
+    checkResponse(needPass, response)
+    if(needPass){
+      // expect(response.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
+      let accounts = response.result
+      let rootAccount = 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh:root'
+      // logger.debug(JSON.stringify(accounts))
+      expect(accounts.length).to.be.above(0)
+      expect(accounts).to.be.contains(rootAccount)
+    }
+    else{
+      expect(response.result).to.contains(testCase.expectedResult.expectedError)
+    }
+  }
+  //endregion
   //endregion
 
   //region tx receipt check
@@ -2052,6 +2393,7 @@ describe('Jingtum测试', function () {
   //endregion
 
   //region block check
+  /*
   function testGetBlockByNumber(server){
     let testNumber = '0010'
     let blockNumber = server.getMode().blockNumber
@@ -2184,8 +2526,7 @@ describe('Jingtum测试', function () {
       })
     })
   }
-
-
+  */
 
   function createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx,
                                                    needPass, expectedError){
@@ -2343,8 +2684,9 @@ describe('Jingtum测试', function () {
     testTestCases(server, describeTitle, testCases)
   }
 
-
   //endregion
+
+
 
   //endregion
 
