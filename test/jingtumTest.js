@@ -6,7 +6,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
-var utility = require("./testUtility.js")
+let utility = require("./testUtility.js")
 const schema = require("./schema.js")
 const consts = require('../lib/consts')
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
@@ -48,8 +48,8 @@ describe('Jingtum测试', function () {
         await server.connect()
       })
 
-      ///*
-      describe('用例测试', function () {
+      /*
+      describe.skip('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
 
@@ -125,393 +125,21 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        /*
+        // testForGetBlockNumber(server, '测试jt_blockNumber')
+        //
+        // testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+        //
+        // testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
 
         testForGetTransaction(server, '测试jt_getTransactionByHash')
 
-        //*/
-
-
-
-
-
+        // await utility.timeout(5000)
 
       })
 
     })
 
-  }
-
-  function needBeRemoved(){
-
-    /*
-
-    describe('测试jt_getBlockByNumber', function () {
-      testGetBlockByNumber(server)
-    })
-
-    describe('测试jt_getBlockByHash', function () {
-      testGetBlockByHash(server)
-    })
-
-    describe('测试jt_createAccount', function () {
-
-      it('0010\t创建有效的账户', function () {
-        let nickName = getDynamicName().symbol
-        return Promise.resolve(server.responseCreateAccount(
-            nickName,
-        )).then(async function (value) {
-          checkResponse(true, value)
-          let account = value.result[0]
-          // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
-          expect(account.address).to.match(/^j/)
-          expect(account.secret).to.match(/^s/)
-          expect(account.nickname).to.equal(nickName)  //todo: bug, nickname should be nickName
-        })
-      })
-
-      it('0020\t创建无效的账户:重复的名字', function () {
-        let nickName = "autotest_1"
-
-        return Promise.resolve(server.responseCreateAccount(
-            nickName,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('the nickname already exists')
-        })
-      })
-
-      it('0020\t创建无效的账户:超过长度的字符串数字', function () {
-        let nickName = getDynamicName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-
-        return Promise.resolve(server.responseCreateAccount(
-            nickName,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
-          // expect(value.result.address).to.match(/^j/)
-          // expect(value.result.secret).to.match(/^s/)
-          // expect(value.result.nickName).to.equal(nickName)
-        })
-      })
-
-    })
-
-    describe('测试jt_getAccount', function () {
-      testGetAccountByTag(server, null)
-      testGetAccountByTag(server, "current")
-      testGetAccountByTag(server, "validated")
-      testGetAccountByTag(server, "closed")
-      // testGetAccountByTag(server, "4136")  //block number  //todo: always timeout, need restore
-      testGetAccountByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
-    })
-
-    describe('测试jt_accounts', function () {
-      testGetAccounts(server)
-    })
-
-    describe('测试jt_getBalance', function () {
-      testGetBalanceByTag(server, null)
-      testGetBalanceByTag(server, "current")
-      testGetBalanceByTag(server, "validated")
-      testGetBalanceByTag(server, "closed")
-      // testGetBalanceByTag(server, "4136")  //block number  //todo: always timeout, need restore
-      testGetBalanceByTag(server, "C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91")  //block 4136
-    })
-
-    describe('测试jt_getTransactionReceipt', function () {
-      testGetTransactionReceipt(server)
-    })
-
-    describe('测试jt_getTransactionByHash', function () {
-
-      it('0010\t查询有效交易哈希-底层币', function () {
-        let tx = data.chain.tx
-        return Promise.resolve(server.responseGetTxByHash(
-            tx.hash,
-        )).then(async function (value) {
-          checkGetTxSuccess(tx, value)
-        })
-      })
-
-      it('0020\t查询有效交易哈希-token', function () {
-        let tx = data.tx_token
-        return Promise.resolve(server.responseGetTxByHash(
-            tx.hash,
-        )).then(async function (value) {
-          checkGetTxSuccess(tx, value)
-        })
-      })
-
-      it('0030\t查询有效交易哈希-memos', function () {
-        let tx = data.tx_memo
-        return Promise.resolve(server.responseGetTxByHash(
-            tx.hash,
-        )).then(async function (value) {
-          checkGetTxSuccess(tx, value)
-        })
-      })
-
-      it('0040\t查询无效交易哈希:数字', function () {
-        return Promise.resolve(server.responseGetTxByHash(
-            1231111,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.equal('interface conversion: interface {} is float64, not string')
-        })
-      })
-
-      it('0040\t查询无效交易哈希:字符串', function () {
-        return Promise.resolve(server.responseGetTxByHash(
-            "data.tx1.hash",
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.contains('encoding/hex: invalid byte:')
-        })
-      })
-
-      it('0040\t查询无效交易哈希:参数为空', function () {
-        return Promise.resolve(server.responseGetTxByHash(
-            null,
-        )).then(async function (value) {
-          checkResponse(false, value)
-          expect(value.result).to.equal('interface conversion: interface {} is nil, not string')
-        })
-      })
-
-    })
-
-    describe('测试jt_getTransactionByHash', function () {
-
-      it('0010\t有效交易哈希', function () {
-        let tx1 = txs.swtTx1.tx
-        let hash = tx1.hash
-        return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
-          checkResponse(true, response)
-          compareTx(tx1, response.result)
-        })
-      })
-
-      it('0020\t无效交易哈希：不存在的hash', function () {
-        let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
-        return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('can\'t find transaction')
-        })
-      })
-
-      it('0020\t无效交易哈希：hash长度超过标准', function () {
-        let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F"
-        return Promise.resolve(server.responseGetTxByHash(hash)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('index out of range')
-        })
-      })
-
-    })
-
-    describe('测试jt_getTransactionByBlockHashAndIndex', function () {
-
-      it('0010\t有效区块哈希，有效交易索引', function () {
-        let tx1 = txs.swtTx1.tx
-        let blockHash = txs.swtTx1.blockHash
-        let index = tx1.meta.TransactionIndex.toString()
-        return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
-          checkResponse(true, response)
-          compareTx(tx1, response.result)
-        })
-      })
-
-      it('0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引', async function () {
-        let blockHash = blocks.block1.hash
-        await goThroughTxsInBlockByHash(server, blockHash)
-      })
-
-      it('0020\t有效区块哈希，无效交易索引无效交易索引:100', function () {
-        let blockHash = txs.swtTx1.blockHash
-        let index = "100"
-        return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('no such transaction in block')
-        })
-      })
-
-      it('0020\t有效区块哈希，无效交易索引无效交易索引:负数', function () {
-        let blockHash = txs.swtTx1.blockHash
-        let index = "-1"
-        return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('index out of range')
-        })
-      })
-
-      it('0020\t有效区块哈希，无效交易索引无效交易索引:乱码', function () {
-        let blockHash = txs.swtTx1.blockHash
-        let index = "asdf"
-        return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('invalid syntax')
-        })
-      })
-
-      it('0030\t无效区块哈希', function () {
-        let blockHash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
-        let index = "0"
-        return Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('can\'t find block')
-        })
-      })
-
-    })
-
-    describe('测试jt_getTransactionByBlockNumberAndIndex', function () {
-
-      it('0010\t有效区块编号，有效交易索引', function () {
-        let tx1 = txs.swtTx1.tx
-        let blockNumber = tx1.ledger_index.toString()
-        let index = tx1.meta.TransactionIndex.toString()
-        return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
-          checkResponse(true, response)
-          compareTx(tx1, response.result)
-        })
-      })
-
-      it('0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引', async function () {
-        let blockNumber = blocks.block1.blockNumber
-        await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-      })
-
-      it('0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引', async function () {
-        let blockNumber = "earliest"
-        await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-      })
-
-      it('0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引', async function () {
-        let blockNumber = "latest"
-        await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-      })
-
-      it('0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引', async function () {
-        let blockNumber = "pending"
-        await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-      })
-
-      it('0020\t有效区块编号，无效交易索引:100', function () {
-        let tx1 = txs.swtTx1.tx
-        let blockNumber = tx1.ledger_index.toString()
-        let index = "100"
-        return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('no such transaction in block')
-        })
-      })
-
-      it('0020\t有效区块编号，无效交易索引无效交易索引:负数', function () {
-        let tx1 = txs.swtTx1.tx
-        let blockNumber = tx1.ledger_index.toString()
-        let index = "-1"
-        return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('index out of range')
-        })
-      })
-
-      it('0020\t有效区块编号，无效交易索引无效交易索引:乱码', function () {
-        let tx1 = txs.swtTx1.tx
-        let blockNumber = tx1.ledger_index.toString()
-        let index = "asdf"
-        return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('invalid syntax')
-        })
-      })
-
-      it('0030\t无效区块编号', function () {
-        let blockNumber = "9999999"
-        let index = "0"
-        return Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber, index)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('can\'t find block')
-        })
-      })
-
-    })
-
-    describe('测试jt_getBlockTransactionCountByHash', function () {
-
-      it('0010\t查询有效区块哈希', function () {
-        let block = blocks.block1
-        let hash = block.hash
-        let txCount = block.transactionsCount
-        return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
-          checkResponse(true, response)
-          expect(txCount).to.equal(response.result)
-        })
-      })
-
-      it('0020\t无效交易哈希：不存在的hash', function () {
-        let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A"
-        return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('can\'t find block')
-        })
-      })
-
-      it('0020\t无效交易哈希：hash长度超过标准', function () {
-        let hash = "B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F"
-        return Promise.resolve(server.responseGetTxCountByHash(hash)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('index out of range')
-        })
-      })
-
-    })
-
-    describe('测试jt_getBlockTransactionCountByNumber', function () {
-
-      it('0010\t查询有效区块编号', function () {
-        let block = blocks.block1
-        let blockNumber = block.blockNumber
-        let txCount = block.transactionsCount
-        return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
-          checkResponse(true, response)
-          expect(txCount).to.equal(response.result)
-        })
-      })
-
-      it('0020\t无效交易编号：9999999', function () {
-        let blockNumber = "9999999"
-        return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('can\'t find block')
-        })
-      })
-
-      it('0020\t无效交易编号：负数', function () {
-        let blockNumber = "-100"
-        return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('invalid syntax')
-        })
-      })
-
-      it('0020\t无效交易编号：乱码', function () {
-        let blockNumber = "addeew"
-        return Promise.resolve(server.responseGetTxCountByBlockNumber(blockNumber)).then(function (response) {
-          checkResponse(false, response)
-          expect(response.result).to.contains('invalid syntax')
-        })
-      })
-
-
-
-    })
-
-         */
   }
 
   //region ===record start time===
@@ -2147,51 +1775,58 @@ describe('Jingtum测试', function () {
   function testForGetTransaction(server, describeTitle){
     let testCases = []
 
+    let txs = server.getMode().txs
+
     let title = '0010\t查询有效交易哈希-底层币'
-    let hash = data.chain.tx.hash
+    let hash = txs.tx1.hash
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0020\t查询有效交易哈希-token'
-    hash = data.tx_token.hash
+    hash = txs.tx_token.hash
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0030\t查询有效交易哈希-memos'
-    hash = data.tx_memo.hash
+    hash = txs.tx_memo.hash
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0040\t查询无效交易哈希:数字'
     hash = 1231111
     needPass = false
-    expectedError = 'interface conversion: interface {} is float64, not string'
+    //expectedError = 'interface conversion: interface {} is float64, not string'  //new chain
+    expectedError = 'invalid tx hash'
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0040\t查询无效交易哈希:字符串'
     hash = 'data.tx1.hash'
-    expectedError = 'encoding/hex: invalid byte:'
+    //expectedError = 'encoding/hex: invalid byte:'
+    expectedError = 'invalid tx hash'
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0040\t查询无效交易哈希:参数为空'
     hash = null
-    expectedError = 'interface conversion: interface {} is nil, not string'
+    //expectedError = 'interface conversion: interface {} is nil, not string'
+    expectedError = 'invalid tx hash'
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0040\t无效交易哈希：不存在的hash'
     hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-    expectedError = 'can\'t find transaction'
+    //expectedError = 'can\'t find transaction'
+    expectedError = 'Transaction not found.'
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
     title = '0040\t无效交易哈希：hash长度超过标准'
     hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
-    expectedError = 'index out of range'
+    //expectedError = 'index out of range'
+    expectedError = 'invalid tx hash'
     testCase = createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
     addTestCase(testCases, testCase)
 
