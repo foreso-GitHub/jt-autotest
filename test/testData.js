@@ -540,11 +540,112 @@ let data = {
         },
 
         tx_memo:{
-            "hash": "04DF8D86E1ED175EB6F7EDAD65BB8089253AE4F90D2AFCABCBD1ED49F9380D66",  //新用户注册赠送区块币; 1456005
+            "hash": "04DF8D86E1ED175EB6F7EDAD65BB8089253AE4F90D2AFCABCBD1ED49F9380D66",  //memo: 新用户注册赠送区块币; 1456005
         },
 
         tx_token: {
             "hash": "815459CA446C9D9A0C53E373917AA517D516BDBB099F79F341361F5A2A8D92C3",   //token: JJCC
+        },
+
+        tx_issue_token:{
+            "hash": "815459CA446C9D9A0C53E373917AA517D516BDBB099F79F341361F5A2A8D92C3",
+        },
+    },
+
+    swtclib_Test:{
+        tx:{
+            "Account": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+            "Amount": "1",
+            "Destination": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+            "Fee": "10000",
+            "Flags": 0,
+            "Memos": [
+                {
+                    "Memo": {
+                        "MemoData": "74657374"
+                    }
+                }
+            ],
+            "Sequence": 38,
+            "SigningPubKey": "029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15",
+            "TransactionType": "Payment",
+            "TxnSignature": "3044022011348BC4E1370A823F9449AE1A3D37E073A0382879B59344A6C82E6D923A1FB102205103A3B3A753B8BEE8748BDCF62298593B13E6D35EF3DFE77E4415F097E9890A",
+            "date": 635915300,
+            "hash": "641A96FE56C2D234D83F8E40E214DCA545AF666243FE7E89247D2BE00AA72B75",
+            "inLedger": 785909,
+            "ledger_index": 785909,
+            "meta": {
+                "AffectedNodes": [
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Account": "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
+                                "Balance": "631230005",
+                                "Flags": 0,
+                                "OwnerCount": 0,
+                                "Sequence": 1
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "LedgerIndex": "3B64ACE3D3169F69272108CAD37C4B0F0D978BED120E1414BC48140ED0539B6C",
+                            "PreviousFields": {
+                                "Balance": "631230004"
+                            },
+                            "PreviousTxnID": "F4BC811AE4F3AABD1537C3B433E651E380FBF016544A62975FA910AF9ACF5A32",
+                            "PreviousTxnLgrSeq": 785907
+                        }
+                    },
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Account": "jPABxZ2ZMsqv2jA9rNhC2VZs9dBeXmLbAR",
+                                "Balance": "1015961",
+                                "Flags": 0,
+                                "OwnerCount": 0,
+                                "Sequence": 526
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "LedgerIndex": "5D78AAFB835F94C60E2DFC442D8E3569728E64AC7ADF218B0BA6D5EC3051EF56",
+                            "PreviousFields": {
+                                "Balance": "1005961",
+                                "Sequence": 525
+                            },
+                            "PreviousTxnID": "F4BC811AE4F3AABD1537C3B433E651E380FBF016544A62975FA910AF9ACF5A32",
+                            "PreviousTxnLgrSeq": 785907
+                        }
+                    },
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Account": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+                                "Balance": "10099368389995",
+                                "Flags": 0,
+                                "OwnerCount": 0,
+                                "Sequence": 39
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "LedgerIndex": "DB35CDEAF3F0D3C190B041C0C7D92FB0E43CBCBFAD4F498C28858A35CEA8BBB7",
+                            "PreviousFields": {
+                                "Balance": "10099368399996",
+                                "Sequence": 38
+                            },
+                            "PreviousTxnID": "F4BC811AE4F3AABD1537C3B433E651E380FBF016544A62975FA910AF9ACF5A32",
+                            "PreviousTxnLgrSeq": 785907
+                        }
+                    }
+                ],
+                "TransactionIndex": 0,
+                "TransactionResult": "tesSUCCESS",
+                "delivered_amount": "unavailable"
+            },
+            "validated": true
+        },
+
+        tx_memo:{
+            "hash": "641A96FE56C2D234D83F8E40E214DCA545AF666243FE7E89247D2BE00AA72B75",  //memo: test
+        },
+
+        tx_token: {
+            "hash": "641A96FE56C2D234D83F8E40E214DCA545AF666243FE7E89247D2BE00AA72B75",   //todo: it is not a token tx.
         },
 
         tx_issue_token:{

@@ -131,7 +131,6 @@ describe('Jingtum测试', function () {
         //
         // testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
-
         testForGetTransaction(server, '测试jt_getTransactionByHash')
 
         // await utility.timeout(5000)
