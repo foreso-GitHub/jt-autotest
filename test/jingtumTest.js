@@ -28,7 +28,7 @@ function createSupportedServicesForNewChain(){
 }
 //endregion
 
-describe('Jingtum测试', function () {
+describe('Jingtum测试', function() {
 
   //region ===record start time===
   logger.debug("======Start testing!======")
@@ -38,7 +38,7 @@ describe('Jingtum测试', function () {
   this.timeout(20000)
 
   for(let mode of modes){
-    
+
     let server = mode.server
     server.init(mode)
     _CurrentRestrictedLevel = mode.restrictedLevel
@@ -48,10 +48,12 @@ describe('Jingtum测试', function () {
     describe('测试模式: ' + server.getName(), function () {
 
       before(async function() {
-        await server.connect()
+        // logger.debug('before connnect')
+        // await server.connect()
+        // logger.debug('after connnect')
       })
 
-      /*
+      ///*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -85,7 +87,7 @@ describe('Jingtum测试', function () {
       })
       //*/
 
-      describe('is working', function () {
+      describe('is working', async function () {
 
         // testForGetBlockNumber(server, '测试jt_blockNumber')
         //
@@ -99,13 +101,15 @@ describe('Jingtum测试', function () {
         //
         // testForGetBalance(server, '测试jt_getBalance')
 
-        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // await utility.timeout(5000)
 
       })
 
+
     })
+
 
   }
 
@@ -633,7 +637,6 @@ describe('Jingtum测试', function () {
 
       before(async function() {
         await execEachTestCase(testCases, 0)
-        //logger.debug('aaa')
         // await utility.timeout(server.mode.defaultBlockTime)
         // server.disconnect()
       })
@@ -2655,3 +2658,4 @@ describe('Jingtum测试', function () {
   // endregion
 
 })
+
