@@ -1,4 +1,4 @@
-let rpc = require('../lib/rpc/interfaces.js')
+let rpc = require('../lib/rpc/rpcInterface.js')
 let swtclib = require('../lib/swtclib/swtclib-interface.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
@@ -105,8 +105,8 @@ let mode_lib_testnet = {
 let modes = [
     mode_rpc_newChain,
     // mode_rpc_ipfs,
-    mode_lib_mainnet,
-    mode_lib_testnet,
+    // mode_lib_mainnet,
+    // mode_lib_testnet,
 ]
 
 
