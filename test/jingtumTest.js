@@ -87,19 +87,19 @@ describe('Jingtum测试', function () {
 
       describe('is working', function () {
 
-        testForGetBlockNumber(server, '测试jt_blockNumber')
+        // testForGetBlockNumber(server, '测试jt_blockNumber')
+        //
+        // testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+        //
+        // testForGetBlockByHash(server, '测试jt_getBlockByHash')
+        //
+        // testForGetTransaction(server, '测试jt_getTransactionByHash')
+        //
+        // testForGetAccount(server, '测试jt_getAccount')
+        //
+        // testForGetBalance(server, '测试jt_getBalance')
 
-        testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-
-        testForGetBlockByHash(server, '测试jt_getBlockByHash')
-
-        testForGetTransaction(server, '测试jt_getTransactionByHash')
-
-        testForGetAccount(server, '测试jt_getAccount')
-
-        testForGetBalance(server, '测试jt_getBalance')
-
-        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // await utility.timeout(5000)
 
@@ -182,7 +182,7 @@ describe('Jingtum测试', function () {
 
   function createTxParamsForTransfer(server){
     return server.createTransferParams(addresses.sender1.address, addresses.sender1.secret, null,
-        addresses.receiver1.address, '1', '10', ['autotest'])
+        addresses.receiver1.address, '0.000015', '10', ['autotest'])
   }
 
   function createTxParamsForIssueToken(server, account, token){
