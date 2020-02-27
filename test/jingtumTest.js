@@ -8,7 +8,7 @@ let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 let utility = require("./testUtility.js")
 const schema = require("./schema.js")
-const consts = require('../lib/consts')
+const consts = require('../lib/base/consts')
 const { chains, addresses, data, token, txs, blocks } = require("./testData")
 const { servers, modes } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
@@ -18,7 +18,6 @@ const testModeEnums = testMode
 
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
-let _ServiceTypes_OnlyNew = [serviceType.newChain, serviceType.ipfs,]
 
 //region config
 let _CurrentRestrictedLevel
@@ -52,7 +51,7 @@ describe('Jingtum测试', function () {
         await server.connect()
       })
 
-      /*
+      ///*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
