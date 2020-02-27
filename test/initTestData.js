@@ -7,14 +7,14 @@ const { addresses, accounts } = require("./testData")
 const utility = require("./testUtility.js")
 //endregion
 
-let mode = modes[1]
+let mode = modes[0]
 let server = mode.server
 server.init(mode)
 
 let root = addresses.rootAccount.address
 let rootSecret = addresses.rootAccount.secret
-initTestDataForSwtclib()
-// chargeMain('j9t5tjAawNoAxgn7FudkaKTo7GjD3HqvtH', 'ss56xiijXd5RkMn677D2mwuHfYe48', root, 10000, 0, 0)
+// initTestDataForSwtclib()
+// chargeMain('j9t5tjAawNoAxgn7FudkaKTo7GjD3HqvtH', '', 'jPdevNK8NeYSkg3TrWZa8eT6BrSp2oteUh', 0.000001, 0, 0)
 
 async function initTestDataForSwtclib(){
     // let value = "100000000"

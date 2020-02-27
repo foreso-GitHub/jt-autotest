@@ -106,6 +106,7 @@ let addresses = {
 }
 
 let data = {
+
     chain:{
         tx:{
             "TransactionType": "Payment",
@@ -680,7 +681,6 @@ let data = {
             "ledger_index": 47482
         },
     },
-
 
 }
 
