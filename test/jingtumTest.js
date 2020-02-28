@@ -18,6 +18,7 @@ const testModeEnums = testMode
 
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
+const HASH_LENGTH = 64
 
 //region config
 let _CurrentRestrictedLevel
@@ -102,6 +103,10 @@ describe('Jingtum测试', function() {
         // testForGetBalance(server, '测试jt_getBalance')
 
         // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+        // testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+        //
+        // testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
 
         // await utility.timeout(5000)
 
@@ -662,6 +667,9 @@ describe('Jingtum测试', function() {
   }
 
   function ifNeedExecuteOrCheck(testCase){
+    if(!testCase){
+      logger.debug("Error: test case doesn't exist!")
+    }
     if(_CurrentRestrictedLevel < testCase.restrictedLevel){
       return false
     }
@@ -1425,28 +1433,39 @@ describe('Jingtum测试', function() {
 
   //region blockNumber test case
 
-  function testForGetBlockNumber(server, describeTitle){
-    let testCases = []
-
-    it('0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求', function () {
-      return Promise.resolve(get2BlockNumber(server)).then(function (value) {
-        expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
-        expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
-      }, function (err) {
-        expect(err).to.be.ok
-      })
-    })
-
-    testCases = createTestCasesForGetBlockNumber(server)
-    testTestCases(server, describeTitle, testCases)
-  }
-
-  function createTestCasesForGetBlockNumber(server){
+  function testForGetBlockNumber(server, describeTitle) {
     let testCases = []
     let testCase = {}
-    let title = ''
 
-    //region test cases for basic transfer
+    let title = '0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求'
+    {
+      testCase = createTestCase(
+          title,
+          server,
+          consts.rpcFunctions.getBlockNumber,
+          null,
+          null,
+          function (testCase) {  //execute function
+            return get2BlockNumber(server).then(function (compareResult) {
+              testCase.hasExecuted = true
+              testCase.actualResult.push(compareResult)
+            }, function (error) {
+              logger.debug(error)
+              expect(false).to.be.ok
+            })
+          },
+          function (testCase) {  //check function
+            let value = testCase.actualResult[0]
+            expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
+            expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
+          },
+          null,
+          restrictedLevel.L2,
+          [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+          [],//[interfaceType.rpc, interfaceType.websocket]
+      )
+    }
+    addTestCase(testCases, testCase)
 
     title = '0010\t查询最新区块号'
     {
@@ -1463,12 +1482,9 @@ describe('Jingtum测试', function() {
           [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
           [],//[interfaceType.rpc, interfaceType.websocket]
       )
-      addTestCase(testCases, testCase)
     }
-
-    //endregion
-
-    return testCases
+    addTestCase(testCases, testCase)
+    testTestCases(server, describeTitle, testCases)
   }
 
   function checkBlockNumber(testCase){
@@ -1925,10 +1941,11 @@ describe('Jingtum测试', function() {
     testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
-    it('0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引', async function () {
-      let blockHash = blocks.block1.hash
-      await goThroughTxsInBlockByHash(server, blockHash)
-    })
+    title = '0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
+    let blockHash = blocks.block1.hash
+    testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockHash(server, title, blockHash)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
 
     title = '0020\t有效区块哈希，无效交易索引无效交易索引:100'
     hash = txs.swtTx1.blockHash
@@ -1983,26 +2000,29 @@ describe('Jingtum测试', function() {
     testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
-    it('0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引', async function () {
-      let blockNumber = blocks.block1.blockNumber
-      await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-    })
+    title = '0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
+    blockNumber = blocks.block1.blockNumber
+    testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
 
-    it('0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引', async function () {
-      let blockNumber = "earliest"
-      await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-    })
+    title = '0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引'
+    blockNumber = "earliest"
+    testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
 
-    it('0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引', async function () {
-      let blockNumber = "latest"
-      await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-    })
+    title = '0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引'
+    blockNumber = "latest"
+    testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
 
-    it('0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引', async function () {
-      let blockNumber = "pending"
-      await goThroughTxsInBlockByBlockNumber(server, blockNumber)
-    })
-
+    title = '0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引'
+    blockNumber = "pending"
+    testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    addTestCase(testCases, testCase)
 
     title = '0020\t有效区块编号，无效交易索引无效交易索引:100'
     blockNumber = tx1.ledger_index.toString()
@@ -2082,6 +2102,91 @@ describe('Jingtum测试', function() {
     else{
       expect(response.result).to.contains(testCase.expectedResult.expectedError)
     }
+  }
+
+  function createSingleTestCaseForGoThroughTxsInBlockByBlockHash(server, title, hash){
+    // todo: need consider how to combine these 2 similar functions.
+    // try to combine number and hash function but failed.
+    // because use function as param will cause 'this' in function direct to other value, response function cannot be found.
+    // let getCountFunc = numberOrHash.length == HASH_LENGTH ? server.responseGetTxCountByHash : server.responseGetTxCountByBlockNumber
+    // let getTxFunc = numberOrHash.length == HASH_LENGTH ? server.responseGetTxByBlockHashAndIndex : server.responseGetTxByBlockNumberAndIndex
+
+    return createTestCase(
+        title,
+        server,
+        '',
+        null,
+        null,
+        function(testCase){
+          return server.responseGetTxCountByHash(hash).then(async(countResponse)=> {
+            testCase.hasExecuted = true
+            testCase.actualResult.push(countResponse)
+          })
+        },
+        async function(testCase){
+          let countResponse = testCase.actualResult[0]
+          checkResponse(true, countResponse)
+          let txCount = Number(countResponse.result)
+          let finishCount = 0
+          for(let i = 0; i < txCount; i++){
+            await Promise.resolve(server.responseGetTxByBlockHashAndIndex(hash, i.toString())).then(function (response) {
+              checkResponse(true, response)
+              finishCount++
+            })
+          }
+          if(finishCount == txCount){
+            logger.debug("遍历所有有效交易索引成功，共查询到" + txCount + "条交易!")
+          }
+          else{
+            logger.debug("遍历所有有效交易索引失败，应该有" + txCount + "条交易，实际查询到" + finishCount + "条交易!")
+            expect(false).to.be.ok
+          }
+        },
+        null,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc, interfaceType.websocket]
+    )
+  }
+
+  function createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, number){
+    // todo: need consider how to combine these 2 similar functions.
+    return createTestCase(
+        title,
+        server,
+        '',
+        null,
+        null,
+        function(testCase){  //execute function
+          return server.responseGetTxCountByBlockNumber(number).then(async(countResponse)=> {
+            testCase.hasExecuted = true
+            testCase.actualResult.push(countResponse)
+          })
+        },
+        async function(testCase){  //check function
+          let countResponse = testCase.actualResult[0]
+          checkResponse(true, countResponse)
+          let txCount = Number(countResponse.result)
+          let finishCount = 0
+          for(let i = 0; i < txCount; i++){
+            await Promise.resolve(server.responseGetTxCountByBlockNumber(number, i.toString())).then(function (response) {
+              checkResponse(true, response)
+              finishCount++
+            })
+          }
+          if(finishCount == txCount){
+            logger.debug("遍历所有有效交易索引成功，共查询到" + txCount + "条交易!")
+          }
+          else{
+            logger.debug("遍历所有有效交易索引失败，应该有" + txCount + "条交易，实际查询到" + finishCount + "条交易!")
+            expect(false).to.be.ok
+          }
+        },
+        null,
+        restrictedLevel.L2,
+        [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [],//[interfaceType.rpc, interfaceType.websocket]
+    )
   }
 
   async function goThroughTxsInBlockByBlockNumber(server, blockNumber){
