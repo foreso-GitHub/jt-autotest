@@ -66,7 +66,7 @@ let mode_lib_mainnet = {
         initParams: {url:'wss://c05.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
         service: serviceType.oldChain,
         interface: interfaceType.websocket,
-        testMode: testMode.batchMode,
+        testMode: testMode.singleMode,
         restrictedLevel: restrictedLevel.L2,
         defaultBlockTime: 10000,
         retryPauseTime: 1000,
@@ -106,9 +106,9 @@ let mode_lib_testnet = {
 }
 
 let modes = [
-    mode_rpc_newChain,
+    // mode_rpc_newChain,
     // mode_rpc_ipfs,
-    // mode_lib_mainnet,
+    mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 

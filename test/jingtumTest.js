@@ -19,6 +19,7 @@ const testModeEnums = testMode
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
 const HASH_LENGTH = 64
+let _FullTestCaseList = []
 
 //region config
 let _CurrentRestrictedLevel
@@ -33,7 +34,9 @@ describe('Jingtum测试', function() {
 
   //region ===record start time===
   logger.debug("======Start testing!======")
-  let start = new Date();
+  let start = new Date()
+  let end = new Date()
+  logger.debug("Start time: " + start.toTimeString())
   //endregion
 
   this.timeout(20000)
@@ -117,12 +120,6 @@ describe('Jingtum测试', function() {
 
 
   }
-
-  //region ===record start time===
-  logger.debug("======End testing!======")
-  let end = new Date();
-  logger.debug("Consume time: " + (end - start))
-  //endregion
 
   //region auto test framework
 
@@ -319,6 +316,9 @@ describe('Jingtum测试', function() {
   function addTestCase(testCases, testCase){
     if(ifNeedExecuteOrCheck(testCase)){
       testCases.push(testCase)
+      _FullTestCaseList.push(testCase)
+      // logger.debug('====== _FullTestCaseList Count ======')
+      // logger.debug(_FullTestCaseList.length)
     }
   }
   //endregion
@@ -347,17 +347,19 @@ describe('Jingtum测试', function() {
   }
 
   function executeTestCaseOfSendTx(testCase){
+    testCase.hasExecuted = true
     return executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
       addSequenceAfterResponseSuccess(response, testCase.txParams[0])
-      testCase.hasExecuted = true
+      // testCase.hasExecuted = true
       testCase.actualResult.push(response)
       resolve(testCase)
     })
   }
 
   function executeTestCaseOfSignTxAndSendRawTx(testCase){
+    testCase.hasExecuted = true
     return executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
-      testCase.hasExecuted = true
+      // testCase.hasExecuted = true
       testCase.actualResult.push(responseOfSign)
       if(responseOfSign.status === status.success){
         if(testCase.expectedResult.needPass){
@@ -372,8 +374,9 @@ describe('Jingtum测试', function() {
               data.push(rawTx)
               let testCaseOfSendRawTx = testCase.subTestCases[0]
               testCaseOfSendRawTx.txParams = data
+              testCaseOfSendRawTx.hasExecuted = true
               executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
-                testCaseOfSendRawTx.hasExecuted = true
+                // testCaseOfSendRawTx.hasExecuted = true
                 testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
                 addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase.txParams[0])
                 resolve(responseOfSendRawTx)
@@ -405,9 +408,10 @@ describe('Jingtum测试', function() {
 
   //region for get
   function executeTestCaseForGet(testCase){
+    testCase.hasExecuted = true
     return new Promise(async (resolve, reject) => {
       executeTxByTestCase(testCase).then(function(response){
-        testCase.hasExecuted = true
+        // testCase.hasExecuted = true
         testCase.actualResult.push(response)
         resolve(testCase)
       }, function (error) {
@@ -429,9 +433,10 @@ describe('Jingtum测试', function() {
   //region execute the function which will NOT write block like jt_signTransaction
 
   function executeTestCaseOfCommonFunction(testCase){
+    testCase.hasExecuted = true
     return new Promise(function(resolve){
       executeTxByTestCase(testCase).then(function(response){
-        testCase.hasExecuted = true
+        // testCase.hasExecuted = true
         testCase.actualResult.push(response)
         resolve(response)
       })
@@ -439,18 +444,6 @@ describe('Jingtum测试', function() {
   }
 
   //endregion
-
-  async function execEachTestCase(testCases, index){
-    if(index < testCases.length){
-      let testCase = testCases[index]
-      // logger.debug("===1. index: " + index )
-      await testCase.executeFunction(testCase)
-      // logger.debug("===2. index: " + index )
-      index++
-      await execEachTestCase(testCases, index)
-      // logger.debug("===3. index: " + index )
-    }
-  }
 
   //endregion
 
@@ -637,34 +630,114 @@ describe('Jingtum测试', function() {
     }
   }
 
+  //region batch mode
   function testBatchTestCases(server, describeTitle, testCases) {
     describe(describeTitle, async function () {
 
       before(async function() {
         await execEachTestCase(testCases, 0)
-        // await utility.timeout(server.mode.defaultBlockTime)
-        // server.disconnect()
       })
 
       testCases.forEach(async function(testCase){
         it(testCase.title, async function () {
-          //logger.debug('bbb: ' + testCase.title + "     " + testCase.hasExecuted)
-          await testCase.checkFunction(testCase)
+          // await testCase.checkFunction(testCase)
+          try{
+            // logger.debug('===before checkFunction')
+            logger.debug('check title: ' + testCase.title)
+            // logger.debug('hasExecuted: ' + testCase.hasExecuted)
+            await testCase.checkFunction(testCase)
+            // logger.debug('===after checkFunction')
+            afterTestFinish(testCase)
+          }
+          catch(ex){
+            afterTestFinish(testCase)
+            logger.debug('=== exception: ' + ex)
+            expect(false).to.be.ok
+          }
         })
       })
     })
   }
 
+  async function execEachTestCase(testCases, index){
+    if(index < testCases.length){
+      let testCase = testCases[index]
+      // logger.debug("===1. index: " + index )
+      // logger.debug('=== before executeFunction')
+      await testCase.executeFunction(testCase)
+      // logger.debug('=== after executeFunction')
+      // logger.debug("===2. index: " + index )
+      index++
+      await execEachTestCase(testCases, index)
+      // logger.debug("===3. index: " + index )
+    }
+  }
+  //endregion
+
+  //region single mode
   function testSingleTestCases(server, describeTitle, testCases) {
     describe(describeTitle, async function () {
       testCases.forEach(async function(testCase){
         it(testCase.title, async function () {
-          await testCase.executeFunction(testCase)
-          await testCase.checkFunction(testCase)
+          try{
+            await testCase.executeFunction(testCase)
+            logger.debug('check title: ' + testCase.title)
+            await testCase.checkFunction(testCase)
+            afterTestFinish(testCase)
+          }
+          catch(ex){
+            afterTestFinish(testCase)
+            logger.debug('=== exception: ' + ex)
+            expect(false).to.be.ok
+          }
         })
       })
     })
   }
+  //endregion
+
+  //region after test
+  function afterTestFinish(testCase){
+    if(checkIfAllTestHasBeenExecuted(_FullTestCaseList)){
+      closeTest(testCase)
+    }
+  }
+
+  function checkIfAllTestHasBeenExecuted(testCases){
+    let result = true
+    // let hasExecutedCount = 0
+    // let clearCount = 0
+    // let clearList = []
+    testCases.forEach((testCase)=>{
+      if(!testCase.hasExecuted){
+        result = false
+        // clearCount++
+        // clearList.push(testCase)
+      }
+      else{
+        // hasExecutedCount++
+      }
+    })
+    // logger.debug('====== hasExecuted Count ======')
+    // logger.debug(hasExecutedCount)
+    // logger.debug('====== clear Count ======')
+    // logger.debug(clearCount)
+
+    return result
+  }
+
+  function closeTest(testCase){
+    //region ===record start time===
+    logger.debug("======End testing!======")
+    end = new Date()
+    logger.debug("Start time: " + start.toTimeString())
+    logger.debug("End time: " + end.toTimeString())
+    logger.debug("Consume time: " + (end - start) / 1000 + 's, equals to ' + (end - start) / 1000 / 60 + 'm!')
+    logger.debug('Closing server ...')
+    testCase.server.close()
+    //endregion
+  }
+  //endregion
 
   function ifNeedExecuteOrCheck(testCase){
     if(!testCase){
@@ -704,6 +777,7 @@ describe('Jingtum测试', function() {
   }
   //endregion
 
+  //region test for tx
   function testForTransfer(server, categoryName, txFunctionName, txParams){
     let testName = ''
     let describeTitle = ''
@@ -808,6 +882,8 @@ describe('Jingtum测试', function() {
 
   //endregion
 
+  //endregion
+
   //region pressure test
 
   function createTestCasesForPressureTest(server, categoryName, testCount){
@@ -818,8 +894,8 @@ describe('Jingtum测试', function() {
     let checkFunction = checkTestCaseOfSendTx
     let expectedResult = createExpecteResult(true)
 
-    for(let i = 0; i <= testCount; i++){
-      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_01', server,
+    for(let i = 0; i < testCount; i++){
+      let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
           txFunctionName, txParams, null,
           executeFunction, checkFunction, expectedResult,
           restrictedLevel.L0)
@@ -1071,7 +1147,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         let memos = "E5A4A7E5AEB6E5A5BD"
         for(let i = 0; i < 18; i++){
-          memos += memos;
+          memos += memos
         }
         testCaseParams.txParams[0].memos = memos
         testCaseParams.restrictedLevel = restrictedLevel.L4
@@ -1085,7 +1161,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         let memos = "E5A4A7E5AEB6E5A5BD"
         for(let i = 0; i < 18; i++){
-          memos += memos;
+          memos += memos
         }
         testCaseParams.txParams[0].memos = {"type":"ok","format":"utf8","data":memos}
         testCaseParams.restrictedLevel = restrictedLevel.L4
@@ -1446,8 +1522,9 @@ describe('Jingtum测试', function() {
           null,
           null,
           function (testCase) {  //execute function
+            testCase.hasExecuted = true
             return get2BlockNumber(server).then(function (compareResult) {
-              testCase.hasExecuted = true
+              // testCase.hasExecuted = true
               testCase.actualResult.push(compareResult)
             }, function (error) {
               logger.debug(error)
@@ -2118,8 +2195,9 @@ describe('Jingtum测试', function() {
         null,
         null,
         function(testCase){
+          testCase.hasExecuted = true
           return server.responseGetTxCountByHash(hash).then(async(countResponse)=> {
-            testCase.hasExecuted = true
+            // testCase.hasExecuted = true
             testCase.actualResult.push(countResponse)
           })
         },
@@ -2158,8 +2236,9 @@ describe('Jingtum测试', function() {
         null,
         null,
         function(testCase){  //execute function
+          testCase.hasExecuted = true
           return server.responseGetTxCountByBlockNumber(number).then(async(countResponse)=> {
-            testCase.hasExecuted = true
+            // testCase.hasExecuted = true
             testCase.actualResult.push(countResponse)
           })
         },
