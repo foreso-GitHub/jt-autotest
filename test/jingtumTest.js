@@ -651,8 +651,7 @@ describe('Jingtum测试', function() {
           }
           catch(ex){
             afterTestFinish(testCase)
-            logger.debug('=== exception: ' + ex)
-            expect(false).to.be.ok
+            throw ex
           }
         })
       })
@@ -687,8 +686,7 @@ describe('Jingtum测试', function() {
           }
           catch(ex){
             afterTestFinish(testCase)
-            logger.debug('=== exception: ' + ex)
-            expect(false).to.be.ok
+            throw ex
           }
         })
       })
