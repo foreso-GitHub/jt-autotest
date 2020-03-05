@@ -57,7 +57,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      ///*
+      /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -105,7 +105,7 @@ describe('Jingtum测试', function() {
         //
         // testForGetBalance(server, '测试jt_getBalance')
 
-        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
         //
@@ -226,7 +226,8 @@ describe('Jingtum测试', function() {
   function createExpecteResult(needPass, isErrorInResult, expectedError){
     let expectedResult = {}
     expectedResult.needPass = needPass
-    expectedResult.isErrorInResult = isErrorInResult
+    // expectedResult.isErrorInResult = isErrorInResult
+    expectedResult.isErrorInResult = true
     expectedResult.expectedError = expectedError
     return expectedResult
   }
@@ -334,9 +335,9 @@ describe('Jingtum测试', function() {
       let data = testCase.txParams[0]
       let from = data.from
       getSequence(server, from).then(function(sequence){
-        data.sequence = sequence
+        data.sequence = isNaN(sequence) ? 1 : sequence
         server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
-          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution: 0
+          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
           logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
           executeTxByTestCase(testCase).then(function(response){
             specialExecuteFunction(testCase, response, resolve)
@@ -643,8 +644,8 @@ describe('Jingtum测试', function() {
           // await testCase.checkFunction(testCase)
           try{
             // logger.debug('===before checkFunction')
-            logger.debug('check title: ' + testCase.title)
             // logger.debug('hasExecuted: ' + testCase.hasExecuted)
+            printTestCaseInfo(testCase)
             await testCase.checkFunction(testCase)
             // logger.debug('===after checkFunction')
             afterTestFinish(testCase)
@@ -680,7 +681,7 @@ describe('Jingtum测试', function() {
         it(testCase.title, async function () {
           try{
             await testCase.executeFunction(testCase)
-            logger.debug('check title: ' + testCase.title)
+            printTestCaseInfo(testCase)
             await testCase.checkFunction(testCase)
             afterTestFinish(testCase)
           }
@@ -736,6 +737,13 @@ describe('Jingtum测试', function() {
     //endregion
   }
   //endregion
+
+  function printTestCaseInfo(testCase){
+    logger.debug('check title: ' + testCase.title)
+    logger.debug('function: ' + testCase.txFunctionName)
+    logger.debug('paraments: ' + JSON.stringify(testCase.txParams))
+    logger.debug('result: ' + JSON.stringify(testCase.actualResult[0]))
+  }
 
   function ifNeedExecuteOrCheck(testCase){
     if(!testCase){
@@ -1030,7 +1038,8 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "999999999999999" + testCaseParams.showSymbol
-        testCaseParams.expectedResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
+        // testCaseParams.expectedResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
+        testCaseParams.expectedResult = createExpecteResult(false, true, 'telINSUF_FEE_P Fee insufficient')
       })
       addTestCase(testCases, testCase)
     }
@@ -1039,7 +1048,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "-100" + testCaseParams.showSymbol
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        // testCaseParams.expectedResult = createExpecteResult(false, false,
+        //     'temBAD_AMOUNT Can only send positive amounts')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'temBAD_AMOUNT Can only send positive amounts')
       })
       addTestCase(testCases, testCase)
@@ -1063,19 +1074,19 @@ describe('Jingtum测试', function() {
       addTestCase(testCases, testCase)
     }
 
-    testCaseParams.title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于1的正小数'
+    testCaseParams.title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于0.000001(最小数额)的正小数'
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-        testCaseParams.txParams[0].value = "0.1" + testCaseParams.showSymbol
+        testCaseParams.txParams[0].value = "0.0000001" + testCaseParams.showSymbol
         testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
       })
       addTestCase(testCases, testCase)
     }
 
-    testCaseParams.title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于1的小数'
+    testCaseParams.title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于0.000001(最小数额)的小数'
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-        testCaseParams.txParams[0].value = "1.1" + testCaseParams.showSymbol
+        testCaseParams.txParams[0].value = "0.0000011" + testCaseParams.showSymbol
         testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
       })
       addTestCase(testCases, testCase)
@@ -1182,6 +1193,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = server.mode.defaultFee
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1189,6 +1201,7 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1197,6 +1210,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "11"
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1205,6 +1219,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "110"
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1215,6 +1230,7 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1225,6 +1241,7 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1235,6 +1252,7 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1245,6 +1263,7 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'telINSUF_FEE_P Fee insufficient')
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1252,9 +1271,12 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "-35"
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        // testCaseParams.expectedResult = createExpecteResult(false, false,
+        //     'tecINSUFF_FEE Insufficient balance to pay fee')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1265,6 +1287,7 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
+      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
     //endregion
@@ -1313,7 +1336,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].name = "tokenName.name12345678901234567890"
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        // testCaseParams.expectedResult = createExpecteResult(false, false,
+        //     'failed to submit transaction')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'failed to submit transaction')
       })
       addTestCase(testCases, testCase)
@@ -1323,7 +1348,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].name = token.existToken.name
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        // testCaseParams.expectedResult = createExpecteResult(false, false,
+        //         //     'failed to submit transaction')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'failed to submit transaction')
       })
       addTestCase(testCases, testCase)
