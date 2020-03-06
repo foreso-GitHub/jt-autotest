@@ -57,7 +57,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      /*
+      ///*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -105,7 +105,7 @@ describe('Jingtum测试', function() {
         //
         // testForGetBalance(server, '测试jt_getBalance')
 
-        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
         //
@@ -742,7 +742,12 @@ describe('Jingtum测试', function() {
     logger.debug('check title: ' + testCase.title)
     logger.debug('function: ' + testCase.txFunctionName)
     logger.debug('paraments: ' + JSON.stringify(testCase.txParams))
+    logger.debug('supportedServices: ' + JSON.stringify(testCase.supportedServices))
+    logger.debug('supportedInterfaces: ' + JSON.stringify(testCase.supportedInterfaces))
+    logger.debug('restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
+    logger.debug('hasExecuted: ' + testCase.hasExecuted)
     logger.debug('result: ' + JSON.stringify(testCase.actualResult[0]))
+    logger.debug('subTestCases: ' + JSON.stringify(testCase.subTestCases))
   }
 
   function ifNeedExecuteOrCheck(testCase){

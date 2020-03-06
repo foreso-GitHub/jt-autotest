@@ -106,9 +106,9 @@ let mode_lib_testnet = {
 }
 
 let modes = [
-    mode_rpc_newChain,
+    // mode_rpc_newChain,
     // mode_rpc_ipfs,
-    // mode_lib_mainnet,
+    mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 
