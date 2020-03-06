@@ -25,9 +25,6 @@ let _FullTestCaseList = []
 let _CurrentRestrictedLevel
 let _CurrentService = serviceType.unknown
 let _CurrentInterface = interfaceType.unknown
-function createSupportedServicesForNewChain(){
-  return [serviceType.newChain, serviceType.ipfs,]
-}
 //endregion
 
 describe('Jingtum测试', function() {
@@ -154,7 +151,7 @@ describe('Jingtum测试', function() {
       throw new Error('txFunctionName doesn\'t exist!')
     }
     testCaseParams.restrictedLevel = restrictedLevel.L2
-    testCaseParams.supportedServices = []
+    testCaseParams.supportedServices = [serviceType.newChain]
     testCaseParams.supportedInterfaces = []
     return testCaseParams
   }
@@ -532,7 +529,7 @@ describe('Jingtum测试', function() {
       //check value
       if(txParams.type == consts.rpcParamConsts.issueCoin){
         expect(tx.Name).to.be.equals(txParams.name)
-        expect(tx.Decimals).to.be.equals(txParams.decimals)
+        expect(tx.Decimals).to.be.equals(Number(txParams.decimals))
         expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
         expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
         expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : addresses.defaultIssuer.address)
@@ -909,7 +906,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
           txFunctionName, txParams, null,
           executeFunction, checkFunction, expectedResult,
-          restrictedLevel.L0)
+          restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
       addTestCase(testCases, testCase)
     }
     return testCases
@@ -952,17 +949,15 @@ describe('Jingtum测试', function() {
       //endregion
 
       //region token test
-      if(server.mode.service == serviceType.newChain || server.mode.service == serviceType.ipfs){
-        txFunctionName = consts.rpcFunctions.sendTx
-        describe('代币测试：' + txFunctionName, async function () {
-          testForIssueTokenInComplexMode(server, txFunctionName)
-        })
+      txFunctionName = consts.rpcFunctions.sendTx
+      describe('代币测试：' + txFunctionName, async function () {
+        testForIssueTokenInComplexMode(server, txFunctionName)
+      })
 
-        txFunctionName = consts.rpcFunctions.signTx
-        describe('代币测试：' + txFunctionName, async function () {
-          testForIssueTokenInComplexMode(server, txFunctionName)
-        })
-      }
+      txFunctionName = consts.rpcFunctions.signTx
+      describe('代币测试：' + txFunctionName, async function () {
+        testForIssueTokenInComplexMode(server, txFunctionName)
+      })
       //endregion
 
     })
@@ -973,6 +968,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
+    testCaseParams.supportedServices.push(serviceType.oldChain)
 
     //region test cases for basic transfer
     testCaseParams.title = '0010\t发起' + testCaseParams.categoryName + '有效交易_01'
@@ -986,10 +982,6 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "123/swt"
-        // testCaseParams.supportedServices = addItemInEmptyArray(serviceType.newChain)
-        // testCaseParams.supportedServices = addItemInArray(testCaseParams.supportedServices, serviceType.ipfs)
-        // testCaseParams.supportedInterfaces = addItemInEmptyArray(interfaceType.rpc)
-        // testCaseParams.supportedInterfaces = addItemInArray(testCaseParams.supportedInterfaces, interfaceType.websocket)
       })
       addTestCase(testCases, testCase)
     }
@@ -1114,6 +1106,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
+    testCaseParams.supportedServices.push(serviceType.oldChain)
 
     //region test cases
     testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]'
@@ -1198,7 +1191,6 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = server.mode.defaultFee
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1206,7 +1198,6 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1215,7 +1206,6 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "11"
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1224,7 +1214,6 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "110"
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1235,7 +1224,6 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1246,7 +1234,6 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1257,7 +1244,6 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1268,7 +1254,6 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, false,
             'telINSUF_FEE_P Fee insufficient')
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1281,7 +1266,6 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, true,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
 
@@ -1292,7 +1276,6 @@ describe('Jingtum测试', function() {
         testCaseParams.expectedResult = createExpecteResult(false, true,
             'interface conversion: interface {} is float64, not string')
       })
-      testCase.supportedServices = [serviceType.newChain]
       addTestCase(testCases, testCase)
     }
     //endregion
@@ -1307,6 +1290,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
+    testCaseParams.restrictedLevel = restrictedLevel.L3
 
     //region test cases
 
@@ -1450,7 +1434,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForMintToken(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
-    // testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
+    testCaseParams.restrictedLevel = restrictedLevel.L3
 
     // await utility.timeout(1)  //make sure create token done first!
 
@@ -1477,7 +1461,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForBurnToken(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
-    // testCaseParams.checkFunction = checkTestCaseOfMintOrBurn
+    testCaseParams.restrictedLevel = restrictedLevel.L3
 
     //region test cases
     testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
@@ -1531,8 +1515,6 @@ describe('Jingtum测试', function() {
     return testCases
   }
 
-
-
   //endregion
 
   //endregion
@@ -1568,7 +1550,7 @@ describe('Jingtum测试', function() {
           },
           null,
           restrictedLevel.L2,
-          [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+          [serviceType.newChain, serviceType.oldChain],
           [],//[interfaceType.rpc, interfaceType.websocket]
       )
     }
@@ -1586,7 +1568,7 @@ describe('Jingtum测试', function() {
           checkBlockNumber,
           null,
           restrictedLevel.L2,
-          [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+          [serviceType.newChain, serviceType.oldChain],
           [],//[interfaceType.rpc, interfaceType.websocket]
       )
     }
@@ -1609,13 +1591,11 @@ describe('Jingtum测试', function() {
     describe(describeTitle, function () {
       let symbol = null
       testForGetBalanceByTag(server, symbol, null)
-      if(server.mode.service == serviceType.newChain || server.mode.service == serviceType.ipfs){
-        testForGetBalanceByTag(server, symbol, 'current')
-        testForGetBalanceByTag(server, symbol, 'validated')
-        testForGetBalanceByTag(server, symbol, 'closed')
-        testForGetBalanceByTag(server, symbol, '4136')  //block number  //todo: always timeout, need restore
-        testForGetBalanceByTag(server, symbol, 'C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91')  //block 4136
-      }
+      testForGetBalanceByTag(server, symbol, 'current')
+      testForGetBalanceByTag(server, symbol, 'validated')
+      testForGetBalanceByTag(server, symbol, 'closed')
+      testForGetBalanceByTag(server, symbol, '4136')  //block number  //todo: always timeout, need restore
+      testForGetBalanceByTag(server, symbol, 'C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91')  //block 4136
     })
   }
 
@@ -1629,12 +1609,12 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     title = '0010\t查询有效的昵称_01:地址内有底层币和代币'
     addressOrName = addresses.balanceAccount.nickName
     testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
@@ -1643,6 +1623,7 @@ describe('Jingtum测试', function() {
     //expectedError = 'no such account'
     expectedError = 'Account not found.'
     testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     title = '0010\t查询未激活的昵称_01:地址内没有有底层币和代币'
@@ -1655,6 +1636,7 @@ describe('Jingtum测试', function() {
     title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
     addressOrName = addresses.wrongFormatAccount1.address
     testCase = createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, tag, needPass, expectedError)
+    if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
@@ -1687,7 +1669,7 @@ describe('Jingtum测试', function() {
         checkGetBalance,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain,],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -1719,7 +1701,6 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t创建无效的账户:重复的名字'
@@ -1727,7 +1708,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'the nickname already exists'
     testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t创建无效的账户:超过长度的字符串数字'
@@ -1738,7 +1718,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = ''
     testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -1764,7 +1743,7 @@ describe('Jingtum测试', function() {
         checkCreateAccount,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -1798,12 +1777,12 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
+    testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     title = '0010\t查询有效的昵称_01:地址内有底层币和代币'
     addressOrName = addresses.balanceAccount.nickName
     testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
@@ -1812,7 +1791,7 @@ describe('Jingtum测试', function() {
     //expectedError = 'no such account'
     expectedError = 'Account not found.'
     testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     title = '0010\t查询未激活的昵称_01:地址内没有有底层币和代币'
@@ -1820,19 +1799,17 @@ describe('Jingtum测试', function() {
     //expectedError = 'Bad account address:'
     expectedError = 'invalid account'
     testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
     addressOrName = addresses.wrongFormatAccount1.address
     testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
     addressOrName = addresses.wrongFormatAccount1.nickName
     testCase = createSingleTestCaseForGetAccount(server, title, addressOrName, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -1858,7 +1835,7 @@ describe('Jingtum测试', function() {
         checkGetAccount,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain,],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -1899,10 +1876,9 @@ describe('Jingtum测试', function() {
         checkGetAccounts,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain, ],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -2012,7 +1988,7 @@ describe('Jingtum测试', function() {
         checkTransaction,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain, serviceType.oldChain],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -2045,13 +2021,13 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
     let blockHash = blocks.block1.hash
     testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockHash(server, title, blockHash)
-    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0020\t有效区块哈希，无效交易索引无效交易索引:100'
@@ -2060,7 +2036,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'no such transaction in block'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0020\t有效区块哈希，无效交易索引无效交易索引:负数'
@@ -2069,7 +2045,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'index out of range'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0020\t有效区块哈希，无效交易索引无效交易索引:乱码'
@@ -2078,7 +2054,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'invalid syntax'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0030\t无效区块哈希'
@@ -2087,7 +2063,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'can\'t find block'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -2104,31 +2080,31 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
     blockNumber = blocks.block1.blockNumber
     testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引'
     blockNumber = "earliest"
     testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引'
     blockNumber = "latest"
     testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引'
     blockNumber = "pending"
     testCase = createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-    testCase.supportedServices = [serviceType.newChain, serviceType.ipfs,]
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0020\t有效区块编号，无效交易索引无效交易索引:100'
@@ -2137,7 +2113,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'no such transaction in block'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0020\t有效区块编号，无效交易索引无效交易索引:负数'
@@ -2146,7 +2122,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'index out of range'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0020\t有效区块编号，无效交易索引无效交易索引:乱码'
@@ -2155,7 +2131,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'invalid syntax'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     title = '0030\t无效区块编号'
@@ -2164,7 +2140,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'can\'t find block'
     testCase = createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    testCase.supportedServices = [serviceType.newChain,]
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -2191,7 +2167,7 @@ describe('Jingtum测试', function() {
         checkTransactionByBlockHashAndIndex,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain,],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -2252,7 +2228,7 @@ describe('Jingtum测试', function() {
         },
         null,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain,],
         [],//[interfaceType.rpc, interfaceType.websocket]
     )
   }
@@ -2293,7 +2269,7 @@ describe('Jingtum测试', function() {
         },
         null,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain,],
         [],//[interfaceType.rpc, interfaceType.websocket]
     )
   }
@@ -2350,7 +2326,6 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetTransactionReceipt(server, testNumber, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0020'
@@ -2358,19 +2333,16 @@ describe('Jingtum测试', function() {
     hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
     expectedError = 'can\'t find transaction'
     testCase = createSingleTestCaseForGetTransactionReceipt(server, testNumber, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     hash = '100093'
     expectedError = 'NewHash256: Wrong length'
     testCase = createSingleTestCaseForGetTransactionReceipt(server, testNumber, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     hash = '1231dsfafwrwerwer'
     expectedError = 'invalid byte'
     testCase = createSingleTestCaseForGetTransactionReceipt(server, testNumber, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -2399,7 +2371,7 @@ describe('Jingtum测试', function() {
         checkTransactionReceipt,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain, ],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -2436,7 +2408,6 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t无效交易哈希：不存在的hash'
@@ -2444,7 +2415,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'can\'t find block'
     testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t无效交易哈希：hash长度超过标准'
@@ -2452,7 +2422,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'index out of range'
     testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -2467,7 +2436,6 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t无效交易编号：9999999'
@@ -2475,7 +2443,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'can\'t find block'
     testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t无效交易编号：负数'
@@ -2483,7 +2450,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'invalid syntax'
     testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     title = '0020\t无效交易编号：乱码'
@@ -2491,7 +2457,6 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'invalid syntax'
     testCase = createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testTestCases(server, describeTitle, testCases)
@@ -2517,7 +2482,7 @@ describe('Jingtum测试', function() {
         checkBlockTransactionCount,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain, ],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
@@ -2536,7 +2501,6 @@ describe('Jingtum测试', function() {
       expect(response.result).to.contains(testCase.expectedResult.expectedError)
     }
   }
-
 
   //endregion
 
@@ -2564,25 +2528,25 @@ describe('Jingtum测试', function() {
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     testNumber = '0020'
     showFullTx = true
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     testNumber = '0030'
     numberOrHash = 'earliest'
     showFullTx = true
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0040'
     numberOrHash = 'earliest'
     showFullTx = false
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0050'
@@ -2590,28 +2554,24 @@ describe('Jingtum测试', function() {
     showFullTx = true
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
     testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0060'
     numberOrHash = 'latest'
     showFullTx = false
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0090'
     numberOrHash = 'pending'
     showFullTx = true
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0100'
     numberOrHash = 'pending'
     showFullTx = false
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
     addTestCase(testCases, testCase)
 
     testNumber = '0110'
@@ -2620,7 +2580,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'value out of range'
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCase.supportedServices = createSupportedServicesForNewChain()
+    // testCase.supportedServices.push(serviceType.oldChain)  //old chain not support huge block number, it will cause test hook more than 20s
     addTestCase(testCases, testCase)
 
     testNumber = '0110'
@@ -2629,6 +2589,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'ledgerNotFound'
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     testNumber = '0120'
@@ -2637,6 +2598,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'invalid ledger_index'
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     testNumber = '0120'
@@ -2645,6 +2607,7 @@ describe('Jingtum测试', function() {
     needPass = false
     expectedError = 'invalid ledger_index'
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     return testCases
@@ -2673,7 +2636,7 @@ describe('Jingtum测试', function() {
         checkBlock,
         expectedResult,
         restrictedLevel.L2,
-        [],//[serviceType.newChain, serviceType.ipfs,],//[serviceType.newChain, serviceType.ipfs, serviceType.oldChain],
+        [serviceType.newChain,],
         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
     )
 
