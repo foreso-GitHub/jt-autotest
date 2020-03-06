@@ -744,7 +744,9 @@ describe('Jingtum测试', function() {
     logger.debug('restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
     logger.debug('hasExecuted: ' + testCase.hasExecuted)
     logger.debug('result: ' + JSON.stringify(testCase.actualResult[0]))
-    logger.debug('subTestCases: ' + JSON.stringify(testCase.subTestCases))
+    if(testCase.subTestCases != null && testCase.subTestCases.length > 0) {
+      logger.debug('subTestCases result: ' + JSON.stringify(testCase.subTestCases[0].actualResult[0]))
+    }
   }
 
   function ifNeedExecuteOrCheck(testCase){
@@ -934,13 +936,11 @@ describe('Jingtum测试', function() {
         testForTransfer(server, categoryName, txFunctionName, txParams)
       })
 
-      if(server.mode.service == serviceType.newChain || server.mode.service == serviceType.ipfs){
-        txFunctionName = consts.rpcFunctions.signTx
-        // txParams = createTxParamsForTransfer(server)
-        describe(categoryName + '测试：' + txFunctionName, async function () {
-          testForTransfer(server, categoryName, txFunctionName, txParams)
-        })
-      }
+      txFunctionName = consts.rpcFunctions.signTx
+      // txParams = createTxParamsForTransfer(server)
+      describe(categoryName + '测试：' + txFunctionName, async function () {
+        testForTransfer(server, categoryName, txFunctionName, txParams)
+      })
 
       categoryName = '原生币swt压力测试'
       testCases = createTestCasesForPressureTest(server, categoryName, 20)
@@ -968,7 +968,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
-    testCaseParams.supportedServices.push(serviceType.oldChain)
+    if(txFunctionName == consts.rpcFunctions.sendTx) testCaseParams.supportedServices.push(serviceType.oldChain)
 
     //region test cases for basic transfer
     testCaseParams.title = '0010\t发起' + testCaseParams.categoryName + '有效交易_01'
@@ -1106,7 +1106,7 @@ describe('Jingtum测试', function() {
   function createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams){
     let testCases = []
     let testCaseParams = createTestCaseParams(server, categoryName, txFunctionName, txParams)
-    testCaseParams.supportedServices.push(serviceType.oldChain)
+    if(txFunctionName == consts.rpcFunctions.sendTx) testCaseParams.supportedServices.push(serviceType.oldChain)
 
     //region test cases
     testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]'
