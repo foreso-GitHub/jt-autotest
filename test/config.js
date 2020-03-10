@@ -36,8 +36,9 @@ let mode_rpc_newChain = {
         tx_token: data.chain.tx_token,
         tx_issue_token: data.chain.tx_issue_token
     },
-    blockNumber: '107600',
-    blockHash: '06DA6A9900FDBBCA1CBE8E9A2146ED8D664FE49102CCE5FAB3554AF0E72F6E38',
+    blockNumber: '107621',
+    blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
+    txCountInBlock: 20,
 }
 
 let mode_rpc_ipfs = {
@@ -62,27 +63,28 @@ let mode_rpc_ipfs = {
 }
 
 let mode_lib_mainnet = {
-        server: lib_main,
-        initParams: {url:'wss://c04.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
-        service: serviceType.oldChain,
-        interface: interfaceType.websocket,
-        testMode: testMode.batchMode,
-        restrictedLevel: restrictedLevel.L2,
-        defaultBlockTime: 10000,
-        retryPauseTime: 1000,
-        retryMaxCount: 16,
-        defaultFee: "10000",
-        txs:{
-            tx1: data.swtclib_Main.tx,
-            tx_memo: data.swtclib_Main.tx_memo,
-            tx_token: data.swtclib_Main.tx_token,
-            tx_issue_token: data.swtclib_Main.tx_issue_token,
-        },
-        // blockNumber: '15190000',
-        // blockHash: '82DE81D806DCEC9140B9382C402967AEF879C76865C8714FF290A75344F973EB',
-        blockNumber: '15267011',
-        blockHash: 'FF9D1723299F7314462F3B366215B5F52176CD78651AB2F51373068EC5A8B041',
-    }
+    server: lib_main,
+    initParams: {url:'wss://c04.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
+    service: serviceType.oldChain,
+    interface: interfaceType.websocket,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L2,
+    defaultBlockTime: 10000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultFee: "10000",
+    txs:{
+        tx1: data.swtclib_Main.tx,
+        tx_memo: data.swtclib_Main.tx_memo,
+        tx_token: data.swtclib_Main.tx_token,
+        tx_issue_token: data.swtclib_Main.tx_issue_token,
+    },
+    // blockNumber: '15190000',
+    // blockHash: '82DE81D806DCEC9140B9382C402967AEF879C76865C8714FF290A75344F973EB',
+    blockNumber: '15267011',
+    blockHash: 'FF9D1723299F7314462F3B366215B5F52176CD78651AB2F51373068EC5A8B041',
+    txCountInBlock: 9,
+}
 
 let mode_lib_testnet = {
     server: lib_test,
@@ -103,12 +105,13 @@ let mode_lib_testnet = {
     },
     blockNumber: '785909',
     blockHash: '928A72FA819C0812FA7BCCAB8A6EAB36830F40FC18E5F504CA61AB54514027BB',
+    txCountInBlock: 1,
 }
 
 let modes = [
-    // mode_rpc_newChain,
+    mode_rpc_newChain,
     // mode_rpc_ipfs,
-    mode_lib_mainnet,
+    // mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 

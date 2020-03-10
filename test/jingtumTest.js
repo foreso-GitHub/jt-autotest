@@ -22,7 +22,6 @@ const HASH_LENGTH = 64
 let _FullTestCaseList = []
 
 //region config
-let _CurrentMode
 let _CurrentRestrictedLevel
 let _CurrentService = serviceType.unknown
 let _CurrentInterface = interfaceType.unknown
@@ -41,7 +40,6 @@ describe('Jingtum测试', function() {
 
   for(let mode of modes){
 
-    _CurrentMode = mode
     let server = mode.server
     server.init(mode)
     _CurrentRestrictedLevel = mode.restrictedLevel
@@ -56,7 +54,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      // /*
+      /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -98,7 +96,7 @@ describe('Jingtum测试', function() {
         //
         // testForGetBlockByHash(server, '测试jt_getBlockByHash')
         //
-        // testForGetTransaction(server, '测试jt_getTransactionByHash')
+        testForGetTransaction(server, '测试jt_getTransactionByHash')
         //
         // testForGetAccount(server, '测试jt_getAccount')
         //
@@ -519,7 +517,8 @@ describe('Jingtum测试', function() {
   async function checkResponseOfTransfer(testCase, txParams){
     await checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
       let params = txParams[0]
-      await compareActualTxWithTxParams(params, tx)
+      let defaultFee = testCase.server.mode.defaultFee
+      await compareActualTxWithTxParams(params, tx, defaultFee)
     })
   }
 
@@ -561,7 +560,7 @@ describe('Jingtum测试', function() {
     })
   }
 
-  function compareActualTxWithTxParams(txParams, tx){
+  function compareActualTxWithTxParams(txParams, tx, defaultFee){
     return new Promise(function(resolve){
       expect(tx.Account).to.be.equals(txParams.from)
       expect(tx.Destination).to.be.equals(txParams.to)
@@ -569,12 +568,12 @@ describe('Jingtum测试', function() {
       let expectedFee
       let expectedValue
       if(_CurrentService == serviceType.oldChain){
-        expectedFee = _CurrentMode.defaultFee
+        expectedFee = defaultFee
         expectedValue = Number(txParams.value) * 1000000
       }
       else
       {
-        expectedFee = (txParams.fee) ? txParams.fee : _CurrentMode.defaultFee
+        expectedFee = (txParams.fee) ? txParams.fee : defaultFee
         expectedValue = Number(txParams.value)
       }
 
@@ -2605,7 +2604,7 @@ describe('Jingtum测试', function() {
 
   function createTestCasesForGetBlock(server, functionName, numberOrHash){
     let testCases = []
-
+    let validNumberOrHash = numberOrHash
     let testNumber = '0010'
     let showFullTx = false
     let needPass = true
@@ -2620,44 +2619,76 @@ describe('Jingtum测试', function() {
     testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
-    testNumber = '0030'
-    numberOrHash = 'earliest'
-    showFullTx = true
-    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    addTestCase(testCases, testCase)
+    if(functionName == consts.rpcFunctions.getBlockByNumber){
+      testNumber = '0030'
+      numberOrHash = 'earliest'
+      showFullTx = true
+      testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+      addTestCase(testCases, testCase)
 
-    testNumber = '0040'
-    numberOrHash = 'earliest'
-    showFullTx = false
-    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    addTestCase(testCases, testCase)
+      testNumber = '0040'
+      numberOrHash = 'earliest'
+      showFullTx = false
+      testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+      addTestCase(testCases, testCase)
 
-    testNumber = '0050'
-    numberOrHash = 'latest'
-    showFullTx = true
-    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
-    addTestCase(testCases, testCase)
+      testNumber = '0050'
+      numberOrHash = 'latest'
+      showFullTx = true
+      testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+      testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
+      addTestCase(testCases, testCase)
 
-    testNumber = '0060'
-    numberOrHash = 'latest'
-    showFullTx = false
-    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    addTestCase(testCases, testCase)
+      testNumber = '0060'
+      numberOrHash = 'latest'
+      showFullTx = false
+      testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+      addTestCase(testCases, testCase)
 
-    testNumber = '0090'
-    numberOrHash = 'pending'
-    showFullTx = true
-    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-    addTestCase(testCases, testCase)
+      testNumber = '0090'
+      numberOrHash = 'pending'
+      showFullTx = true
+      testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+      addTestCase(testCases, testCase)
 
-    testNumber = '0100'
-    numberOrHash = 'pending'
-    showFullTx = false
+      testNumber = '0100'
+      numberOrHash = 'pending'
+      showFullTx = false
+      testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+      addTestCase(testCases, testCase)
+    }
+
+    testNumber = '0110'
+    numberOrHash = validNumberOrHash
+    showFullTx = 'wrwerwre'
+    needPass = false
+    expectedError = 'interface conversion: interface {} is string, not bool'
     testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是字符串'
+    testCase.supportedServices.push(serviceType.oldChain)
     addTestCase(testCases, testCase)
 
     testNumber = '0110'
+    numberOrHash = validNumberOrHash
+    showFullTx = 123123
+    needPass = false
+    expectedError = 'interface conversion: interface {} is float64, not bool'
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是数字'
+    testCase.supportedServices.push(serviceType.oldChain)
+    addTestCase(testCases, testCase)
+
+    testNumber = '0110'
+    numberOrHash = validNumberOrHash
+    showFullTx = null
+    needPass = false
+    expectedError = 'interface conversion: interface {} is nil, not bool'
+    testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+    testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是空值'
+    testCase.supportedServices.push(serviceType.oldChain)
+    addTestCase(testCases, testCase)
+
+    testNumber = '0120'
     numberOrHash = '9990000000'
     showFullTx = false
     needPass = false
@@ -2666,7 +2697,7 @@ describe('Jingtum测试', function() {
     // testCase.supportedServices.push(serviceType.oldChain)  //old chain not support huge block number, it will cause test hook more than 20s
     addTestCase(testCases, testCase)
 
-    testNumber = '0110'
+    testNumber = '0120'
     numberOrHash = '99900000'
     showFullTx = false
     needPass = false
@@ -2736,6 +2767,13 @@ describe('Jingtum测试', function() {
       let blockNumberOrHash = testCase.txParams[0]
       expect((functionName === consts.rpcFunctions.getBlockByNumber) ? response.result.ledger_index : response.result.ledger_hash)
           .to.be.equals(blockNumberOrHash)
+      let server = testCase.server
+      expect(response.result.transactions.length).to.be.equals(server.mode.txCountInBlock)
+      let showFullTx = testCase.txParams[1]
+      if(showFullTx != null){
+        let tx = response.result.transactions[0]
+        expect(typeof tx == 'object' || utility.isJSON(tx)).to.be.equals(showFullTx)
+      }
     }
     else{
       expect(response.result).to.contains(testCase.expectedResult.expectedError)
