@@ -427,7 +427,8 @@ const WALLET_SCHEMA = {
     ]
 }
 
-const SENDTX_SCHEMA = {
+//todo need be replaced by SENDTX_SCHEMA
+const OLD_SENDTX_SCHEMA = {
     title: "test response of jt_sendTransaction",
     type: "object",
     required: [
@@ -456,6 +457,42 @@ const SENDTX_SCHEMA = {
     },
 }
 
+const SENDTX_SCHEMA = {
+    title: "test response of jt_sendTransaction",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            engine_result: {
+                "type": "string"
+            },
+            engine_result_code: {
+                "type": "integer"
+            },
+            engine_result_message: {
+                "type": "string"
+            },
+            hash: {
+                "type": "string"
+            },
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
 module.exports = {
     SERVER_INFO_SCHEMA,
     LEDGER_CLOSED_SCHEMA,
@@ -475,4 +512,5 @@ module.exports = {
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
     SENDTX_SCHEMA,
+    OLD_SENDTX_SCHEMA,
 }

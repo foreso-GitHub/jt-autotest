@@ -63,7 +63,7 @@ let mode_rpc_ipfs = {
 
 let mode_lib_mainnet = {
         server: lib_main,
-        initParams: {url:'wss://c05.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
+        initParams: {url:'wss://c04.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
         service: serviceType.oldChain,
         interface: interfaceType.websocket,
         testMode: testMode.batchMode,
@@ -71,7 +71,7 @@ let mode_lib_mainnet = {
         defaultBlockTime: 10000,
         retryPauseTime: 1000,
         retryMaxCount: 16,
-        defaultFee: "10",
+        defaultFee: "10000",
         txs:{
             tx1: data.swtclib_Main.tx,
             tx_memo: data.swtclib_Main.tx_memo,
@@ -94,7 +94,7 @@ let mode_lib_testnet = {
     defaultBlockTime: 10000,
     retryPauseTime: 1000,
     retryMaxCount: 16,
-    defaultFee: "10",
+    defaultFee: "10000",
     txs:{
         tx1: data.swtclib_Test.tx,
         tx_memo: data.swtclib_Test.tx_memo,
@@ -106,9 +106,9 @@ let mode_lib_testnet = {
 }
 
 let modes = [
-    mode_rpc_newChain,
+    // mode_rpc_newChain,
     // mode_rpc_ipfs,
-    // mode_lib_mainnet,
+    mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 

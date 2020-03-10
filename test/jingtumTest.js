@@ -22,6 +22,7 @@ const HASH_LENGTH = 64
 let _FullTestCaseList = []
 
 //region config
+let _CurrentMode
 let _CurrentRestrictedLevel
 let _CurrentService = serviceType.unknown
 let _CurrentInterface = interfaceType.unknown
@@ -40,6 +41,7 @@ describe('Jingtum测试', function() {
 
   for(let mode of modes){
 
+    _CurrentMode = mode
     let server = mode.server
     server.init(mode)
     _CurrentRestrictedLevel = mode.restrictedLevel
@@ -54,7 +56,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      ///*
+      // /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -457,23 +459,61 @@ describe('Jingtum测试', function() {
   async function checkResponseOfCommon(testCase, txParams, checkFunction){
     let responseOfSendTx = testCase.actualResult[0]
     checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
-    if(testCase.expectedResult.needPass){
-      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-      let hash = responseOfSendTx.result[0]
-      // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-      await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-        checkResponse(true, responseOfGetTx)
-        // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-        expect(responseOfGetTx.result.hash).to.be.equal(hash)
-        await checkFunction(testCase, txParams, responseOfGetTx.result)
-      }, function (err) {
-        expect(err).to.be.ok
-      })
+
+    //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
+    if(_CurrentService == serviceType.newChain){
+      if(testCase.expectedResult.needPass){
+        expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+        let hash = responseOfSendTx.result[0]
+        // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+        // let hash = responseOfSendTx.result[0]
+        // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
+        await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+          checkResponse(true, responseOfGetTx)
+          // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+          expect(responseOfGetTx.result.hash).to.be.equal(hash)
+          await checkFunction(testCase, txParams, responseOfGetTx.result)
+        }, function (err) {
+          expect(err).to.be.ok
+        })
+      }
+      else{
+        let expectedResult = testCase.expectedResult
+        expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
+      }
     }
     else{
-      let expectedResult = testCase.expectedResult
-      expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
+      if(testCase.expectedResult.needPass){
+        expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+        let hash = responseOfSendTx.result.hash  //for swtclib
+        await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+          checkResponse(true, responseOfGetTx)
+          // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+          expect(responseOfGetTx.result.hash).to.be.equal(hash)
+          await checkFunction(testCase, txParams, responseOfGetTx.result)
+        }, function (err) {
+          expect(err).to.be.ok
+        })
+      }
+      else{
+        expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+        let expectedResult = testCase.expectedResult.expectedError
+        compareEngineResults(expectedResult, responseOfSendTx.result)
+      }
     }
+  }
+
+  function compareEngineResults(result1, result2){
+    // if(result1.engine_result === result2.engine_result
+    //   && result1.engine_result_code === result2.engine_result_code
+    //   && result1.engine_result_message === result2.engine_result_message){
+    //   return true
+    // }
+    // return false
+
+    expect(result2.engine_result).to.equals(result1.engine_result)
+    expect(result2.engine_result_code).to.equals(result1.engine_result_code)
+    expect(result2.engine_result_message).to.equals(result1.engine_result_message)
   }
 
   async function checkResponseOfTransfer(testCase, txParams){
@@ -525,7 +565,20 @@ describe('Jingtum测试', function() {
     return new Promise(function(resolve){
       expect(tx.Account).to.be.equals(txParams.from)
       expect(tx.Destination).to.be.equals(txParams.to)
-      expect(tx.Fee).to.be.equals(((txParams.fee) ? txParams.fee : 10).toString())
+
+      let expectedFee
+      let expectedValue
+      if(_CurrentService == serviceType.oldChain){
+        expectedFee = _CurrentMode.defaultFee
+        expectedValue = Number(txParams.value) * 1000000
+      }
+      else
+      {
+        expectedFee = (txParams.fee) ? txParams.fee : _CurrentMode.defaultFee
+        expectedValue = Number(txParams.value)
+      }
+
+      expect(tx.Fee).to.be.equals(expectedFee.toString())
       //check value
       if(txParams.type == consts.rpcParamConsts.issueCoin){
         expect(tx.Name).to.be.equals(txParams.name)
@@ -541,7 +594,8 @@ describe('Jingtum测试', function() {
           expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
         }
         else{
-          expect(Number(tx.Amount)).to.be.equals(Number(txParams.value))
+          // expect(Number(tx.Amount)).to.be.equals(Number(txParams.value))
+          expect(Number(tx.Amount)).to.be.equals(expectedValue)
         }
       }
       //check memos
@@ -823,9 +877,12 @@ describe('Jingtum测试', function() {
     testTestCases(server, describeTitle, testCases)
 
     //set created token properties
-    let tokenName = testCases[0].txParams[0].name
-    let tokenSymbol = testCases[0].txParams[0].symbol
-    let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
+    // let tokenName = testCases[0].txParams[0].name
+    // let tokenSymbol = testCases[0].txParams[0].symbol
+    // let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
+    let tokenName = txParams.name
+    let tokenSymbol = txParams.symbol
+    let issuer = txParams.local ? txParams.from : addresses.defaultIssuer.address
     logger.debug("===create token: " + tokenSymbol)
 
     //token transfer
@@ -949,15 +1006,17 @@ describe('Jingtum测试', function() {
       //endregion
 
       //region token test
-      txFunctionName = consts.rpcFunctions.sendTx
-      describe('代币测试：' + txFunctionName, async function () {
-        testForIssueTokenInComplexMode(server, txFunctionName)
-      })
+      if(server.mode.service == serviceType.newChain){
+        txFunctionName = consts.rpcFunctions.sendTx
+        describe('代币测试：' + txFunctionName, async function () {
+          testForIssueTokenInComplexMode(server, txFunctionName)
+        })
 
-      txFunctionName = consts.rpcFunctions.signTx
-      describe('代币测试：' + txFunctionName, async function () {
-        testForIssueTokenInComplexMode(server, txFunctionName)
-      })
+        txFunctionName = consts.rpcFunctions.signTx
+        describe('代币测试：' + txFunctionName, async function () {
+          testForIssueTokenInComplexMode(server, txFunctionName)
+        })
+      }
       //endregion
 
     })
@@ -990,7 +1049,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].secret = null
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'No secret found for')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'No secret found for')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'No secret found for' : consts.engineResults.temINVALID_SECRET)
       })
       addTestCase(testCases, testCase)
     }
@@ -999,7 +1060,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].secret = '错误的秘钥'
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 string')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 string')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'Bad Base58 string' : consts.engineResults.temMALFORMED)
       })
       addTestCase(testCases, testCase)
     }
@@ -1008,7 +1071,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 checksum')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'Bad Base58 checksum' : consts.engineResults.temMALFORMED)
       })
       addTestCase(testCases, testCase)
     }
@@ -1017,7 +1082,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad account address:')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad account address:')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'Bad account address:' : consts.engineResults.temINVALID_FROM_ADDRESS)
       })
       addTestCase(testCases, testCase)
     }
@@ -1026,7 +1093,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad account address:')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad account address:')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'Bad account address:' : consts.engineResults.temINVALID_TO_ADDRESS)
       })
       addTestCase(testCases, testCase)
     }
@@ -1036,7 +1105,9 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "999999999999999" + testCaseParams.showSymbol
         // testCaseParams.expectedResult = createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'telINSUF_FEE_P Fee insufficient')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'telINSUF_FEE_P Fee insufficient')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'telINSUF_FEE_P Fee insufficient' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
@@ -1047,8 +1118,10 @@ describe('Jingtum测试', function() {
         testCaseParams.txParams[0].value = "-100" + testCaseParams.showSymbol
         // testCaseParams.expectedResult = createExpecteResult(false, false,
         //     'temBAD_AMOUNT Can only send positive amounts')
+        // testCaseParams.expectedResult = createExpecteResult(false, true,
+        //     'temBAD_AMOUNT Can only send positive amounts')
         testCaseParams.expectedResult = createExpecteResult(false, true,
-            'temBAD_AMOUNT Can only send positive amounts')
+            _CurrentService == serviceType.newChain ? 'temBAD_AMOUNT Can only send positive amounts' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
@@ -1057,7 +1130,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = null
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'Invalid Number')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'Invalid Number')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'Invalid Number' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
@@ -1066,7 +1141,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "aawrwfsfs"
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'Invalid Number')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'Invalid Number')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'Invalid Number' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
@@ -1075,7 +1152,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "0.0000001" + testCaseParams.showSymbol
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
@@ -1084,7 +1163,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "0.0000011" + testCaseParams.showSymbol
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
@@ -1093,7 +1174,9 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].value = "-0.1" + testCaseParams.showSymbol
-        testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
+        // testCaseParams.expectedResult = createExpecteResult(false, true, 'value must be integer type')
+        testCaseParams.expectedResult = createExpecteResult(false, true,
+            _CurrentService == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
       })
       addTestCase(testCases, testCase)
     }
