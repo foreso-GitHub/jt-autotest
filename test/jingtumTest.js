@@ -230,7 +230,7 @@ describe('Jingtum测试', function() {
   function createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction){
     testCaseParams.txParams = cloneParamsAarry(testCaseParams.originalTxParams)
     updateTxParamsFunction()
-    testCaseParams.expectedResult = createExpecteResult(true)
+    // testCaseParams.expectedResult = createExpecteResult(true)
     let testCase = createTestCaseByParams(testCaseParams)
     if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
       let expectedResultOfSendRawTx = createExpecteResult(true)
@@ -503,6 +503,16 @@ describe('Jingtum测试', function() {
       let params = txParams[0]
       let defaultFee = testCase.server.mode.defaultFee
       await compareActualTxWithTxParams(params, tx, defaultFee)
+
+      if(_CurrentRestrictedLevel >= restrictedLevel.L5){
+        let expectedBalance = testCase.expectedResult.expectedBalance
+        if(expectedBalance){
+          let server = testCase.server
+          let from = params.from
+          let symbol = params.symbol
+          await checkBalanceChange(server, from, symbol, expectedBalance)
+        }
+      }
     })
   }
 
@@ -977,14 +987,14 @@ describe('Jingtum测试', function() {
         testForTransfer(server, categoryName, txFunctionName, txParams)
       })
 
-      txFunctionName = consts.rpcFunctions.signTx
-      txParams = createTxParamsForTransfer(server)
-      describe(categoryName + '测试：' + txFunctionName, async function () {
-        testForTransfer(server, categoryName, txFunctionName, txParams)
-      })
+      // txFunctionName = consts.rpcFunctions.signTx
+      // txParams = createTxParamsForTransfer(server)
+      // describe(categoryName + '测试：' + txFunctionName, async function () {
+      //   testForTransfer(server, categoryName, txFunctionName, txParams)
+      // })
 
       categoryName = '原生币swt压力测试'
-      testCases = createTestCasesForPressureTest(server, categoryName, 2000)
+      testCases = createTestCasesForPressureTest(server, categoryName, 20)
       testTestCases(server, categoryName, testCases)
 
       //endregion
@@ -998,10 +1008,10 @@ describe('Jingtum测试', function() {
           testForIssueTokenInComplexMode(server, txFunctionName)
         })
 
-        txFunctionName = consts.rpcFunctions.signTx
-        describe('代币测试：' + txFunctionName, async function () {
-          testForIssueTokenInComplexMode(server, txFunctionName)
-        })
+        // txFunctionName = consts.rpcFunctions.signTx
+        // describe('代币测试：' + txFunctionName, async function () {
+        //   testForIssueTokenInComplexMode(server, txFunctionName)
+        // })
 
       }
 
@@ -1371,6 +1381,7 @@ describe('Jingtum测试', function() {
     testCaseParams.title = '0270\t发行' + testCaseParams.categoryName
     {
       let testCase = createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+        testCaseParams.expectedResult.expectedBalance = txParams[0].total_supply
       })
       addTestCase(testCases, testCase)
     }
@@ -1520,6 +1531,7 @@ describe('Jingtum测试', function() {
       let testCase = canMint(testCaseParams.txParams[0].flags) ?
           createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
             testCaseParams.txParams[0].total_supply = '9'
+            testCaseParams.expectedResult.expectedBalance = 19753086419
           })
           :
           createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
@@ -1579,6 +1591,17 @@ describe('Jingtum测试', function() {
               testCaseParams.txParams[0].total_supply =  '-19753086410'
             }
             // testCaseParams.txParams[0].total_supply =  '-9876543191'
+
+            // let data = testCaseParams.txParams[0]
+            // let server = testCaseParams.server
+            // // logger.debug('++++' + JSON.stringify(data))
+            // server.getBalance(data.from, data.symbol).then(function(balance){
+            //   logger.debug('++++' + JSON.stringify(balance))
+            //   testCaseParams.txParams[0].total_supply = '-' + balance.value
+            // })
+
+            testCaseParams.expectedResult = createExpecteResult(true)
+            testCaseParams.expectedResult.expectedBalance = 0
           })
           :
           createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
@@ -2804,10 +2827,23 @@ describe('Jingtum测试', function() {
     })
   }
 
+  //swt example:
+  // { id: 38,
+  //     jsonrpc: '2.0',
+  //     result: { balance: '1798498811047' },
+  //   status: 'success' }
+  //token example:
   async function checkBalanceChange(server, from, symbol, expectedBalance){
-    let balance = await server.getBalance(from, symbol)
-    expect(Number(balance.value)).to.be.equal(expectedBalance)
-    return balance
+    if(symbol){ //token
+      let balance = await server.getBalance(from, symbol)
+      expect(Number(balance.value)).to.be.equal(Number(expectedBalance))
+      return balance
+    }
+    else{ //swt
+      let balance = await server.getBalance(from)
+      expect(Number(balance)).to.be.equal(Number(expectedBalance))
+      return balance
+    }
   }
 
   //region normal response check
