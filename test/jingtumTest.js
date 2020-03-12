@@ -90,7 +90,9 @@ describe('Jingtum测试', function() {
 
       describe('is working', async function () {
 
-        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        testForGetBalance(server, '测试jt_getBalance')
+
+        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // await utility.timeout(5000)
 
@@ -1690,20 +1692,31 @@ describe('Jingtum测试', function() {
 
   function testForGetBalance(server, describeTitle){
     describe(describeTitle, function () {
-      let symbol = null
-      testForGetBalanceByTag(server, symbol, null)
-      testForGetBalanceByTag(server, symbol, 'current')
-      testForGetBalanceByTag(server, symbol, 'validated')
-      testForGetBalanceByTag(server, symbol, 'closed')
-      testForGetBalanceByTag(server, symbol, '4136')  //block number  //todo: always timeout, need restore
-      testForGetBalanceByTag(server, symbol, 'C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91')  //block 4136
+      let symbol = null //swtc
+      testForGetBalanceByAllTags(server, symbol)
+      if(_CurrentService == serviceType.newChain){
+        symbol = '5e69b0cc'   //token without issuer
+        testForGetBalanceByAllTags(server, symbol)
+        symbol = '5e69b0d4'   //token with issuer
+        testForGetBalanceByAllTags(server, symbol)
+      }
     })
   }
 
-  function testForGetBalanceByTag(server, symbol, tag){
+  function testForGetBalanceByAllTags(server, symbol){
+    testForGetBalanceBySymbolAndTag(server, symbol, null)
+    testForGetBalanceBySymbolAndTag(server, symbol, 'current')
+    testForGetBalanceBySymbolAndTag(server, symbol, 'validated')
+    testForGetBalanceBySymbolAndTag(server, symbol, 'closed')
+    testForGetBalanceBySymbolAndTag(server, symbol, '4136')  //block number  //todo: always timeout, need restore
+    testForGetBalanceBySymbolAndTag(server, symbol, 'C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91')  //block 4136
+  }
+
+  function testForGetBalanceBySymbolAndTag(server, symbol, tag){
 
     let testCases = []
-    let describeTitle = '测试jt_getBalance，tag为' + tag
+    let showSymbol = symbol == null ? 'swtc' : symbol
+    let describeTitle = '测试jt_getBalance， Token为' + showSymbol + '，tag为' + tag
 
     let title = '0010\t查询有效的地址_01:地址内有底层币和代币'
     let addressOrName = addresses.balanceAccount.address
@@ -1753,7 +1766,7 @@ describe('Jingtum测试', function() {
     let functionName = consts.rpcFunctions.getBalance
     let txParams = []
     txParams.push(addressOrName)
-    if(symbol != null) txParams.push(symbol)
+    txParams.push(symbol != null ? symbol : '')
     if(tag != null) txParams.push(tag)
     let expectedResult = {}
     expectedResult.needPass = needPass
@@ -1782,8 +1795,16 @@ describe('Jingtum测试', function() {
     let needPass = testCase.expectedResult.needPass
     checkResponse(needPass, response)
     if(needPass){
-      expect(response.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)
-      expect(Number(response.result.balance)).to.be.above(0)
+      let symbol = testCase.txParams[1]
+      if(symbol == ''){  //todo suppose it is swtc, in fact, maybe not.  the better way is formats of balance of swtc and token are the same.
+        expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
+        expect(Number(response.result.balance)).to.be.above(0)
+      }
+      else{ //suppose it is token
+        expect(response.result).to.be.jsonSchema(schema.BALANCE_TOKEN_SCHEMA)
+        expect(Number(response.result.balance.value)).to.be.above(0)
+      }
+
     }
     else{
       expect(response.result).to.contains(testCase.expectedResult.expectedError)
@@ -1958,7 +1979,7 @@ describe('Jingtum测试', function() {
     let needPass = testCase.expectedResult.needPass
     checkResponse(needPass, response)
     if(needPass){
-      // expect(response.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
+      // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
       expect(Number(response.result.Balance)).to.be.above(0)
     }
     else{
@@ -2000,7 +2021,7 @@ describe('Jingtum测试', function() {
     let needPass = testCase.expectedResult.needPass
     checkResponse(needPass, response)
     if(needPass){
-      // expect(response.result).to.be.jsonSchema(schema.BLANCE_SCHEMA)  //todo: add account schema
+      // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
       let accounts = response.result
       let rootAccount = 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh:root'
       // logger.debug(JSON.stringify(accounts))
