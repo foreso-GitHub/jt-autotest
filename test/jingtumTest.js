@@ -54,7 +54,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      /*
+      // /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -90,7 +90,7 @@ describe('Jingtum测试', function() {
 
       describe('is working', async function () {
 
-        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // await utility.timeout(5000)
 
