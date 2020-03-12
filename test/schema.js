@@ -397,7 +397,8 @@ const BLOCKNUMBER_SCHEMA = {
     type: "integer",
 }
 
-const BLANCE_SCHEMA = {
+//{"balance":"10000100003"}
+const BALANCE_SCHEMA = {
     title: "test response of jt_getBalance",
     type: "object",
     required: [
@@ -407,6 +408,34 @@ const BLANCE_SCHEMA = {
         balance: {
             "type": "string"
         }
+    },
+}
+
+// {
+//     "balance": {
+//     "currency": "5e69b0cc"
+//     "issuer": "jjjjjjjjjjjjjjjjjjjjjhoLvTp"
+//     "value": "1000000"
+// }
+// }
+const BALANCE_TOKEN_SCHEMA = {
+    title: "test response of jt_getBalance, for token",
+    type: "object",
+    required: [
+        "balance"
+    ],
+    properties: {
+        balance: {
+            currency: {
+                "type": "string"
+            },
+            issuer: {
+                "type": "integer"
+            },
+            value: {
+                "type": "string"
+            },
+        },
     },
 }
 
@@ -427,7 +456,8 @@ const WALLET_SCHEMA = {
     ]
 }
 
-const SENDTX_SCHEMA = {
+//todo need be replaced by SENDTX_SCHEMA
+const OLD_SENDTX_SCHEMA = {
     title: "test response of jt_sendTransaction",
     type: "object",
     required: [
@@ -456,6 +486,42 @@ const SENDTX_SCHEMA = {
     },
 }
 
+const SENDTX_SCHEMA = {
+    title: "test response of jt_sendTransaction",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            engine_result: {
+                "type": "string"
+            },
+            engine_result_code: {
+                "type": "integer"
+            },
+            engine_result_message: {
+                "type": "string"
+            },
+            hash: {
+                "type": "string"
+            },
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
 module.exports = {
     SERVER_INFO_SCHEMA,
     LEDGER_CLOSED_SCHEMA,
@@ -471,8 +537,10 @@ module.exports = {
     ORDER_SCHEMA,
     PAYMENT_SCHEMA,
     BLOCKNUMBER_SCHEMA,
-    BLANCE_SCHEMA,
+    BALANCE_SCHEMA,
+    BALANCE_TOKEN_SCHEMA,
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
     SENDTX_SCHEMA,
+    OLD_SENDTX_SCHEMA,
 }
