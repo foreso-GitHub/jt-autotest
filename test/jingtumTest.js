@@ -592,7 +592,7 @@ describe('Jingtum测试', function() {
         }
       }
       //check memos, only in new chain
-      if(txParams.memos != null && _CurrentService == serviceType.newChain){
+      if(txParams.memos != null){
         let memos = tx.Memos
         let expectedMemos = txParams.memos
         for(let i = 0; i < expectedMemos.length; i++){
@@ -1001,7 +1001,7 @@ describe('Jingtum测试', function() {
 
       //region token test
 
-      if(server.mode.service == serviceType.newChain){
+      if(server.mode.service == serviceType.newChain && _CurrentRestrictedLevel >= restrictedLevel.L3){
 
         txFunctionName = consts.rpcFunctions.sendTx
         describe('代币测试：' + txFunctionName, async function () {
