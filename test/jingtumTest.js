@@ -90,9 +90,7 @@ describe('Jingtum测试', function() {
 
       describe('is working', async function () {
 
-        testForGetBalance(server, '测试jt_getBalance')
-
-        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+        testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // await utility.timeout(5000)
 
@@ -948,6 +946,36 @@ describe('Jingtum测试', function() {
 
   //endregion
 
+  //region sequence test
+
+  function createTestCasesForSequenceTest(server, title){
+
+    // getSequence(server, from).then(function(sequence){
+    //   data.sequence = isNaN(sequence) ? 1 : sequence
+    //   server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
+    //     testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
+    //     logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
+    //     executeTxByTestCase(testCase).then(function(response){
+    //       specialExecuteFunction(testCase, response, resolve)
+    //     })
+    //   })
+    // })
+    //
+    // let txParams = createTxParamsForTransfer(server)
+    // let txFunctionName = consts.rpcFunctions.sendTx
+    // let executeFunction = executeTestCaseOfSendTx
+    // let checkFunction = checkTestCaseOfSendTx
+    // let expectedResult = createExpecteResult(true)
+    // let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
+    //     txFunctionName, txParams, null,
+    //     executeFunction, checkFunction, expectedResult,
+    //     restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
+    // return testCase
+
+  }
+
+  //endregion
+
   //region pressure test
 
   function createTestCasesForPressureTest(server, categoryName, testCount){
@@ -994,6 +1022,10 @@ describe('Jingtum测试', function() {
       describe(categoryName + '测试：' + txFunctionName, async function () {
         testForTransfer(server, categoryName, txFunctionName, txParams)
       })
+
+      categoryName = '原生币sequence测试'
+      testCases = createTestCasesForSequenceTest(server, categoryName, 20)
+      testTestCases(server, categoryName, testCases)
 
       categoryName = '原生币swt压力测试'
       testCases = createTestCasesForPressureTest(server, categoryName, 20)

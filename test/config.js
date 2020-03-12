@@ -24,7 +24,7 @@ let mode_rpc_newChain = {
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L2,
+    restrictedLevel: restrictedLevel.L3,
     defaultBlockTime: 5000,
     retryPauseTime: 1000,
     retryMaxCount: 16,
