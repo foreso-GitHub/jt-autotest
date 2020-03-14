@@ -36,7 +36,7 @@ describe('Jingtum测试', function() {
   logger.debug("Start time: " + start.toTimeString())
   //endregion
 
-  this.timeout(20000)
+  this.timeout(600000)
 
   for(let mode of modes){
 
@@ -54,7 +54,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      // /*
+      /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -91,6 +91,22 @@ describe('Jingtum测试', function() {
       describe('is working', async function () {
 
         // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+        let txFunctionName = consts.rpcFunctions.sendTx
+        let categoryName
+        let testCases
+
+        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+        // categoryName = '原生币swt压力测试'
+        // testCases = createTestCasesForPressureTest(server, categoryName, 20)
+        // testTestCases(server, categoryName, testCases)
+
+        // categoryName = '原生币swt压力测试'
+        // testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
+        // testTestCases(server, categoryName, testCases)
+
+        testForSequenceTest(server, txFunctionName)
 
         // await utility.timeout(5000)
 
@@ -316,7 +332,9 @@ describe('Jingtum测试', function() {
       let data = testCase.txParams[0]
       let from = data.from
       getSequence(server, from).then(function(sequence){
-        data.sequence = isNaN(sequence) ? 1 : sequence
+        if(data.sequence == null){
+          data.sequence = isNaN(sequence) ? 1 : sequence
+        }
         server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
           testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
           logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
@@ -439,7 +457,18 @@ describe('Jingtum测试', function() {
   }
 
   async function checkResponseOfCommon(testCase, txParams, checkFunction){
-    let responseOfSendTx = testCase.actualResult[0]
+    await checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, 0)
+  }
+
+  async function checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, index){
+    await checkSingleResponseOfCommon(testCase, testCase.actualResult[index], txParams, checkFunction)
+    index++
+    if(index < testCase.actualResult.length){
+      await checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, index)
+    }
+  }
+
+  async function checkSingleResponseOfCommon(testCase, responseOfSendTx, txParams, checkFunction){
     checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
 
     //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
@@ -485,14 +514,54 @@ describe('Jingtum测试', function() {
     }
   }
 
-  function compareEngineResults(result1, result2){
-    // if(result1.engine_result === result2.engine_result
-    //   && result1.engine_result_code === result2.engine_result_code
-    //   && result1.engine_result_message === result2.engine_result_message){
-    //   return true
-    // }
-    // return false
+  // async function checkResponseOfCommon(testCase, txParams, checkFunction){
+  //   let responseOfSendTx = testCase.actualResult[0]
+  //   checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
+  //
+  //   //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
+  //   if(_CurrentService == serviceType.newChain){
+  //     if(testCase.expectedResult.needPass){
+  //       expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+  //       let hash = responseOfSendTx.result[0]
+  //       // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+  //       // let hash = responseOfSendTx.result[0]
+  //       // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
+  //       await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+  //         checkResponse(true, responseOfGetTx)
+  //         // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+  //         expect(responseOfGetTx.result.hash).to.be.equal(hash)
+  //         await checkFunction(testCase, txParams, responseOfGetTx.result)
+  //       }, function (err) {
+  //         expect(err).to.be.ok
+  //       })
+  //     }
+  //     else{
+  //       let expectedResult = testCase.expectedResult
+  //       expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
+  //     }
+  //   }
+  //   else{
+  //     if(testCase.expectedResult.needPass){
+  //       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+  //       let hash = responseOfSendTx.result.hash  //for swtclib
+  //       await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+  //         checkResponse(true, responseOfGetTx)
+  //         // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
+  //         expect(responseOfGetTx.result.hash).to.be.equal(hash)
+  //         await checkFunction(testCase, txParams, responseOfGetTx.result)
+  //       }, function (err) {
+  //         expect(err).to.be.ok
+  //       })
+  //     }
+  //     else{
+  //       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+  //       let expectedResult = testCase.expectedResult.expectedError
+  //       compareEngineResults(expectedResult, responseOfSendTx.result)
+  //     }
+  //   }
+  // }
 
+  function compareEngineResults(result1, result2){
     expect(result2.engine_result).to.equals(result1.engine_result)
     expect(result2.engine_result_code).to.equals(result1.engine_result_code)
     expect(result2.engine_result_message).to.equals(result1.engine_result_message)
@@ -676,11 +745,12 @@ describe('Jingtum测试', function() {
   }
 
   //region batch mode
+
   function testBatchTestCases(server, describeTitle, testCases) {
     describe(describeTitle, async function () {
 
       before(async function() {
-        await execEachTestCase(testCases, 0)
+        await execEachTestCase(testCases, 0)  //NOTICE!!! the execute method must RETURN a promise, then batch mode can work!!!
       })
 
       testCases.forEach(async function(testCase){
@@ -775,7 +845,13 @@ describe('Jingtum测试', function() {
     end = new Date()
     logger.debug("Start time: " + start.toTimeString())
     logger.debug("End time: " + end.toTimeString())
-    logger.debug("Consume time: " + (end - start) / 1000 + 's, equals to ' + (end - start) / 1000 / 60 + 'm!')
+    let span = end - start
+    let hour = Math.floor(span / 1000 / 60 / 60)
+    span = span - hour * 1000 * 60 * 60
+    let minute = Math.floor(span / 1000 / 60 )
+    span = span - minute * 1000 * 60
+    let second = Math.floor(span / 1000  )
+    logger.debug("Consume time: " + (end - start) / 1000 + 's, equals to ' + hour + ':' + minute + ':' + second + '!')
     logger.debug('Closing server ...')
     testCase.server.close()
     //endregion
@@ -948,30 +1024,193 @@ describe('Jingtum测试', function() {
 
   //region sequence test
 
-  function createTestCasesForSequenceTest(server, title){
+  async function testForSequenceTest(server, txFunctionName){
+    let testCases = []
+    let testCase = {}
+    let categoryName = 'Sequence测试: ' + txFunctionName
+    let title
 
-    // getSequence(server, from).then(function(sequence){
-    //   data.sequence = isNaN(sequence) ? 1 : sequence
-    //   server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
-    //     testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
-    //     logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
-    //     executeTxByTestCase(testCase).then(function(response){
-    //       specialExecuteFunction(testCase, response, resolve)
-    //     })
-    //   })
-    // })
-    //
-    // let txParams = createTxParamsForTransfer(server)
-    // let txFunctionName = consts.rpcFunctions.sendTx
-    // let executeFunction = executeTestCaseOfSendTx
-    // let checkFunction = checkTestCaseOfSendTx
-    // let expectedResult = createExpecteResult(true)
-    // let testCase = createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
-    //     txFunctionName, txParams, null,
-    //     executeFunction, checkFunction, expectedResult,
-    //     restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
-    // return testCase
+    title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence1, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      addTestCase(testCases, testCase)
+    }
 
+    title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
+        '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上\n'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        let currentSequence = data.sequence
+        data.sequence = currentSequence + 1
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        await utility.timeout(testCase.server.mode.defaultBlockTime)
+        data.sequence = currentSequence
+        result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        let currentSequence = data.sequence
+        data.sequence = currentSequence - 1
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      // testCase.expectedResult = createExpecteResult(false, true, 'temBAD_SEQUENCE Malformed: Sequence is not in the past.')
+      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.tefPAST_SEQ)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数、负数、字符串等'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        data.sequence = 0.5
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.temBAD_SEQUENCE)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        data.sequence = -1
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.temBAD_SEQUENCE)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        data.sequence = 'abcdefgijklmnopq'
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        testCase.actualResult.push(result)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.temBAD_SEQUENCE)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0670	同时发起多个交易时指定sequence_01:假设发起钱包的sequence已经到了n，同时发起m个交易，' +
+        '指定每个交易的sequence分别为n+1、n+2、…、n+m'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence4, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        let currentSequence = data.sequence
+        currentSequence = await simpleTx(testCase, currentSequence, 1)
+        currentSequence = await simpleTx(testCase, currentSequence, 1)
+        currentSequence = await simpleTx(testCase, currentSequence, 1)
+        currentSequence = await simpleTx(testCase, currentSequence, 1)
+        currentSequence = await simpleTx(testCase, currentSequence, 1)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0680\t同时发起多个交易时指定sequence_02:假设发起钱包的sequence已经到了n，' +
+        '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
+    {
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence5, addresses.receiver2)
+      testCase.specialExecute = async function(testCase, resolve){
+        let data = testCase.txParams[0]
+        let start = data.sequence
+        let currentSequence = start
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        await utility.timeout(testCase.server.mode.defaultBlockTime)
+        currentSequence = start + 1
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        currentSequence = await simpleTx(testCase, currentSequence, 2)
+        resolve(testCase)
+      }
+      testCase.checkFunction = checkTestCaseOfSendTx
+      addTestCase(testCases, testCase)
+    }
+
+    testTestCases(server, categoryName, testCases)
+  }
+
+  async function simpleTx(testCase, currentSequence, plusCount){
+    return new Promise(async function(resolve){
+      // logger.debug('----: ' + currentSequence)
+      testCase.txParams[0].sequence = currentSequence
+      let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+      testCase.actualResult.push(result)
+      if(result.status == 'success') currentSequence += plusCount
+      resolve(currentSequence)
+    })
+  }
+
+  function createTestCaseForSequenceTest(server, title, txFunctionName, sender, receiver){
+    let txParams = server.createTransferParams(sender.address, sender.secret, null,
+        receiver.address, '0.000001', '10', ['pressure test'])
+    let executeFunction = executeSequenceTest
+    let checkFunction = checkTestCaseOfSendTx
+    let expectedResult = createExpecteResult(true)
+    let testCase = createTestCase(title, server,
+        txFunctionName, txParams, null,
+        executeFunction, checkFunction, expectedResult,
+        restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
+    return testCase
+  }
+
+  function executeSequenceTest(testCase){
+    return new Promise(function(resolve){
+      let server = testCase.server
+      let data = testCase.txParams[0]
+      let from = data.from
+      getSequence(server, from).then(function(sequence){
+        data.sequence = isNaN(sequence) ? 1 : sequence
+        server.getBalance(data.from, data.symbol).then(async function(balanceBeforeExecution){
+          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
+          // logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
+          testCase.hasExecuted = true
+          testCase.actualResult = []
+          testCase.specialExecute(testCase, resolve)
+        })
+      })
+    })
   }
 
   //endregion
@@ -994,6 +1233,47 @@ describe('Jingtum测试', function() {
     }
     return testCases
   }
+
+  //region pressure test in one case
+  function createTestCasesForPressureTestInOneCase(server, txFunctionName, count){
+    let testCases = []
+    let title = '9000\t交易压力测试，交易数量：' + count
+    let testCase = createTestCaseForPressureTest(server, title, txFunctionName, count)
+    addTestCase(testCases, testCase)
+    return testCases
+  }
+
+  function createTestCaseForPressureTest(server, title, txFunctionName, count){
+    let testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.pressureAccount, addresses.receiver2)
+    testCase.count = count
+    // testCase.executeFunction = executeSequenceTest
+    testCase.specialExecute = async function(testCase, resolve){
+      let data = testCase.txParams[0]
+      let start = data.sequence
+      testCase.errorResult = []
+      for(let i = 0; i < testCase.count; i++){
+        data.sequence = start + i
+        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        // logger.debug('++++count: ' + i + ' sequence: ' + data.sequence)
+        // logger.debug('result: ' + JSON.stringify(result))
+        if(result.status != 'success') {
+          logger.debug('!!!!! error count: ' + i + ' sequence: ' + data.sequence)
+          logger.debug('!!!!! error: ' + JSON.stringify(result.result))
+          testCase.errorResult.push(result)
+        }
+        testCase.actualResult.push(result)
+        if(i == testCase.count - 1){
+          resolve(testCase)
+        }
+      }
+    }
+    testCase.checkFunction = async function(testCase){
+      expect(testCase.actualResult.length).to.be.equal(count)
+      expect(testCase.errorResult.length).to.be.equal(0)
+    }
+    return testCase
+  }
+  //endregion
 
   //endregion
 
@@ -1023,12 +1303,16 @@ describe('Jingtum测试', function() {
         testForTransfer(server, categoryName, txFunctionName, txParams)
       })
 
-      categoryName = '原生币sequence测试'
-      testCases = createTestCasesForSequenceTest(server, categoryName, 20)
+      // categoryName = '原生币sequence测试'
+      // testCases = createTestCasesForSequenceTest(server, categoryName, 20)
+      // testTestCases(server, categoryName, testCases)
+
+      categoryName = '原生币swt压力测试，分多个case执行'
+      testCases = createTestCasesForPressureTest(server, categoryName, 20)
       testTestCases(server, categoryName, testCases)
 
-      categoryName = '原生币swt压力测试'
-      testCases = createTestCasesForPressureTest(server, categoryName, 20)
+      categoryName = '原生币swt压力测试，在一个内case执行'
+      testCases = createTestCasesForPressureTestInOneCase(server, 20)
       testTestCases(server, categoryName, testCases)
 
       //endregion

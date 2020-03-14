@@ -26,14 +26,28 @@ let accounts = [
     //receiver3
     {address: "j4hxZmEo37wWcq7WLaoCtf8BjPDesTpAaR", secret: "ss1RvLHxENzbFPe5P4HgCTFebhSQD"},
 
+    //sequence1
     {address: "jBykxUHVDccTYtquCSCsFVgem1zt3FFe71", secret: "shJcGmQDoF3DU61ufA25a36ipfe4x"},
-    // {address: "j3Go8eJjRD5yvZuZbrGXXDcrACkxHgdaM8", secret: "shnWYMunzyrzfLAE4LWknxxST7mq8"},
-    // {address: "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd", secret: "ss6iFshVyH7zZL2pGiQ4otrrd5uCg"},
+
+    //sequence2
+    {address: "j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd", secret: "ss6iFshVyH7zZL2pGiQ4otrrd5uCg"},
+
+    //sequence3
+    {address: "jGPPk3jWd2NY1wStCHK27NDm61MES8Bhuf", secret: "ss5WvoCyjpryiuQ8ioENTccZoxPG6"},
+
+    //sequence4
+    {address: "jDjvM2rrjgAsYEeFJsSvuXxkbYxZQpdEwu", secret: "shJTqjPJKsgTLDqCQ16nuALHSzjTd"},
+
+    //sequence5
+    {address: "jnrX7oqQLtF2Vi5tXpS8gNza2x75kgQmFp", secret: "shU3sYDD5bSrtAn2jQSEMX8RVFiYf"},
+
+    //pressureAccount
+    {address: "j3Go8eJjRD5yvZuZbrGXXDcrACkxHgdaM8", secret: "shnWYMunzyrzfLAE4LWknxxST7mq8"},
+
+    //backup
     // {address: "jjsbo9Yz5RTrKAWSWgNtEHdrviMtWYoqZ5", secret: ""},
-    // {address: "jGPPk3jWd2NY1wStCHK27NDm61MES8Bhuf", secret: "ss5WvoCyjpryiuQ8ioENTccZoxPG6"},
     // {address: "jJMsY9dmkRfj1fGbft7kyXxJ3SyehPg1tG", secret: ""},
-    // {address: "jDjvM2rrjgAsYEeFJsSvuXxkbYxZQpdEwu", secret: "shJTqjPJKsgTLDqCQ16nuALHSzjTd"},
-    // {address: "jnrX7oqQLtF2Vi5tXpS8gNza2x75kgQmFp", secret: "shU3sYDD5bSrtAn2jQSEMX8RVFiYf"},
+
 ]
 
 //inactive account, do not send swt in them!
@@ -89,6 +103,30 @@ let addresses = {
         address:accounts[i].address,
         secret:accounts[i++].secret,
     },
+    sequence1:{
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
+    },
+    sequence2:{
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
+    },
+    sequence3:{
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
+    },
+    sequence4:{
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
+    },
+    sequence5:{
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
+    },
+    pressureAccount:{
+        address:accounts[i].address,
+        secret:accounts[i++].secret,
+    },
     inactiveAccount1:{
         address:inactiveAccounts[0].address,
         secret:inactiveAccounts[0].secret,
@@ -102,7 +140,7 @@ let addresses = {
     defaultIssuer:{
         address: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
         secret: ''
-    }
+    },
 }
 
 let data = {
