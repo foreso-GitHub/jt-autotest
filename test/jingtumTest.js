@@ -36,7 +36,7 @@ describe('Jingtum测试', function() {
   logger.debug("Start time: " + start.toTimeString())
   //endregion
 
-  this.timeout(20000)
+  this.timeout(60000)
 
   for(let mode of modes){
 
@@ -102,11 +102,12 @@ describe('Jingtum测试', function() {
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
         // testTestCases(server, categoryName, testCases)
 
-        categoryName = '原生币swt压力测试'
-        testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
-        testTestCases(server, categoryName, testCases)
+        // categoryName = '原生币swt压力测试'
+        // testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
+        // testTestCases(server, categoryName, testCases)
 
-        testForSequenceTest(server, txFunctionName)
+        categoryName = 'Sequence测试: '
+        testForSequenceTest(server, categoryName)
 
         // await utility.timeout(5000)
 
@@ -513,53 +514,6 @@ describe('Jingtum测试', function() {
       }
     }
   }
-
-  // async function checkResponseOfCommon(testCase, txParams, checkFunction){
-  //   let responseOfSendTx = testCase.actualResult[0]
-  //   checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
-  //
-  //   //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
-  //   if(_CurrentService == serviceType.newChain){
-  //     if(testCase.expectedResult.needPass){
-  //       expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
-  //       let hash = responseOfSendTx.result[0]
-  //       // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-  //       // let hash = responseOfSendTx.result[0]
-  //       // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-  //       await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-  //         checkResponse(true, responseOfGetTx)
-  //         // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-  //         expect(responseOfGetTx.result.hash).to.be.equal(hash)
-  //         await checkFunction(testCase, txParams, responseOfGetTx.result)
-  //       }, function (err) {
-  //         expect(err).to.be.ok
-  //       })
-  //     }
-  //     else{
-  //       let expectedResult = testCase.expectedResult
-  //       expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
-  //     }
-  //   }
-  //   else{
-  //     if(testCase.expectedResult.needPass){
-  //       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-  //       let hash = responseOfSendTx.result.hash  //for swtclib
-  //       await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-  //         checkResponse(true, responseOfGetTx)
-  //         // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-  //         expect(responseOfGetTx.result.hash).to.be.equal(hash)
-  //         await checkFunction(testCase, txParams, responseOfGetTx.result)
-  //       }, function (err) {
-  //         expect(err).to.be.ok
-  //       })
-  //     }
-  //     else{
-  //       expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-  //       let expectedResult = testCase.expectedResult.expectedError
-  //       compareEngineResults(expectedResult, responseOfSendTx.result)
-  //     }
-  //   }
-  // }
 
   function compareEngineResults(result1, result2){
     expect(result2.engine_result).to.equals(result1.engine_result)
@@ -1023,11 +977,23 @@ describe('Jingtum测试', function() {
   //endregion
 
   //region sequence test
+  async function testForSequenceTest(server, describeTitle){
 
-  async function testForSequenceTest(server, txFunctionName){
+    let txFunctionName = consts.rpcFunctions.sendTx
+    let categoryName = describeTitle + txFunctionName
+    let testCases = createTestCasesForSequenceTest(server, txFunctionName)
+    testTestCases(server, categoryName, testCases)
+
+    txFunctionName = consts.rpcFunctions.signTx
+    categoryName = describeTitle + txFunctionName
+    testCases = createTestCasesForSequenceTest(server, txFunctionName)
+    // testTestCases(server, categoryName, testCases)
+
+  }
+
+  function createTestCasesForSequenceTest(server, txFunctionName){
     let testCases = []
     let testCase = {}
-    let categoryName = 'Sequence测试: ' + txFunctionName
     let title
 
     title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
@@ -1035,6 +1001,9 @@ describe('Jingtum测试', function() {
       testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence1, addresses.receiver2)
       testCase.specialExecute = async function(testCase, resolve){
         let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        if(testCase.txFunctionName == consts.rpcFunctions.signTx){
+
+        }
         testCase.actualResult.push(result)
         resolve(testCase)
       }
@@ -1075,7 +1044,8 @@ describe('Jingtum测试', function() {
       }
       testCase.checkFunction = checkTestCaseOfSendTx
       // testCase.expectedResult = createExpecteResult(false, true, 'temBAD_SEQUENCE Malformed: Sequence is not in the past.')
-      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.tefPAST_SEQ)
+      testCase.expectedResult = createExpecteResult(false, true,
+          _CurrentService == serviceType.newChain ? 'temBAD_SEQUENCE Malformed: Sequence is not in the past.' : consts.engineResults.tefPAST_SEQ)
       addTestCase(testCases, testCase)
     }
 
@@ -1090,7 +1060,8 @@ describe('Jingtum测试', function() {
         resolve(testCase)
       }
       testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.temBAD_SEQUENCE)
+      testCase.expectedResult = createExpecteResult(false, true,
+          _CurrentService == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
       addTestCase(testCases, testCase)
     }
 
@@ -1105,7 +1076,8 @@ describe('Jingtum测试', function() {
         resolve(testCase)
       }
       testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.temBAD_SEQUENCE)
+      testCase.expectedResult = createExpecteResult(false, true,
+          _CurrentService == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
       addTestCase(testCases, testCase)
     }
 
@@ -1120,7 +1092,8 @@ describe('Jingtum测试', function() {
         resolve(testCase)
       }
       testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.expectedResult = createExpecteResult(false, true, consts.engineResults.temBAD_SEQUENCE)
+      testCase.expectedResult = createExpecteResult(false, true,
+          _CurrentService == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
       addTestCase(testCases, testCase)
     }
 
@@ -1168,7 +1141,7 @@ describe('Jingtum测试', function() {
       addTestCase(testCases, testCase)
     }
 
-    testTestCases(server, categoryName, testCases)
+    return testCases
   }
 
   async function simpleTx(testCase, currentSequence, plusCount){
@@ -1303,10 +1276,14 @@ describe('Jingtum测试', function() {
         testForTransfer(server, categoryName, txFunctionName, txParams)
       })
 
-      // categoryName = '原生币sequence测试'
-      // testCases = createTestCasesForSequenceTest(server, categoryName, 20)
-      // testTestCases(server, categoryName, testCases)
+      //endregion
 
+      //region sequence test
+      categoryName = 'Sequence测试: '
+      testForSequenceTest(server, categoryName)
+      //endregion
+
+      //region pressure test
       categoryName = '原生币swt压力测试，分多个case执行'
       testCases = createTestCasesForPressureTest(server, categoryName, 20)
       testTestCases(server, categoryName, testCases)
@@ -1314,7 +1291,6 @@ describe('Jingtum测试', function() {
       categoryName = '原生币swt压力测试，在一个内case执行'
       testCases = createTestCasesForPressureTestInOneCase(server, 20)
       testTestCases(server, categoryName, testCases)
-
       //endregion
 
       //region token test
