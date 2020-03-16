@@ -19,7 +19,7 @@ chargeMain(
     'j9t5tjAawNoAxgn7FudkaKTo7GjD3HqvtH',
     '',
     '',
-    10000,
+    30,
     null,
     0)
 

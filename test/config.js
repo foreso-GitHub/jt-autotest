@@ -64,7 +64,7 @@ let mode_rpc_ipfs = {
 
 let mode_lib_mainnet = {
     server: lib_main,
-    initParams: {url:'wss://c04.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
+    initParams: {url:'wss://c05.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
     service: serviceType.oldChain,
     interface: interfaceType.websocket,
     testMode: testMode.batchMode,

@@ -36,7 +36,7 @@ describe('Jingtum测试', function() {
   logger.debug("Start time: " + start.toTimeString())
   //endregion
 
-  this.timeout(600000)
+  this.timeout(20000)
 
   for(let mode of modes){
 
@@ -102,9 +102,9 @@ describe('Jingtum测试', function() {
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
         // testTestCases(server, categoryName, testCases)
 
-        // categoryName = '原生币swt压力测试'
-        // testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
-        // testTestCases(server, categoryName, testCases)
+        categoryName = '原生币swt压力测试'
+        testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
+        testTestCases(server, categoryName, testCases)
 
         testForSequenceTest(server, txFunctionName)
 
@@ -3250,7 +3250,7 @@ describe('Jingtum测试', function() {
       }
       else{
         Promise.resolve(server.responseGetAccount(from)).then(function (accountInfo) {
-          logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
+          // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
           let sequence = Number(accountInfo.result.Sequence)
           setSequence(from, sequence)
           resolve(sequence)
