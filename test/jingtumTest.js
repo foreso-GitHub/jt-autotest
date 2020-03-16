@@ -186,7 +186,7 @@ describe('Jingtum测试', function() {
 
   function createTxParamsForTransfer(server){
     return server.createTransferParams(addresses.sender1.address, addresses.sender1.secret, null,
-        addresses.receiver1.address, '0.000015', '10', ['autotest'])
+        addresses.receiver1.address, '0.000015', '0.00001', ['autotest: transfer test'])
   }
 
   function createTxParamsForIssueToken(server, account, token){
@@ -205,7 +205,7 @@ describe('Jingtum测试', function() {
 
   function createTxParamsForTokenTransfer(server, account, symbol, issuer){
     let tokenParams = server.createTransferParams(account.address, account.secret, null,
-        addresses.receiver1.address, '1', '10', ['autotest'])
+        addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
     tokenParams[0].symbol = symbol
     tokenParams[0].issuer = issuer
     tokenParams[0].showSymbol = getShowSymbol(symbol, issuer)
@@ -977,17 +977,17 @@ describe('Jingtum测试', function() {
   //endregion
 
   //region sequence test
-  async function testForSequenceTest(server, describeTitle){
+  function testForSequenceTest(server, describeTitle){
 
     let txFunctionName = consts.rpcFunctions.sendTx
     let categoryName = describeTitle + txFunctionName
     let testCases = createTestCasesForSequenceTest(server, txFunctionName)
-    testTestCases(server, categoryName, testCases)
+    // testTestCases(server, categoryName, testCases)
 
     txFunctionName = consts.rpcFunctions.signTx
     categoryName = describeTitle + txFunctionName
     testCases = createTestCasesForSequenceTest(server, txFunctionName)
-    // testTestCases(server, categoryName, testCases)
+    testTestCases(server, categoryName, testCases)
 
   }
 
@@ -995,26 +995,127 @@ describe('Jingtum测试', function() {
     let testCases = []
     let testCase = {}
     let title
+    let value = '0.000001'
+    // let fee = '0.00001'
+    let valueInAmount = _CurrentService == serviceType.newChain ? value : value * 1000000
+    let fee = server.mode.defaultFee
 
     title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence1, addresses.receiver2)
-      testCase.specialExecute = async function(testCase, resolve){
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        if(testCase.txFunctionName == consts.rpcFunctions.signTx){
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence1, addresses.receiver2, value)
+      testCase.executeFunction = function(testCase){
+        return new Promise(async function(resolve){
+          testCase.hasExecuted = true
+          testCase.checks = []
+          let server = testCase.server
+          let data = testCase.txParams[0]
+          let from = data.from
 
-        }
-        testCase.actualResult.push(result)
-        resolve(testCase)
+          //get sequence
+          let currentSequence = await getSequence(server, from)
+          data.sequence = isNaN(currentSequence) ? 1 : currentSequence
+
+          //record balance before transfer
+          let from_balance_1 = await server.getBalance(data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+
+          //transfer
+          let result
+          if(testCase.txFunctionName == consts.rpcFunctions.sendTx){
+            result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+          }
+          else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
+            let responseOfSignTx = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+            let blob = responseOfSignTx.result[0]
+            //sign tx, need record signed tx
+            let check_0 = {
+              title: 'sign tx result',
+              needPass: true,
+              actualResult: responseOfSignTx,
+              checkFunction: checkSignTx
+            }
+            testCase.checks.push(check_0)
+            //sign tx, need sendRawTx
+            result = await testCase.server.getResponse(consts.rpcFunctions.sendRawTx, [blob])
+          }
+          else{
+            throw new Error(testCase.txFunctionName + 'cannot be executed!')
+          }
+          let check_1 = {
+            title: 'send tx result',
+            needPass: true,
+            actualResult: result,
+            checkFunction: checkSendTx
+          }
+          testCase.checks.push(check_1)
+
+          //wait transfer result written in block
+          // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
+          // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+          if(_CurrentService == serviceType.newChain){
+            let hash = result.result[0]
+            let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+          }
+          else{
+            // let hash = result.result.hash
+            // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+            await utility.timeout(server.mode.defaultBlockTime + 1000)
+          }
+
+          //record balance after transfer
+          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
+          let check_2 = {
+            title: 'from address balance',
+            expectedBalance: from_balance_expected,
+            actualBalance: from_balance_2,
+            checkFunction: checkBalance
+          }
+          logger.debug('===from_balance_1: ' + from_balance_1)
+          logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
+          logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
+          logger.debug('===check_2: ' + JSON.stringify(check_2))
+          testCase.checks.push(check_2)
+
+          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
+          let check_3 = {
+            title: 'to address balance',
+            expectedBalance: to_balance_expected,
+            actualBalance: to_balance_2,
+            checkFunction: checkBalance
+          }
+          testCase.checks.push(check_3)
+
+          resolve(testCase)
+        })
       }
-      testCase.checkFunction = checkTestCaseOfSendTx
+      // testCase.checkFunction = checkTestCaseOfSendTx
+      testCase.checkFunction = checkTestCase
       addTestCase(testCases, testCase)
     }
+
+    /*
+
+    // title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
+    // {
+    //   testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence1, addresses.receiver2, value)
+    //   testCase.specialExecute = async function(testCase, resolve){
+    //     let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+    //     if(testCase.txFunctionName == consts.rpcFunctions.signTx){
+    //
+    //     }
+    //     testCase.actualResult.push(result)
+    //     resolve(testCase)
+    //   }
+    //   testCase.checkFunction = checkTestCaseOfSendTx
+    //   addTestCase(testCases, testCase)
+    // }
 
     title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
         '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上\n'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         let currentSequence = data.sequence
@@ -1033,7 +1134,7 @@ describe('Jingtum测试', function() {
 
     title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         let currentSequence = data.sequence
@@ -1051,7 +1152,7 @@ describe('Jingtum测试', function() {
 
     title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数、负数、字符串等'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         data.sequence = 0.5
@@ -1067,7 +1168,7 @@ describe('Jingtum测试', function() {
 
     title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         data.sequence = -1
@@ -1083,7 +1184,7 @@ describe('Jingtum测试', function() {
 
     title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         data.sequence = 'abcdefgijklmnopq'
@@ -1100,7 +1201,7 @@ describe('Jingtum测试', function() {
     title = '0670	同时发起多个交易时指定sequence_01:假设发起钱包的sequence已经到了n，同时发起m个交易，' +
         '指定每个交易的sequence分别为n+1、n+2、…、n+m'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence4, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence4, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         let currentSequence = data.sequence
@@ -1118,7 +1219,7 @@ describe('Jingtum测试', function() {
     title = '0680\t同时发起多个交易时指定sequence_02:假设发起钱包的sequence已经到了n，' +
         '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence5, addresses.receiver2)
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence5, addresses.receiver2, value)
       testCase.specialExecute = async function(testCase, resolve){
         let data = testCase.txParams[0]
         let start = data.sequence
@@ -1141,8 +1242,97 @@ describe('Jingtum测试', function() {
       addTestCase(testCases, testCase)
     }
 
+    // */
+
     return testCases
   }
+
+  //region new check system
+  function checkBalance(testCase, check){
+    let expectedBalance = Number(check.expectedBalance)
+    let actualBalance = Number(check.actualBalance)
+    expect(actualBalance).to.be.equal(expectedBalance)
+  }
+
+  async function checkSendTx(testCase, check){
+    let server = testCase.server
+    let needPass = check.needPass
+    let responseOfSendTx = check.actualResult
+    checkResponse(needPass, responseOfSendTx)
+
+    //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
+    if(_CurrentService == serviceType.newChain){
+      expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+      if(needPass){
+        // expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+        let hash = responseOfSendTx.result[0]
+        let responseOfGetTx = await getTxByHash(server, hash, 0)
+        checkResponse(true, responseOfGetTx)
+
+        let tx = responseOfGetTx.result
+        expect(tx.hash).to.be.equal(hash)
+        let params = testCase.txParams[0]
+        let defaultFee = server.mode.defaultFee
+        await compareActualTxWithTxParams(params, tx, defaultFee)
+      }
+      else{
+        let expectedResult = check.expectedResult
+        expect(responseOfSendTx.result).to.contains(expectedResult.expectedError)
+      }
+    }
+    else{
+      expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+      if(needPass){
+        let hash = responseOfSendTx.result.hash  //for swtclib
+        let responseOfGetTx = await getTxByHash(server, hash, 0)
+        checkResponse(true, responseOfGetTx)
+
+        let tx = responseOfGetTx.result
+        expect(tx.hash).to.be.equal(hash)
+        let params = testCase.txParams[0]
+        let defaultFee = server.mode.defaultFee
+        await compareActualTxWithTxParams(params, tx, defaultFee)
+      }
+      else{
+        let expectedResult = testCase.expectedResult.expectedError
+        compareEngineResults(expectedResult, responseOfSendTx.result)
+      }
+    }
+  }
+
+  function checkSignTx(testCase, check){
+    let server = testCase.server
+    let needPass = check.needPass
+    let responseOfSendTx = check.actualResult
+    checkResponse(needPass, responseOfSendTx)
+
+    if(needPass) {
+      expect(responseOfSendTx).to.be.jsonSchema(schema.SIGNTX_SCHEMA)
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(responseOfSendTx.result).to.contains(expectedResult.expectedError)
+    }
+  }
+
+  //region common check
+  async function checkTestCase(testCase){
+    await checkTestCaseOneByOne(testCase, 0)
+  }
+
+  async function checkTestCaseOneByOne(testCase, index){
+    let check = testCase.checks[index]
+    if(check.title) logger.debug('Checking ' + check.title + ' ...')
+    await check.checkFunction(testCase, check)
+    if(check.title) logger.debug('Check ' + check.title + ' done!')
+    index++
+    if(index < testCase.checks.length) {
+      await checkTestCaseOneByOne(testCase, index)
+    }
+  }
+  //endregion
+
+  //endregion
 
   async function simpleTx(testCase, currentSequence, plusCount){
     return new Promise(async function(resolve){
@@ -1155,9 +1345,9 @@ describe('Jingtum测试', function() {
     })
   }
 
-  function createTestCaseForSequenceTest(server, title, txFunctionName, sender, receiver){
+  function createTestCaseForSequenceTest(server, title, txFunctionName, sender, receiver, value, fee){
     let txParams = server.createTransferParams(sender.address, sender.secret, null,
-        receiver.address, '0.000001', '10', ['pressure test'])
+        receiver.address, value, fee, ['autotest: sequence test'])
     let executeFunction = executeSequenceTest
     let checkFunction = checkTestCaseOfSendTx
     let expectedResult = createExpecteResult(true)

@@ -522,6 +522,35 @@ const SENDTX_SCHEMA = {
     },
 }
 
+const SIGNTX_SCHEMA = {
+    title: "test response of jt_signTransaction",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "string"
+            }
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
 module.exports = {
     SERVER_INFO_SCHEMA,
     LEDGER_CLOSED_SCHEMA,
@@ -542,5 +571,6 @@ module.exports = {
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
     SENDTX_SCHEMA,
+    SIGNTX_SCHEMA,
     OLD_SENDTX_SCHEMA,
 }
