@@ -36,7 +36,7 @@ describe('Jingtum测试', function() {
   logger.debug("Start time: " + start.toTimeString())
   //endregion
 
-  this.timeout(60000)
+  this.timeout(240000)
 
   for(let mode of modes){
 
@@ -102,9 +102,9 @@ describe('Jingtum测试', function() {
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
         // testTestCases(server, categoryName, testCases)
 
-        // categoryName = '原生币swt压力测试'
-        // testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
-        // testTestCases(server, categoryName, testCases)
+        categoryName = '原生币swt压力测试，单个case'
+        testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
+        testTestCases(server, categoryName, testCases)
 
         categoryName = 'Sequence测试: '
         testForSequenceTest(server, categoryName)
@@ -982,13 +982,14 @@ describe('Jingtum测试', function() {
     let txFunctionName = consts.rpcFunctions.sendTx
     let categoryName = describeTitle + txFunctionName
     let testCases = createTestCasesForSequenceTest(server, txFunctionName)
-    // testTestCases(server, categoryName, testCases)
-
-    txFunctionName = consts.rpcFunctions.signTx
-    categoryName = describeTitle + txFunctionName
-    testCases = createTestCasesForSequenceTest(server, txFunctionName)
     testTestCases(server, categoryName, testCases)
 
+    if(_CurrentService == serviceType.newChain){
+      txFunctionName = consts.rpcFunctions.signTx
+      categoryName = describeTitle + txFunctionName
+      testCases = createTestCasesForSequenceTest(server, txFunctionName)
+      // testTestCases(server, categoryName, testCases)
+    }
   }
 
   function createTestCasesForSequenceTest(server, txFunctionName){
@@ -1011,45 +1012,21 @@ describe('Jingtum测试', function() {
           let data = testCase.txParams[0]
           let from = data.from
 
-          //get sequence
-          let currentSequence = await getSequence(server, from)
-          data.sequence = isNaN(currentSequence) ? 1 : currentSequence
-
           //record balance before transfer
           let from_balance_1 = await server.getBalance(data.from, data.symbol)
           let to_balance_1 = await server.getBalance(data.to, data.symbol)
 
+          //get sequence
+          let currentSequence = await getSequence(server, from)
+          data.sequence = isNaN(currentSequence) ? 1 : currentSequence
+
           //transfer
-          let result
-          if(testCase.txFunctionName == consts.rpcFunctions.sendTx){
-            result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-          }
-          else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
-            let responseOfSignTx = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-            let blob = responseOfSignTx.result[0]
-            //sign tx, need record signed tx
-            let check_0 = {
-              title: 'sign tx result',
-              needPass: true,
-              actualResult: responseOfSignTx,
-              checkFunction: checkSignTx
-            }
-            testCase.checks.push(check_0)
-            //sign tx, need sendRawTx
-            result = await testCase.server.getResponse(consts.rpcFunctions.sendRawTx, [blob])
-          }
-          else{
-            throw new Error(testCase.txFunctionName + 'cannot be executed!')
-          }
-          let check_1 = {
-            title: 'send tx result',
-            needPass: true,
-            actualResult: result,
-            checkFunction: checkSendTx
-          }
-          testCase.checks.push(check_1)
+          let expectedResult = createExpecteResult(true)
+          await executeTransfer(testCase, expectedResult, expectedResult)
 
           //wait transfer result written in block
+          let result = testCase.actualResult
+          // await utility.timeout(server.mode.defaultBlockTime + 2000)
           // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
           // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
           if(_CurrentService == serviceType.newChain){
@@ -1059,142 +1036,144 @@ describe('Jingtum测试', function() {
           else{
             // let hash = result.result.hash
             // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
-            await utility.timeout(server.mode.defaultBlockTime + 1000)
+            await utility.timeout(server.mode.defaultBlockTime + 2000)
           }
 
           //record balance after transfer
           let from_balance_2 = await server.getBalance(data.from, data.symbol)
           let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
-          let check_2 = {
-            title: 'from address balance',
-            expectedBalance: from_balance_expected,
-            actualBalance: from_balance_2,
-            checkFunction: checkBalance
-          }
-          logger.debug('===from_balance_1: ' + from_balance_1)
-          logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
-          logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
-          logger.debug('===check_2: ' + JSON.stringify(check_2))
-          testCase.checks.push(check_2)
+          addBalanceCheck(testCase, 'from address balance check', from_balance_expected, from_balance_2)
+          // logger.debug('===from_balance_1: ' + from_balance_1)
+          // logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
+          // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
+          // logger.debug('===check_2: ' + JSON.stringify(check_2))
 
           let to_balance_2 = await server.getBalance(data.to, data.symbol)
           let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
-          let check_3 = {
-            title: 'to address balance',
-            expectedBalance: to_balance_expected,
-            actualBalance: to_balance_2,
-            checkFunction: checkBalance
-          }
-          testCase.checks.push(check_3)
+          addBalanceCheck(testCase, 'to address balance check', to_balance_expected, to_balance_2)
 
           resolve(testCase)
         })
       }
-      // testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.checkFunction = checkTestCase
       addTestCase(testCases, testCase)
     }
-
-    /*
-
-    // title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
-    // {
-    //   testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence1, addresses.receiver2, value)
-    //   testCase.specialExecute = async function(testCase, resolve){
-    //     let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-    //     if(testCase.txFunctionName == consts.rpcFunctions.signTx){
-    //
-    //     }
-    //     testCase.actualResult.push(result)
-    //     resolve(testCase)
-    //   }
-    //   testCase.checkFunction = checkTestCaseOfSendTx
-    //   addTestCase(testCases, testCase)
-    // }
 
     title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
         '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上\n'
     {
       testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        let currentSequence = data.sequence
-        data.sequence = currentSequence + 1
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        testCase.actualResult.push(result)
-        await utility.timeout(testCase.server.mode.defaultBlockTime)
-        data.sequence = currentSequence
-        result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        testCase.actualResult.push(result)
-        resolve(testCase)
+      testCase.executeFunction = function(testCase){
+        return new Promise(async function(resolve){
+          testCase.hasExecuted = true
+          testCase.checks = []
+          let server = testCase.server
+          let data = testCase.txParams[0]
+          let from = data.from
+          let check = {}
+
+          //get sequence
+          let currentSequence = await getSequence(server, from)
+          currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+          data.sequence = currentSequence + 1
+
+          //record balance before transfer
+          let from_balance_1 = await server.getBalance(data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+
+          //transfer n+2 tx
+          let expectedResult = createExpecteResult(true)
+          await executeTransfer(testCase, expectedResult, expectedResult)
+
+          //wait transfer result written in block
+          await utility.timeout(server.mode.defaultBlockTime + 2000)
+
+          //balance should not change
+          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_expected = Number(from_balance_1)
+          addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
+          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_expected = Number(to_balance_1)
+          addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
+
+          //transfer n+1 tx
+          data.sequence = currentSequence
+          expectedResult = createExpecteResult(true)
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
+
+          // balance should change now
+          from_balance_2 = await server.getBalance(data.from, data.symbol)
+          from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) * 2 - Number(fee) * 2
+          addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
+          to_balance_2 = await server.getBalance(data.to, data.symbol)
+          to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 2
+          addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
+
+          resolve(testCase)
+        })
       }
-      testCase.checkFunction = checkTestCaseOfSendTx
       addTestCase(testCases, testCase)
     }
 
     title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
     {
       testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        let currentSequence = data.sequence
-        data.sequence = currentSequence - 1
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        testCase.actualResult.push(result)
-        resolve(testCase)
+      let signTxExpectedResult = createExpecteResult(true)
+      let sendTxExpectedResult = createExpecteResult(false, true,
+        testCase.server.mode.service == serviceType.newChain
+            ? 'temBAD_SEQUENCE Malformed: Sequence is not in the past.'
+            : consts.engineResults.tefPAST_SEQ)
+      testCase.executeFunction = function(testCase){
+        return executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+            function(txParams, currentSequence){
+          txParams.sequence = currentSequence - 1
+        })
       }
-      testCase.checkFunction = checkTestCaseOfSendTx
-      // testCase.expectedResult = createExpecteResult(false, true, 'temBAD_SEQUENCE Malformed: Sequence is not in the past.')
-      testCase.expectedResult = createExpecteResult(false, true,
-          _CurrentService == serviceType.newChain ? 'temBAD_SEQUENCE Malformed: Sequence is not in the past.' : consts.engineResults.tefPAST_SEQ)
       addTestCase(testCases, testCase)
     }
 
-    title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数、负数、字符串等'
+    title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        data.sequence = 0.5
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        testCase.actualResult.push(result)
-        resolve(testCase)
-      }
-      testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.expectedResult = createExpecteResult(false, true,
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence3, addresses.receiver2, value)
+      let signTxExpectedResult = createExpecteResult(false, true,
           _CurrentService == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
+      let sendTxExpectedResult = signTxExpectedResult
+      testCase.executeFunction = function(testCase){
+        return executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+            function(txParams, currentSequence){
+          txParams.sequence = 0.5
+        })
+      }
       addTestCase(testCases, testCase)
     }
 
     title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        data.sequence = -1
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        testCase.actualResult.push(result)
-        resolve(testCase)
-      }
-      testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.expectedResult = createExpecteResult(false, true,
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence3, addresses.receiver2, value)
+      let signTxExpectedResult = createExpecteResult(false, true,
           _CurrentService == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
+      let sendTxExpectedResult = signTxExpectedResult
+      testCase.executeFunction = function(testCase){
+        return executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+            function(txParams, currentSequence){
+          txParams.sequence = -1
+        })
+      }
       addTestCase(testCases, testCase)
     }
 
     title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
     {
-      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        data.sequence = 'abcdefgijklmnopq'
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        testCase.actualResult.push(result)
-        resolve(testCase)
-      }
-      testCase.checkFunction = checkTestCaseOfSendTx
-      testCase.expectedResult = createExpecteResult(false, true,
+      testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence3, addresses.receiver2, value)
+      let signTxExpectedResult = createExpecteResult(false, true,
           _CurrentService == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
+      let sendTxExpectedResult = signTxExpectedResult
+      testCase.executeFunction = function(testCase){
+        return executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+            function(txParams, currentSequence){
+          txParams.sequence = 'abcdefgijklmnopq'
+        })
+      }
       addTestCase(testCases, testCase)
     }
 
@@ -1202,17 +1181,58 @@ describe('Jingtum测试', function() {
         '指定每个交易的sequence分别为n+1、n+2、…、n+m'
     {
       testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence4, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        let currentSequence = data.sequence
-        currentSequence = await simpleTx(testCase, currentSequence, 1)
-        currentSequence = await simpleTx(testCase, currentSequence, 1)
-        currentSequence = await simpleTx(testCase, currentSequence, 1)
-        currentSequence = await simpleTx(testCase, currentSequence, 1)
-        currentSequence = await simpleTx(testCase, currentSequence, 1)
-        resolve(testCase)
+      testCase.executeFunction = function(testCase){
+        return new Promise(async function(resolve){
+          testCase.hasExecuted = true
+          testCase.checks = []
+          let server = testCase.server
+          let data = testCase.txParams[0]
+          let from = data.from
+
+          //record balance before transfer
+          let from_balance_1 = await server.getBalance(data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+
+          //transfer
+          let currentSequence = await getSequence(server, from)
+          currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+          let expectedResult = createExpecteResult(true)
+          data.sequence = currentSequence
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 1
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 2
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 3
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 4
+          await executeTransfer(testCase, expectedResult, expectedResult)
+
+          //wait transfer result written in block
+          let result = testCase.actualResult
+          if(_CurrentService == serviceType.newChain){
+            let hash = result.result[0]
+            let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+          }
+          else{
+            // let hash = result.result.hash
+            // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+            await utility.timeout(server.mode.defaultBlockTime + 2000)
+          }
+
+          //record balance after transfer
+          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 5
+          addBalanceCheck(testCase, 'from address balance check', from_balance_expected, from_balance_2)
+
+
+          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 5
+          addBalanceCheck(testCase, 'to address balance check', to_balance_expected, to_balance_2)
+
+          resolve(testCase)
+        })
       }
-      testCase.checkFunction = checkTestCaseOfSendTx
       addTestCase(testCases, testCase)
     }
 
@@ -1220,32 +1240,161 @@ describe('Jingtum测试', function() {
         '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
     {
       testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence5, addresses.receiver2, value)
-      testCase.specialExecute = async function(testCase, resolve){
-        let data = testCase.txParams[0]
-        let start = data.sequence
-        let currentSequence = start
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        await utility.timeout(testCase.server.mode.defaultBlockTime)
-        currentSequence = start + 1
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        currentSequence = await simpleTx(testCase, currentSequence, 2)
-        resolve(testCase)
+      testCase.executeFunction = function(testCase){
+        return new Promise(async function(resolve){
+          testCase.hasExecuted = true
+          testCase.checks = []
+          let server = testCase.server
+          let data = testCase.txParams[0]
+          let from = data.from
+          let check = {}
+
+          //record balance before transfer
+          let from_balance_1 = await server.getBalance(data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+
+          //transfer n+2 tx
+          let currentSequence = await getSequence(server, from)
+          currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+          let expectedResult = createExpecteResult(true)
+          data.sequence = currentSequence + 1
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 3
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 5
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 7
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 9
+          await executeTransfer(testCase, expectedResult, expectedResult)
+
+          //wait transfer result written in block
+          await utility.timeout(server.mode.defaultBlockTime + 2000)
+
+          //balance should not change
+          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_expected = Number(from_balance_1)
+          addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
+          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_expected = Number(to_balance_1)
+          addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
+
+          //transfer n+1 tx
+          data.sequence = currentSequence
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 2
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 4
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 6
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          data.sequence = currentSequence + 8
+          await executeTransfer(testCase, expectedResult, expectedResult)
+          await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
+
+          // balance should change now
+          from_balance_2 = await server.getBalance(data.from, data.symbol)
+          from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 10
+          addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
+          to_balance_2 = await server.getBalance(data.to, data.symbol)
+          to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 10
+          addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
+
+          resolve(testCase)
+        })
       }
-      testCase.checkFunction = checkTestCaseOfSendTx
       addTestCase(testCases, testCase)
     }
 
-    // */
-
     return testCases
   }
+
+  //region standard executions
+
+  function executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult, setSequenceFunction){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      testCase.checks = []
+      let server = testCase.server
+      let data = testCase.txParams[0]
+      let from = data.from
+
+      //get sequence
+      let currentSequence = await getSequence(server, from)
+      currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+      setSequenceFunction(data, currentSequence)
+
+      //record balance before transfer
+      let from_balance_1 = await server.getBalance(data.from, data.symbol)
+      let to_balance_1 = await server.getBalance(data.to, data.symbol)
+
+      //transfer
+      await executeTransfer(testCase, sendTxExpectedResult, signTxExpectedResult)
+
+      //wait transfer result written in block
+      let result = testCase.actualResult
+      await utility.timeout(server.mode.defaultBlockTime + 2000)
+
+      //record balance after transfer
+      let from_balance_2 = await server.getBalance(data.from, data.symbol)
+      let from_balance_expected = Number(from_balance_1)
+      addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
+      let to_balance_2 = await server.getBalance(data.to, data.symbol)
+      let to_balance_expected = Number(to_balance_1)
+      addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
+
+      resolve(testCase)
+    })
+  }
+
+  async function executeTransfer(testCase, sendTxExpectedResult, signTxExpectedResult){
+    return new Promise(async(resolve)=>{
+      let result
+      if(testCase.txFunctionName == consts.rpcFunctions.sendTx){
+        result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+      }
+      else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
+        let responseOfSignTx = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        let blob = responseOfSignTx.result[0]
+        //sign tx, need record signed tx
+        let check_0 = {
+          title: 'sign tx result',
+          expectedResult: signTxExpectedResult,
+          actualResult: responseOfSignTx,
+          checkFunction: checkSignTx
+        }
+        testCase.checks.push(check_0)
+        //sign tx, need sendRawTx
+        result = await testCase.server.getResponse(consts.rpcFunctions.sendRawTx, [blob])
+      }
+      else{
+        throw new Error(testCase.txFunctionName + 'cannot be executed!')
+      }
+      if(testCase.txFunctionName == consts.rpcFunctions.sendTx || (signTxExpectedResult && signTxExpectedResult.needPass)){  //only when sign tx need success, will check send raw tx result.
+        let check_1 = {
+          title: 'send tx result',
+          expectedResult: sendTxExpectedResult,
+          actualResult: result,
+          checkFunction: checkSendTx
+        }
+        if(_CurrentService == serviceType.newChain) testCase.checks.push(check_1)  //todo need remove condition, new chain and old chain should be the same
+      }
+      testCase.actualResult = result
+      resolve(testCase)
+    })
+  }
+
+  function addBalanceCheck(testCase, title, expectedBalance, actualBalance){
+    let check = {
+      title: title,
+      expectedBalance: expectedBalance,
+      actualBalance: actualBalance,
+      checkFunction: checkBalance
+    }
+    testCase.checks.push(check)
+  }
+
+  //endregion
 
   //region new check system
   function checkBalance(testCase, check){
@@ -1256,15 +1405,15 @@ describe('Jingtum测试', function() {
 
   async function checkSendTx(testCase, check){
     let server = testCase.server
-    let needPass = check.needPass
+    let needPass = check.expectedResult.needPass
     let responseOfSendTx = check.actualResult
     checkResponse(needPass, responseOfSendTx)
 
     //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
     if(_CurrentService == serviceType.newChain){
-      expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+      // expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
       if(needPass){
-        // expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+        expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
         let hash = responseOfSendTx.result[0]
         let responseOfGetTx = await getTxByHash(server, hash, 0)
         checkResponse(true, responseOfGetTx)
@@ -1301,8 +1450,7 @@ describe('Jingtum测试', function() {
   }
 
   function checkSignTx(testCase, check){
-    let server = testCase.server
-    let needPass = check.needPass
+    let needPass = check.expectedResult.needPass
     let responseOfSendTx = check.actualResult
     checkResponse(needPass, responseOfSendTx)
 
@@ -1334,46 +1482,14 @@ describe('Jingtum测试', function() {
 
   //endregion
 
-  async function simpleTx(testCase, currentSequence, plusCount){
-    return new Promise(async function(resolve){
-      // logger.debug('----: ' + currentSequence)
-      testCase.txParams[0].sequence = currentSequence
-      let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-      testCase.actualResult.push(result)
-      if(result.status == 'success') currentSequence += plusCount
-      resolve(currentSequence)
-    })
-  }
-
   function createTestCaseForSequenceTest(server, title, txFunctionName, sender, receiver, value, fee){
     let txParams = server.createTransferParams(sender.address, sender.secret, null,
         receiver.address, value, fee, ['autotest: sequence test'])
-    let executeFunction = executeSequenceTest
-    let checkFunction = checkTestCaseOfSendTx
-    let expectedResult = createExpecteResult(true)
     let testCase = createTestCase(title, server,
         txFunctionName, txParams, null,
-        executeFunction, checkFunction, expectedResult,
+        null, checkTestCase, null,
         restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
     return testCase
-  }
-
-  function executeSequenceTest(testCase){
-    return new Promise(function(resolve){
-      let server = testCase.server
-      let data = testCase.txParams[0]
-      let from = data.from
-      getSequence(server, from).then(function(sequence){
-        data.sequence = isNaN(sequence) ? 1 : sequence
-        server.getBalance(data.from, data.symbol).then(async function(balanceBeforeExecution){
-          testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
-          // logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
-          testCase.hasExecuted = true
-          testCase.actualResult = []
-          testCase.specialExecute(testCase, resolve)
-        })
-      })
-    })
   }
 
   //endregion
@@ -1407,33 +1523,67 @@ describe('Jingtum测试', function() {
   }
 
   function createTestCaseForPressureTest(server, title, txFunctionName, count){
-    let testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.pressureAccount, addresses.receiver2)
-    testCase.count = count
-    // testCase.executeFunction = executeSequenceTest
-    testCase.specialExecute = async function(testCase, resolve){
-      let data = testCase.txParams[0]
-      let start = data.sequence
-      testCase.errorResult = []
-      for(let i = 0; i < testCase.count; i++){
-        data.sequence = start + i
-        let result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-        // logger.debug('++++count: ' + i + ' sequence: ' + data.sequence)
-        // logger.debug('result: ' + JSON.stringify(result))
-        if(result.status != 'success') {
-          logger.debug('!!!!! error count: ' + i + ' sequence: ' + data.sequence)
-          logger.debug('!!!!! error: ' + JSON.stringify(result.result))
-          testCase.errorResult.push(result)
+    let testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.pressureAccount, addresses.receiver2, '0.000001')
+    testCase.executeFunction = function(testCase){
+      return new Promise(async function(resolve){
+        testCase.hasExecuted = true
+        testCase.checks = []
+        let server = testCase.server
+        let data = testCase.txParams[0]
+        let from = data.from
+
+        let value = '0.000001'
+        // let fee = '0.00001'
+        let valueInAmount = _CurrentService == serviceType.newChain ? value : value * 1000000
+        let fee = server.mode.defaultFee
+
+        //record balance before transfer
+        let from_balance_1 = await server.getBalance(data.from, data.symbol)
+        let to_balance_1 = await server.getBalance(data.to, data.symbol)
+
+        //get sequence
+        let currentSequence = await getSequence(server, from)
+        currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+
+        //transfer
+        for(let i = 0; i < count; i++){
+          data.sequence = currentSequence + i
+          let expectedResult = createExpecteResult(true)
+          await executeTransfer(testCase, expectedResult, expectedResult)
         }
-        testCase.actualResult.push(result)
-        if(i == testCase.count - 1){
-          resolve(testCase)
+
+        //wait transfer result written in block
+        let result = testCase.actualResult
+        // await utility.timeout(server.mode.defaultBlockTime + 2000)
+        // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
+        // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+        if(_CurrentService == serviceType.newChain){
+          let hash = result.result[0]
+          let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
         }
-      }
+        else{
+          // let hash = result.result.hash
+          // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
+          await utility.timeout(server.mode.defaultBlockTime + 2000)
+        }
+
+        //record balance after transfer
+        let from_balance_2 = await server.getBalance(data.from, data.symbol)
+        let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * count
+        addBalanceCheck(testCase, 'from address balance check', from_balance_expected, from_balance_2)
+        // logger.debug('===from_balance_1: ' + from_balance_1)
+        // logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
+        // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
+        // logger.debug('===check_2: ' + JSON.stringify(check_2))
+
+        let to_balance_2 = await server.getBalance(data.to, data.symbol)
+        let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * count
+        addBalanceCheck(testCase, 'to address balance check', to_balance_expected, to_balance_2)
+
+        resolve(testCase)
+      })
     }
-    testCase.checkFunction = async function(testCase){
-      expect(testCase.actualResult.length).to.be.equal(count)
-      expect(testCase.errorResult.length).to.be.equal(0)
-    }
+    testCase.checkFunction = checkTestCase
     return testCase
   }
   //endregion
