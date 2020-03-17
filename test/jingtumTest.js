@@ -54,7 +54,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      /*
+      // /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -105,8 +105,8 @@ describe('Jingtum测试', function() {
         // testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
         // testTestCases(server, categoryName, testCases)
 
-        categoryName = 'Sequence测试: '
-        testForSequenceTest(server, categoryName)
+        // categoryName = 'Sequence测试: '
+        // testForSequenceTest(server, categoryName)
 
         // await utility.timeout(5000)
 
@@ -1726,7 +1726,7 @@ describe('Jingtum测试', function() {
         testCaseParams.txParams[0].secret = '错误的秘钥'
         // testCaseParams.expectedResult = createExpecteResult(false, true, 'Bad Base58 string')
         testCaseParams.expectedResult = createExpecteResult(false, true,
-            testCase.server.mode.service == serviceType.newChain ? 'Bad Base58 string' : consts.engineResults.temMALFORMED)
+            _CurrentService == serviceType.newChain ? 'Bad Base58 string' : consts.engineResults.temMALFORMED)
       })
       addTestCase(testCases, testCase)
     }
