@@ -16,13 +16,11 @@ const status = responseStatus
 const testModeEnums = testMode
 //endregion
 
+//region global fields
+const HASH_LENGTH = 64
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
-const HASH_LENGTH = 64
 let _FullTestCaseList = []
-
-//region config
-let _CurrentRestrictedLevel
 //endregion
 
 describe('Jingtum测试', function() {
@@ -40,7 +38,6 @@ describe('Jingtum测试', function() {
 
     let server = mode.server
     server.init(mode)
-    _CurrentRestrictedLevel = mode.restrictedLevel
 
     this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
 
@@ -529,7 +526,7 @@ describe('Jingtum测试', function() {
       let params = txParams[0]
       await compareActualTxWithTxParams(params, tx, testCase.server.mode)
 
-      if(_CurrentRestrictedLevel >= restrictedLevel.L5){
+      if(testCase.server.mode.restrictedLevel >= restrictedLevel.L5){
         let expectedBalance = testCase.expectedResult.expectedBalance
         if(expectedBalance){
           let server = testCase.server
@@ -604,7 +601,7 @@ describe('Jingtum测试', function() {
         expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
         expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
         expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : addresses.defaultIssuer.address)
-        if(_CurrentRestrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
+        if(mode.restrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
       }
       else{
         if(txParams.symbol){
@@ -837,7 +834,7 @@ describe('Jingtum测试', function() {
     if(!testCase){
       logger.debug("Error: test case doesn't exist!")
     }
-    if(_CurrentRestrictedLevel < testCase.restrictedLevel){
+    if(testCase.server.mode.restrictedLevel < testCase.restrictedLevel){
       return false
     }
     else if(!(!testCase.supportedServices || testCase.supportedServices.length == 0)
@@ -1675,7 +1672,7 @@ describe('Jingtum测试', function() {
 
       //region token test
 
-      if(server.mode.service == serviceType.newChain && _CurrentRestrictedLevel >= restrictedLevel.L3){
+      if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
 
         txFunctionName = consts.rpcFunctions.sendTx
         describe('代币测试：' + txFunctionName, async function () {
