@@ -101,8 +101,12 @@ describe('Jingtum测试', function() {
         // testCases = createTestCasesForPressureTest(server, categoryName, 20)
         // testTestCases(server, categoryName, testCases)
 
-        // categoryName = '原生币swt压力测试，单个case'
-        // testCases = createTestCasesForPressureTestInOneCase(server, txFunctionName, 50)
+        // categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
+        // testCases = createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
+        // testTestCases(server, categoryName, testCases)
+        //
+        // categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
+        // testCases = createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
         // testTestCases(server, categoryName, testCases)
 
         // categoryName = 'Sequence测试: '
@@ -822,6 +826,11 @@ describe('Jingtum测试', function() {
     logger.debug('result: ' + JSON.stringify(testCase.actualResult[0]))
     if(testCase.subTestCases != null && testCase.subTestCases.length > 0) {
       logger.debug('subTestCases result: ' + JSON.stringify(testCase.subTestCases[0].actualResult[0]))
+    }
+    if(testCase.checks != null && testCase.checks.length > 0) {
+      for(let i = 0; i < testCase.checks.length; i++){
+        logger.debug('check[' + i + ']: ' + JSON.stringify(testCase.checks[i]))
+      }
     }
   }
 
@@ -1582,12 +1591,11 @@ describe('Jingtum测试', function() {
         }
 
         //wait transfer result written in block
-        let result = testCase.actualResult
         // await utility.timeout(server.mode.defaultBlockTime + 2000)
         // let hash = testCase.server.mode.service == serviceType.newChain ? result.result[0] : result.result.hash
         // let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
         if(_CurrentService == serviceType.newChain){
-          let hash = result.result[0]
+          let hash = testCase.actualResult.result[0]
           let tx = await getTxByHash(server, hash, 0)  //do not work in swtclib
         }
         else{
@@ -1657,8 +1665,12 @@ describe('Jingtum测试', function() {
       testCases = createTestCasesForPressureTest(server, categoryName, 20)
       testTestCases(server, categoryName, testCases)
 
-      categoryName = '原生币swt压力测试，在一个内case执行'
-      testCases = createTestCasesForPressureTestInOneCase(server, 50)
+      categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
+      testCases = createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
+      testTestCases(server, categoryName, testCases)
+
+      categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
+      testCases = createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
       testTestCases(server, categoryName, testCases)
       //endregion
 
