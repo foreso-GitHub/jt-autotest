@@ -32,8 +32,6 @@ describe('Jingtum测试', function() {
   logger.debug("Start time: " + start.toTimeString())
   //endregion
 
-  // this.timeout(60000)
-
   for(let mode of modes){
 
     let server = mode.server
@@ -49,7 +47,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      /*
+      // /*
       describe('用例测试', function () {
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -87,30 +85,11 @@ describe('Jingtum测试', function() {
 
         // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-        let txFunctionName = consts.rpcFunctions.sendTx
-        let categoryName
-        let testCases
-
-
-        // categoryName = '原生币swt压力测试'
-        // testCases = createTestCasesForPressureTest(server, categoryName, 20)
-        // testTestCases(server, categoryName, testCases)
-
-        // categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
-        // testCases = createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
-        // testTestCases(server, categoryName, testCases)
-        //
-        // categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
-        // testCases = createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
-        // testTestCases(server, categoryName, testCases)
-
-        categoryName = 'Sequence测试: '
-        testForSequenceTest(server, categoryName)
-
         // await utility.timeout(5000)
 
-      })
+        // testForIpfsTest(server, '测试ipfs')
 
+      })
 
     })
 
@@ -675,6 +654,23 @@ describe('Jingtum测试', function() {
     else{
       let expectedResult = testCase.expectedResult
       expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
+    }
+  }
+  //endregion
+
+  //region common check system for sequence and ipfs test
+  async function checkTestCase(testCase){
+    await checkTestCaseOneByOne(testCase, 0)
+  }
+
+  async function checkTestCaseOneByOne(testCase, index){
+    let check = testCase.checks[index]
+    if(check.title) logger.debug('Checking ' + check.title + ' ...')
+    await check.checkFunction(testCase, check)
+    if(check.title) logger.debug('Check ' + check.title + ' done!')
+    index++
+    if(index < testCase.checks.length) {
+      await checkTestCaseOneByOne(testCase, index)
     }
   }
   //endregion
@@ -1432,7 +1428,8 @@ describe('Jingtum测试', function() {
 
   //endregion
 
-  //region new check system
+  //region check
+
   function checkBalance(testCase, check){
     let expectedBalance = Number(check.expectedBalance)
     let actualBalance = Number(check.actualBalance)
@@ -1496,23 +1493,6 @@ describe('Jingtum测试', function() {
       expect(responseOfSendTx.result).to.contains(expectedResult.expectedError)
     }
   }
-
-  //region common check
-  async function checkTestCase(testCase){
-    await checkTestCaseOneByOne(testCase, 0)
-  }
-
-  async function checkTestCaseOneByOne(testCase, index){
-    let check = testCase.checks[index]
-    if(check.title) logger.debug('Checking ' + check.title + ' ...')
-    await check.checkFunction(testCase, check)
-    if(check.title) logger.debug('Check ' + check.title + ' done!')
-    index++
-    if(index < testCase.checks.length) {
-      await checkTestCaseOneByOne(testCase, index)
-    }
-  }
-  //endregion
 
   //endregion
 
@@ -3355,7 +3335,7 @@ describe('Jingtum测试', function() {
       numberOrHash = 'latest'
       showFullTx = true
       testCase = createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-      testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
+      // testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
       addTestCase(testCases, testCase)
 
       testNumber = '0060'
@@ -3503,6 +3483,305 @@ describe('Jingtum测试', function() {
 
   //endregion
 
+  //region ipfs test
+  function testForIpfsTest(server, describeTitle){
+    let testCases = testForUploadData(server)
+    testTestCases(server, describeTitle + ': ' + consts.ipfsFunctions.uploadData, testCases)
+  }
+
+  function testForUploadData(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+    let dataArray = []
+
+    //region 0010	有效的单个字符串
+    title = '0010\t有效的单个字符串：上传十六进制字符串'
+    {
+      dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0010\t有效的单个字符串：上传一般字符串'
+    {
+      dataArray = ['Hello jingtum!']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0010\t有效的单个字符串：上传纯数字'
+    {
+      dataArray = ['1234567890']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0010\t有效的单个字符串：上传空格'
+    {
+      dataArray = [' ']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0010\t有效的单个字符串：上传中文'
+    {
+      dataArray = ['你好井通']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+    //endregion
+
+    //region 0020	有效的多个字符串
+    title = '0020\t有效的多个字符串：上传多个十六进制字符串'
+    {
+      dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 'QmXGoXxdRBYjXE3Wj95NBLHqg8hEG1W8xXHF99aH3q921b']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t有效的多个字符串：上传多个一般字符串'
+    {
+      dataArray = ['Hello jingtum!', 'Make jingtum great!']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t有效的多个字符串：上传多个纯数字字符串'
+    {
+      dataArray = ['1234567890', '9876543210']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t有效的多个字符串：上传多个空格'
+    {
+      dataArray = [' ', ' ']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t有效的多个字符串：上传多个中文'
+    {
+      dataArray = ['你好井通！', '我很好，你呢？']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+    //endregion
+
+    //region 0030	无效字符测试
+    title = '0030\t无效字符测试：上传的数据为空'
+    {
+      dataArray = []
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.expectedResult = createExpecteResult(false, true, 'no hash')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t无效字符测试：上传的数据为数字'
+    {
+      dataArray = [123]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t无效字符测试：上传的数据为单引号字符串'  //cannot input 单引号字符串 by js
+    //endregion
+
+    //region 0040	多个无效数据测试
+    title = '0040\t多个无效数据测试：上传多个十六进制字符串'
+    {
+      dataArray = [123, 456, 789]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t多个有效无效数据混合测试'
+    {
+      dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 456, 789]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t多个有效无效数据混合测试'
+    {
+      dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 456, '789']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t多个有效无效数据混合测试'
+    {
+      dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', '456', 789]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+      addTestCase(testCases, testCase)
+    }
+    //endregion
+
+    //region 0070	字符串最多个数测试
+
+    title = '0060\t单个字符串最大长度测试：上传一个很长的十六进制字符串（可逐渐加长），测试字符串是否有长度上限'
+    {
+      let count = 10
+      let txt = (new Date()).toTimeString()
+      for(let i = 0; i < count; i++){
+        txt = txt + txt
+      }
+      logger.debug('===txt length: ' + txt.length)
+      let dataArray = [txt]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t字符串最多个数测试：上传多个十六进制字符串测试（个数可逐渐增加），测试字符串个数是否有上限'
+    {
+      let count = 100
+      let dataArray = []
+      let txt = (new Date()).toTimeString()
+      for(let i = 0; i < count; i++){
+        dataArray.push(i.toString() + '. ' + txt)
+      }
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0080\t存储相同的数据'
+    {
+      let dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW','QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.executeFunction = function(testCase){
+        return new Promise(async (resolve)=>{
+          await executeForUploadData(testCase)
+          let upload_response = testCase.actualResult
+          let check = {
+            title: 'ipfs upload same data result',
+            expectedResult: testCase.expectedResult,
+            actualResult: upload_response,
+            checkFunction: function(testCase, check){
+              let results = check.actualResult.result
+              let ipfs_hash_1 = results[0].ipfs_hash
+              let ipfs_hash_2 = results[1].ipfs_hash
+              expect(ipfs_hash_2).to.be.equal(ipfs_hash_1)
+            }
+          }
+          testCase.checks.push(check)
+          resolve(testCase)
+        })
+      }
+      addTestCase(testCases, testCase)
+    }
+
+    //endregion
+
+    return testCases
+  }
+
+  //region create test case
+  function createTestCaseForIpfsTest(server, title, txFunctionName, dataArray){
+    let testCase = createTestCase(title, server,
+        txFunctionName, dataArray, null,
+        executeForUploadData, checkTestCase, createExpecteResult(true),
+        restrictedLevel.L0, [serviceType.ipfs])
+    return testCase
+  }
+  //endregion
+
+  //region execute
+  function executeForUploadData(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      testCase.checks = []
+      let data = testCase.txParams
+
+      //upload
+      let upload_response = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+      testCase.actualResult = upload_response
+      let check = {
+        title: 'ipfs upload data result',
+        expectedResult: testCase.expectedResult,
+        actualResult: upload_response,
+        checkFunction: checkUploadData
+      }
+      testCase.checks.push(check)
+
+      if(testCase.expectedResult.needPass){
+        let upload_results = upload_response.result
+        let ipfs_hashes = []
+        upload_results.forEach((result)=>{
+          ipfs_hashes.push(result.ipfs_hash)
+        })
+        let download_response = await testCase.server.getResponse(consts.ipfsFunctions.downloadData, ipfs_hashes)
+        check = {
+          title: 'ipfs download data result after upload data',
+          expectedResult: createExpecteResult(true),
+          rawDatas: data,
+          actualResult: download_response,
+          checkFunction: checkDownloadData
+        }
+        testCase.checks.push(check)
+      }
+
+      resolve(testCase)
+    })
+  }
+  //endregion
+
+  //region check
+  function checkUploadData(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.UPLOAD_DATA_SCHEMA)
+      //check size
+      let results = response.result
+      expect(results.length).to.be.equal(testCase.txParams.length)
+      let count = testCase.txParams.length
+      for(let i = 0; i < count; i++){
+        expect(results[i].size >= testCase.txParams[i].length).to.be.ok
+        expect(isHex(results[i].data_hash)).to.be.ok
+      }
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
+  }
+
+  function checkDownloadData(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.DOWNLOAD_DATA_SCHEMA)
+      //compare data
+      let rawDatas = check.rawDatas
+      let results = response.result
+      expect(results.length).to.be.equal(rawDatas.length)
+      let count = rawDatas.length
+      for(let i = 0; i < count; i++){
+        let asc2 = hex2Ascii(results[i])
+        if(asc2 != rawDatas[i]){
+          let utf8 = hex2Utf8(results[i])
+          expect(utf8 == rawDatas[i]).to.be.ok
+        }
+        // expect(hex2Ascii(results[i])).to.be.equal(rawDatas[i])
+      }
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
+  }
+  //endregion
+  //endregion
+
   // region utility methods
 
   async function get2BlockNumber (server) {
@@ -3572,24 +3851,41 @@ describe('Jingtum测试', function() {
 
   //region hex relative
 
+  //example
+  // hex: 516d557556664a7251326d62374632323366556876706b5136626a46464d344661504b6e4b4c4c42574d45704257
+  // ascii: QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW
+  // base64: UW1VdVZmSnJRMm1iN0YyMjNmVWh2cGtRNmJqRkZNNEZhUEtuS0xMQldNRXBCVw==
+
   function hex2Utf8(hex){
     return new Buffer.from(hex.toString(), 'hex').toString('utf8')
   }
 
-  function hex2String(hex){
+  function utf82Hex(hex){
+    return new Buffer.from(string, 'utf8').toString('hex')
+  }
+
+  function hex2Base64(hex){
     // return new Buffer.from(hex.toString(), 'hex').toString('utf8')
     return new Buffer.from(hex.toString(), 'hex').toString('base64')
   }
 
-  function string2Hex(string){
+  function base642Hex(string){
     // return new Buffer.from(string, 'utf8').toString('hex')
     return new Buffer.from(string, 'base64').toString('hex')
   }
 
+  function hex2Ascii(hex){
+    return new Buffer.from(hex.toString(), 'hex').toString('ascii')
+  }
+
+  function ascii2Hex(string){
+    return new Buffer.from(string, 'ascii').toString('hex')
+  }
+
   function isHex(context){
-    let context2 = hex2String(context)
-    let hex = string2Hex(context2)
-    return context === hex
+    let context2 = hex2Base64(context)
+    let hex = base642Hex(context2)
+    return context.toUpperCase() === hex.toUpperCase()
   }
 
   //endregion

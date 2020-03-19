@@ -551,6 +551,80 @@ const SIGNTX_SCHEMA = {
     },
 }
 
+const UPLOAD_DATA_SCHEMA = {
+    title: "test response of sw_uploadData",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "object",
+                required: [
+                    "data_hash",
+                    "ipfs_hash",
+                    "size",
+                ],
+                properties: {
+                    data_hash: {
+                        type: "string"
+                    },
+                    ipfs_hash: {
+                        type: "string"
+                    },
+                    size: {
+                        type: "integer"
+                    },
+                },
+            },
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
+const DOWNLOAD_DATA_SCHEMA = {
+    title: "test response of sw_uploadData",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "string"
+            }
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
 module.exports = {
     SERVER_INFO_SCHEMA,
     LEDGER_CLOSED_SCHEMA,
@@ -573,4 +647,6 @@ module.exports = {
     SENDTX_SCHEMA,
     SIGNTX_SCHEMA,
     OLD_SENDTX_SCHEMA,
+    UPLOAD_DATA_SCHEMA,
+    DOWNLOAD_DATA_SCHEMA,
 }
