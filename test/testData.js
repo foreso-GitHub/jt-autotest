@@ -918,6 +918,12 @@ let blocks = {
 }
 
 let ipfs_data = {
+    data_upload:{
+        "data_hash": "F5B92036DF885311D9196E418846F2DE58C25FA06BA489C0F1FA74D7B7D8A08C",
+        "ipfs_hash": "QmdsfpkDoDvTNxWYes3qrRmHSbhy9Vth8X4EY5hdYmYkWu",
+        "size": 29,
+        "raw_data": "Test for upload data!",
+    },
     data_download: {
         "data_hash": "EE4153929FA183010B7B710F46519B280774EE2863C08250A11A327878862C74",
         "ipfs_hash": "QmQmhX1RNKU9EhDGfqeu7VfcuPrZzGHHmdc7BegzfeH32t",
