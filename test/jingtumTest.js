@@ -64,6 +64,8 @@ describe('Jingtum测试', function() {
       /*
       describe('用例测试', function () {
 
+        testForIpfsTest(server, '测试ipfs')
+
         testForGetBlockNumber(server, '测试jt_blockNumber')
 
         testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
@@ -102,6 +104,8 @@ describe('Jingtum测试', function() {
         // await utility.timeout(5000)
 
         testForIpfsTest(server, '测试ipfs')
+
+
 
       })
 
@@ -3575,6 +3579,10 @@ describe('Jingtum测试', function() {
     })
   }
 
+  function getNodeInfoBase(testCase, params, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.getNodeInfo, params, null, expectedResult, checkNodeInfo)
+  }
+
   function uploadDataBase(testCase, params, expectedResult){
     return operateData(testCase, consts.ipfsFunctions.uploadData, params, null, expectedResult, checkUploadData)
   }
@@ -3619,16 +3627,8 @@ describe('Jingtum测试', function() {
   function executeForNodeInfo(testCase){
     return new Promise(async function(resolve){
       testCase.hasExecuted = true
-      testCase.checks = []
-      let response = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-      testCase.actualResult = response
-      let check = {
-        title: 'ipfs get node info',
-        expectedResult: testCase.expectedResult,
-        actualResult: response,
-        checkFunction: checkNodeInfo
-      }
-      testCase.checks.push(check)
+      let check = await getNodeInfoBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(check.actualResult)
       resolve(testCase)
     })
   }
