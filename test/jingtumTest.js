@@ -9,7 +9,7 @@ let HashMap = require('hashmap')
 let utility = require("./testUtility.js")
 const schema = require("./schema.js")
 const consts = require('../lib/base/consts')
-const { chains, addresses, data, token, txs, blocks } = require("./testData")
+const { chains, addresses, data, token, txs, blocks, ipfs_data } = require("./testData")
 const { servers, modes } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
@@ -18,6 +18,7 @@ const testModeEnums = testMode
 
 //region global fields
 const HASH_LENGTH = 64
+const IPFS_HASH_LENGTH = 46
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
 let _FullTestCaseList = []
@@ -37,7 +38,20 @@ describe('Jingtum测试', function() {
     let server = mode.server
     server.init(mode)
 
-    this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
+    // this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
+
+    if(mode.service == serviceType.oldChain){
+      this.timeout(120000)
+    }
+    else if(mode.service == serviceType.newChain){
+      this.timeout(30000)
+    }
+    else if(mode.service == serviceType.ipfs){
+      this.timeout(25000)
+    }
+    else{
+      this.timeout(10000)
+    }
 
     describe('测试模式: ' + server.getName(), function () {
 
@@ -49,6 +63,8 @@ describe('Jingtum测试', function() {
 
       // /*
       describe('用例测试', function () {
+
+        testForIpfsTest(server, '测试ipfs')
 
         testForGetBlockNumber(server, '测试jt_blockNumber')
 
@@ -151,6 +167,7 @@ describe('Jingtum测试', function() {
     testCase.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
     testCase.supportedServices = (supportedServices) ? cloneArray(supportedServices) : []
     testCase.supportedInterfaces = (supportedInterfaces) ? cloneArray(supportedInterfaces) : []
+    testCase.checks = []
     return testCase
   }
 
@@ -680,6 +697,7 @@ describe('Jingtum测试', function() {
   //region 4. test test cases
 
   //region common
+
   function testTestCases(server, describeTitle, testCases) {
     let testMode = server.mode.testMode
     if(!testMode || testMode == testModeEnums.batchMode){
@@ -735,6 +753,7 @@ describe('Jingtum测试', function() {
       // logger.debug("===3. index: " + index )
     }
   }
+
   //endregion
 
   //region single mode
@@ -815,7 +834,8 @@ describe('Jingtum测试', function() {
     logger.debug('supportedInterfaces: ' + JSON.stringify(testCase.supportedInterfaces))
     logger.debug('restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
     logger.debug('hasExecuted: ' + testCase.hasExecuted)
-    logger.debug('result: ' + JSON.stringify(testCase.actualResult[0]))
+    for(let i = 0; i < testCase.actualResult.length; i++){
+      logger.debug('result[' +i + ']: ' + JSON.stringify(testCase.actualResult[i]))    }
     if(testCase.subTestCases != null && testCase.subTestCases.length > 0) {
       logger.debug('subTestCases result: ' + JSON.stringify(testCase.subTestCases[0].actualResult[0]))
     }
@@ -1063,7 +1083,7 @@ describe('Jingtum测试', function() {
     }
 
     title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
-        '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上\n'
+        '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上'
     {
       testCase = createTestCaseForSequenceTest(server, title, txFunctionName, addresses.sequence2, addresses.receiver2, value)
       testCase.executeFunction = function(testCase){
@@ -3485,9 +3505,192 @@ describe('Jingtum测试', function() {
 
   //region ipfs test
   function testForIpfsTest(server, describeTitle){
-    let testCases = testForUploadData(server)
-    testTestCases(server, describeTitle + ': ' + consts.ipfsFunctions.uploadData, testCases)
+    describe(describeTitle, function(){
+      let testCases
+
+      testCases = testForNodeInfo(server)
+      testTestCases(server, consts.ipfsFunctions.getNodeInfo, testCases)
+
+      testCases = testForUploadData(server)
+      testTestCases(server, consts.ipfsFunctions.uploadData, testCases)
+
+      testCases = testForDownloadData(server)
+      testTestCases(server, consts.ipfsFunctions.downloadData, testCases)
+
+      testCases = testForRemoveData(server)
+      testTestCases(server, consts.ipfsFunctions.removeData, testCases)
+
+      testCases = testForPinData(server)
+      testTestCases(server, consts.ipfsFunctions.pinData, testCases)
+
+      testCases = testForUnpinData(server)
+      testTestCases(server, consts.ipfsFunctions.unpinData, testCases)
+
+      testCases = testForUploadFile(server)
+      testTestCases(server, consts.ipfsFunctions.uploadFile, testCases)
+
+      // testCases = testForDownloadFile(server)
+      // testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
+      //
+      // testCases = testForFullProcess(server)
+      // testTestCases(server, 'ipfs全流程测试', testCases)
+      //
+      // testCases = pressureTestForUploadData(server)
+      // testTestCases(server, 'ipfs压力测试', testCases)
+    })
   }
+
+  function createTestCaseForIpfsTest(server, title, txFunctionName, txParams){
+    let executeFunction
+    if(txFunctionName == consts.ipfsFunctions.getNodeInfo){
+      executeFunction = executeForNodeInfo
+    }
+    else if(txFunctionName == consts.ipfsFunctions.uploadData){
+      executeFunction = executeForUploadData
+    }
+    else if(txFunctionName == consts.ipfsFunctions.downloadData){
+      executeFunction = executeForDownloadData
+    }
+    else if(txFunctionName == consts.ipfsFunctions.removeData){
+      executeFunction = executeForRemoveData
+    }
+    else if(txFunctionName == consts.ipfsFunctions.pinData){
+      executeFunction = executeForPinData
+    }
+    else if(txFunctionName == consts.ipfsFunctions.unpinData){
+      executeFunction = executeForUnpinData
+    }
+    else if(txFunctionName == consts.ipfsFunctions.uploadFile){
+      executeFunction = executeForUploadFile
+    }
+    else if(txFunctionName == consts.ipfsFunctions.downloadFile){
+      executeFunction = executeForDownloadFile
+    }
+    else {
+      throw new Error('Interface ' + txFunctionName + ' doesn\'t exist!')
+    }
+
+    let testCase = createTestCase(title, server,
+        txFunctionName, txParams, null,
+        executeFunction, checkTestCase, createExpecteResult(true),
+        restrictedLevel.L0, [serviceType.ipfs])
+    return testCase
+  }
+
+  //region common execute
+
+  function operateData(testCase, functionName, params, rawDatas, expectedResult, checkFunction){
+    return new Promise(async function(resolve){
+      let response = await testCase.server.getResponse(functionName, params)
+      let check = {
+        title: 'ipfs ' + functionName + ' data result',
+        params: params,
+        rawDatas: rawDatas,
+        expectedResult: expectedResult,
+        actualResult: response,
+        checkFunction: checkFunction
+      }
+      testCase.checks.push(check)
+      resolve(check)
+    })
+  }
+
+  function getNodeInfoBase(testCase, params, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.getNodeInfo, params, null, expectedResult, checkNodeInfo)
+  }
+
+  function uploadDataBase(testCase, params, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.uploadData, params, null, expectedResult, checkUploadData)
+  }
+
+  function downloadDataBase(testCase, params, rawDatas, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.downloadData, params, rawDatas, expectedResult, checkDownloadData)
+  }
+
+  function removeDataBase(testCase, params, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.removeData, params, null, expectedResult, checkRemoveData)
+  }
+
+  function pinDataBase(testCase, params, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.pinData, params, null, expectedResult, checkPinData)
+  }
+
+  function unpinDataBase(testCase, params, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.unpinData, params, null, expectedResult, checkUnpinData)
+  }
+
+  function uploadFileBase(testCase, params, expectedResult){
+    return new Promise(async function(resolve){
+      let url = testCase.url
+      let fileName = params
+      let rawDatas = testCase.rawDatas
+      let response = await testCase.server.uploadFile(url, fileName)
+      let check = {
+        title: 'ipfs ' + consts.ipfsFunctions.uploadFile + ' result',
+        params: params,
+        rawDatas: rawDatas,
+        expectedResult: expectedResult,
+        actualResult: response,
+        checkFunction: checkUploadFile
+      }
+      testCase.checks.push(check)
+      resolve(check)
+    })
+  }
+
+  function downloadFileBase(testCase, params, rawDatas, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.downloadFile, params, rawDatas, expectedResult, checkDownloadFile)
+  }
+
+  //endregion
+
+  //region node info
+
+  function testForNodeInfo(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.getNodeInfo
+
+    title = '0010\t显示节点状态'
+    {
+      let txParams = []
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.executeFunction = executeForNodeInfo
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForNodeInfo(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let check = await getNodeInfoBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(check.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function checkNodeInfo(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.NODEINFO_SCHEMA)
+      let max = response.result.max
+      let usage = response.result.usage
+      expect(max >= usage).to.be.ok
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
+  }
+
+  //endregion
+
+  //region upload data
 
   function testForUploadData(server){
     let testCases = []
@@ -3495,6 +3698,7 @@ describe('Jingtum测试', function() {
     let title = ''
     let txFunctionName = consts.ipfsFunctions.uploadData
     let dataArray = []
+    // let validData = ipfs_data.data_unpin
 
     //region 0010	有效的单个字符串
     title = '0010\t有效的单个字符串：上传十六进制字符串'
@@ -3506,7 +3710,7 @@ describe('Jingtum测试', function() {
 
     title = '0010\t有效的单个字符串：上传一般字符串'
     {
-      dataArray = ['Hello jingtum!']
+      dataArray = ['Hello jingtum\t!\r\n']
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
       addTestCase(testCases, testCase)
     }
@@ -3657,12 +3861,13 @@ describe('Jingtum测试', function() {
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
       testCase.executeFunction = function(testCase){
         return new Promise(async (resolve)=>{
-          await executeForUploadData(testCase)
-          let upload_response = testCase.actualResult
+          testCase.hasExecuted = true
+          let uploadCheck = await uploadDataBase(testCase, testCase.txParams, testCase.expectedResult)
+          let uploadResponse = uploadCheck.actualResult
           let check = {
             title: 'ipfs upload same data result',
             expectedResult: testCase.expectedResult,
-            actualResult: upload_response,
+            actualResult: uploadResponse,
             checkFunction: function(testCase, check){
               let results = check.actualResult.result
               let ipfs_hash_1 = results[0].ipfs_hash
@@ -3682,57 +3887,25 @@ describe('Jingtum测试', function() {
     return testCases
   }
 
-  //region create test case
-  function createTestCaseForIpfsTest(server, title, txFunctionName, dataArray){
-    let testCase = createTestCase(title, server,
-        txFunctionName, dataArray, null,
-        executeForUploadData, checkTestCase, createExpecteResult(true),
-        restrictedLevel.L0, [serviceType.ipfs])
-    return testCase
-  }
-  //endregion
-
-  //region execute
   function executeForUploadData(testCase){
     return new Promise(async function(resolve){
       testCase.hasExecuted = true
-      testCase.checks = []
-      let data = testCase.txParams
-
-      //upload
-      let upload_response = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
-      testCase.actualResult = upload_response
-      let check = {
-        title: 'ipfs upload data result',
-        expectedResult: testCase.expectedResult,
-        actualResult: upload_response,
-        checkFunction: checkUploadData
-      }
-      testCase.checks.push(check)
-
+      let uploadCheck = await uploadDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(uploadCheck.actualResult)
       if(testCase.expectedResult.needPass){
-        let upload_results = upload_response.result
-        let ipfs_hashes = []
-        upload_results.forEach((result)=>{
-          ipfs_hashes.push(result.ipfs_hash)
+        let uploadResponse = uploadCheck.actualResult
+        let hashAarray = []
+        uploadResponse.result.forEach((result)=>{
+          hashAarray.push(result.ipfs_hash)
         })
-        let download_response = await testCase.server.getResponse(consts.ipfsFunctions.downloadData, ipfs_hashes)
-        check = {
-          title: 'ipfs download data result after upload data',
-          expectedResult: createExpecteResult(true),
-          rawDatas: data,
-          actualResult: download_response,
-          checkFunction: checkDownloadData
-        }
-        testCase.checks.push(check)
+        let rawDatas = testCase.txParams
+        let downloadCheck = await downloadDataBase(testCase, hashAarray, rawDatas, createExpecteResult(true))
+        testCase.actualResult.push(downloadCheck.actualResult)
       }
-
       resolve(testCase)
     })
   }
-  //endregion
 
-  //region check
   function checkUploadData(testCase, check){
     let needPass = check.expectedResult.needPass
     let response = check.actualResult
@@ -3741,17 +3914,131 @@ describe('Jingtum测试', function() {
       expect(response).to.be.jsonSchema(schema.UPLOAD_DATA_SCHEMA)
       //check size
       let results = response.result
-      expect(results.length).to.be.equal(testCase.txParams.length)
-      let count = testCase.txParams.length
+      let rawParams = check.params
+      expect(results.length).to.be.equal(rawParams.length)
+      let count = rawParams.length
       for(let i = 0; i < count; i++){
-        expect(results[i].size >= testCase.txParams[i].length).to.be.ok
+        expect(results[i].size >= rawParams[i].length).to.be.ok
         expect(isHex(results[i].data_hash)).to.be.ok
+        expect(results[i].data_hash.length).to.be.equal(HASH_LENGTH)
+        expect(results[i].ipfs_hash.length).to.be.equal(IPFS_HASH_LENGTH)
       }
     }
     else{
       let expectedResult = check.expectedResult
       expect(response.result).to.contains(expectedResult.expectedError)
     }
+  }
+
+  //endregion
+
+  //region download data
+
+  function testForDownloadData(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.downloadData
+    let validData = ipfs_data.data_download
+
+    title = '0010\t单个有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.rawDatas = [validData.raw_data]
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度不够'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度过长'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
+    {
+      let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      // addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      // addTestCase(testCases, testCase) //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
+    {
+      let count = 100
+      let txParams = []
+      let data = validData
+      for(let i = 0; i < count; i++){
+        txParams.push(data.ipfs_hash)
+      }
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.rawDatas = []
+      for(let i = 0; i < count; i++){
+        testCase.rawDatas.push(data.raw_data)
+      }
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t多个有效的哈希参数：输入多个有效的哈希参数'
+    {
+      let txParams = []
+      let poem = ipfs_data.poem_1
+      poem.forEach((data)=>{
+        txParams.push(data.ipfs_hash)
+      })
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.rawDatas = []
+      poem.forEach((data)=>{
+        testCase.rawDatas.push(data.raw_data)
+      })
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t多个有效的哈希参数：输入多个有效但重复的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, validData.ipfs_hash, validData.ipfs_hash, ]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(true)
+      testCase.rawDatas = [validData.raw_data, validData.raw_data, validData.raw_data,]
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForDownloadData(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let downloadCheck = await downloadDataBase(testCase, testCase.txParams, testCase.rawDatas, testCase.expectedResult)
+      testCase.actualResult.push(downloadCheck.actualResult)
+      resolve(testCase)
+    })
   }
 
   function checkDownloadData(testCase, check){
@@ -3765,6 +4052,7 @@ describe('Jingtum测试', function() {
       let results = response.result
       expect(results.length).to.be.equal(rawDatas.length)
       let count = rawDatas.length
+      logger.debug('Total ' + count + ' datas need be checked!')
       for(let i = 0; i < count; i++){
         let asc2 = hex2Ascii(results[i])
         if(asc2 != rawDatas[i]){
@@ -3779,7 +4067,510 @@ describe('Jingtum测试', function() {
       expect(response.result).to.contains(expectedResult.expectedError)
     }
   }
+
   //endregion
+
+  //region remove data
+
+  function testForRemoveData(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.removeData
+    let validData = ipfs_data.data_remove
+
+    title = '0010\t单个有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForRemoveDataWithPreparation
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度不够'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度过长'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
+    {
+      let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForRemoveDataWithPreparation
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForRemoveDataWithPreparation
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0060\t有效和无效混合的哈希参数_03：输入多个哈希参数，其中部分哈希参数重复'
+    {
+      let txParams = [validData.ipfs_hash, validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForRemoveDataWithPreparation
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
+    {
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
+      testCase.testCount = 30
+      testCase.executeFunction = executeForRemoveDataInBatch
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0080\t多个有效的哈希参数：输入多个有效的哈希参数'
+    {
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
+      testCase.testCount = 10
+      testCase.executeFunction = executeForRemoveDataInBatch
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForRemoveDataWithPreparation(testCase){  //upload data to make sure there is data can be removed.
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let uploadCheck = await uploadDataBase(testCase, testCase.uploadParams, createExpecteResult(true))
+      testCase.actualResult.push(uploadCheck.actualResult)
+      let uploadResponse = uploadCheck.actualResult
+      let hashAarray = []
+      uploadResponse.result.forEach((result)=>{
+        hashAarray.push(result.ipfs_hash)
+      })
+      let removeCheck = await removeDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(removeCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function executeForRemoveDataInBatch(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      let dataArray = []
+      let txt = (new Date()).toTimeString()
+      for(let i = 0; i < count; i++){
+        dataArray.push(i.toString() + '. ' + txt)
+      }
+      let uploadCheck = await uploadDataBase(testCase, dataArray, createExpecteResult(true))
+      testCase.actualResult.push(uploadCheck.actualResult)
+      let uploadResponse = uploadCheck.actualResult
+      testCase.txParams = []
+      uploadResponse.result.forEach((result)=>{
+        testCase.txParams.push(result.ipfs_hash)
+      })
+      let removeCheck = await removeDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(removeCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function executeForRemoveData(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let removeCheck = await removeDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(removeCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function checkRemoveData(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.REMOVE_DATA_SCHEMA)
+      //compare data
+      let hashes = check.params
+      let results = response.result
+      expect(results.length).to.be.equal(hashes.length)
+      let count = hashes.length
+      logger.debug('Total ' + count + ' hashes need be checked!')
+      for(let i = 0; i < count; i++){
+        expect(results[i]).to.be.equal(hashes[i])
+        expect(results[i].length).to.be.equal(IPFS_HASH_LENGTH)
+      }
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
+  }
+
+  //endregion
+
+  //region pin data
+
+  function testForPinData(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.pinData
+    let validData = ipfs_data.data_pin
+
+    title = '0010\t单个有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForPinDataWithPreparation
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度不够'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度过长'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
+    {
+      let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      //addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForPinDataWithPreparation
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForPinDataWithPreparation
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      // addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
+    {
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
+      testCase.testCount = 30
+      testCase.executeFunction = executeForRemoveDataInBatch
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t多个有效的哈希参数：输入多个有效的哈希参数'
+    {
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
+      testCase.testCount = 10
+      testCase.executeFunction = executeForRemoveDataInBatch
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t有效和无效混合的哈希参数_03：输入多个哈希参数，其中部分哈希参数重复'
+    {
+      let txParams = [validData.ipfs_hash, validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data, validData.raw_data]
+      testCase.executeFunction = executeForPinDataWithPreparation
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForPinDataWithPreparation(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let uploadCheck = await uploadDataBase(testCase, testCase.uploadParams, createExpecteResult(true))
+      testCase.actualResult.push(uploadCheck.actualResult)
+      let uploadResponse = uploadCheck.actualResult
+      let hashAarray = []
+      uploadResponse.result.forEach((result)=>{
+        hashAarray.push(result.ipfs_hash)
+      })
+      let pinCheck = await pinDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(pinCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function executeForRemoveDataInBatch(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      let dataArray = []
+      let txt = (new Date()).toTimeString()
+      for(let i = 0; i < count; i++){
+        dataArray.push(i.toString() + '. ' + txt)
+      }
+      let uploadCheck = await uploadDataBase(testCase, dataArray, createExpecteResult(true))
+      testCase.actualResult.push(uploadCheck.actualResult)
+      let uploadResponse = uploadCheck.actualResult
+      testCase.txParams = []
+      uploadResponse.result.forEach((result)=>{
+        testCase.txParams.push(result.ipfs_hash)
+      })
+      let pinCheck = await pinDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(pinCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function executeForPinData(testCase){
+    testCase.hasExecuted = true
+    return pinDataBase(testCase, testCase.txParams, testCase.expectedResult)
+  }
+
+  function checkPinData(testCase, check){
+    checkRemoveData(testCase, check)
+  }
+
+  //endregion
+
+  //region unpin data
+
+  function testForUnpinData(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.unpinData
+    let validData = ipfs_data.data_unpin
+
+    title = '0010\t单个有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.executeFunction = executeForUnpinDataWithPreparation
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度不够'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度过长'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
+    {
+      let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      //addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      testCase.executeFunction = executeForUnpinDataWithPreparation
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
+    {
+      let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.uploadParams = [validData.raw_data]
+      testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+      testCase.executeFunction = executeForUnpinDataWithPreparation
+      // addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
+    {
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
+      testCase.testCount = 30
+      testCase.executeFunction = executeForUnpinDataInBatch
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0070\t多个有效的哈希参数：输入多个有效的哈希参数'
+    {
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
+      testCase.testCount = 10
+      testCase.executeFunction = executeForUnpinDataInBatch
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForUnpinDataWithPreparation(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let uploadCheck = await uploadDataBase(testCase, testCase.uploadParams, createExpecteResult(true))
+      testCase.actualResult.push(uploadCheck.actualResult)
+      let uploadResponse = uploadCheck.actualResult
+      let hashAarray = []
+      uploadResponse.result.forEach((result)=>{
+        hashAarray.push(result.ipfs_hash)
+      })
+      let pinCheck = await pinDataBase(testCase, hashAarray, createExpecteResult(true))
+      testCase.actualResult.push(pinCheck.actualResult)
+      let unpinCheck = await unpinDataBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(unpinCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function executeForUnpinDataInBatch(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      let dataArray = []
+      let txt = testCase.title + ' - ' + (new Date()).toTimeString()
+      for(let i = 0; i < count; i++){
+        dataArray.push(i.toString() + '. ' + txt)
+      }
+      let uploadCheck = await uploadDataBase(testCase, dataArray, createExpecteResult(true))
+      let uploadResponse = uploadCheck.actualResult
+      let hashAarray = []
+      uploadResponse.result.forEach((result)=>{
+        hashAarray.push(result.ipfs_hash)
+      })
+      let pinCheck = await pinDataBase(testCase, hashAarray, createExpecteResult(true))
+      let unpinCheck = await unpinDataBase(testCase, hashAarray, testCase.expectedResult)
+      testCase.actualResult.push(uploadCheck.actualResult)
+      testCase.actualResult.push(pinCheck.actualResult)
+      testCase.actualResult.push(unpinCheck.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function executeForUnpinData(testCase){
+    testCase.hasExecuted = true
+    return unpinDataBase(testCase, testCase.txParams, testCase.expectedResult)
+  }
+
+  function checkUnpinData(testCase, check){
+    checkRemoveData(testCase, check)
+  }
+
+  //endregion
+
+  //region upload file
+
+  function testForUploadFile(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadFile
+    let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
+    let testFilePath = '.\\test\\testFiles\\'
+
+    title = '0010\t上传存在的文件：通过API接口上传文件，指定的文件存在'
+    {
+      let testFile = ipfs_data.uploadFile_1
+      let fileName = testFilePath + testFile.name
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
+      testCase.url = url
+      testCase.rawDatas = testFile
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t不同文件类型上传测试：上传不同类型的文件'
+    {
+      let testFile = ipfs_data.uploadImage_1
+      let fileName = testFilePath + testFile.name
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
+      testCase.url = url
+      testCase.rawDatas = testFile
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForUploadFile(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let check = await uploadFileBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(check.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function checkUploadFile(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.UPLOAD_FILE_SCHEMA)
+      let rawFileName = testCase.txParams
+      let file = response.result[0]
+      expect(rawFileName).to.contains(file.name)
+      let rawFile = testCase.rawDatas
+      expect(file.data_hash).to.be.equal(rawFile.data_hash)
+      expect(file.ipfs_hash).to.be.equal(rawFile.ipfs_hash)
+      expect(file.name).to.be.equal(rawFile.name)
+      expect(file.size).to.be.equal(rawFile.size)
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
+  }
+
+  //endregion
+
   //endregion
 
   // region utility methods

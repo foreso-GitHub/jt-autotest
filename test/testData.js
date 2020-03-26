@@ -917,6 +917,114 @@ let blocks = {
     }
 }
 
+let ipfs_data = {
+    data_upload:{
+        "data_hash": "F5B92036DF885311D9196E418846F2DE58C25FA06BA489C0F1FA74D7B7D8A08C",
+        "ipfs_hash": "QmdsfpkDoDvTNxWYes3qrRmHSbhy9Vth8X4EY5hdYmYkWu",
+        "size": 29,
+        "raw_data": "Test for upload data!",
+    },
+    data_download: {
+        "data_hash": "EE4153929FA183010B7B710F46519B280774EE2863C08250A11A327878862C74",
+        "ipfs_hash": "QmQmhX1RNKU9EhDGfqeu7VfcuPrZzGHHmdc7BegzfeH32t",
+        "size": 129,
+        "raw_data": "关于群众反映的涉及李文亮医生有关情况调查的通报\n中央纪委国家监委网站 2020-03-19 19:30:06\n",
+    },
+    data_remove: {
+        "data_hash": "F4D538057EFD63186E0E0317F40F00761918867C211B872A32D57416214F380A",
+        "ipfs_hash": "QmNvP3JHvM8tiGsVP41La2aHn69UJDD6Xcv1PtciSQRS9L",
+        "size": 35,
+        "raw_data": "Test for single valid hash!",
+    },
+    data_pin:{
+        "data_hash": "C1FA7C142D2EAF19552032652013080D866AB5FD17FA4458BDCA61CB9059B308",
+        "ipfs_hash": "QmcsNQ5YNv3tn8FBL5pzBDQMqjMLYdSknLMTEdhJYaoYQE",
+        "size": 26,
+        "raw_data": "Test for pin data!",
+    },
+    data_unpin: {
+        "data_hash": "84DA8CF9D47932BB830D4328D442161102E2D561AB6F98B803C85FE0C8A463F0",
+        "ipfs_hash": "QmbzJ1f1htbg1huWu8fyUShnTXDTJuznn1JjNABFodpXWq",
+        "size": 28,
+        "raw_data": "Test for unpin data!",
+    },
+    deleted_data_1: {  //has been deleted
+        "data_hash": "E241DD748FF87D42E874C2531F9C51BC0200F7E03C14678D9069EA8B93926C49",
+        "ipfs_hash": "QmXJ6aefqno3sX4sgSkE98cD3zBAvNpdQZtriP4sokvZqA",
+        "size": 218,
+        "raw_data": "李文亮，男，满族，1985年10月出生，辽宁锦州人，中共党员，工作中因感染新型冠状病毒引发肺炎于2020年2月7日不幸去世，生前系武汉市中心医院眼科医师。",
+    },
+    bad_data_1: {
+        "ipfs_hash_too_short": "QmQmhX1RNKU9EhDGfqeu7VfcuPrZzGHHmdc7Begzfe",
+        "ipfs_hash_too_long": "QmQmhX1RNKU9EhDGfqeu7VfcuPrZzGHHmdc7BegzfeH32taa",
+    },
+    poem_1:[
+        {
+            "raw_data": "此时此刻",
+            "data_hash": "12A598F48C6E5FFBABCA3A786C9A0F18A412628BDF6D5D753FAD7624B0DD4AD4",
+            "ipfs_hash": "QmZqiFPzRch5FFeTQEQYALHp36XhHysP64FpfS1YoDgDdU",
+            "size": 20
+        },
+        {
+            "raw_data": "此时此刻，\n外星人你们在干什么呢？",
+            "data_hash": "B9A16F218CED8482A360250E254EE16D60ACC5F4CE74934A71D9F5656214B4B7",
+            "ipfs_hash": "QmaQJeg188tGzFFyx2VhZdDYPr5n43uVV7pcYH8Ma382Aw",
+            "size": 57
+        },
+        {
+            "raw_data": "也许你们正在探索其他星球，\n是不是你们的太阳熄灭了而不得不踏上星际探索之旅呢？",
+            "data_hash": "2BD118BFD1BC8353B84E4B4D8E7EB3E7BEF9B3D778C517A790948362D6BEB65F",
+            "ipfs_hash": "QmdoJnCNb9oYCAqDPXrZrxQwPiXCr1BA6DdMqL7Fyk7jYX",
+            "size": 123
+        },
+        {
+            "raw_data": "也许你们的家乡有了病毒，\n是不是你们的白衣天使也在想办法消灭它呢？",
+            "data_hash": "90E9136D154816191C5CE457455E2B021CBAAA40561007DBA6D8EA10750A7DF8",
+            "ipfs_hash": "QmUQkMpNbJfbgE6v8KA9bAQqHwJAqfiNf9h5MKWDnkjTYE",
+            "size": 105
+        },
+        {
+            "raw_data": "也许你们正在打仗，\n是不是你们认为战争很有趣呢？",
+            "data_hash": "5C5841D0DCF854E13A19592E8A13BC4B105D791D75362F96DD6EE6F69D2F1690",
+            "ipfs_hash": "QmcdgSiSVTfy1QxRufewCYBZ3yzAGCCubqrKNoAXxnp98w",
+            "size": 78
+        },
+        {
+            "raw_data": "也许你们遇到了可怕的黑洞，\n是不是你们能轻易逃离那恐怖的引力呢？",
+            "data_hash": "52AF573592A9F313FF203F4239FC4D88252C4734A2A340FC30F34D5B4C29BC11",
+            "ipfs_hash": "QmVpbaHFYWgAJMYkF33gAjYFZ8bsgiUL1xbNrSPgKxkdtF",
+            "size": 102
+        },
+        {
+            "raw_data": "也许你们在保护着地球，\n是不是地球上有你们重视的东西呢？",
+            "data_hash": "222B0C16483424BB3830D1483FFB609B6AB59D5E11C0D7AC74C274659F6F3100",
+            "ipfs_hash": "QmRHBhnvk4YXxTzRySTqmgH5PET8jHeWgqamVSydVddrjZ",
+            "size": 90
+        },
+        {
+            "raw_data": "此时此刻，\n我仰望着蔚蓝的天空，\n不知你们能否听见我的疑问？",
+            "data_hash": "268A068D0828873993B5E098AB09807942750924BE8869BC6D27F9F616555AC8",
+            "ipfs_hash": "QmRoo5AzV5LpF7NtZJ45LuDj2FZ6rN6KEJ99Mby9S2RyHF",
+            "size": 94
+        }
+    ],
+    uploadFile_1: {
+        data_hash: '949892EE22A7AEA90A3DA5B0804DB877C1474454BE2E08CDDF2310D6C99D0C8F',
+        ipfs_hash: 'QmRgroG1sBJq3Uq8rXbD4UfQYnzBJ5fdHYkw39qo5D1C54',
+        name: 'up1.txt',
+        size: 21,
+        raw_data: 'Test for upload file!'
+    },
+    uploadImage_1: {
+        data_hash: '7551A0FED56A8BCA0C26FE8289F95F17FF41A6C40A71DC412E6F81615966198C',
+        ipfs_hash: 'QmSMbSFseAVxMxsRnPESN6yLBoLqLQxsKe2nbyevZP15DW',
+        name: 'image1.png',
+        size: 2699,
+        raw_data: ''
+    },
+}
+
+
 module.exports = {
     chains,
     accounts,
@@ -925,4 +1033,5 @@ module.exports = {
     token,
     txs,
     blocks,
+    ipfs_data,
 }

@@ -44,6 +44,7 @@ let mode_rpc_newChain = {
 let mode_rpc_ipfs = {
     server: rpc_7545,
     initParams: {url:'http://139.198.191.254:7545/v1/jsonrpc'},
+    // initParams: {url:'http://139.198.177.59:7545/v1/jsonrpc'},
     service: serviceType.ipfs,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,

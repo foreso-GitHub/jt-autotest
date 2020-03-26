@@ -551,6 +551,45 @@ const SIGNTX_SCHEMA = {
     },
 }
 
+//region ipfs schemas
+
+const NODEINFO_SCHEMA = {
+    title: "test response of sw_nodeInfo",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "object",
+            required: [
+                "max",
+                "usage",
+            ],
+            properties: {
+                max: {
+                    type: "integer"
+                },
+                usage: {
+                    type: "integer"
+                },
+            },
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
 const UPLOAD_DATA_SCHEMA = {
     title: "test response of sw_uploadData",
     type: "object",
@@ -597,7 +636,7 @@ const UPLOAD_DATA_SCHEMA = {
 }
 
 const DOWNLOAD_DATA_SCHEMA = {
-    title: "test response of sw_uploadData",
+    title: "test response of sw_downloadData",
     type: "object",
     required: [
         "id",
@@ -625,6 +664,91 @@ const DOWNLOAD_DATA_SCHEMA = {
     },
 }
 
+const REMOVE_DATA_SCHEMA = {
+    title: "test response of sw_removeData",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "string"
+            }
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
+const UPLOAD_FILE_SCHEMA = {
+    title: "test response of sw_uploadFile",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "object",
+                required: [
+                    "data_hash",
+                    "ipfs_hash",
+                    "name",
+                    "size",
+                ],
+                properties: {
+                    data_hash: {
+                        type: "string"
+                    },
+                    ipfs_hash: {
+                        type: "string"
+                    },
+                    name: {
+                        type: "string"
+                    },
+                    size: {
+                        type: "integer"
+                    },
+                },
+            },
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
+const DOWNLOAD_FILE_SCHEMA = {
+    title: "test response of sw_downloadFile",
+    type: "string",
+}
+
+//endregion
+
 module.exports = {
     SERVER_INFO_SCHEMA,
     LEDGER_CLOSED_SCHEMA,
@@ -649,4 +773,8 @@ module.exports = {
     OLD_SENDTX_SCHEMA,
     UPLOAD_DATA_SCHEMA,
     DOWNLOAD_DATA_SCHEMA,
+    NODEINFO_SCHEMA,
+    REMOVE_DATA_SCHEMA,
+    UPLOAD_FILE_SCHEMA,
+    DOWNLOAD_FILE_SCHEMA,
 }
