@@ -61,7 +61,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      /*
+      // /*
       describe('用例测试', function () {
 
         testForIpfsTest(server, '测试ipfs')
@@ -103,7 +103,7 @@ describe('Jingtum测试', function() {
 
         // await utility.timeout(5000)
 
-        testForIpfsTest(server, '测试ipfs')
+        // testForIpfsTest(server, '测试ipfs')
 
       })
 
@@ -3529,14 +3529,14 @@ describe('Jingtum测试', function() {
       testCases = testForUploadFile(server)
       testTestCases(server, consts.ipfsFunctions.uploadFile, testCases)
 
-      testCases = testForDownloadFile(server)
-      testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
-
-      testCases = testForFullProcess(server)
-      testTestCases(server, 'ipfs全流程测试', testCases)
-
-      testCases = pressureTestForUploadData(server)
-      testTestCases(server, 'ipfs压力测试', testCases)
+      // testCases = testForDownloadFile(server)
+      // testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
+      //
+      // testCases = testForFullProcess(server)
+      // testTestCases(server, 'ipfs全流程测试', testCases)
+      //
+      // testCases = pressureTestForUploadData(server)
+      // testTestCases(server, 'ipfs压力测试', testCases)
     })
   }
 
