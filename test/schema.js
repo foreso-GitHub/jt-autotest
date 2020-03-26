@@ -665,7 +665,7 @@ const DOWNLOAD_DATA_SCHEMA = {
 }
 
 const REMOVE_DATA_SCHEMA = {
-    title: "test response of sw_downloadData",
+    title: "test response of sw_removeData",
     type: "object",
     required: [
         "id",
@@ -691,6 +691,60 @@ const REMOVE_DATA_SCHEMA = {
             type: "string"
         },
     },
+}
+
+const UPLOAD_FILE_SCHEMA = {
+    title: "test response of sw_uploadFile",
+    type: "object",
+    required: [
+        "id",
+        "jsonrpc",
+        "result",
+        "status",
+    ],
+    properties: {
+        id: {
+            type: "integer"
+        },
+        jsonrpc: {
+            type: "string"
+        },
+        result: {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "object",
+                required: [
+                    "data_hash",
+                    "ipfs_hash",
+                    "name",
+                    "size",
+                ],
+                properties: {
+                    data_hash: {
+                        type: "string"
+                    },
+                    ipfs_hash: {
+                        type: "string"
+                    },
+                    name: {
+                        type: "string"
+                    },
+                    size: {
+                        type: "integer"
+                    },
+                },
+            },
+        },
+        status: {
+            type: "string"
+        },
+    },
+}
+
+const DOWNLOAD_FILE_SCHEMA = {
+    title: "test response of sw_downloadFile",
+    type: "string",
 }
 
 //endregion
@@ -721,4 +775,6 @@ module.exports = {
     DOWNLOAD_DATA_SCHEMA,
     NODEINFO_SCHEMA,
     REMOVE_DATA_SCHEMA,
+    UPLOAD_FILE_SCHEMA,
+    DOWNLOAD_FILE_SCHEMA,
 }

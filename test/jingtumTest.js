@@ -47,7 +47,7 @@ describe('Jingtum测试', function() {
       this.timeout(30000)
     }
     else if(mode.service == serviceType.ipfs){
-      this.timeout(20000)
+      this.timeout(25000)
     }
     else{
       this.timeout(10000)
@@ -104,8 +104,6 @@ describe('Jingtum测试', function() {
         // await utility.timeout(5000)
 
         testForIpfsTest(server, '测试ipfs')
-
-
 
       })
 
@@ -3527,10 +3525,22 @@ describe('Jingtum测试', function() {
 
       testCases = testForUnpinData(server)
       testTestCases(server, consts.ipfsFunctions.unpinData, testCases)
+
+      testCases = testForUploadFile(server)
+      testTestCases(server, consts.ipfsFunctions.uploadFile, testCases)
+
+      testCases = testForDownloadFile(server)
+      testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
+
+      testCases = testForFullProcess(server)
+      testTestCases(server, 'ipfs全流程测试', testCases)
+
+      testCases = pressureTestForUploadData(server)
+      testTestCases(server, 'ipfs压力测试', testCases)
     })
   }
 
-  function createTestCaseForIpfsTest(server, title, txFunctionName, dataArray){
+  function createTestCaseForIpfsTest(server, title, txFunctionName, txParams){
     let executeFunction
     if(txFunctionName == consts.ipfsFunctions.getNodeInfo){
       executeFunction = executeForNodeInfo
@@ -3550,12 +3560,18 @@ describe('Jingtum测试', function() {
     else if(txFunctionName == consts.ipfsFunctions.unpinData){
       executeFunction = executeForUnpinData
     }
+    else if(txFunctionName == consts.ipfsFunctions.uploadFile){
+      executeFunction = executeForUploadFile
+    }
+    else if(txFunctionName == consts.ipfsFunctions.downloadFile){
+      executeFunction = executeForDownloadFile
+    }
     else {
       throw new Error('Interface ' + txFunctionName + ' doesn\'t exist!')
     }
 
     let testCase = createTestCase(title, server,
-        txFunctionName, dataArray, null,
+        txFunctionName, txParams, null,
         executeFunction, checkTestCase, createExpecteResult(true),
         restrictedLevel.L0, [serviceType.ipfs])
     return testCase
@@ -3601,6 +3617,29 @@ describe('Jingtum测试', function() {
 
   function unpinDataBase(testCase, params, expectedResult){
     return operateData(testCase, consts.ipfsFunctions.unpinData, params, null, expectedResult, checkUnpinData)
+  }
+
+  function uploadFileBase(testCase, params, expectedResult){
+    return new Promise(async function(resolve){
+      let url = testCase.url
+      let fileName = params
+      let rawDatas = testCase.rawDatas
+      let response = await testCase.server.uploadFile(url, fileName)
+      let check = {
+        title: 'ipfs ' + consts.ipfsFunctions.uploadFile + ' result',
+        params: params,
+        rawDatas: rawDatas,
+        expectedResult: expectedResult,
+        actualResult: response,
+        checkFunction: checkUploadFile
+      }
+      testCase.checks.push(check)
+      resolve(check)
+    })
+  }
+
+  function downloadFileBase(testCase, params, rawDatas, expectedResult){
+    return operateData(testCase, consts.ipfsFunctions.downloadFile, params, rawDatas, expectedResult, checkDownloadFile)
   }
 
   //endregion
@@ -4259,7 +4298,7 @@ describe('Jingtum测试', function() {
     title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
     {
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, null)
-      testCase.testCount = 100
+      testCase.testCount = 30
       testCase.executeFunction = executeForRemoveDataInBatch
       addTestCase(testCases, testCase)
     }
@@ -4463,6 +4502,71 @@ describe('Jingtum测试', function() {
 
   function checkUnpinData(testCase, check){
     checkRemoveData(testCase, check)
+  }
+
+  //endregion
+
+  //region upload file
+
+  function testForUploadFile(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadFile
+    let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
+    let testFilePath = '.\\test\\testFiles\\'
+
+    title = '0010\t上传存在的文件：通过API接口上传文件，指定的文件存在'
+    {
+      let testFile = ipfs_data.uploadFile_1
+      let fileName = testFilePath + testFile.name
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
+      testCase.url = url
+      testCase.rawDatas = testFile
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t不同文件类型上传测试：上传不同类型的文件'
+    {
+      let testFile = ipfs_data.uploadImage_1
+      let fileName = testFilePath + testFile.name
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
+      testCase.url = url
+      testCase.rawDatas = testFile
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function executeForUploadFile(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let check = await uploadFileBase(testCase, testCase.txParams, testCase.expectedResult)
+      testCase.actualResult.push(check.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function checkUploadFile(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    checkResponse(needPass, response)
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.UPLOAD_FILE_SCHEMA)
+      let rawFileName = testCase.txParams
+      let file = response.result[0]
+      expect(rawFileName).to.contains(file.name)
+      let rawFile = testCase.rawDatas
+      expect(file.data_hash).to.be.equal(rawFile.data_hash)
+      expect(file.ipfs_hash).to.be.equal(rawFile.ipfs_hash)
+      expect(file.name).to.be.equal(rawFile.name)
+      expect(file.size).to.be.equal(rawFile.size)
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
   }
 
   //endregion

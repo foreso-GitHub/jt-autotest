@@ -1007,8 +1007,23 @@ let ipfs_data = {
             "ipfs_hash": "QmRoo5AzV5LpF7NtZJ45LuDj2FZ6rN6KEJ99Mby9S2RyHF",
             "size": 94
         }
-    ]
+    ],
+    uploadFile_1: {
+        data_hash: '949892EE22A7AEA90A3DA5B0804DB877C1474454BE2E08CDDF2310D6C99D0C8F',
+        ipfs_hash: 'QmRgroG1sBJq3Uq8rXbD4UfQYnzBJ5fdHYkw39qo5D1C54',
+        name: 'up1.txt',
+        size: 21,
+        raw_data: 'Test for upload file!'
+    },
+    uploadImage_1: {
+        data_hash: '7551A0FED56A8BCA0C26FE8289F95F17FF41A6C40A71DC412E6F81615966198C',
+        ipfs_hash: 'QmSMbSFseAVxMxsRnPESN6yLBoLqLQxsKe2nbyevZP15DW',
+        name: 'image1.png',
+        size: 2699,
+        raw_data: ''
+    },
 }
+
 
 module.exports = {
     chains,
