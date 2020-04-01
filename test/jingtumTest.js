@@ -3537,6 +3537,9 @@ describe('Jingtum测试', function() {
 
       testCases = pressureTestForUploadData(server)
       testTestCases(server, 'ipfs上传压力测试', testCases)
+
+      testCases = pressureTestForFullProcess(server)
+      testTestCases(server, 'ipfs全流程压力测试', testCases)
     })
   }
 
@@ -4827,6 +4830,25 @@ describe('Jingtum测试', function() {
     return testCases
   }
 
+  function pressureTestForFullProcess(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+    let count = 30
+
+    let dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
+    for(let i = 0; i < count; i++){
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.rawDatas = dataArray
+      testCase.rawDownloadDatas = dataArray
+      testCase.executeFunction = executeForFullProcessForUploadData
+      testCase.title = '0010\t测试FullProcess: ' + (i + 1) + '/' + count
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
   //endregion
 
   //endregion
