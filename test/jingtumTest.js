@@ -47,7 +47,7 @@ describe('Jingtum测试', function() {
       this.timeout(30000)
     }
     else if(mode.service == serviceType.ipfs){
-      this.timeout(25000)
+      this.timeout(35000)
     }
     else{
       this.timeout(10000)
@@ -3529,14 +3529,23 @@ describe('Jingtum测试', function() {
       testCases = testForUploadFile(server)
       testTestCases(server, consts.ipfsFunctions.uploadFile, testCases)
 
-      // testCases = testForDownloadFile(server)
-      // testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
-      //
-      // testCases = testForFullProcess(server)
-      // testTestCases(server, 'ipfs全流程测试', testCases)
-      //
-      // testCases = pressureTestForUploadData(server)
-      // testTestCases(server, 'ipfs压力测试', testCases)
+      testCases = testForDownloadFile(server)
+      testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
+
+      testCases = testForFullProcess(server)
+      testTestCases(server, 'ipfs全流程测试', testCases)
+
+      testCases = pressureTestForUploadData(server)
+      testTestCases(server, 'ipfs上传压力测试，多个case', testCases)
+
+      testCases = pressureTestForUploadDataInOneCase(server)
+      testTestCases(server, 'ipfs上传压力测试，单个case', testCases)
+
+      testCases = pressureTestForFullProcess(server)
+      testTestCases(server, 'ipfs全流程压力测试，多个case', testCases)
+
+      testCases = pressureTestForFullProcessInOneCase(server)
+      testTestCases(server, 'ipfs全流程压力测试，单个case', testCases)
     })
   }
 
@@ -3845,7 +3854,7 @@ describe('Jingtum测试', function() {
 
     title = '0070\t字符串最多个数测试：上传多个十六进制字符串测试（个数可逐渐增加），测试字符串个数是否有上限'
     {
-      let count = 100
+      let count = 30
       let dataArray = []
       let txt = (new Date()).toTimeString()
       for(let i = 0; i < count; i++){
@@ -3903,6 +3912,35 @@ describe('Jingtum测试', function() {
         testCase.actualResult.push(downloadCheck.actualResult)
       }
       resolve(testCase)
+    })
+  }
+
+  function executeForpressureTestForUploadData(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      count = count != null ? count : 1
+      let doneCount = 0;
+      for(let i = 0; i < count; i++){
+        let data = i.toString() + '. ' +  testCase.txParams[0]
+        let uploadCheck = await uploadDataBase(testCase, [data], testCase.expectedResult)
+        testCase.actualResult.push(uploadCheck.actualResult)
+        if(testCase.expectedResult.needPass){
+          let uploadResponse = uploadCheck.actualResult
+          let hashAarray = []
+          uploadResponse.result.forEach((result)=>{
+            hashAarray.push(result.ipfs_hash)
+          })
+          let rawDatas = [data]
+          let downloadCheck = await downloadDataBase(testCase, hashAarray, rawDatas, createExpecteResult(true))
+          testCase.actualResult.push(downloadCheck.actualResult)
+          doneCount++
+
+          if(doneCount == count){
+            resolve(testCase)
+          }
+        }
+      }
     })
   }
 
@@ -4569,6 +4607,337 @@ describe('Jingtum测试', function() {
     }
   }
 
+  //endregion
+
+  //region download file
+
+  function testForDownloadFile(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.downloadFile
+    let validData = ipfs_data.data_download
+
+    title = '0010\t有效的哈希参数：哈希参数有效，有对应的数据'
+    {
+      let txParams = [validData.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.rawDatas = validData.raw_data
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度不够'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t单个无效的哈希参数_01：哈希长度过长'
+    {
+      let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
+    {
+      let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
+      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      // addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+    }
+
+    return testCases
+  }
+
+  function executeForDownloadFile(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let check = await downloadFileBase(testCase, testCase.txParams, testCase.rawDatas, testCase.expectedResult)
+      testCase.actualResult.push(check.actualResult)
+      resolve(testCase)
+    })
+  }
+
+  function checkDownloadFile(testCase, check){
+    let needPass = check.expectedResult.needPass
+    let response = check.actualResult
+    // checkResponse(needPass, response)  //download file response is not json
+    if(needPass){
+      expect(response).to.be.jsonSchema(schema.DOWNLOAD_FILE_SCHEMA)
+      //compare data
+      let rawContent = check.rawDatas
+      let content = response
+      expect(content).to.be.equal(rawContent)
+    }
+    else{
+      let expectedResult = check.expectedResult
+      expect(response.result).to.contains(expectedResult.expectedError)
+    }
+  }
+
+  //endregion
+
+  //region full process of ipfs
+
+  function testForFullProcess(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+    let dataArray = []
+
+    title = '0010\t上传数据'
+    {
+      txFunctionName = consts.ipfsFunctions.uploadData
+      dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.rawDatas = dataArray
+      testCase.rawDownloadDatas = dataArray
+      testCase.executeFunction = executeForFullProcessForUploadData
+      addTestCase(testCases, testCase)
+    }
+
+    title = '0020\t上传文件'
+    {
+      txFunctionName = consts.ipfsFunctions.uploadFile
+      let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
+      let testFilePath = '.\\test\\testFiles\\'
+      let testFile = ipfs_data.uploadFile_1
+      let fileName = testFilePath + testFile.name
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
+      testCase.url = url
+      testCase.rawDatas = testFile
+      testCase.rawDownloadDatas = [testFile.raw_data]
+      testCase.executeFunction = executeForFullProcessForUploadFile
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  //region steps
+  //1.1 upload (data or file)
+  //1.2 download (data and file)
+  //2.1 upin (should fail)
+  //2.2 pin
+  //2.3 download (data and file)
+  //2.4 remove (should fail)
+  //2.5 download (data and file)
+  //3.1 unpin
+  //3.2 download (data and file)
+  //4.1 remove (should success)
+  //4.2 remove (should fail)
+  //endregion
+
+  function executeForFullProcessForUploadData(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+
+      //step1.1 upload
+      let check = await uploadDataBase(testCase, testCase.txParams, createExpecteResult(true))
+      check.title = 'Step1.1: upload data successfully'
+      testCase.actualResult.push(check.actualResult)
+
+      await executeForFullProcess(testCase)
+
+      resolve(testCase)
+    })
+  }
+
+  function executeForFullProcessForUploadDataInOneCase(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      count = count != null ? count : 1
+      let doneCount = 0;
+      for(let i = 0; i < count; i++){
+        //step1.1 upload
+        let check = await uploadDataBase(testCase, testCase.txParams, createExpecteResult(true))
+        check.title = 'Step1.1: upload data successfully'
+        testCase.actualResult.push(check.actualResult)
+        await executeForFullProcess(testCase)
+        doneCount++
+        if(doneCount == count){
+          resolve(testCase)
+        }
+      }
+    })
+  }
+
+  function executeForFullProcessForUploadFile(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+
+      //step1.1 upload
+      let check = await uploadFileBase(testCase, testCase.txParams, createExpecteResult(true))
+      check.title = 'Step1.1: upload file successfully'
+      testCase.actualResult.push(check.actualResult)
+
+      await executeForFullProcess(testCase)
+
+      resolve(testCase)
+    })
+  }
+
+  function executeForFullProcess(testCase){
+    return new Promise(async function(resolve){
+      let check
+
+      //prepare
+      let uploadCheck = testCase.checks[0]
+      let uploadResponse = uploadCheck.actualResult
+      let hashAarray = []
+      uploadResponse.result.forEach((result)=>{
+        hashAarray.push(result.ipfs_hash)
+      })
+      let rawDatas = testCase.rawDownloadDatas
+
+      //step1.2 download
+      await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step1.2')
+
+      //step2.1 unpin
+      check = await unpinDataBase(testCase, hashAarray, createExpecteResult(false, true, 'not pinned'))
+      check.title = 'Step2.1: unpin data failed before pin'
+      testCase.actualResult.push(check.actualResult)
+
+      //step2.2 pin
+      check = await pinDataBase(testCase, hashAarray, createExpecteResult(true))
+      check.title = 'Step2.2: pin data successfully'
+      testCase.actualResult.push(check.actualResult)
+
+      //step2.3 download
+      await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step2.3')
+
+      //step2.4 fail to remove
+      check = await removeDataBase(testCase, hashAarray, createExpecteResult(false, true, 'pinned: direct'))
+      check.title = 'Step2.4: fail to remove data'
+      testCase.actualResult.push(check.actualResult)
+
+      //step2.5 download
+      await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step2.5')
+
+      //step3.1 unpin
+      check = await unpinDataBase(testCase, hashAarray, createExpecteResult(true))
+      check.title = 'Step2.2: unpin data successfully'
+      testCase.actualResult.push(check.actualResult)
+
+      //step3.2 download
+      await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step3.2')
+
+      //step4.1 remove successfully
+      check = await removeDataBase(testCase, hashAarray, createExpecteResult(true))
+      check.title = 'Step4.1: remove data successfully'
+      testCase.actualResult.push(check.actualResult)
+
+      //step4.2 fail to remove
+      check = await removeDataBase(testCase, hashAarray, createExpecteResult(false, true, 'blockstore: block not found'))
+      check.title = 'Step4.2: fail to remove data'
+      testCase.actualResult.push(check.actualResult)
+
+      resolve(testCase)
+    })
+  }
+
+  function executeForDownloads(testCase, hashAarray, rawDatas, expectedResult, stepNumber){
+    return new Promise(async(resolve)=>{
+      let check
+
+      check = await downloadDataBase(testCase, hashAarray, rawDatas, expectedResult)
+      check.title = stepNumber + ': download data successfully after upload'
+      testCase.actualResult.push(check.actualResult)
+
+      let count = hashAarray.length
+      let doneCount = 0
+      for(let i = 0; i < count; i++){
+        check = await downloadFileBase(testCase, [hashAarray[i]], rawDatas[i], expectedResult)
+        check.title = stepNumber + ': download file successfully after upload for data[' + i + ']'
+        testCase.actualResult.push(check.actualResult)
+        doneCount++
+        if(doneCount == count){
+          resolve(testCase)
+        }
+      }
+    })
+  }
+
+  //endregion
+
+  //region pressure test
+  function pressureTestForUploadData(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+    let count = 60
+
+    let txt = (new Date()).toTimeString()
+    for(let i = 1; i <= count; i++){
+      let data = i.toString() + '. ' + txt
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, [data])
+      testCase.title = '0010\t测试UploadData: ' + i + '/' + count
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function pressureTestForUploadDataInOneCase(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+
+    let dataArray = [(new Date()).toTimeString()]
+    testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+    testCase.executeFunction = executeForpressureTestForUploadData
+    testCase.testCount = 100
+    testCase.title = '0020\t测试' + testCase.testCount + '个uploadData，在单个case内执行'
+    addTestCase(testCases, testCase)
+    return testCases
+  }
+
+  function pressureTestForFullProcess(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+    let count = 30
+
+    let txt = (new Date()).toTimeString()
+    for(let i = 1; i <= count; i++){
+      let dataArray = [i.toString() + '. ' + txt]
+      testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+      testCase.rawDatas = dataArray
+      testCase.rawDownloadDatas = dataArray
+      testCase.executeFunction = executeForFullProcessForUploadData
+      testCase.title = '0010\t测试FullProcess: ' + i + '/' + count
+      addTestCase(testCases, testCase)
+    }
+
+    return testCases
+  }
+
+  function pressureTestForFullProcessInOneCase(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+
+    let dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
+    testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+    testCase.rawDatas = dataArray
+    testCase.rawDownloadDatas = dataArray
+    testCase.executeFunction = executeForFullProcessForUploadDataInOneCase
+    testCase.testCount = 50
+    testCase.title = '0010\t测试' + testCase.testCount + '个FullProcess，在单个case内执行'
+    addTestCase(testCases, testCase)
+
+    return testCases
+  }
   //endregion
 
   //endregion
