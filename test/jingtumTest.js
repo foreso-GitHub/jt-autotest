@@ -61,7 +61,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      /*
+      // /*
       describe('用例测试', function () {
 
         testForIpfsTest(server, '测试ipfs')
@@ -103,7 +103,7 @@ describe('Jingtum测试', function() {
 
         // await utility.timeout(5000)
 
-        testForIpfsTest(server, '测试ipfs')
+        // testForIpfsTest(server, '测试ipfs')
 
       })
 
@@ -3536,10 +3536,16 @@ describe('Jingtum测试', function() {
       testTestCases(server, 'ipfs全流程测试', testCases)
 
       testCases = pressureTestForUploadData(server)
-      testTestCases(server, 'ipfs上传压力测试', testCases)
+      testTestCases(server, 'ipfs上传压力测试，多个case', testCases)
+
+      testCases = pressureTestForUploadDataInOneCase(server)
+      testTestCases(server, 'ipfs上传压力测试，单个case', testCases)
 
       testCases = pressureTestForFullProcess(server)
-      testTestCases(server, 'ipfs全流程压力测试', testCases)
+      testTestCases(server, 'ipfs全流程压力测试，多个case', testCases)
+
+      testCases = pressureTestForFullProcessInOneCase(server)
+      testTestCases(server, 'ipfs全流程压力测试，单个case', testCases)
     })
   }
 
@@ -3906,6 +3912,35 @@ describe('Jingtum测试', function() {
         testCase.actualResult.push(downloadCheck.actualResult)
       }
       resolve(testCase)
+    })
+  }
+
+  function executeForpressureTestForUploadData(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      count = count != null ? count : 1
+      let doneCount = 0;
+      for(let i = 0; i < count; i++){
+        let data = i.toString() + '. ' +  testCase.txParams[0]
+        let uploadCheck = await uploadDataBase(testCase, [data], testCase.expectedResult)
+        testCase.actualResult.push(uploadCheck.actualResult)
+        if(testCase.expectedResult.needPass){
+          let uploadResponse = uploadCheck.actualResult
+          let hashAarray = []
+          uploadResponse.result.forEach((result)=>{
+            hashAarray.push(result.ipfs_hash)
+          })
+          let rawDatas = [data]
+          let downloadCheck = await downloadDataBase(testCase, hashAarray, rawDatas, createExpecteResult(true))
+          testCase.actualResult.push(downloadCheck.actualResult)
+          doneCount++
+
+          if(doneCount == count){
+            resolve(testCase)
+          }
+        }
+      }
     })
   }
 
@@ -4713,6 +4748,26 @@ describe('Jingtum测试', function() {
     })
   }
 
+  function executeForFullProcessForUploadDataInOneCase(testCase){
+    return new Promise(async function(resolve){
+      testCase.hasExecuted = true
+      let count = testCase.testCount
+      count = count != null ? count : 1
+      let doneCount = 0;
+      for(let i = 0; i < count; i++){
+        //step1.1 upload
+        let check = await uploadDataBase(testCase, testCase.txParams, createExpecteResult(true))
+        check.title = 'Step1.1: upload data successfully'
+        testCase.actualResult.push(check.actualResult)
+        await executeForFullProcess(testCase)
+        doneCount++
+        if(doneCount == count){
+          resolve(testCase)
+        }
+      }
+    })
+  }
+
   function executeForFullProcessForUploadFile(testCase){
     return new Promise(async function(resolve){
       testCase.hasExecuted = true
@@ -4820,13 +4875,28 @@ describe('Jingtum测试', function() {
     let count = 60
 
     let txt = (new Date()).toTimeString()
-    for(let i = 0; i < count; i++){
+    for(let i = 1; i <= count; i++){
       let data = i.toString() + '. ' + txt
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, [data])
-      testCase.title = '0010\t测试UploadData: ' + (i + 1) + '/' + count
+      testCase.title = '0010\t测试UploadData: ' + i + '/' + count
       addTestCase(testCases, testCase)
     }
 
+    return testCases
+  }
+
+  function pressureTestForUploadDataInOneCase(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+
+    let dataArray = [(new Date()).toTimeString()]
+    testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+    testCase.executeFunction = executeForpressureTestForUploadData
+    testCase.testCount = 100
+    testCase.title = '0020\t测试' + testCase.testCount + '个uploadData，在单个case内执行'
+    addTestCase(testCases, testCase)
     return testCases
   }
 
@@ -4837,15 +4907,34 @@ describe('Jingtum测试', function() {
     let txFunctionName = consts.ipfsFunctions.uploadData
     let count = 30
 
-    let dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
-    for(let i = 0; i < count; i++){
+    let txt = (new Date()).toTimeString()
+    for(let i = 1; i <= count; i++){
+      let dataArray = [i.toString() + '. ' + txt]
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
       testCase.rawDatas = dataArray
       testCase.rawDownloadDatas = dataArray
       testCase.executeFunction = executeForFullProcessForUploadData
-      testCase.title = '0010\t测试FullProcess: ' + (i + 1) + '/' + count
+      testCase.title = '0010\t测试FullProcess: ' + i + '/' + count
       addTestCase(testCases, testCase)
     }
+
+    return testCases
+  }
+
+  function pressureTestForFullProcessInOneCase(server){
+    let testCases = []
+    let testCase = {}
+    let title = ''
+    let txFunctionName = consts.ipfsFunctions.uploadData
+
+    let dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
+    testCase = createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
+    testCase.rawDatas = dataArray
+    testCase.rawDownloadDatas = dataArray
+    testCase.executeFunction = executeForFullProcessForUploadDataInOneCase
+    testCase.testCount = 50
+    testCase.title = '0010\t测试' + testCase.testCount + '个FullProcess，在单个case内执行'
+    addTestCase(testCases, testCase)
 
     return testCases
   }
