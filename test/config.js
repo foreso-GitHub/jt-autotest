@@ -12,11 +12,12 @@ const { chains, addresses, data, token, txs, blocks } = require("./testData")
 // jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz
 // ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C
 
-let rpc_7545 = new rpc()
+let rpc_59 = new rpc()
+let rpc_254 = new rpc()
 let rpc_9545 = new rpc()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
-let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
+let servers = [rpc_59, rpc_254, rpc_9545, lib_main, lib_test]
 
 let mode_rpc_newChain = {
     server: rpc_9545,
@@ -41,8 +42,30 @@ let mode_rpc_newChain = {
     txCountInBlock: 20,
 }
 
-let mode_rpc_ipfs = {
-    server: rpc_7545,
+let mode_rpc_ipfs_59 = {
+    server: rpc_59,
+    // initParams: {url:'http://139.198.191.254:7545/v1/jsonrpc'},
+    initParams: {url:'http://139.198.177.59:7545/v1/jsonrpc'},
+    service: serviceType.ipfs,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L2,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultFee: "10",
+    txs:{
+        tx1: data.chain.tx,
+        tx_memo: data.chain.tx_memo,
+        tx_token: data.chain.tx_token,
+        tx_issue_token: data.chain.tx_issue_token
+    },
+    blockNumber: '107600',
+    blockHash: '06DA6A9900FDBBCA1CBE8E9A2146ED8D664FE49102CCE5FAB3554AF0E72F6E38',
+}
+
+let mode_rpc_ipfs_254 = {
+    server: rpc_254,
     initParams: {url:'http://139.198.191.254:7545/v1/jsonrpc'},
     // initParams: {url:'http://139.198.177.59:7545/v1/jsonrpc'},
     service: serviceType.ipfs,
@@ -110,8 +133,9 @@ let mode_lib_testnet = {
 }
 
 let modes = [
-    // mode_rpc_newChain,
-    mode_rpc_ipfs,
+    mode_rpc_newChain,
+    mode_rpc_ipfs_59,
+    mode_rpc_ipfs_254,
     mode_lib_mainnet,
     mode_lib_testnet,
 ]
