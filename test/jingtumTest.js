@@ -105,6 +105,12 @@ describe('Jingtum测试', function() {
 
         // testForIpfsTest(server, '测试ipfs')
 
+        // testForGetBlockNumber(server, '测试jt_blockNumber')
+
+        // testForGetAccount(server, '测试jt_getAccount')
+
+        // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
       })
 
     })
@@ -330,7 +336,7 @@ describe('Jingtum测试', function() {
         if(data.sequence == null){
           data.sequence = isNaN(sequence) ? 1 : sequence
         }
-        server.getBalance(data.from, data.symbol).then(function(balanceBeforeExecution){
+        server.getBalance(server, data.from, data.symbol).then(function(balanceBeforeExecution){
           testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
           logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
           executeTxByTestCase(testCase).then(function(response){
@@ -424,7 +430,7 @@ describe('Jingtum测试', function() {
 
   function executeTxByTestCase(testCase){
     logger.debug(testCase.title)
-    return testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+    return testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
   }
 
   //region execute the function which will NOT write block like jt_signTransaction
@@ -551,7 +557,7 @@ describe('Jingtum测试', function() {
   async function checkTestCaseOfMintOrBurn(testCase){
     await checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
       let params = txParams[0]
-      await testCase.server.getBalance(params.from, params.symbol).then(function(balanceAfterExecution){
+      await testCase.server.getBalance(testCase.server, params.from, params.symbol).then(function(balanceAfterExecution){
         testCase.balanceAfterExecution = balanceAfterExecution
         oldBalance = getBalanceValue(testCase.balanceBeforeExecution)
         newBalance = getBalanceValue(testCase.balanceAfterExecution)
@@ -633,7 +639,7 @@ describe('Jingtum测试', function() {
   }
 
   function getTxByHash(server, hash, retryCount){
-    return server.responseGetTxByHash(hash)
+    return server.responseGetTxByHash(server, hash)
         .then(async function (value) {
           //retry
           if(retryCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
@@ -1038,8 +1044,8 @@ describe('Jingtum测试', function() {
           let from = data.from
 
           //record balance before transfer
-          let from_balance_1 = await server.getBalance(data.from, data.symbol)
-          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+          let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
 
           //get sequence
           let currentSequence = await getSequence(server, from)
@@ -1064,7 +1070,7 @@ describe('Jingtum测试', function() {
           }
 
           //record balance after transfer
-          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
           let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
           addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
           // logger.debug('===from_balance_1: ' + from_balance_1)
@@ -1072,7 +1078,7 @@ describe('Jingtum测试', function() {
           // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
           // logger.debug('===check_2: ' + JSON.stringify(check_2))
 
-          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
           let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
           addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
 
@@ -1095,8 +1101,8 @@ describe('Jingtum测试', function() {
           let from = data.from
 
           //record balance before transfer
-          let from_balance_1 = await server.getBalance(data.from, data.symbol)
-          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+          let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
 
           //get sequence
           let currentSequence = await getSequence(server, from)
@@ -1111,10 +1117,10 @@ describe('Jingtum测试', function() {
           await utility.timeout(server.mode.defaultBlockTime + 2000)
 
           //balance should not change
-          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
           let from_balance_expected = Number(from_balance_1)
           addBalanceCheck(testCase, 'from address balance, no change', from_balance_expected, from_balance_2)
-          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
           let to_balance_expected = Number(to_balance_1)
           addBalanceCheck(testCase, 'to address balance, no change', to_balance_expected, to_balance_2)
 
@@ -1136,10 +1142,10 @@ describe('Jingtum测试', function() {
           }
 
           // balance should change now
-          from_balance_2 = await server.getBalance(data.from, data.symbol)
+          from_balance_2 = await server.getBalance(server, data.from, data.symbol)
           from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 3
           addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-          to_balance_2 = await server.getBalance(data.to, data.symbol)
+          to_balance_2 = await server.getBalance(server, data.to, data.symbol)
           to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 3
           addBalanceCheck(testCase, 'to address balance, need change', to_balance_expected, to_balance_2)
 
@@ -1230,8 +1236,8 @@ describe('Jingtum测试', function() {
           let from = data.from
 
           //record balance before transfer
-          let from_balance_1 = await server.getBalance(data.from, data.symbol)
-          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+          let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
 
           //transfer
           let currentSequence = await getSequence(server, from)
@@ -1260,12 +1266,12 @@ describe('Jingtum测试', function() {
           }
 
           //record balance after transfer
-          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
           let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 5
           addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
 
 
-          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
           let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 5
           addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
 
@@ -1291,8 +1297,8 @@ describe('Jingtum测试', function() {
           let check = {}
 
           //record balance before transfer
-          let from_balance_1 = await server.getBalance(data.from, data.symbol)
-          let to_balance_1 = await server.getBalance(data.to, data.symbol)
+          let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
+          let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
 
           //transfer n+2 tx
           let currentSequence = await getSequence(server, from)
@@ -1311,10 +1317,10 @@ describe('Jingtum测试', function() {
           await utility.timeout(server.mode.defaultBlockTime + 2000)
 
           //balance should not change
-          let from_balance_2 = await server.getBalance(data.from, data.symbol)
+          let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
           let from_balance_expected = Number(from_balance_1)
           addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
-          let to_balance_2 = await server.getBalance(data.to, data.symbol)
+          let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
           let to_balance_expected = Number(to_balance_1)
           addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
 
@@ -1341,10 +1347,10 @@ describe('Jingtum测试', function() {
           }
 
           // balance should change now
-          from_balance_2 = await server.getBalance(data.from, data.symbol)
+          from_balance_2 = await server.getBalance(server, data.from, data.symbol)
           from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 9
           addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-          to_balance_2 = await server.getBalance(data.to, data.symbol)
+          to_balance_2 = await server.getBalance(server, data.to, data.symbol)
           to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 9
           addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
 
@@ -1375,8 +1381,8 @@ describe('Jingtum测试', function() {
       setSequenceFunction(data, currentSequence)
 
       //record balance before transfer
-      let from_balance_1 = await server.getBalance(data.from, data.symbol)
-      let to_balance_1 = await server.getBalance(data.to, data.symbol)
+      let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
+      let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
 
       //transfer
       await executeTransfer(testCase, sendTxExpectedResult, signTxExpectedResult)
@@ -1386,10 +1392,10 @@ describe('Jingtum测试', function() {
       await utility.timeout(server.mode.defaultBlockTime + 2000)
 
       //record balance after transfer
-      let from_balance_2 = await server.getBalance(data.from, data.symbol)
+      let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
       let from_balance_expected = Number(from_balance_1)
       addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
-      let to_balance_2 = await server.getBalance(data.to, data.symbol)
+      let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
       let to_balance_expected = Number(to_balance_1)
       addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
 
@@ -1401,11 +1407,11 @@ describe('Jingtum测试', function() {
     return new Promise(async(resolve)=>{
       let result
       if(testCase.txFunctionName == consts.rpcFunctions.sendTx){
-        result = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        result = await testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
         addSequenceAfterResponseSuccess(result, testCase)
       }
       else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
-        let responseOfSignTx = await testCase.server.getResponse(testCase.txFunctionName, testCase.txParams)
+        let responseOfSignTx = await testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
         let blob = responseOfSignTx.result[0]
         //sign tx, need record signed tx
         let check_0 = {
@@ -1416,7 +1422,7 @@ describe('Jingtum测试', function() {
         }
         testCase.checks.push(check_0)
         //sign tx, need sendRawTx
-        result = await testCase.server.getResponse(consts.rpcFunctions.sendRawTx, [blob])
+        result = await testCase.server.getResponse(testCase.server, consts.rpcFunctions.sendRawTx, [blob])
         addSequenceAfterResponseSuccess(result, testCase)
       }
       else{
@@ -1572,8 +1578,8 @@ describe('Jingtum测试', function() {
         let fee = server.mode.defaultFee
 
         //record balance before transfer
-        let from_balance_1 = await server.getBalance(data.from, data.symbol)
-        let to_balance_1 = await server.getBalance(data.to, data.symbol)
+        let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
+        let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
 
         //get sequence
         let currentSequence = await getSequence(server, from)
@@ -1601,7 +1607,7 @@ describe('Jingtum测试', function() {
         }
 
         //record balance after transfer
-        let from_balance_2 = await server.getBalance(data.from, data.symbol)
+        let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
         let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * count
         addBalanceCheck(testCase, 'from address balance check', from_balance_expected, from_balance_2)
         // logger.debug('===from_balance_1: ' + from_balance_1)
@@ -1609,7 +1615,7 @@ describe('Jingtum测试', function() {
         // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
         // logger.debug('===check_2: ' + JSON.stringify(check_2))
 
-        let to_balance_2 = await server.getBalance(data.to, data.symbol)
+        let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
         let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * count
         addBalanceCheck(testCase, 'to address balance check', to_balance_expected, to_balance_2)
 
@@ -3003,7 +3009,7 @@ describe('Jingtum测试', function() {
         null,
         function(testCase){
           testCase.hasExecuted = true
-          return server.responseGetTxCountByHash(hash).then(async(countResponse)=> {
+          return server.responseGetTxCountByHash(server, hash).then(async(countResponse)=> {
             // testCase.hasExecuted = true
             testCase.actualResult.push(countResponse)
           })
@@ -3014,7 +3020,7 @@ describe('Jingtum测试', function() {
           let txCount = Number(countResponse.result)
           let finishCount = 0
           for(let i = 0; i < txCount; i++){
-            await Promise.resolve(server.responseGetTxByBlockHashAndIndex(hash, i.toString())).then(function (response) {
+            await Promise.resolve(server.responseGetTxByBlockHashAndIndex(server, hash, i.toString())).then(function (response) {
               checkResponse(true, response)
               finishCount++
             })
@@ -3044,7 +3050,7 @@ describe('Jingtum测试', function() {
         null,
         function(testCase){  //execute function
           testCase.hasExecuted = true
-          return server.responseGetTxCountByBlockNumber(number).then(async(countResponse)=> {
+          return server.responseGetTxCountByBlockNumber(server, number).then(async(countResponse)=> {
             // testCase.hasExecuted = true
             testCase.actualResult.push(countResponse)
           })
@@ -3055,7 +3061,7 @@ describe('Jingtum测试', function() {
           let txCount = Number(countResponse.result)
           let finishCount = 0
           for(let i = 0; i < txCount; i++){
-            await Promise.resolve(server.responseGetTxCountByBlockNumber(number, i.toString())).then(function (response) {
+            await Promise.resolve(server.responseGetTxCountByBlockNumber(server, number, i.toString())).then(function (response) {
               checkResponse(true, response)
               finishCount++
             })
@@ -3076,12 +3082,12 @@ describe('Jingtum测试', function() {
   }
 
   async function goThroughTxsInBlockByBlockNumber(server, blockNumber){
-    await server.responseGetTxCountByBlockNumber(blockNumber).then(async(countResponse)=>{
+    await server.responseGetTxCountByBlockNumber(server, blockNumber).then(async(countResponse)=>{
       checkResponse(true, countResponse)
       let txCount = Number(countResponse.result)
       let finishCount = 0
       for(let i = 0; i < txCount; i++){
-        await Promise.resolve(server.responseGetTxByBlockNumberAndIndex(blockNumber.toString(), i.toString())).then(function (response) {
+        await Promise.resolve(server.responseGetTxByBlockNumberAndIndex(server, blockNumber.toString(), i.toString())).then(function (response) {
           checkResponse(true, response)
           finishCount++
           if(finishCount == txCount){
@@ -3094,12 +3100,12 @@ describe('Jingtum测试', function() {
   }
 
   async function goThroughTxsInBlockByHash(server, blockHash){
-    await server.responseGetTxCountByHash(blockHash).then(async(countResponse)=>{
+    await server.responseGetTxCountByHash(server, blockHash).then(async(countResponse)=>{
       checkResponse(true, countResponse)
       let txCount = Number(countResponse.result)
       let finishCount = 0
       for(let i = 0; i < txCount; i++){
-        await Promise.resolve(server.responseGetTxByBlockHashAndIndex(blockHash, i.toString())).then(function (response) {
+        await Promise.resolve(server.responseGetTxByBlockHashAndIndex(server, blockHash, i.toString())).then(function (response) {
           checkResponse(true, response)
           finishCount++
         })
@@ -3590,7 +3596,7 @@ describe('Jingtum测试', function() {
 
   function operateData(testCase, functionName, params, rawDatas, expectedResult, checkFunction){
     return new Promise(async function(resolve){
-      let response = await testCase.server.getResponse(functionName, params)
+      let response = await testCase.server.getResponse(testCase.server, functionName, params)
       let check = {
         title: 'ipfs ' + functionName + ' data result',
         params: params,
@@ -4948,10 +4954,10 @@ describe('Jingtum测试', function() {
     return new Promise(async (resolve, reject) => {
       if(!server) reject("Server cannot be null!")
       let result = {}
-      result.blockNumber1 = await server.getBlockNumber()
+      result.blockNumber1 = await server.getBlockNumber(server)
       //logger.debug("defaultBlockTime: " + server.mode.defaultBlockTime)
       await utility.timeout(server.mode.defaultBlockTime)
-      result.blockNumber2 = await server.getBlockNumber()
+      result.blockNumber2 = await server.getBlockNumber(server)
       resolve(result)
     })
   }
@@ -4964,12 +4970,12 @@ describe('Jingtum测试', function() {
   //token example:
   async function checkBalanceChange(server, from, symbol, expectedBalance){
     if(symbol){ //token
-      let balance = await server.getBalance(from, symbol)
+      let balance = await server.getBalance(server, from, symbol)
       expect(Number(balance.value)).to.be.equal(Number(expectedBalance))
       return balance
     }
     else{ //swt
-      let balance = await server.getBalance(from)
+      let balance = await server.getBalance(server, from)
       expect(Number(balance)).to.be.equal(Number(expectedBalance))
       return balance
     }
@@ -5059,7 +5065,7 @@ describe('Jingtum测试', function() {
         resolve(_SequenceMap.get(key))
       }
       else{
-        Promise.resolve(server.responseGetAccount(from)).then(function (accountInfo) {
+        Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
           // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
           let sequence = Number(accountInfo.result.Sequence)
           setSequence(server.getName(), from, sequence)
