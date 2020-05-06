@@ -2,7 +2,7 @@
 let rpc = require('../lib/rpc/rpcInterface.js')
 let swtclib = require('../lib/swtclib/swtclibInterface.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
-const { chains, addresses, data, token, txs, blocks } = require("./testData")
+const { data, token, txs, blocks } = require("./testData/testData")
 //endregion
 
 //const RPC_URL_7545 = 'http://139.198.191.254:7545/v1/jsonrpc'
@@ -39,6 +39,9 @@ let mode_rpc_newChain = {
     blockNumber: '107621',
     blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
     txCountInBlock: 20,
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+    accountsJsonPath: './test/testData/accounts_rpc_9545.json',
+    accountsJsPath: './test/testData/accounts.js'
 }
 
 let mode_rpc_ipfs = {
@@ -61,6 +64,7 @@ let mode_rpc_ipfs = {
     },
     blockNumber: '107600',
     blockHash: '06DA6A9900FDBBCA1CBE8E9A2146ED8D664FE49102CCE5FAB3554AF0E72F6E38',
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
 }
 
 let mode_lib_mainnet = {
@@ -111,6 +115,13 @@ let mode_lib_testnet = {
 
 let modes = [
     mode_rpc_newChain,
+    // mode_rpc_ipfs,
+    // mode_lib_mainnet,
+    // mode_lib_testnet,
+]
+
+let allModes = [
+    mode_rpc_newChain,
     mode_rpc_ipfs,
     mode_lib_mainnet,
     mode_lib_testnet,
@@ -120,4 +131,5 @@ let modes = [
 module.exports = {
     servers,
     modes,
+    allModes,
 }
