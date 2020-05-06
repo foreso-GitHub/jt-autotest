@@ -2,8 +2,8 @@
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-const { modes } = require("./config")
-const { addresses, accounts } = require("./testData")
+const { modes } = require("../config")
+const { addresses, accounts } = require("../testData/testData")
 const utility = require("./testUtility.js")
 //endregion
 
