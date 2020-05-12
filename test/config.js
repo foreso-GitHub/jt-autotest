@@ -14,6 +14,7 @@ const { data, token, txs, blocks } = require("./testData/testData")
 
 let rpc_7545 = new rpc()
 let rpc_9545 = new rpc()
+let rpc_box01 = new rpc()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
@@ -21,6 +22,32 @@ let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
 let mode_rpc_newChain = {
     server: rpc_9545,
     initParams: {url:'http://139.198.177.59:9545/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    txs:{
+        tx1: data.chain.tx,
+        tx_memo: data.chain.tx_memo,
+        tx_token: data.chain.tx_token,
+        tx_issue_token: data.chain.tx_issue_token
+    },
+    blockNumber: '107621',
+    blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
+    txCountInBlock: 20,
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+    accountsJsonPath: './test/testData/accounts_rpc_9545.json',
+    accountsJsPath: './test/testData/accounts.js'
+}
+
+let mode_rpc_box01 = {
+    server: rpc_box01,
+    initParams: {url:'http://box-admin.elerp.net:10201/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
@@ -114,21 +141,27 @@ let mode_lib_testnet = {
 }
 
 let modes = [
-    mode_rpc_newChain,
-    // mode_rpc_ipfs,
+    // mode_rpc_newChain,
+    // mode_rpc_box01,
+    mode_rpc_ipfs,
     // mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 
 let allModes = [
     mode_rpc_newChain,
+    mode_rpc_box01,
     mode_rpc_ipfs,
     mode_lib_mainnet,
     mode_lib_testnet,
 ]
 
+let configCommons = {
+    ipfs_test_files_path: ".\\test\\testData\\testFiles\\",
+}
 
 module.exports = {
+    configCommons,
     servers,
     modes,
     allModes,

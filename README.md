@@ -1,5 +1,5 @@
 # autotest-demo
-The demo of auto test of jingtum new chain.
+Auto test of jingtum new chain.
 
 要求
 1. 要兼顾rpc，restful api和websocket3种链接方式，但只写一套测试script。链接方式可扩展。
@@ -14,4 +14,8 @@ The demo of auto test of jingtum new chain.
 CI：Travis
 代码规整工具：Prettier，ESLint
 
+项目地址：
+https://github.com/foreso-GitHub/jt-autotest
 
+执行命令：
+mocha -R mochawesome

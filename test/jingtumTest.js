@@ -11,7 +11,7 @@ const schema = require("./schema.js")
 const consts = require('../lib/base/consts')
 const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
 const { addresses } = require("./testData/addresses")
-const { servers, modes, } = require("./config")
+const { configCommons, modes, } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
 const testModeEnums = testMode
@@ -225,8 +225,7 @@ describe('Jingtum测试', function() {
   function createExpecteResult(needPass, isErrorInResult, expectedError){
     let expectedResult = {}
     expectedResult.needPass = needPass
-    // expectedResult.isErrorInResult = isErrorInResult
-    expectedResult.isErrorInResult = true
+    expectedResult.isErrorInResult = isErrorInResult != null ? isErrorInResult : true;
     expectedResult.expectedError = expectedError
     return expectedResult
   }
@@ -1983,7 +1982,7 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "9"
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -1993,7 +1992,7 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "0"
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -2003,7 +2002,7 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "12.5"
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'tecINSUFF_FEE Insufficient balance to pay fee')
       })
       addTestCase(testCases, testCase)
@@ -2013,7 +2012,7 @@ describe('Jingtum测试', function() {
     {
       let testCase = createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
         testCaseParams.txParams[0].fee = "999999999999999"
-        testCaseParams.expectedResult = createExpecteResult(false, false,
+        testCaseParams.expectedResult = createExpecteResult(false, true,
             'telINSUF_FEE_P Fee insufficient')
       })
       addTestCase(testCases, testCase)
@@ -4559,7 +4558,7 @@ describe('Jingtum测试', function() {
     let title = ''
     let txFunctionName = consts.ipfsFunctions.uploadFile
     let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
-    let testFilePath = '.\\test\\testFiles\\'
+    let testFilePath = configCommons.ipfs_test_files_path
 
     title = '0010\t上传存在的文件：通过API接口上传文件，指定的文件存在'
     {
@@ -4637,7 +4636,7 @@ describe('Jingtum测试', function() {
     {
       let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
       addTestCase(testCases, testCase)
     }
 
@@ -4645,7 +4644,7 @@ describe('Jingtum测试', function() {
     {
       let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
       addTestCase(testCases, testCase)
     }
 
@@ -4653,7 +4652,7 @@ describe('Jingtum测试', function() {
     {
       let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-      testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+      testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
       // addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
     }
 
@@ -4682,7 +4681,7 @@ describe('Jingtum测试', function() {
     }
     else{
       let expectedResult = check.expectedResult
-      expect(response.result).to.contains(expectedResult.expectedError)
+      expect(expectedResult.isErrorInResult ? response.result : response.message).to.contains(expectedResult.expectedError)
     }
   }
 
@@ -4712,7 +4711,8 @@ describe('Jingtum测试', function() {
     {
       txFunctionName = consts.ipfsFunctions.uploadFile
       let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
-      let testFilePath = '.\\test\\testFiles\\'
+      // let testFilePath = '.\\test\\testData\\testFiles\\'
+      let testFilePath = configCommons.ipfs_test_files_path
       let testFile = ipfs_data.uploadFile_1
       let fileName = testFilePath + testFile.name
       testCase = createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
