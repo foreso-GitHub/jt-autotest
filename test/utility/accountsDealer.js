@@ -6,8 +6,13 @@ const fs = require('fs');
 // const utility = require("./testUtility.js")
 const { allModes } = require("../config")
 const consts = require("../../lib/base/consts.js")
+const Charger = require('./charger')
 //endregion
 
+const ACCOUNT_COUNT = 15
+const ACCOUNT_MIN_BALANCE = 50*1000000
+const ACCOUNT_CHARGE_AMOUNT = 100
+let charger = new Charger()
 let root = {}
 let jsonPath = ''
 let server
@@ -185,6 +190,17 @@ function accountsDealer() {
         }
 
         return addresses
+    }
+
+    accountsDealer.prototype.initAndChargeAccounts = async function(mode){
+        let accounts = await this.loadAccounts(mode.accountsJsonPath)
+        if (accounts.length < ACCOUNT_COUNT) {
+            await this.create(mode)
+            accounts = await this.loadAccounts(mode.accountsJsonPath)
+        }
+        let server = mode.server
+        server.init(mode)
+        charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
     }
 
 }

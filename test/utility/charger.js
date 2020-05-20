@@ -22,14 +22,30 @@ const utility = require("./testUtility.js")
 
 function charger() {
 
-    charger.prototype.chargeForNewChain = async function(server, accounts, value){
-        let root = accounts[0].address
-        let rootSecret = accounts[0].secret
+    charger.prototype.chargeAccounts = async function(server, sender, accounts, value){
+        let root = sender.address
+        let rootSecret = sender.secret
         await server.responseGetAccount(server, root).then(async function(response){
             let sequence = response.result.Sequence
             for(let account of accounts){
-                await charge(server, root, rootSecret, account.address, value, sequence++, 0)
+                await charge(server, root, rootSecret, account.address, value.toString(), sequence++, 0)
                     .then(function(result){logger.debug(JSON.stringify(result))})
+            }
+        })
+    }
+
+    charger.prototype.chargeBasedOnBalance = function(server, sender, accounts, checkBalance, chargeAmount){
+        let accountsNeedBeCharged = []
+        let totalCount = accounts.length
+        let count = 0
+        accounts.forEach(async (account) => {
+            let balance = await server.getBalance(server, account.address)
+            if(balance == null || balance < checkBalance){
+                accountsNeedBeCharged.push(account)
+            }
+            count++
+            if(count == totalCount){
+                this.chargeAccounts(server, sender, accountsNeedBeCharged, chargeAmount)
             }
         })
     }
