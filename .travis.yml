@@ -13,9 +13,11 @@ script:
   - mocha ./test/jingtumTest.js
 
 after_script:
+
 branches:
   only:
     - master
+    - Dev
 
 notifications:
   email: foreso@sina.com
