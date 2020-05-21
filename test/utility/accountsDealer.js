@@ -281,7 +281,10 @@ function accountsDealer() {
     }
 
     function saveAccountJsFile(modeAccounts, filePath){
-        return new Promise((resolve, reject) =>{
+        return new Promise(async (resolve, reject) =>{
+            let destFilePath = configCommons.test_data_backup_path
+                + 'accounts_backup_' + (new Date()).toDateString() + '_' + (new Date()).getTime() + '.js'
+            await copyFile(filePath, destFilePath)  //backup
             let fileString = 'let modeAccounts = ' + JSON.stringify(modeAccounts) + '\r\nmodule.exports = { modeAccounts }'
             fs.writeFile(filePath, fileString, function (err) {
                 if (err) {
@@ -290,6 +293,21 @@ function accountsDealer() {
                 } else {
                     logger.debug('Accounts js saved: ' + filePath)
                     resolve(modeAccounts)
+                }
+            })
+        })
+    }
+
+    function copyFile(srcFilePath, destFilePath){
+        return new Promise((resolve, reject) =>{
+            fs.copyFile(srcFilePath, destFilePath,function(err){
+                if(err) {
+                    console.log('Copy file error: ' + err)
+                    reject(err)
+                }
+                else {
+                    console.log('Copy file succeed! From [' + srcFilePath + '] to [' + destFilePath + ']!')
+                    resolve(destFilePath)
                 }
             })
         })
