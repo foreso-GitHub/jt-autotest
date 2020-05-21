@@ -4,9 +4,10 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const fs = require('fs');
 // const utility = require("./testUtility.js")
-const { allModes } = require("../config")
+const { modes, allModes, configCommons } = require("../config")
 const consts = require("../../lib/base/consts.js")
 const Charger = require('./charger')
+let { modeAccounts } = require("../testData/accounts")
 //endregion
 
 const ACCOUNT_COUNT = 15
@@ -18,6 +19,8 @@ let jsonPath = ''
 let server
 
 function accountsDealer() {
+
+    //region create accounts
 
     function init(mode) {
         root = mode.root
@@ -32,7 +35,7 @@ function accountsDealer() {
 
     accountsDealer.prototype.create = async function(mode) {
         init(mode)
-        let accounts = await createAccounts(15)
+        let accounts = await createAccounts(mode.server, 15)
         let accountsJsonString = JSON.stringify(accounts)
         fs.writeFileSync(mode.accountsJsonPath, accountsJsonString);
         let jsString = 'let accounts = ' + accountsJsonString + '\r\nmodule.exports = { accounts }'
@@ -41,12 +44,11 @@ function accountsDealer() {
         return accounts
     }
 
-    // accountsDealer.prototype.createAccounts = async function(count) {
-    async function createAccounts(count){
+    async function createAccounts(server, count){
         let accounts = []
         accounts.push(root)
         for (let i = 1; i < count; i++) {
-            let result = await createWallet()
+            let result = await createWallet(server)
             if (result.success) {
                 accounts.push(result.account)
                 // logger.debug(JSON.stringify((result)))
@@ -84,9 +86,9 @@ function accountsDealer() {
         })
     }
 
-    function createWallet() {
+    function createWallet(server) {
         return new Promise((resolve, reject) => {
-            server.getResponse(consts.rpcFunctions.createWallet, []).then(async function (result) {
+            server.getResponse(server, consts.rpcFunctions.createWallet, []).then(async function (result) {
                 resolve({account: {address: result.result[0].address, secret: result.result[0].secret}, success: true})
             }).catch(function (error) {
                 reject({message: error, success: false})
@@ -94,6 +96,10 @@ function accountsDealer() {
         })
     }
 
+    //endregion
+
+    //region convert accounts to addresses
+    //output addresses based on accounts.  addresses is the real account data used in test.
     accountsDealer.prototype.getAddresses = function(accounts){
 
         //inactive account, do not send swt in them!
@@ -192,6 +198,15 @@ function accountsDealer() {
         return addresses
     }
 
+    accountsDealer.prototype.getAddressesByMode = function(modeAccounts, mode){
+        let accounts = findModeAccounts(modeAccounts, mode.name)
+        return this.getAddresses(accounts)
+    }
+
+    //endregion
+
+    //region init
+    //init accounts, and send swtc in them.
     accountsDealer.prototype.initAndChargeAccounts = async function(mode){
         let accounts = await this.loadAccounts(mode.accountsJsonPath)
         if (accounts.length < ACCOUNT_COUNT) {
@@ -202,6 +217,100 @@ function accountsDealer() {
         server.init(mode)
         charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
     }
+
+    accountsDealer.prototype.initAccounts = async function(modes){
+        return new Promise((resolve, reject) =>{
+            if(!modeAccounts){
+                modeAccounts = []
+            }
+            let needSaveAccountsJsFile = false
+            let needCreateMode = []
+            let checkedCount = 0
+            modes.forEach(async mode=>{
+                let accounts = findModeAccounts(modeAccounts, mode.name)
+                if (accounts == null){
+                    needCreateMode.push(mode)
+                    needSaveAccountsJsFile = true
+                }
+                checkedCount++
+                if(checkedCount == modes.length){
+                    if(needCreateMode.length==0){
+                        resolve(modeAccounts)
+                    }
+                    let createCount = 0
+                    for(let i=0;i<needCreateMode.length;i++) {
+                        let createMode = needCreateMode[i]
+                        await createNewAccounts(modeAccounts, createMode)
+                        createCount++
+                        if(createCount == needCreateMode.length) {
+                            if(needSaveAccountsJsFile){
+                                await saveAccountJsFile(modeAccounts, configCommons.accounts_js_file_path)
+                                resolve(modeAccounts)
+                            }
+                        }
+                    }
+                }
+            })
+        })
+    }
+
+    async function createNewAccounts(modeAccounts, createMode){
+        init(createMode)
+        let accounts = await createAccounts(createMode.server, 15)
+        let newModeAccount = {}
+        newModeAccount.modeName = createMode.name
+        newModeAccount.accounts = accounts
+        modeAccounts.push(newModeAccount)
+        return newModeAccount
+    }
+
+    function findModeAccounts(modeAccounts, modeName){
+        let accounts = null
+        let totalCount = modeAccounts.length
+        let count = 0
+        for(i=0;i<totalCount;i++){
+            modeAccount=modeAccounts[i]
+            if(modeAccount.modeName == modeName){
+                accounts = modeAccount.accounts
+            }
+            count++
+            if(totalCount == count){
+                return accounts
+            }
+        }
+    }
+
+    function saveAccountJsFile(modeAccounts, filePath){
+        return new Promise((resolve, reject) =>{
+            let fileString = 'let modeAccounts = ' + JSON.stringify(modeAccounts) + '\r\nmodule.exports = { modeAccounts }'
+            fs.writeFile(filePath, fileString, function (err) {
+                if (err) {
+                    logger.debug(err)
+                    reject(err)
+                } else {
+                    logger.debug('Accounts js saved: ' + filePath)
+                    resolve(modeAccounts)
+                }
+            })
+        })
+    }
+
+    accountsDealer.prototype.chargeAccounts = async function(modes){
+        for(let i=0;i<modes.length;i++) {
+            let mode = modes[i]
+            let server = mode.server
+            server.init(mode)
+            let accounts = findModeAccounts(modeAccounts, mode.name)
+            await charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
+        }
+
+    }
+
+    accountsDealer.prototype.startInit = async function(){
+        await this.initAccounts(allModes)
+        this.chargeAccounts(allModes)
+    }
+    //endregion
 
 }
 

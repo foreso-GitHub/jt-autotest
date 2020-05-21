@@ -20,6 +20,7 @@ let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
 
 let mode_rpc_newChain = {
+    name: "rpc_9545",
     server: rpc_9545,
     initParams: {url:'http://139.198.177.59:9545/v1/jsonrpc'},
     service: serviceType.newChain,
@@ -46,6 +47,34 @@ let mode_rpc_newChain = {
 }
 
 let mode_rpc_box01 = {
+    name: "rpc_box01",
+    server: rpc_box01,
+    initParams: {url:'http://box-admin.elerp.net:10201/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    txs:{
+        tx1: data.chain.tx,
+        tx_memo: data.chain.tx_memo,
+        tx_token: data.chain.tx_token,
+        tx_issue_token: data.chain.tx_issue_token
+    },
+    blockNumber: '107621',
+    blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
+    txCountInBlock: 20,
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+    accountsJsonPath: './test/testData/accounts_rpc_9545.json',
+    accountsJsPath: './test/testData/accounts.js'
+}
+
+let mode_rpc_box02 = {
+    name: "rpc_box02",
     server: rpc_box01,
     initParams: {url:'http://box-admin.elerp.net:10201/v1/jsonrpc'},
     service: serviceType.newChain,
@@ -72,6 +101,7 @@ let mode_rpc_box01 = {
 }
 
 let mode_rpc_ipfs = {
+    name: "rpc_7545",
     server: rpc_7545,
     initParams: {url:'http://139.198.191.254:7545/v1/jsonrpc'},
     // initParams: {url:'http://139.198.177.59:7545/v1/jsonrpc'},
@@ -95,6 +125,7 @@ let mode_rpc_ipfs = {
 }
 
 let mode_lib_mainnet = {
+    name: "lib_main",
     server: lib_main,
     initParams: {url:'wss://c05.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
     service: serviceType.oldChain,
@@ -119,6 +150,7 @@ let mode_lib_mainnet = {
 }
 
 let mode_lib_testnet = {
+    name: "lib_test",
     server: lib_test,
     initParams: {url:'ws://139.198.19.157:5055', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
     service: serviceType.oldChain,
@@ -149,15 +181,19 @@ let modes = [
 ]
 
 let allModes = [
-    mode_rpc_newChain,
+    // mode_rpc_newChain,
     mode_rpc_box01,
-    mode_rpc_ipfs,
-    mode_lib_mainnet,
-    mode_lib_testnet,
+    // mode_rpc_box02,
+    // mode_rpc_ipfs,
+    // mode_lib_mainnet,
+    // mode_lib_testnet,
 ]
 
 let configCommons = {
+    test_data_path: ".\\test\\testData\\",
+    test_data_backup_path: ".\\test\\testData\\backup\\",
     ipfs_test_files_path: ".\\test\\testData\\testFiles\\",
+    accounts_js_file_path: ".\\test\\testData\\accounts.js",
 }
 
 module.exports = {

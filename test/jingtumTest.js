@@ -10,7 +10,8 @@ let utility = require("./utility/testUtility.js")
 const schema = require("./schema.js")
 const consts = require('../lib/base/consts')
 const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
-const { addresses } = require("./testData/addresses")
+let { modeAccounts } = require('./testData/accounts')
+const AccountsDealer = require('./utility/accountsDealer')
 const { configCommons, modes, } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
@@ -23,6 +24,8 @@ const IPFS_HASH_LENGTH = 46
 let _SequenceMap = new HashMap()
 let _LastDynamicalTimeSeed = 0
 let _FullTestCaseList = []
+let accountsDealer = new AccountsDealer()
+let addresses
 //endregion
 
 describe('Jingtum测试', function() {
@@ -38,6 +41,7 @@ describe('Jingtum测试', function() {
 
     let server = mode.server
     server.init(mode)
+    addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
 
     // this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
 

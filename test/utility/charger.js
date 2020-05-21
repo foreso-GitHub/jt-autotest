@@ -35,18 +35,21 @@ function charger() {
     }
 
     charger.prototype.chargeBasedOnBalance = function(server, sender, accounts, checkBalance, chargeAmount){
-        let accountsNeedBeCharged = []
-        let totalCount = accounts.length
-        let count = 0
-        accounts.forEach(async (account) => {
-            let balance = await server.getBalance(server, account.address)
-            if(balance == null || balance < checkBalance){
-                accountsNeedBeCharged.push(account)
-            }
-            count++
-            if(count == totalCount){
-                this.chargeAccounts(server, sender, accountsNeedBeCharged, chargeAmount)
-            }
+        return new Promise((resolve, reject) => {
+            let accountsNeedBeCharged = []
+            let totalCount = accounts.length
+            let count = 0
+            accounts.forEach(async (account) => {
+                let balance = await server.getBalance(server, account.address)
+                if(balance == null || balance < checkBalance){
+                    accountsNeedBeCharged.push(account)
+                }
+                count++
+                if(count == totalCount){
+                    await this.chargeAccounts(server, sender, accountsNeedBeCharged, chargeAmount)
+                    resolve(accountsNeedBeCharged)
+                }
+            })
         })
     }
 
