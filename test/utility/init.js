@@ -1,7 +1,9 @@
 const { allModes } = require("../config")
 const AccountsDealer = require('./accountsDealer')
-
+const ChainDataCreator = require('./chainDataCreator')
 let dealer = new AccountsDealer()
-dealer.startInit()
-// dealer.initAndChargeAccounts(allModes[1])
-// init(allModes[1])
+let creator = new ChainDataCreator()
+
+// dealer.startInit()
+creator.create()
+

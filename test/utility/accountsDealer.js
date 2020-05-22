@@ -2,8 +2,7 @@
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-const fs = require('fs');
-// const utility = require("./testUtility.js")
+const fs = require('fs')
 const { modes, allModes, configCommons } = require("../config")
 const consts = require("../../lib/base/consts.js")
 const Charger = require('./charger')
@@ -15,7 +14,6 @@ const ACCOUNT_MIN_BALANCE = 50*1000000
 const ACCOUNT_CHARGE_AMOUNT = 100
 let charger = new Charger()
 let root = {}
-let jsonPath = ''
 let server
 
 function accountsDealer() {
@@ -24,13 +22,8 @@ function accountsDealer() {
 
     function init(mode) {
         root = mode.root
-        jsonPath = mode.accountsJsonPath
         server = mode.server
         server.init(mode)
-    }
-
-    accountsDealer.prototype.createDefault = function() {
-        return this.create(allModes[0])
     }
 
     accountsDealer.prototype.create = async function(mode) {
@@ -66,23 +59,6 @@ function accountsDealer() {
             let accounts = JSON.parse(accountsJsonString)
             logger.debug('Load accounts: ' + JSON.stringify(accounts))
             resolve(accounts)
-        })
-    }
-
-    accountsDealer.prototype.saveAccounts = function(accounts, jsonPath) {
-        return new Promise((resolve, reject) =>{
-            let accountsJsonString = 'let accounts = ' + JSON.stringify(accounts)
-            // fs.writeFileSync(newfilepath, JSON.stringify(filestr));
-            // {'flag':'a'},
-            fs.writeFile(jsonPath, accountsJsonString, function (err) {
-                if (err) {
-                    logger.debug(err)
-                    reject(err)
-                } else {
-                    logger.debug('Accounts json saved: ' + jsonPath)
-                    resolve(accounts)
-                }
-            })
         })
     }
 
@@ -240,7 +216,8 @@ function accountsDealer() {
                     let createCount = 0
                     for(let i=0;i<needCreateMode.length;i++) {
                         let createMode = needCreateMode[i]
-                        await createNewAccounts(modeAccounts, createMode)
+                        let newModeAccount = await createNewAccounts(createMode)
+                        modeAccounts.push(newModeAccount)
                         createCount++
                         if(createCount == needCreateMode.length) {
                             if(needSaveAccountsJsFile){
@@ -254,13 +231,12 @@ function accountsDealer() {
         })
     }
 
-    async function createNewAccounts(modeAccounts, createMode){
+    async function createNewAccounts(createMode){
         init(createMode)
         let accounts = await createAccounts(createMode.server, 15)
         let newModeAccount = {}
         newModeAccount.modeName = createMode.name
         newModeAccount.accounts = accounts
-        modeAccounts.push(newModeAccount)
         return newModeAccount
     }
 
