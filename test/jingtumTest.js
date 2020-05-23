@@ -10,6 +10,7 @@ let utility = require("./utility/testUtility.js")
 const schema = require("./schema.js")
 const consts = require('../lib/base/consts')
 const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
+const { chainDatas } = require("./testData/chainDatas")
 let { modeAccounts } = require('./testData/accounts')
 const AccountsDealer = require('./utility/accountsDealer')
 const { configCommons, modes, } = require("./config")
@@ -22,7 +23,6 @@ const testModeEnums = testMode
 const HASH_LENGTH = 64
 const IPFS_HASH_LENGTH = 46
 let _SequenceMap = new HashMap()
-let _LastDynamicalTimeSeed = 0
 let _FullTestCaseList = []
 let accountsDealer = new AccountsDealer()
 let addresses
@@ -42,6 +42,7 @@ describe('Jingtum测试', function() {
     let server = mode.server
     server.init(mode)
     addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
+    mode.txs = utility.findMode(chainDatas, mode.name)
 
     // this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
 
@@ -203,7 +204,7 @@ describe('Jingtum测试', function() {
     // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
     // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
 
-    let tokenName = getDynamicName()
+    let tokenName = utility.getDynamicTokenName()
     return server.createIssueTokenParams(account.address, account.secret, null,
         tokenName.name, tokenName.symbol, token.decimals, token.total_supply, token.local, token.flags)
   }
@@ -213,7 +214,7 @@ describe('Jingtum测试', function() {
         addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
     tokenParams[0].symbol = symbol
     tokenParams[0].issuer = issuer
-    tokenParams[0].showSymbol = getShowSymbol(symbol, issuer)
+    tokenParams[0].showSymbol = utility.getShowSymbol(symbol, issuer)
     tokenParams[0].value = '1' + tokenParams[0].showSymbol
     return tokenParams
   }
@@ -642,22 +643,34 @@ describe('Jingtum测试', function() {
     })
   }
 
+  // function getTxByHash(server, hash, retryCount){
+  //   return server.responseGetTxByHash(server, hash)
+  //       .then(async function (value) {
+  //         //retry
+  //         if(retryCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+  //             || value.result.toString().indexOf('no such transaction') != -1)){
+  //           retryCount++
+  //           logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
+  //           await utility.timeout(server.mode.retryPauseTime)
+  //           return getTxByHash(server, hash, retryCount)
+  //         }
+  //         return value
+  //       }).catch(function(error){
+  //         logger.debug(error)
+  //         expect(error).to.not.be.ok
+  //       })
+  // }
+
   function getTxByHash(server, hash, retryCount){
-    return server.responseGetTxByHash(server, hash)
-        .then(async function (value) {
-          //retry
-          if(retryCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
-              || value.result.toString().indexOf('no such transaction') != -1)){
-            retryCount++
-            logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
-            await utility.timeout(server.mode.retryPauseTime)
-            return getTxByHash(server, hash, retryCount)
-          }
-          return value
-        }).catch(function(error){
-          logger.debug(error)
-          expect(error).to.not.be.ok
-        })
+    return new Promise(async function(resolve, reject){
+      utility.getTxByHash(server, hash, retryCount)
+          .then(async function (value) {
+            resolve(value)
+          })
+          .catch(function(error){
+            expect(error).to.not.be.ok
+          })
+    })
   }
 
   //endregion
@@ -2092,7 +2105,7 @@ describe('Jingtum测试', function() {
       let testCase = createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
         testCaseParams.txParams[0].name = "tokenName.name12345678901234567890tokenName.name12345678901234567890tokenName.name12345678901234567890" +
             "tokenName.name12345678901234567890tokenName.name12345678901234567890tokenName.name12345678901234567890"
-        testCaseParams.txParams[0].symbol = getDynamicName().symbol
+        testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
         // testCaseParams.expectedResult = createExpecteResult(false, false,
         //     'failed to submit transaction')
         testCaseParams.expectedResult = createExpecteResult(false, true,
@@ -2498,7 +2511,7 @@ describe('Jingtum测试', function() {
     let testCases = []
 
     let title = '0010\t创建有效的账户'
-    let nickName = getDynamicName().symbol
+    let nickName = utility.getDynamicTokenName().symbol
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
@@ -2512,7 +2525,7 @@ describe('Jingtum测试', function() {
     addTestCase(testCases, testCase)
 
     title = '0020\t创建无效的账户:超过长度的字符串数字'
-    nickName = getDynamicName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+    nickName = utility.getDynamicTokenName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
         + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
         + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
         + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
@@ -3319,14 +3332,14 @@ describe('Jingtum测试', function() {
 
   function testForGetBlockByNumber(server, describeTitle){
     let functionName = consts.rpcFunctions.getBlockByNumber
-    let blockNumber = server.mode.blockNumber
+    let blockNumber = server.mode.txs.block.blockNumber
     let testCases = createTestCasesForGetBlock(server, functionName, blockNumber)
     testTestCases(server, describeTitle, testCases)
   }
 
   function testForGetBlockByHash(server, describeTitle){
     let functionName = consts.rpcFunctions.getBlockByHash
-    let blockNumber = server.mode.blockHash
+    let blockNumber = server.mode.txs.block.blockHash
     let testCases = createTestCasesForGetBlock(server, functionName, blockNumber)
     testTestCases(server, describeTitle, testCases)
   }
@@ -3497,7 +3510,7 @@ describe('Jingtum测试', function() {
       expect((functionName === consts.rpcFunctions.getBlockByNumber) ? response.result.ledger_index : response.result.ledger_hash)
           .to.be.equals(blockNumberOrHash)
       let server = testCase.server
-      expect(response.result.transactions.length).to.be.equals(server.mode.txCountInBlock)
+      expect(response.result.transactions.length).to.be.equals(server.mode.txs.block.txCountInBlock)
       let showFullTx = testCase.txParams[1]
       if(showFullTx != null){
         let tx = response.result.transactions[0]
@@ -5008,18 +5021,6 @@ describe('Jingtum测试', function() {
 
   //region common functions
 
-  //region dynamic token name
-  function getDynamicName(){
-    let timeSeed = (_LastDynamicalTimeSeed) ? _LastDynamicalTimeSeed : Math.round(new Date().getTime()/1000)
-    _LastDynamicalTimeSeed = ++timeSeed
-    let result = {}
-    result.name = "TestCoin" + timeSeed
-    result.symbol = timeSeed.toString(16)
-    logger.debug("getDynamicName: " + JSON.stringify(result))
-    return result
-  }
-  //endregion
-
   //region hex relative
 
   //example
@@ -5143,12 +5144,6 @@ describe('Jingtum测试', function() {
   function addItemInArray(array, item){
     array.push(item)
     return array
-  }
-  //endregion
-
-  //region show symbol
-  function getShowSymbol(symbol, issuer){
-    return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
   }
   //endregion
 

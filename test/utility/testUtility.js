@@ -6,6 +6,8 @@ const fs = require('fs')
 const { configCommons } = require("../config")
 //endregion
 
+let _LastDynamicalTimeSeed = 0
+
 let testUtility = {
 
     //region timeout
@@ -109,21 +111,45 @@ let testUtility = {
     //endregion
 
     //region get tx
+
     getTxByHash: function(server, hash, retryCount){
-        return server.responseGetTxByHash(server, hash)
-            .then(async function (value) {
-                //retry
-                if(retryCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
-                    || value.result.toString().indexOf('no such transaction') != -1)){
-                    retryCount++
-                    logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
-                    await utility.timeout(server.mode.retryPauseTime)
-                    return getTxByHash(server, hash, retryCount)
-                }
-                return value
-            }).catch(function(error){
-                logger.debug(error)
-            })
+        return new Promise(async function(resolve, reject){
+            server.responseGetTxByHash(server, hash)
+                .then(async function (value) {
+                    //retry
+                    if(retryCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+                        || value.result.toString().indexOf('no such transaction') != -1)){
+                        retryCount++
+                        logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
+                        await testUtility.timeout(server.mode.retryPauseTime)
+                        resolve(await testUtility.getTxByHash(server, hash, retryCount))
+                    }
+                    else{
+                        resolve(value)
+                    }
+                })
+                .catch(function(error){
+                    logger.debug(error)
+                    reject(error)
+                })
+        })
+    },
+
+    //endregion
+
+    //region issue token
+    getDynamicTokenName: function(){
+        let timeSeed = (_LastDynamicalTimeSeed) ? _LastDynamicalTimeSeed : Math.round(new Date().getTime()/1000)
+        _LastDynamicalTimeSeed = ++timeSeed
+        let result = {}
+        result.name = "TestCoin" + timeSeed
+        result.symbol = timeSeed.toString(16)
+        logger.debug("getDynamicName: " + JSON.stringify(result))
+        return result
+    },
+
+    getShowSymbol: function(symbol, issuer){
+        return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
     },
     //endregion
 

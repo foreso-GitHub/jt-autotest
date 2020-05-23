@@ -7,6 +7,7 @@ const { modes, allModes, configCommons } = require("../config")
 const consts = require("../../lib/base/consts.js")
 const Charger = require('./charger')
 let { modeAccounts } = require("../testData/accounts")
+const utility = require("./testUtility.js")
 //endregion
 
 const ACCOUNT_COUNT = 15
@@ -203,7 +204,7 @@ function accountsDealer() {
             let needCreateMode = []
             let checkedCount = 0
             modes.forEach(async mode=>{
-                let accounts = findModeAccounts(modeAccounts, mode.name)
+                let accounts = utility.findMode(modeAccounts, mode.name)
                 if (accounts == null){
                     needCreateMode.push(mode)
                     needSaveAccountsJsFile = true
@@ -221,7 +222,7 @@ function accountsDealer() {
                         createCount++
                         if(createCount == needCreateMode.length) {
                             if(needSaveAccountsJsFile){
-                                await saveAccountJsFile(modeAccounts, configCommons.accounts_js_file_path)
+                                await utility.saveJsFile('modeAccounts', modeAccounts, configCommons.accounts_js_file_path)
                                 resolve(modeAccounts)
                             }
                         }
@@ -241,52 +242,12 @@ function accountsDealer() {
     }
 
     function findModeAccounts(modeAccounts, modeName){
-        let accounts = null
-        let totalCount = modeAccounts.length
-        let count = 0
-        for(i=0;i<totalCount;i++){
-            modeAccount=modeAccounts[i]
-            if(modeAccount.modeName == modeName){
-                accounts = modeAccount.accounts
-            }
-            count++
-            if(totalCount == count){
-                return accounts
-            }
+        let accounts = []
+        let mode = utility.findMode(modeAccounts, modeName)
+        if(mode && mode.accounts){
+            accounts = mode.accounts
         }
-    }
-
-    function saveAccountJsFile(modeAccounts, filePath){
-        return new Promise(async (resolve, reject) =>{
-            let destFilePath = configCommons.test_data_backup_path
-                + 'accounts_backup_' + (new Date()).toDateString() + '_' + (new Date()).getTime() + '.js'
-            await copyFile(filePath, destFilePath)  //backup
-            let fileString = 'let modeAccounts = ' + JSON.stringify(modeAccounts) + '\r\nmodule.exports = { modeAccounts }'
-            fs.writeFile(filePath, fileString, function (err) {
-                if (err) {
-                    logger.debug(err)
-                    reject(err)
-                } else {
-                    logger.debug('Accounts js saved: ' + filePath)
-                    resolve(modeAccounts)
-                }
-            })
-        })
-    }
-
-    function copyFile(srcFilePath, destFilePath){
-        return new Promise((resolve, reject) =>{
-            fs.copyFile(srcFilePath, destFilePath,function(err){
-                if(err) {
-                    console.log('Copy file error: ' + err)
-                    reject(err)
-                }
-                else {
-                    console.log('Copy file succeed! From [' + srcFilePath + '] to [' + destFilePath + ']!')
-                    resolve(destFilePath)
-                }
-            })
-        })
+        return accounts
     }
 
     accountsDealer.prototype.chargeAccounts = async function(modes){

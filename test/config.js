@@ -42,8 +42,6 @@ let mode_rpc_newChain = {
     blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
     txCountInBlock: 20,
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-    accountsJsonPath: './test/testData/accounts_rpc_9545.json',
-    accountsJsPath: './test/testData/accounts.js'
 }
 
 let mode_rpc_box01 = {
@@ -59,18 +57,7 @@ let mode_rpc_box01 = {
     retryMaxCount: 16,
     defaultValue: "1",
     defaultFee: "10",
-    txs:{
-        tx1: data.chain.tx,
-        tx_memo: data.chain.tx_memo,
-        tx_token: data.chain.tx_token,
-        tx_issue_token: data.chain.tx_issue_token
-    },
-    blockNumber: '107621',
-    blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
-    txCountInBlock: 20,
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-    accountsJsonPath: './test/testData/accounts_rpc_9545.json',
-    accountsJsPath: './test/testData/accounts.js'
 }
 
 let mode_rpc_box02 = {
@@ -86,18 +73,7 @@ let mode_rpc_box02 = {
     retryMaxCount: 16,
     defaultValue: "1",
     defaultFee: "10",
-    txs:{
-        tx1: data.chain.tx,
-        tx_memo: data.chain.tx_memo,
-        tx_token: data.chain.tx_token,
-        tx_issue_token: data.chain.tx_issue_token
-    },
-    blockNumber: '107621',
-    blockHash: '2EBFABD8340E016ACD8E0C28E878532633E5893251B8410647A03A993747FDAF',
-    txCountInBlock: 20,
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-    accountsJsonPath: './test/testData/accounts_rpc_9545.json',
-    accountsJsPath: './test/testData/accounts.js'
 }
 
 let mode_rpc_ipfs = {

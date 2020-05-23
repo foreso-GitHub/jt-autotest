@@ -5,5 +5,5 @@ let dealer = new AccountsDealer()
 let creator = new ChainDataCreator()
 
 // dealer.startInit()
-creator.create()
+// creator.create(allModes, false)
 
