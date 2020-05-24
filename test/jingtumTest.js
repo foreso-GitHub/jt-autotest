@@ -105,6 +105,8 @@ describe('Jingtum测试', function() {
 
       describe('is working', async function () {
 
+        // testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
         // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
         // await utility.timeout(5000)
@@ -3146,7 +3148,7 @@ describe('Jingtum测试', function() {
     let testCases = []
 
     let title = '0010\t有效交易哈希'
-    let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E7'
+    let hash = server.mode.txs.tx1.hash
     let needPass = true
     let expectedError = ''
     let testCase = createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
@@ -3211,8 +3213,8 @@ describe('Jingtum测试', function() {
       let affectedNodes = response.result.AffectedNodes
       let from = affectedNodes[1].ModifiedNode.FinalFields.Account
       let to = affectedNodes[2].ModifiedNode.FinalFields.Account
-      expect(from).to.be.equals(addresses.sender2.address)
-      expect(to).to.be.equals(addresses.receiver1.address)
+      expect(from).to.be.equals(testCase.server.mode.txs.tx1.Account)
+      expect(to).to.be.equals(testCase.server.mode.txs.tx1.Destination)
     }
     else{
       expect(response.result).to.contains(testCase.expectedResult.expectedError)
