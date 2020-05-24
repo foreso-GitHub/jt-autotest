@@ -8,7 +8,7 @@ const { configCommons } = require("../config")
 
 let _LastDynamicalTimeSeed = 0
 
-let testUtility = {
+module.exports = testUtility = {
 
     //region timeout
     timeout: function(time) {
@@ -154,4 +154,4 @@ let testUtility = {
     //endregion
 
 }
-module.exports = testUtility
+
