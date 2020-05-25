@@ -4,7 +4,7 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const { modes } = require("../config")
 const { addresses, accounts } = require("../testData/testData")
-const utility = require("./testUtility.js")
+const utility = require("../framework/testUtility.js")
 //endregion
 
 let mode = modes[0]

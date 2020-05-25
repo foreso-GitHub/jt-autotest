@@ -187,8 +187,8 @@ module.exports = testUtility = {
     },
 
     isHex: function(context){
-        let context2 = utility.hex2Base64(context)
-        let hex = utility.base642Hex(context2)
+        let context2 = testUtility.hex2Base64(context)
+        let hex = testUtility.base642Hex(context2)
         return context.toUpperCase() === hex.toUpperCase()
     },
 

@@ -14,7 +14,7 @@ const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/lib/base/consts')
-let utility = require('../utility/testUtility')
+let utility = require('../framework/testUtility')
 const { token, } = require("../testData/testData")
 //endregion
 //endregion

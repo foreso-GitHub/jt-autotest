@@ -6,7 +6,7 @@ const fs = require('fs');
 const { modes, allModes, configCommons } = require("../config")
 let { chainDatas } = require("../testData/chainDatas")
 const consts = require("../framework/lib/base/consts.js")
-const utility = require("./testUtility.js")
+const utility = require("../framework/testUtility.js")
 //endregion
 
 
