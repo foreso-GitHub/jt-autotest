@@ -33,11 +33,11 @@ module.exports = tcsSendAndSignTx = {
             //region basic test
 
             categoryName = '原生币swt'
-            // txFunctionName = consts.rpcFunctions.sendTx
-            // txParams = framework.createTxParamsForTransfer(server)
-            // describe(categoryName + '测试：' + txFunctionName, async function () {
-            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            // })
+            txFunctionName = consts.rpcFunctions.sendTx
+            txParams = framework.createTxParamsForTransfer(server)
+            describe(categoryName + '测试：' + txFunctionName, async function () {
+                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            })
 
             txFunctionName = consts.rpcFunctions.signTx
             txParams = framework.createTxParamsForTransfer(server)
@@ -51,7 +51,7 @@ module.exports = tcsSendAndSignTx = {
             // categoryName = 'Sequence测试: '
             // testForSequenceTest(server, categoryName)
             // //endregion
-            //
+
             // //region pressure test
             // categoryName = '原生币swt压力测试，分多个case执行'
             // testCases = framework.createTestCasesForPressureTest(server, categoryName, 20)
@@ -64,23 +64,23 @@ module.exports = tcsSendAndSignTx = {
             // categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
             // testCases = framework.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
             // framework.testTestCases(server, categoryName, testCases)
-            // //endregion
+            // // endregion
 
             //region token test
 
-            // if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
-            //
-            //     txFunctionName = consts.rpcFunctions.sendTx
-            //     describe('代币测试：' + txFunctionName, async function () {
-            //         tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
-            //     })
-            //
-            //     txFunctionName = consts.rpcFunctions.signTx
-            //     describe('代币测试：' + txFunctionName, async function () {
-            //         tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
-            //     })
-            //
-            // }
+            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
+
+                txFunctionName = consts.rpcFunctions.sendTx
+                describe('代币测试：' + txFunctionName, async function () {
+                    tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
+                })
+
+                txFunctionName = consts.rpcFunctions.signTx
+                describe('代币测试：' + txFunctionName, async function () {
+                    tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
+                })
+
+            }
 
             //endregion
 
@@ -718,7 +718,7 @@ module.exports = tcsSendAndSignTx = {
         //create token
         testName = '测试创建token'
         describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        txParams = createTxParamsForIssueToken(server, account, configToken)
+        txParams = framework.createTxParamsForIssueToken(server, account, configToken)
         testCases = tcsSendAndSignTx.createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
         framework.testTestCases(server, describeTitle, testCases)
 
@@ -733,12 +733,12 @@ module.exports = tcsSendAndSignTx = {
         logger.debug("===create token: " + tokenSymbol)
 
         //token transfer
-        let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
         describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
         tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
         //mint token
-        let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
         describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
         testCases = tcsSendAndSignTx.createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestCases(server, describeTitle, testCases)

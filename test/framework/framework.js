@@ -38,36 +38,36 @@ module.exports = framework = {
     //region create txParams
 
     createTestCaseParams: function(server, categoryName, txFunctionName, txParams){
-    let testCaseParams = {}
-    testCaseParams.server = server
-    testCaseParams.categoryName = categoryName
-    testCaseParams.txFunctionName = txFunctionName
-    testCaseParams.title = ''
-    testCaseParams.originalTxParams = txParams
-    testCaseParams.txParams = framework.cloneParamsAarry(txParams)
-    testCaseParams.otherParams = {}
-    testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
-    testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
-    testCaseParams.expectedResult = framework.createExpecteResult(true)
-    testCaseParams.testCase = {}
-    testCaseParams.symbol = testCaseParams.txParams[0].symbol
-    testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
-    if(txFunctionName === consts.rpcFunctions.sendTx) {
+        let testCaseParams = {}
+        testCaseParams.server = server
+        testCaseParams.categoryName = categoryName
+        testCaseParams.txFunctionName = txFunctionName
+        testCaseParams.title = ''
+        testCaseParams.originalTxParams = txParams
+        testCaseParams.txParams = framework.cloneParamsAarry(txParams)
+        testCaseParams.otherParams = {}
         testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
         testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
-    }
-    else if(txFunctionName === consts.rpcFunctions.signTx){
-        testCaseParams.executeFunction = framework.executeTestCaseOfSignTxAndSendRawTx
-        testCaseParams.checkFunction = framework.checkTestCaseOfSignTxAndSendRawTx
-    }
-    else{
-        throw new Error('txFunctionName doesn\'t exist!')
-    }
-    testCaseParams.restrictedLevel = restrictedLevel.L2
-    testCaseParams.supportedServices = [serviceType.newChain]
-    testCaseParams.supportedInterfaces = []
-    return testCaseParams
-},
+        testCaseParams.expectedResult = framework.createExpecteResult(true)
+        testCaseParams.testCase = {}
+        testCaseParams.symbol = testCaseParams.txParams[0].symbol
+        testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
+        if(txFunctionName === consts.rpcFunctions.sendTx) {
+            testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
+            testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
+        }
+        else if(txFunctionName === consts.rpcFunctions.signTx){
+            testCaseParams.executeFunction = framework.executeTestCaseOfSignTxAndSendRawTx
+            testCaseParams.checkFunction = framework.checkTestCaseOfSignTxAndSendRawTx
+        }
+        else{
+            throw new Error('txFunctionName doesn\'t exist!')
+        }
+        testCaseParams.restrictedLevel = restrictedLevel.L2
+        testCaseParams.supportedServices = [serviceType.newChain]
+        testCaseParams.supportedInterfaces = []
+        return testCaseParams
+    },
 
     createTestCase: function(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expectedResult,
                             restrictedLv, supportedServices, supportedInterfaces){
@@ -515,7 +515,7 @@ module.exports = framework = {
                 expect(tx.Decimals).to.be.equals(Number(txParams.decimals))
                 expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
                 expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
-                expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : server.mode.addresses.defaultIssuer.address)
+                expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : mode.addresses.defaultIssuer.address)
                 if(mode.restrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
             }
             else{
