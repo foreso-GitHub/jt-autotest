@@ -153,5 +153,78 @@ module.exports = testUtility = {
     },
     //endregion
 
+    //region hex relative
+
+    //example
+    // hex: 516d557556664a7251326d62374632323366556876706b5136626a46464d344661504b6e4b4c4c42574d45704257
+    // ascii: QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW
+    // base64: UW1VdVZmSnJRMm1iN0YyMjNmVWh2cGtRNmJqRkZNNEZhUEtuS0xMQldNRXBCVw==
+
+    hex2Utf8: function(hex){
+        return new Buffer.from(hex.toString(), 'hex').toString('utf8')
+    },
+
+    utf82Hex: function(hex){
+        return new Buffer.from(string, 'utf8').toString('hex')
+    },
+
+    hex2Base64: function(hex){
+        // return new Buffer.from(hex.toString(), 'hex').toString('utf8')
+        return new Buffer.from(hex.toString(), 'hex').toString('base64')
+    },
+
+    base642Hex: function(string){
+        // return new Buffer.from(string, 'utf8').toString('hex')
+        return new Buffer.from(string, 'base64').toString('hex')
+    },
+
+    hex2Ascii: function(hex){
+        return new Buffer.from(hex.toString(), 'hex').toString('ascii')
+    },
+
+    ascii2Hex: function(string){
+        return new Buffer.from(string, 'ascii').toString('hex')
+    },
+
+    isHex: function(context){
+        let context2 = utility.hex2Base64(context)
+        let hex = utility.base642Hex(context2)
+        return context.toUpperCase() === hex.toUpperCase()
+    },
+
+    //endregion
+
+    //region array operation
+    cloneArray: function(originalArray){
+        let newArray = []
+        originalArray.forEach((item) => {
+            newArray.push(item)
+        })
+        return newArray
+    },
+
+    ifArrayHas: function(array, specialItem){
+        let result = false
+        array.forEach((item) => {
+            if(item == specialItem){
+                result = true
+            }
+        })
+
+        return result
+    },
+
+    addItemInEmptyArray: function(item){
+        let array = []
+        array.push(item)
+        return array
+    },
+
+    addItemInArray: function(array, item){
+        array.push(item)
+        return array
+    },
+    //endregion
+
 }
 

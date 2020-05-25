@@ -25,7 +25,6 @@ const IPFS_HASH_LENGTH = 46
 let _SequenceMap = new HashMap()
 let _FullTestCaseList = []
 let accountsDealer = new AccountsDealer()
-let addresses
 let START
 let END
 //endregion
@@ -45,21 +44,21 @@ module.exports = framework = {
     testCaseParams.txFunctionName = txFunctionName
     testCaseParams.title = ''
     testCaseParams.originalTxParams = txParams
-    testCaseParams.txParams = cloneParamsAarry(txParams)
+    testCaseParams.txParams = framework.cloneParamsAarry(txParams)
     testCaseParams.otherParams = {}
-    testCaseParams.executeFunction = executeTestCaseOfSendTx
-    testCaseParams.checkFunction = checkTestCaseOfSendTx
-    testCaseParams.expectedResult = createExpecteResult(true)
+    testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
+    testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
+    testCaseParams.expectedResult = framework.createExpecteResult(true)
     testCaseParams.testCase = {}
     testCaseParams.symbol = testCaseParams.txParams[0].symbol
     testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
     if(txFunctionName === consts.rpcFunctions.sendTx) {
-        testCaseParams.executeFunction = executeTestCaseOfSendTx
-        testCaseParams.checkFunction = checkTestCaseOfSendTx
+        testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
+        testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
     }
     else if(txFunctionName === consts.rpcFunctions.signTx){
-        testCaseParams.executeFunction = executeTestCaseOfSignTxAndSendRawTx
-        testCaseParams.checkFunction = checkTestCaseOfSignTxAndSendRawTx
+        testCaseParams.executeFunction = framework.executeTestCaseOfSignTxAndSendRawTx
+        testCaseParams.checkFunction = framework.checkTestCaseOfSignTxAndSendRawTx
     }
     else{
         throw new Error('txFunctionName doesn\'t exist!')
@@ -85,22 +84,22 @@ module.exports = framework = {
         testCase.hasExecuted = false
         testCase.actualResult = []
         testCase.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
-        testCase.supportedServices = (supportedServices) ? framework.cloneArray(supportedServices) : []
-        testCase.supportedInterfaces = (supportedInterfaces) ? framework.cloneArray(supportedInterfaces) : []
+        testCase.supportedServices = (supportedServices) ? utility.cloneArray(supportedServices) : []
+        testCase.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
         testCase.checks = []
         return testCase
     },
 
     createTestCaseByParams: function(testCaseParams){
-        return createTestCase(testCaseParams.title, testCaseParams.server,
+        return framework.createTestCase(testCaseParams.title, testCaseParams.server,
             testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
             testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expectedResult,
             testCaseParams.restrictedLevel, testCaseParams.supportedServices, testCaseParams.supportedInterfaces)
     },
 
     createTxParamsForTransfer: function(server){
-        return server.createTransferParams(addresses.sender1.address, addresses.sender1.secret, null,
-            addresses.receiver1.address, '0.000015', '0.00001', ['autotest: transfer test'])
+        return server.createTransferParams(server.mode.addresses.sender1.address, server.mode.addresses.sender1.secret, null,
+            server.mode.addresses.receiver1.address, '0.000015', '0.00001', ['autotest: transfer test'])
     },
 
     createTxParamsForIssueToken: function(server, account, token){
@@ -119,7 +118,7 @@ module.exports = framework = {
 
     createTxParamsForTokenTransfer: function(server, account, symbol, issuer){
         let tokenParams = server.createTransferParams(account.address, account.secret, null,
-            addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
+            server.mode.addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
         tokenParams[0].symbol = symbol
         tokenParams[0].issuer = issuer
         tokenParams[0].showSymbol = utility.getShowSymbol(symbol, issuer)
@@ -148,7 +147,7 @@ module.exports = framework = {
 
     addTestCaseForSendRawTx: function(testCaseOfSignTx, expectedResultOfSendRawTx){
         let txFunctionName = consts.rpcFunctions.sendRawTx
-        let testCaseOfSendRawTx = createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
+        let testCaseOfSendRawTx = framework.createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
             txFunctionName, null,null, null, null, expectedResultOfSendRawTx,
             testCaseOfSignTx.restrictedLevel, testCaseOfSignTx.supportedServices, testCaseOfSignTx.supportedInterfaces)
         testCaseOfSignTx.subTestCases = []
@@ -158,23 +157,23 @@ module.exports = framework = {
     //region 当jt_sendTransaction和jt_signTransaction都通过测试时
 
     createTestCaseWhenSignPassAndSendRawTxPass: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = cloneParamsAarry(testCaseParams.originalTxParams)
+        testCaseParams.txParams = framework.cloneParamsAarry(testCaseParams.originalTxParams)
         updateTxParamsFunction()
-        // testCaseParams.expectedResult = createExpecteResult(true)
-        let testCase = createTestCaseByParams(testCaseParams)
+        // testCaseParams.expectedResult = framework.createExpecteResult(true)
+        let testCase = framework.createTestCaseByParams(testCaseParams)
         if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
-            let expectedResultOfSendRawTx = createExpecteResult(true)
-            addTestCaseForSendRawTx(testCase, expectedResultOfSendRawTx)
+            let expectedResultOfSendRawTx = framework.createExpecteResult(true)
+            framework.addTestCaseForSendRawTx(testCase, expectedResultOfSendRawTx)
         }
         return testCase
     },
 
     createTestCaseWhenSignPassAndSendRawTxPassForTransfer: function(testCaseParams, updateTxParamsFunction){
-        return createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction)
+        return framework.createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction)
     },
 
     createTestCaseWhenSignPassAndSendRawTxPassForIssueToken: function(testCaseParams, updateTxParamsFunction){
-        return createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction)
+        return framework.createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction)
     },
 
     //endregion
@@ -182,18 +181,18 @@ module.exports = framework = {
     //region 当jt_sendTransaction和jt_signTransaction都通不过测试时
 
     createTestCaseWhenSignFail: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = cloneParamsAarry(testCaseParams.originalTxParams)
+        testCaseParams.txParams = framework.cloneParamsAarry(testCaseParams.originalTxParams)
         updateTxParamsFunction()
-        let testCase = createTestCaseByParams(testCaseParams)
+        let testCase = framework.createTestCaseByParams(testCaseParams)
         return testCase
     },
 
     createTestCaseWhenSignFailForTransfer: function(testCaseParams, updateTxParamsFunction){
-        return createTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction)
+        return framework.createTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction)
     },
 
     createTestCaseWhenSignFailForIssueToken: function(testCaseParams, updateTxParamsFunction){
-        return createTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction)
+        return framework.createTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction)
     },
 
     //endregion
@@ -201,23 +200,23 @@ module.exports = framework = {
     //region 当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
 
     createTestCaseWhenSignPassButSendRawTxFail: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = cloneParamsAarry(testCaseParams.originalTxParams)
+        testCaseParams.txParams = framework.cloneParamsAarry(testCaseParams.originalTxParams)
         updateTxParamsFunction()
-        let testCase = createTestCaseByParams(testCaseParams)
+        let testCase = framework.createTestCaseByParams(testCaseParams)
         if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
-            let expectedResultOfSignTx = createExpecteResult(true)
+            let expectedResultOfSignTx = framework.createExpecteResult(true)
             testCase.expectedResult = expectedResultOfSignTx
-            addTestCaseForSendRawTx(testCase, testCaseParams.expectedResult)
+            framework.addTestCaseForSendRawTx(testCase, testCaseParams.expectedResult)
         }
         return testCase
     },
 
     createTestCaseWhenSignPassButSendRawTxFailForTransfer: function(testCaseParams, updateTxParamsFunction){
-        return createTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction)
+        return framework.createTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction)
     },
 
     createTestCaseWhenSignPassButSendRawTxFailForIssueToken: function(testCaseParams, updateTxParamsFunction){
-        return createTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction)
+        return framework.createTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction)
     },
 
     //endregion
@@ -245,14 +244,14 @@ module.exports = framework = {
             let server = testCase.server
             let data = testCase.txParams[0]
             let from = data.from
-            getSequence(server, from).then(function(sequence){
+            framework.getSequence(server, from).then(function(sequence){
                 if(data.sequence == null){
                     data.sequence = isNaN(sequence) ? 1 : sequence
                 }
                 server.getBalance(server, data.from, data.symbol).then(function(balanceBeforeExecution){
                     testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
                     logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
-                    executeTxByTestCase(testCase).then(function(response){
+                    framework.executeTxByTestCase(testCase).then(function(response){
                         specialExecuteFunction(testCase, response, resolve)
                     })
                 })
@@ -262,8 +261,8 @@ module.exports = framework = {
 
     executeTestCaseOfSendTx: function(testCase){
         testCase.hasExecuted = true
-        return executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
-            addSequenceAfterResponseSuccess(response, testCase)
+        return framework.executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
+            framework.addSequenceAfterResponseSuccess(response, testCase)
             // testCase.hasExecuted = true
             testCase.actualResult.push(response)
             resolve(testCase)
@@ -272,7 +271,7 @@ module.exports = framework = {
 
     executeTestCaseOfSignTxAndSendRawTx: function(testCase){
         testCase.hasExecuted = true
-        return executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
+        return framework.executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
             // testCase.hasExecuted = true
             testCase.actualResult.push(responseOfSign)
             if(responseOfSign.status === status.success){
@@ -289,10 +288,10 @@ module.exports = framework = {
                             let testCaseOfSendRawTx = testCase.subTestCases[0]
                             testCaseOfSendRawTx.txParams = data
                             testCaseOfSendRawTx.hasExecuted = true
-                            executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
+                            framework.executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
                                 // testCaseOfSendRawTx.hasExecuted = true
                                 testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
-                                addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase)
+                                framework.addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase)
                                 resolve(responseOfSendRawTx)
                             })
                         }
@@ -317,7 +316,7 @@ module.exports = framework = {
         let data = testCase.txParams[0]
         let serverName = testCase.server.getName()
         if(response.status === status.success){
-            setSequence(serverName, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+            framework.setSequence(serverName, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
         }
     },
     //endregion
@@ -352,7 +351,7 @@ module.exports = framework = {
     executeTestCaseOfCommonFunction: function(testCase){
         testCase.hasExecuted = true
         return new Promise(function(resolve){
-            executeTxByTestCase(testCase).then(function(response){
+            framework.executeTxByTestCase(testCase).then(function(response){
                 // testCase.hasExecuted = true
                 testCase.actualResult.push(response)
                 resolve(response)
@@ -370,23 +369,23 @@ module.exports = framework = {
 
     //region check send tx result
     checkTestCaseOfSendTx: async function(testCase){
-        await checkResponseOfTransfer(testCase, testCase.txParams)
+        await framework.checkResponseOfTransfer(testCase, testCase.txParams)
     },
 
     checkResponseOfCommon: async function(testCase, txParams, checkFunction){
-        await checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, 0)
+        await framework.checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, 0)
     },
 
     checkSingleResponseOfCommonOneByOne: async function(testCase, txParams, checkFunction, index){
-        await checkSingleResponseOfCommon(testCase, testCase.actualResult[index], txParams, checkFunction)
+        await framework.checkSingleResponseOfCommon(testCase, testCase.actualResult[index], txParams, checkFunction)
         index++
         if(index < testCase.actualResult.length){
-            await checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, index)
+            await framework.checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, index)
         }
     },
 
     checkSingleResponseOfCommon: async function(testCase, responseOfSendTx, txParams, checkFunction){
-        checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
+        framework.checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
 
         //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
         if(testCase.server.mode.service == serviceType.newChain){
@@ -396,8 +395,8 @@ module.exports = framework = {
                 // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
                 // let hash = responseOfSendTx.result[0]
                 // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-                await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-                    checkResponse(true, responseOfGetTx)
+                await framework.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+                    framework.checkResponse(true, responseOfGetTx)
                     // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
                     expect(responseOfGetTx.result.hash).to.be.equal(hash)
                     await checkFunction(testCase, txParams, responseOfGetTx.result)
@@ -414,8 +413,8 @@ module.exports = framework = {
             if(testCase.expectedResult.needPass){
                 expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
                 let hash = responseOfSendTx.result.hash  //for swtclib
-                await getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-                    checkResponse(true, responseOfGetTx)
+                await framework.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+                    framework.checkResponse(true, responseOfGetTx)
                     // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
                     expect(responseOfGetTx.result.hash).to.be.equal(hash)
                     await checkFunction(testCase, txParams, responseOfGetTx.result)
@@ -426,7 +425,7 @@ module.exports = framework = {
             else{
                 expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
                 let expectedResult = testCase.expectedResult.expectedError
-                compareEngineResults(expectedResult, responseOfSendTx.result)
+                framework.compareEngineResults(expectedResult, responseOfSendTx.result)
             }
         }
     },
@@ -438,9 +437,9 @@ module.exports = framework = {
     },
 
     checkResponseOfTransfer: async function(testCase, txParams){
-        await checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
+        await framework.checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
             let params = txParams[0]
-            await compareActualTxWithTxParams(params, tx, testCase.server.mode)
+            await framework.compareActualTxWithTxParams(params, tx, testCase.server.mode)
 
             if(testCase.server.mode.restrictedLevel >= restrictedLevel.L5){
                 let expectedBalance = testCase.expectedResult.expectedBalance
@@ -448,7 +447,7 @@ module.exports = framework = {
                     let server = testCase.server
                     let from = params.from
                     let symbol = params.symbol
-                    await checkBalanceChange(server, from, symbol, expectedBalance)
+                    await framework.checkBalanceChange(server, from, symbol, expectedBalance)
                 }
             }
         })
@@ -469,12 +468,12 @@ module.exports = framework = {
     },
 
     checkTestCaseOfMintOrBurn: async function(testCase){
-        await checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
+        await framework.checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
             let params = txParams[0]
             await testCase.server.getBalance(testCase.server, params.from, params.symbol).then(function(balanceAfterExecution){
                 testCase.balanceAfterExecution = balanceAfterExecution
-                oldBalance = getBalanceValue(testCase.balanceBeforeExecution)
-                newBalance = getBalanceValue(testCase.balanceAfterExecution)
+                oldBalance = framework.getBalanceValue(testCase.balanceBeforeExecution)
+                newBalance = framework.getBalanceValue(testCase.balanceAfterExecution)
                 if(params.type === consts.rpcParamConsts.issueCoin){
                     expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
                 }
@@ -516,7 +515,7 @@ module.exports = framework = {
                 expect(tx.Decimals).to.be.equals(Number(txParams.decimals))
                 expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
                 expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
-                expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : addresses.defaultIssuer.address)
+                expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : server.mode.addresses.defaultIssuer.address)
                 if(mode.restrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
             }
             else{
@@ -536,10 +535,10 @@ module.exports = framework = {
                 for(let i = 0; i < expectedMemos.length; i++){
                     let expectedMemo = expectedMemos[i]
                     if(typeof expectedMemo == "string"){
-                        expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
+                        expect(utility.hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
                     }
                     else if(expectedMemo.data){
-                        expect(hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
+                        expect(utility.hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
                     }
                     else{
                         expect(false).to.be.ok
@@ -570,17 +569,17 @@ module.exports = framework = {
     checkTestCaseOfSignTxAndSendRawTx: async function(testCase){
         //check sign result
         let responseOfSendTx = testCase.actualResult[0]
-        checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
+        framework.checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
         if(testCase.expectedResult.needPass){
             expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
             let signedTx = responseOfSendTx.result[0]
             expect(typeof(signedTx) === 'string').to.be.ok
-            expect(isHex(signedTx)).to.be.ok
+            expect(utility.isHex(signedTx)).to.be.ok
 
             //check send raw tx result
             let txParams = testCase.txParams
             let testCaseOfSendRawTx = testCase.subTestCases[0]
-            await checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
+            await framework.checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
         }
         else{
             let expectedResult = testCase.expectedResult
@@ -591,7 +590,7 @@ module.exports = framework = {
 
     //region common check system for sequence and ipfs test
     checkTestCase: async function(testCase){
-        await checkTestCaseOneByOne(testCase, 0)
+        await framework.checkTestCaseOneByOne(testCase, 0)
     },
 
     checkTestCaseOneByOne: async function(testCase, index){
@@ -601,7 +600,7 @@ module.exports = framework = {
         if(check.title) logger.debug('Check ' + check.title + ' done!')
         index++
         if(index < testCase.checks.length) {
-            await checkTestCaseOneByOne(testCase, index)
+            await framework.checkTestCaseOneByOne(testCase, index)
         }
     },
     //endregion
@@ -677,12 +676,12 @@ module.exports = framework = {
                 it(testCase.title, async function () {
                     try{
                         await testCase.executeFunction(testCase)
-                        printTestCaseInfo(testCase)
+                        framework.printTestCaseInfo(testCase)
                         await testCase.checkFunction(testCase)
-                        afterTestFinish(testCase)
+                        framework.afterTestFinish(testCase)
                     }
                     catch(ex){
-                        afterTestFinish(testCase)
+                        framework.afterTestFinish(testCase)
                         throw ex
                     }
                 })
@@ -777,11 +776,11 @@ module.exports = framework = {
             return false
         }
         else if(!(!testCase.supportedServices || testCase.supportedServices.length == 0)
-            && !framework.ifArrayHas(testCase.supportedServices, testCase.server.mode.service)){
+            && !utility.ifArrayHas(testCase.supportedServices, testCase.server.mode.service)){
             return false
         }
         else if(!(!testCase.supportedInterfaces || testCase.supportedInterfaces.length == 0)
-            && !framework.ifArrayHas(testCase.supportedInterfaces, testCase.server.mode.interface)){
+            && !utility.ifArrayHas(testCase.supportedInterfaces, testCase.server.mode.interface)){
             return false
         }
         else if(testCase.txFunctionName == consts.rpcFunctions.signTx
@@ -793,130 +792,6 @@ module.exports = framework = {
         }
     },
 
-    testTestCasesByDescribes: function(server, describeTitle, descriptions){
-
-        // describe(describeTitle, async function () {
-        //
-        //   before(async function() {
-        //     execEachTestCase(testCases, 0)
-        //     await utility.timeout(server.mode.defaultBlockTime)
-        //   })
-        //
-        //   testCases.forEach(async function(testCase){
-        //     it(testCase.title, async function () {
-        //       await testCase.checkFunction(testCase)
-        //     })
-        //   })
-        // })
-    },
-    //endregion
-
-    //region test for tx
-    testForTransfer: function(server, categoryName, txFunctionName, txParams){
-        let testName = ''
-        let describeTitle = ''
-        let testCases = []
-
-        testName = '测试基本交易'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testCases = createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams)
-        testTestCases(server, describeTitle, testCases)
-
-        testName = '测试交易memo'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testCases = createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
-        testTestCases(server, describeTitle, testCases)
-
-        testName = '测试交易Fee'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testCases = createTestCasesForTransactionWithFee(server, categoryName, txFunctionName, txParams)
-        testTestCases(server, describeTitle, testCases)
-    },
-
-    testForIssueToken: function(server, categoryName, txFunctionName, account, configToken){
-        let testName = ''
-        let describeTitle = ''
-        let testCases = []
-        let txParams = {}
-
-        //create token
-        testName = '测试创建token'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        txParams = createTxParamsForIssueToken(server, account, configToken)
-        testCases = createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
-        testTestCases(server, describeTitle, testCases)
-
-        //set created token properties
-        // let tokenName = testCases[0].txParams[0].name
-        // let tokenSymbol = testCases[0].txParams[0].symbol
-        // let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
-        let txParam = txParams[0]
-        let tokenName = txParam.name
-        let tokenSymbol = txParam.symbol
-        let issuer = txParam.local ? txParam.from : addresses.defaultIssuer.address
-        logger.debug("===create token: " + tokenSymbol)
-
-        //token transfer
-        let transferTxParams = createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        testForTransfer(server, categoryName, txFunctionName, transferTxParams)
-
-        //mint token
-        let mintTxParams = createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        testCases = createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        testTestCases(server, describeTitle, testCases)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        testCases = createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        testTestCases(server, describeTitle, testCases)
-    },
-
-    testForIssueTokenInComplexMode: function(server, txFunctionName){
-        let account = addresses.sender3
-
-        let configToken = token.config_normal
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_mintable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_burnable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_mint_burn
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_normal
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_mintable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_burnable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_mint_burn
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-    },
     //endregion
 
     //endregion
@@ -966,47 +841,6 @@ module.exports = framework = {
 
     //region common functions
 
-    //region hex relative
-
-    //example
-    // hex: 516d557556664a7251326d62374632323366556876706b5136626a46464d344661504b6e4b4c4c42574d45704257
-    // ascii: QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW
-    // base64: UW1VdVZmSnJRMm1iN0YyMjNmVWh2cGtRNmJqRkZNNEZhUEtuS0xMQldNRXBCVw==
-
-    hex2Utf8: function(hex){
-        return new Buffer.from(hex.toString(), 'hex').toString('utf8')
-    },
-
-    utf82Hex: function(hex){
-        return new Buffer.from(string, 'utf8').toString('hex')
-    },
-
-    hex2Base64: function(hex){
-        // return new Buffer.from(hex.toString(), 'hex').toString('utf8')
-        return new Buffer.from(hex.toString(), 'hex').toString('base64')
-    },
-
-    base642Hex: function(string){
-        // return new Buffer.from(string, 'utf8').toString('hex')
-        return new Buffer.from(string, 'base64').toString('hex')
-    },
-
-    hex2Ascii: function(hex){
-        return new Buffer.from(hex.toString(), 'hex').toString('ascii')
-    },
-
-    ascii2Hex: function(string){
-        return new Buffer.from(string, 'ascii').toString('hex')
-    },
-
-    isHex: function(context){
-        let context2 = hex2Base64(context)
-        let hex = base642Hex(context2)
-        return context.toUpperCase() === hex.toUpperCase()
-    },
-
-    //endregion
-
     //region process sequence
     getSequence: function(server, from){
         return new Promise(function (resolve){
@@ -1019,7 +853,7 @@ module.exports = framework = {
                 Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
                     // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
                     let sequence = Number(accountInfo.result.Sequence)
-                    setSequence(server.getName(), from, sequence)
+                    framework.setSequence(server.getName(), from, sequence)
                     resolve(sequence)
                 }).catch(function (error){
                     logger.debug("Error!!! " + error)
@@ -1055,68 +889,10 @@ module.exports = framework = {
 
     cloneParamsAarry: function(originalParamsAarry){
         let paramsAarry = []
-        paramsAarry.push(cloneParams(originalParamsAarry[0]))
+        paramsAarry.push(framework.cloneParams(originalParamsAarry[0]))
         return paramsAarry
     },
     //endregion
-
-    //region array operation
-    cloneArray: function(originalArray){
-        let newArray = []
-        originalArray.forEach((item) => {
-            newArray.push(item)
-        })
-        return newArray
-    },
-
-    ifArrayHas: function(array, specialItem){
-        let result = false
-        array.forEach((item) => {
-            if(item == specialItem){
-                result = true
-            }
-        })
-
-        return result
-    },
-
-    addItemInEmptyArray: function(item){
-        let array = []
-        array.push(item)
-        return array
-    },
-
-    addItemInArray: function(array, item){
-        array.push(item)
-        return array
-    },
-    //endregion
-
-    //endregion
-
-    //region mintable and burnable
-
-    // 参考”发起底层币无效交易“的测试用例
-    // "flags":        float64(data.TxCoinMintable | data.TxCoinBurnable)
-    // TxCoinMintable  TransactionFlag = 0x00010000 (65536)
-    // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
-    // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
-    // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
-    // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
-
-    canMint: function(flags){
-        if(flags === consts.flags.mintable || flags === consts.flags.both){
-            return true
-        }
-        return false
-    },
-
-    canBurn: function(flags){
-        if(flags === consts.flags.burnable || flags === consts.flags.both){
-            return true
-        }
-        return false
-    },
 
     //endregion
 
