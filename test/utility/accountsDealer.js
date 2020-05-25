@@ -42,7 +42,7 @@ function accountsDealer() {
         let accounts = []
         accounts.push(root)
         for (let i = 1; i < count; i++) {
-            let result = await createWallet(server)
+            let result = await createAccount(server)
             if (result.success) {
                 accounts.push(result.account)
                 // logger.debug(JSON.stringify((result)))
@@ -67,6 +67,17 @@ function accountsDealer() {
         return new Promise((resolve, reject) => {
             server.getResponse(server, consts.rpcFunctions.createWallet, []).then(async function (result) {
                 resolve({account: {address: result.result[0].address, secret: result.result[0].secret}, success: true})
+            }).catch(function (error) {
+                reject({message: error, success: false})
+            })
+        })
+    }
+
+    function createAccount(server) {
+        return new Promise((resolve, reject) => {
+            let name = utility.getDynamicTokenName().name
+            server.getResponse(server, consts.rpcFunctions.createAccount, [name]).then(async function (result) {
+                resolve({account: {address: result.result[0].address, secret: result.result[0].secret, nickName: name,}, success: true})
             }).catch(function (error) {
                 reject({message: error, success: false})
             })
