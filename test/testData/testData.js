@@ -1,4 +1,4 @@
-const consts = require('../../lib/base/consts')
+const consts = require('../framework/lib/base/consts')
 
 let chains = ['swt', 'bwt']
 

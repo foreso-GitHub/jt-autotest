@@ -7,14 +7,14 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 let utility = require("../utility/testUtility.js")
-const schema = require("../schema.js")
-const consts = require('../../lib/base/consts')
+const schema = require("./schema.js")
+const consts = require('./lib/base/consts')
 const { chains, data, token, txs, blocks, ipfs_data } = require("../testData/testData")
 const { chainDatas } = require("../testData/chainDatas")
 let { modeAccounts } = require('../testData/accounts')
 const AccountsDealer = require('../utility/accountsDealer')
 const { configCommons, modes, } = require("../config")
-const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../enums")
+const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
 const testModeEnums = testMode
 //endregion
@@ -924,18 +924,6 @@ module.exports = framework = {
     //endregion
 
     // region utility methods
-
-    get2BlockNumber: async function(server) {
-        return new Promise(async (resolve, reject) => {
-            if(!server) reject("Server cannot be null!")
-            let result = {}
-            result.blockNumber1 = await server.getBlockNumber(server)
-            //logger.debug("defaultBlockTime: " + server.mode.defaultBlockTime)
-            await utility.timeout(server.mode.defaultBlockTime)
-            result.blockNumber2 = await server.getBlockNumber(server)
-            resolve(result)
-        })
-    },
 
     //swt example:
     // { id: 38,

@@ -5,7 +5,7 @@ let logger = log4js.getLogger('default')
 const fs = require('fs');
 const { modes, allModes, configCommons } = require("../config")
 let { chainDatas } = require("../testData/chainDatas")
-const consts = require("../../lib/base/consts.js")
+const consts = require("../framework/lib/base/consts.js")
 const utility = require("./testUtility.js")
 //endregion
 

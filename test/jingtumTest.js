@@ -7,14 +7,14 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 let utility = require("./utility/testUtility.js")
-const schema = require("./schema.js")
-const consts = require('../lib/base/consts')
+const schema = require("./framework/schema.js")
+const consts = require('./framework/lib/base/consts')
 const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
 const { chainDatas } = require("./testData/chainDatas")
 let { modeAccounts } = require('./testData/accounts')
 const AccountsDealer = require('./utility/accountsDealer')
 const { configCommons, modes, } = require("./config")
-const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
+const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
 const status = responseStatus
 const testModeEnums = testMode
 //endregion

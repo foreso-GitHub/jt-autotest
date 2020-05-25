@@ -7,17 +7,23 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 let utility = require("./utility/testUtility.js")
-const schema = require("./schema.js")
-const consts = require('../lib/base/consts')
+const schema = require("./framework/schema.js")
+const consts = require('./framework/lib/base/consts')
 const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
 const { chainDatas } = require("./testData/chainDatas")
 let { modeAccounts } = require('./testData/accounts')
 const AccountsDealer = require('./utility/accountsDealer')
 const { configCommons, modes, } = require("./config")
-const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
+const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
 const status = responseStatus
 const testModeEnums = testMode
 const framework = require('./framework/framework')
+//endregion
+
+//region import test cases
+const tcsBlockCheck = require('./testCases/tcsBlockCheck')
+const tcsGetBlockNumber = require('./testCases/tcsGetBlockNumber')
+const tcsCreateAccount = require('./testCases/tcsCreateAccount')
 //endregion
 
 //region global fields
@@ -66,26 +72,44 @@ describe('Jingtum测试', function() {
             // /*
             describe('用例测试', function () {
 
-                testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+                //
+                // tcsBlockCheck.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                //
+                // tcsBlockCheck.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
+                // testForIpfsTest(server, '测试ipfs')
+
+
+
+
+                // testForGetAccount(server, '测试jt_getAccount')
+                //
+                // testForGetAccounts(server, '测试jt_accounts')
+                //
+                // testForGetBalance(server, '测试jt_getBalance')
+                //
+                // testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+                //
+                // testForGetTransaction(server, '测试jt_getTransactionByHash')
+                //
+                // testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+                //
+                // testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+                //
+                // testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
+                //
+                // testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
+                //
+                // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
             })
             //*/
 
             describe('is working', async function () {
 
-                // testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-
-                // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
-                // await utility.timeout(5000)
-
-                // testForIpfsTest(server, '测试ipfs')
-
-                // testForGetBlockNumber(server, '测试jt_blockNumber')
-
-                // testForGetAccount(server, '测试jt_getAccount')
-
-                // testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
             })
 

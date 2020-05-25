@@ -1,7 +1,7 @@
 //region require
-let rpc = require('../lib/rpc/rpcInterface.js')
-let swtclib = require('../lib/swtclib/swtclibInterface.js')
-const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
+let rpc = require('./framework/lib/rpc/rpcInterface.js')
+let swtclib = require('./framework/lib/swtclib/swtclibInterface.js')
+const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
 const { data, token, txs, blocks } = require("./testData/testData")
 //endregion
 
