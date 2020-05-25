@@ -67,7 +67,7 @@ describe('Jingtum测试', function() {
         // logger.debug('after connnect')
       })
 
-      // /*
+      /*
       describe('用例测试', function () {
 
         testForIpfsTest(server, '测试ipfs')
@@ -104,6 +104,8 @@ describe('Jingtum测试', function() {
       //*/
 
       describe('is working', async function () {
+
+        testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
 
         // testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
 

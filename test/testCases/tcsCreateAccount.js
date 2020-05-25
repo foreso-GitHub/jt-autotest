@@ -28,14 +28,14 @@ module.exports = tcsCreateAccount = {
         let nickName = utility.getDynamicTokenName().symbol
         let needPass = true
         let expectedError = ''
-        let testCase = this.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
+        let testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t创建无效的账户:重复的名字'
         nickName = 'autotest_1'
         needPass = false
         expectedError = 'the nickname already exists'
-        testCase = this.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
+        testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t创建无效的账户:超过长度的字符串数字'
@@ -45,7 +45,7 @@ module.exports = tcsCreateAccount = {
             + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
         needPass = false
         expectedError = ''
-        testCase = this.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
+        testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
@@ -68,7 +68,7 @@ module.exports = tcsCreateAccount = {
             txParams,
             null,
             framework.executeTestCaseForGet,
-            this.checkCreateAccount,
+            tcsCreateAccount.checkCreateAccount,
             expectedResult,
             restrictedLevel.L2,
             [serviceType.newChain],

@@ -18,21 +18,21 @@ let utility = require('../utility/testUtility')
 //endregion
 //endregion
 
-module.exports = tcsBlockCheck = {
+module.exports = tcsGetBlock = {
 
     //region block check
 
     testForGetBlockByNumber: function(server, describeTitle){
         let functionName = consts.rpcFunctions.getBlockByNumber
         let blockNumber = server.mode.txs.block.blockNumber
-        let testCases = this.createTestCasesForGetBlock(server, functionName, blockNumber)
+        let testCases = tcsGetBlock.createTestCasesForGetBlock(server, functionName, blockNumber)
         framework.testTestCases(server, describeTitle, testCases)
     },
 
     testForGetBlockByHash: function(server, describeTitle){
         let functionName = consts.rpcFunctions.getBlockByHash
         let blockNumber = server.mode.txs.block.blockHash
-        let testCases = this.createTestCasesForGetBlock(server, functionName, blockNumber)
+        let testCases = tcsGetBlock.createTestCasesForGetBlock(server, functionName, blockNumber)
         framework.testTestCases(server, describeTitle, testCases)
     },
 
@@ -43,13 +43,13 @@ module.exports = tcsBlockCheck = {
         let showFullTx = false
         let needPass = true
         let expectedError = ''
-        let testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        let testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         testNumber = '0020'
         showFullTx = true
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
@@ -57,38 +57,38 @@ module.exports = tcsBlockCheck = {
             testNumber = '0030'
             numberOrHash = 'earliest'
             showFullTx = true
-            testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0040'
             numberOrHash = 'earliest'
             showFullTx = false
-            testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0050'
             numberOrHash = 'latest'
             showFullTx = true
-            testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
             // testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0060'
             numberOrHash = 'latest'
             showFullTx = false
-            testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0090'
             numberOrHash = 'pending'
             showFullTx = true
-            testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0100'
             numberOrHash = 'pending'
             showFullTx = false
-            testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
 
@@ -97,7 +97,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = 'wrwerwre'
         needPass = false
         expectedError = 'interface conversion: interface {} is string, not bool'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是字符串'
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -107,7 +107,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = 123123
         needPass = false
         expectedError = 'interface conversion: interface {} is float64, not bool'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是数字'
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -117,7 +117,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = null
         needPass = false
         expectedError = 'interface conversion: interface {} is nil, not bool'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是空值'
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -127,7 +127,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = false
         needPass = false
         expectedError = 'value out of range'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         // testCase.supportedServices.push(serviceType.oldChain)  //old chain not support huge block number, it will cause test hook more than 20s
         framework.addTestCase(testCases, testCase)
 
@@ -136,7 +136,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = false
         needPass = false
         expectedError = 'ledgerNotFound'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
@@ -145,7 +145,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = false
         needPass = false
         expectedError = 'invalid ledger_index'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
@@ -154,7 +154,7 @@ module.exports = tcsBlockCheck = {
         showFullTx = false
         needPass = false
         expectedError = 'invalid ledger_index'
-        testCase = this.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
@@ -182,7 +182,7 @@ module.exports = tcsBlockCheck = {
             txParams,
             null,
             framework.executeTestCaseForGet,
-            this.checkBlock,
+            tcsGetBlock.checkBlock,
             expectedResult,
             restrictedLevel.L2,
             [serviceType.newChain,],

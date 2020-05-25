@@ -22,10 +22,12 @@ module.exports = tcsGetAccount = {
 
     //region get account
     testForGetAccount: function(server, describeTitle){
-        this.testForGetAccountByTag(server, describeTitle, null)
-        this.testForGetAccountByTag(server, describeTitle, 'validated')
-        this.testForGetAccountByTag(server, describeTitle, 'current')
-        this.testForGetAccountByTag(server, describeTitle, 'closed')
+        describe(describeTitle, function () {
+            tcsGetAccount.testForGetAccountByTag(server, describeTitle, null)
+            tcsGetAccount.testForGetAccountByTag(server, describeTitle, 'validated')
+            tcsGetAccount.testForGetAccountByTag(server, describeTitle, 'current')
+            tcsGetAccount.testForGetAccountByTag(server, describeTitle, 'closed')
+        })
     },
 
     testForGetAccountByTag: function(server, describeTitle, tag){
@@ -37,13 +39,13 @@ module.exports = tcsGetAccount = {
         let addressOrName = server.mode.addresses.balanceAccount.address
         let needPass = true
         let expectedError = ''
-        let testCase = this.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        let testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询有效的昵称_01:地址内有底层币和代币'
         addressOrName = server.mode.addresses.balanceAccount.nickName
-        testCase = this.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
@@ -51,7 +53,7 @@ module.exports = tcsGetAccount = {
         needPass = false
         //expectedError = 'no such account'
         expectedError = 'Account not found.'
-        testCase = this.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
@@ -59,18 +61,18 @@ module.exports = tcsGetAccount = {
         addressOrName = server.mode.addresses.inactiveAccount1.nickName
         //expectedError = 'Bad account address:'
         expectedError = 'invalid account'
-        testCase = this.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.address
-        testCase = this.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
-        testCase = this.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
@@ -94,7 +96,7 @@ module.exports = tcsGetAccount = {
             txParams,
             null,
             framework.executeTestCaseForGet,
-            this.checkGetAccount,
+            tcsGetAccount.checkGetAccount,
             expectedResult,
             restrictedLevel.L2,
             [serviceType.newChain,],
