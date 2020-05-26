@@ -33,6 +33,7 @@ const tcsGetTx = require('./testCases/tcsGetTx')
 const tcsGetTxCount = require('./testCases/tcsGetTxCount')
 const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
+const tcsIpfs = require('./testCases/tcsIpfs')
 //endregion
 
 //region global fields
@@ -50,8 +51,10 @@ describe('Jingtum测试', function() {
 
         let server = mode.server
         server.init(mode)
-        mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
-        mode.txs = utility.findMode(chainDatas, mode.name)
+        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
+            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
+            mode.txs = utility.findMode(chainDatas, mode.name)
+        }
 
         // this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
 
@@ -76,7 +79,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -109,13 +112,14 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
 
-                // testForIpfsTest(server, '测试ipfs')
+                tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
             })
             //*/
 
             describe('is working', async function () {
 
+                tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
             })
 
