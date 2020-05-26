@@ -23,29 +23,20 @@ module.exports = tcsPressureSendTx = {
 
     testForPressureSendTx: function(server, describeTitle){
         describe(describeTitle, function (){
-            let categoryName = ''
-            let txFunctionName = ''
-            let txParams = {}
-            let testCases = []
 
             //region sequence test
-            categoryName = 'Sequence测试: '
+            let categoryName = 'Sequence测试: '
             tcsPressureSendTx.testForSequenceTest(server, categoryName)
             //endregion
 
             //region pressure test
-            categoryName = '原生币swt压力测试，分多个case执行'
-            testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, 20)
-            framework.testTestCases(server, categoryName, testCases)
-
-            categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
-            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
-            framework.testTestCases(server, categoryName, testCases)
-
-            categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
-            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
-            framework.testTestCases(server, categoryName, testCases)
+            tcsPressureSendTx.testForPressureTest(server)
             // endregion
+
+            //region pure pressure test
+            // tcsPressureSendTx.testForPurePressureTest(server)
+            // endregion
+
         })
     },
 
@@ -414,13 +405,29 @@ module.exports = tcsPressureSendTx = {
         let testCase = framework.createTestCase(title, server,
             txFunctionName, txParams, null,
             null, framework.checkTestCase, null,
-            restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
+            restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
         return testCase
     },
 
     // endregion
 
     //region pressure test
+    testForPressureTest: function(server){
+        let categoryName = ''
+        let testCases = []
+
+        categoryName = '原生币swt压力测试，分多个case执行'
+        testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, 20)
+        framework.testTestCases(server, categoryName, testCases)
+
+        categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
+        testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 1000)
+        framework.testTestCases(server, categoryName, testCases)
+
+        categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
+        testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
+        framework.testTestCases(server, categoryName, testCases)
+    },
 
     createTestCasesForPressureTest: function(server, categoryName, testCount){
         let testCases = []
@@ -433,7 +440,7 @@ module.exports = tcsPressureSendTx = {
             let testCase = framework.createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
                 txFunctionName, txParams, null,
                 executeFunction, checkFunction, expectedResult,
-                restrictedLevel.L0, [serviceType.newChain, serviceType.oldChain])
+                restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
             framework.addTestCase(testCases, testCase)
         }
         return testCases
@@ -512,6 +519,132 @@ module.exports = tcsPressureSendTx = {
         return testCase
     },
     //endregion
+
+    //endregion
+
+    //region pure pressure test
+
+    //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
+    testForPurePressureTest: function(server){
+        let testCases = []
+        let categoryName = '纯压力测试'
+        let accountParams = []
+        let addresses = server.mode.addresses
+        let value = '0.000001'
+        let fee = '0.00001'
+        let count = 2
+
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        //     addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
+        //     addresses.receiver2.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
+        //     addresses.receiver3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver1.address, addresses.receiver1.secret,
+        //     addresses.sender1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver2.address, addresses.receiver2.secret,
+        //     addresses.sender2.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver3.address, addresses.receiver3.secret,
+        //     addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount.address, addresses.pressureAccount.secret,
+        //     addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam('jLWCJbszAnyFRFbNhmFQ5nyQ1RYa5vAhvm', 'snQvdZrd2BskdE1uHCW1sW48Th36b',
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+
+        testCases = tcsPressureSendTx.createTestCaseForPurePressureTest(server,  accountParams)
+        framework.testTestCases(server, categoryName, testCases)
+    },
+
+    createTestCaseForPurePressureTest: function(server, accountParams){
+        let testCases = []
+        let totalCount = 0
+        for (let accountParam of accountParams){
+            totalCount += accountParam.count
+        }
+        let title = '9001\t纯交易压力测试，交易数量：' + totalCount
+        // let testCase = tcsPressureSendTx.createTestCaseForPressureTest(server, title, txFunctionName, count)
+        let testCase = framework.createTestCase(title, server,
+            '', '', null,
+            null, null, null,
+            restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
+
+        testCase.otherParams = {}
+        testCase.otherParams.accountParams = accountParams
+        testCase.otherParams.totalCount = totalCount
+        testCase.executeFunction = tcsPressureSendTx.executePurePressureTest
+        testCase.checkFunction = tcsPressureSendTx.checkPurePressureTest
+
+        framework.addTestCase(testCases, testCase)
+        return testCases
+    },
+
+    executePurePressureTest: function(testCase){
+        testCase.hasExecuted = true
+        return new Promise(async (resolve, reject) => {
+            let server = testCase.server
+            let accountParams = testCase.otherParams.accountParams
+            let totalCount = testCase.otherParams.totalCount
+            let executeCount = 0
+            let totalSuccessCount = 0
+            accountParams.forEach(async accountParam=>{
+            // for (let accountParam of accountParams){
+            // for (let j = 0; j < accountParams.length; j++){
+            //     let accountParam = accountParams[j]
+                let count = accountParam.count
+                let txFunctionName = accountParam.txFunctionName
+
+                //get sequence
+                let currentSequence = await framework.getSequence(server, accountParam.from)
+                currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+                let sequence = currentSequence
+
+                accountParam.results = []
+                accountParam.successCount = 0
+
+                //transfer
+                for(let i = 0; i < count; i++){
+                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence++,
+                        accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
+                    let result = await server.getResponse(server, txFunctionName, params)
+                    executeCount++
+                    accountParam.results.push(result)
+                    if(result.status == responseStatus.success) {
+                        accountParam.successCount++
+                        totalSuccessCount++
+                    }
+
+                    logger.debug(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: ' + result)
+
+                    if(executeCount == totalCount){
+                        testCase.otherParams.executeCount = executeCount
+                        testCase.otherParams.totalSuccessCount = totalSuccessCount
+                        resolve(testCase.otherParams)
+                    }
+                }
+            })
+        })
+
+
+    },
+
+    checkPurePressureTest: function(testCase){
+        let totalCount = testCase.otherParams.totalCount
+        let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        expect(totalSuccessCount).to.be.equal(totalCount)
+    },
+
+    createAccountParam: function(from, secret, to, value, fee, memos, txFunctionName, count){
+        let accountParam = {}
+        if(from != null) accountParam.from = from
+        if(secret != null) accountParam.secret = secret
+        if(to != null) accountParam.to = to
+        if(value != null) accountParam.value = value
+        if(fee != null) accountParam.fee = fee
+        if(memos != null) accountParam.memos = memos
+        if(txFunctionName != null) accountParam.txFunctionName = txFunctionName
+        if(count != null) accountParam.count = count
+        return accountParam
+    },
 
     //endregion
 

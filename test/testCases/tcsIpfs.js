@@ -100,7 +100,7 @@ module.exports = tcsIpfs = {
         let testCase = framework.createTestCase(title, server,
             txFunctionName, txParams, null,
             executeFunction, framework.checkTestCase, framework.createExpecteResult(true),
-            restrictedLevel.L0, [serviceType.ipfs])
+            restrictedLevel.L2, [serviceType.ipfs])
         return testCase
     },
 

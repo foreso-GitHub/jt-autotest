@@ -119,6 +119,8 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
+                // tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
+
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
             })
