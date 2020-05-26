@@ -32,6 +32,7 @@ const tcsGetReceipt = require('./testCases/tcsGetReceipt')
 const tcsGetTx = require('./testCases/tcsGetTx')
 const tcsGetTxCount = require('./testCases/tcsGetTxCount')
 const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
+const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
 //endregion
 
 //region global fields
@@ -78,33 +79,35 @@ describe('Jingtum测试', function() {
             // /*
             describe('用例测试', function () {
 
-                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-                //
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-                //
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
-                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
-                //
-                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-                //
-                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-                //
-                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
-                //
-                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
-                //
-                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
-                //
-                // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
+                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
+                tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+
+                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
+                tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+
+                tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+
+                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+
+                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+
+                tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
                 tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
 
                 // testForIpfsTest(server, '测试ipfs')
 
