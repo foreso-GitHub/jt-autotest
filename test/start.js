@@ -79,7 +79,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -112,14 +112,14 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
 
-                tcsIpfs.testForIpfsTest(server, '测试ipfs')
+                // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
             })
             //*/
 
             describe('is working', async function () {
 
-                tcsIpfs.testForIpfsTest(server, '测试ipfs')
+                // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
             })
 
