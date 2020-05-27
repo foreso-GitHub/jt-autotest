@@ -25,12 +25,12 @@ module.exports = tcsPressureSendTx = {
         describe(describeTitle, function (){
 
             //region sequence test
-            let categoryName = 'Sequence测试: '
-            tcsPressureSendTx.testForSequenceTest(server, categoryName)
+            // let categoryName = 'Sequence测试: '
+            // tcsPressureSendTx.testForSequenceTest(server, categoryName)
             //endregion
 
             //region pressure test
-            tcsPressureSendTx.testForPressureTest(server)
+            // tcsPressureSendTx.testForPressureTest(server)
             // endregion
 
             //region pure pressure test
@@ -532,7 +532,7 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        let count = 30
+        let count = 300
 
         //region push account params
 
@@ -677,7 +677,6 @@ module.exports = tcsPressureSendTx = {
     checkPurePressureTest: async function(testCase){
         let totalCount = testCase.otherParams.totalCount
         let totalSuccessCount = testCase.otherParams.totalSuccessCount
-        expect(totalSuccessCount).to.be.equal(totalCount)
 
         //check tps
         let server = testCase.server
@@ -723,6 +722,8 @@ module.exports = tcsPressureSendTx = {
         logger.debug("tps1: " + tps1)
         logger.debug("txCountInBlocks: " + txCountInBlocks)
         logger.debug("tps2: " + tps2)
+
+        expect(totalSuccessCount).to.be.equal(totalCount)
     },
 
     createAccountParam: function(from, secret, to, value, fee, memos, txFunctionName, count){
