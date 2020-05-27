@@ -532,7 +532,9 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        let count = 200
+        let count = 300
+
+        //region push account params
 
         accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
             addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
@@ -559,6 +561,19 @@ module.exports = tcsPressureSendTx = {
             addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
         accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount5.address, addresses.pressureAccount5.secret,
             addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount6.address, addresses.pressureAccount6.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.signTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount7.address, addresses.pressureAccount7.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.signTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount8.address, addresses.pressureAccount8.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.signTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount9.address, addresses.pressureAccount9.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.signTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount10.address, addresses.pressureAccount10.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.signTx, count))
+
+        //endregion
 
         testCases = tcsPressureSendTx.createTestCaseForPurePressureTest(server,  accountParams)
         framework.testTestCases(server, categoryName, testCases)
@@ -615,6 +630,9 @@ module.exports = tcsPressureSendTx = {
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence++,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
+                    if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
+                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
+                    }
                     executeCount++
                     accountParam.results.push(result)
                     if(result.status == responseStatus.success) {
@@ -632,14 +650,54 @@ module.exports = tcsPressureSendTx = {
                 }
             })
         })
-
-
     },
 
-    checkPurePressureTest: function(testCase){
+    checkPurePressureTest: async function(testCase){
         let totalCount = testCase.otherParams.totalCount
         let totalSuccessCount = testCase.otherParams.totalSuccessCount
         expect(totalSuccessCount).to.be.equal(totalCount)
+
+        //check tps
+        let server = testCase.server
+        let blockTime = server.mode.defaultBlockTime / 1000
+
+        let startTxHash = testCase.otherParams.accountParams[0].results[0].result[0]
+        let startTx = await utility.getTxByHash(server, startTxHash)
+        let startBlockNumber = startTx.result.ledger_index
+
+        let endAccountParams = testCase.otherParams.accountParams[testCase.otherParams.accountParams.length - 1]
+        let endTxHash = endAccountParams.results[endAccountParams.results.length - 1].result[0]
+        let endTx = await utility.getTxByHash(server, endTxHash)
+        let endBlockNumber = endTx.result.ledger_index
+
+        let blockTpsInfoList = []
+        for(let i = startBlockNumber; i <= endBlockNumber; i++){
+            let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
+            let block = blockResponse.result
+            let blockTpsInfo = {}
+            blockTpsInfo.blockNumber = block.ledger_index
+            blockTpsInfo.txCount = block.transactions.length
+            blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
+            blockTpsInfoList.push(blockTpsInfo)
+        }
+
+        let txCountInBlocks = 0
+        for(let blockTpsInfo of blockTpsInfoList){
+            logger.debug('------ block tps status ------')
+            logger.debug("blockNumber: " + blockTpsInfo.blockNumber)
+            logger.debug("txCount: " + blockTpsInfo.txCount)
+            logger.debug("tps: " + blockTpsInfo.tps)
+            txCountInBlocks += blockTpsInfo.txCount
+        }
+
+        let tps1 = totalSuccessCount / (endBlockNumber - startBlockNumber + 1) / blockTime
+        let tps2 = txCountInBlocks / (endBlockNumber - startBlockNumber + 1) / blockTime
+        logger.debug("======== tps status ========")
+        logger.debug("startBlockNumber: " + startBlockNumber)
+        logger.debug("endBlockNumber: " + endBlockNumber)
+        logger.debug("totalSuccessCount: " + totalSuccessCount)
+        logger.debug("tps1: " + tps1)
+        logger.debug("tps2: " + tps2)
     },
 
     createAccountParam: function(from, secret, to, value, fee, memos, txFunctionName, count){
@@ -817,6 +875,5 @@ module.exports = tcsPressureSendTx = {
     //endregion
 
     //endregion
-
 
 }

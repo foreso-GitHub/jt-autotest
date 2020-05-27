@@ -112,17 +112,20 @@ module.exports = testUtility = {
 
     //region get tx
 
-    getTxByHash: function(server, hash, retryCount){
+    getTxByHash: function(server, hash, retriedCount){
+        if(retriedCount == null){
+            retriedCount = 0
+        }
         return new Promise(async function(resolve, reject){
             server.responseGetTxByHash(server, hash)
                 .then(async function (value) {
                     //retry
-                    if(retryCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
+                    if(retriedCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
                         || value.result.toString().indexOf('no such transaction') != -1)){
-                        retryCount++
-                        logger.debug("===Try responseGetTxByHash again! The " + retryCount + " retry!===")
+                        retriedCount++
+                        logger.debug("===Try responseGetTxByHash again! The " + retriedCount + " retry!===")
                         await testUtility.timeout(server.mode.retryPauseTime)
-                        resolve(await testUtility.getTxByHash(server, hash, retryCount))
+                        resolve(await testUtility.getTxByHash(server, hash, retriedCount))
                     }
                     else{
                         resolve(value)
