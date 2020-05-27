@@ -532,7 +532,7 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        let count = 300
+        let count = 30
 
         //region push account params
 

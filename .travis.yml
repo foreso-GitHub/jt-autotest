@@ -10,7 +10,7 @@ install:
 before_script:
 
 script:
-  - mocha ./test/jingtumTest.js
+  - mocha ./test/start.js
 
 after_script:
 
