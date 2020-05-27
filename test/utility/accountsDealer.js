@@ -10,7 +10,7 @@ let { modeAccounts } = require("../testData/accounts")
 const utility = require("../framework/testUtility.js")
 //endregion
 
-const ACCOUNT_COUNT = 15
+const ACCOUNT_COUNT = 50
 const ACCOUNT_MIN_BALANCE = 50*1000000
 const ACCOUNT_CHARGE_AMOUNT = 100
 let charger = new Charger()
@@ -23,19 +23,9 @@ function accountsDealer() {
 
     function init(mode) {
         root = mode.root
+        root.nickName = 'root'
         server = mode.server
         server.init(mode)
-    }
-
-    accountsDealer.prototype.create = async function(mode) {
-        init(mode)
-        let accounts = await createAccounts(mode.server, 15)
-        let accountsJsonString = JSON.stringify(accounts)
-        fs.writeFileSync(mode.accountsJsonPath, accountsJsonString);
-        let jsString = 'let accounts = ' + accountsJsonString + '\r\nmodule.exports = { accounts }'
-        fs.writeFileSync(mode.accountsJsPath, jsString);
-        // let newAccounts = await this.loadAccounts(mode.accountsJsonPath)
-        return accounts
     }
 
     async function createAccounts(server, count){
@@ -167,6 +157,86 @@ function accountsDealer() {
                 address:accounts[i].address,
                 secret:accounts[i++].secret,
             },
+            pressureAccount1:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount2:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount3:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount4:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount5:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount6:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount7:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount8:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount9:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount10:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount11:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount12:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount13:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount14:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount15:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount16:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount17:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount18:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount19:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            pressureAccount20:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
             inactiveAccount1:{
                 address:inactiveAccounts[0].address,
                 secret:inactiveAccounts[0].secret,
@@ -195,17 +265,6 @@ function accountsDealer() {
 
     //region init
     //init accounts, and send swtc in them.
-    accountsDealer.prototype.initAndChargeAccounts = async function(mode){
-        let accounts = await this.loadAccounts(mode.accountsJsonPath)
-        if (accounts.length < ACCOUNT_COUNT) {
-            await this.create(mode)
-            accounts = await this.loadAccounts(mode.accountsJsonPath)
-        }
-        let server = mode.server
-        server.init(mode)
-        charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
-    }
-
     accountsDealer.prototype.initAccounts = async function(modes){
         return new Promise((resolve, reject) =>{
             if(!modeAccounts){
@@ -245,7 +304,7 @@ function accountsDealer() {
 
     async function createNewAccounts(createMode){
         init(createMode)
-        let accounts = await createAccounts(createMode.server, 15)
+        let accounts = await createAccounts(createMode.server, ACCOUNT_COUNT)
         let newModeAccount = {}
         newModeAccount.modeName = createMode.name
         newModeAccount.accounts = accounts
@@ -269,7 +328,6 @@ function accountsDealer() {
             let accounts = findModeAccounts(modeAccounts, mode.name)
             await charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
         }
-
     }
 
     accountsDealer.prototype.startInit = async function(){

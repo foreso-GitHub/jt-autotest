@@ -25,16 +25,16 @@ module.exports = tcsPressureSendTx = {
         describe(describeTitle, function (){
 
             //region sequence test
-            let categoryName = 'Sequence测试: '
-            tcsPressureSendTx.testForSequenceTest(server, categoryName)
+            // let categoryName = 'Sequence测试: '
+            // tcsPressureSendTx.testForSequenceTest(server, categoryName)
             //endregion
 
             //region pressure test
-            tcsPressureSendTx.testForPressureTest(server)
+            // tcsPressureSendTx.testForPressureTest(server)
             // endregion
 
             //region pure pressure test
-            // tcsPressureSendTx.testForPurePressureTest(server)
+            tcsPressureSendTx.testForPurePressureTest(server)
             // endregion
 
         })
@@ -421,7 +421,7 @@ module.exports = tcsPressureSendTx = {
         framework.testTestCases(server, categoryName, testCases)
 
         categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
-        testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 1000)
+        testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
         framework.testTestCases(server, categoryName, testCases)
 
         categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
@@ -532,23 +532,32 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        let count = 2
+        let count = 200
 
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-        //     addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
-        //     addresses.receiver2.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
-        //     addresses.receiver3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver1.address, addresses.receiver1.secret,
-        //     addresses.sender1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver2.address, addresses.receiver2.secret,
-        //     addresses.sender2.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver3.address, addresses.receiver3.secret,
-        //     addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        // accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount.address, addresses.pressureAccount.secret,
-        //     addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        accountParams.push(tcsPressureSendTx.createAccountParam('jLWCJbszAnyFRFbNhmFQ5nyQ1RYa5vAhvm', 'snQvdZrd2BskdE1uHCW1sW48Th36b',
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+            addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
+            addresses.receiver2.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
+            addresses.receiver3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver1.address, addresses.receiver1.secret,
+            addresses.sender1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver2.address, addresses.receiver2.secret,
+            addresses.sender2.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.receiver3.address, addresses.receiver3.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount.address, addresses.pressureAccount.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount1.address, addresses.pressureAccount1.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount2.address, addresses.pressureAccount2.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount3.address, addresses.pressureAccount3.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount4.address, addresses.pressureAccount4.secret,
+            addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount5.address, addresses.pressureAccount5.secret,
             addresses.sender3.address, value, fee, null, consts.rpcFunctions.sendTx, count))
 
         testCases = tcsPressureSendTx.createTestCaseForPurePressureTest(server,  accountParams)
