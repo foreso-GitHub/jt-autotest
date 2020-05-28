@@ -321,7 +321,7 @@ function accountsDealer() {
     }
 
     accountsDealer.prototype.chargeAccounts = async function(modes){
-        for(let i=0;i<modes.length;i++) {
+        for(let i = 0; i < modes.length; i++) {
             let mode = modes[i]
             let server = mode.server
             server.init(mode)
@@ -331,8 +331,9 @@ function accountsDealer() {
     }
 
     accountsDealer.prototype.startInit = async function(){
-        await this.initAccounts(allModes)
-        this.chargeAccounts(allModes)
+        let modeAccounts = await this.initAccounts(allModes)
+        await this.chargeAccounts(allModes)
+        return modeAccounts
     }
     //endregion
 

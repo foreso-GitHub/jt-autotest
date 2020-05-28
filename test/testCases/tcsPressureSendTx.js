@@ -34,9 +34,8 @@ module.exports = tcsPressureSendTx = {
             // endregion
 
             //region pure pressure test
-            tcsPressureSendTx.testForPurePressureTest(server)
+            // tcsPressureSendTx.testForPurePressureTest(server)
             // endregion
-
         })
     },
 
@@ -412,21 +411,23 @@ module.exports = tcsPressureSendTx = {
     // endregion
 
     //region pressure test
-    testForPressureTest: function(server){
-        let categoryName = ''
-        let testCases = []
+    testForPressureTest: function(server, describeTitle){
+        describe(describeTitle, function () {
+            let categoryName = ''
+            let testCases = []
 
-        categoryName = '原生币swt压力测试，分多个case执行'
-        testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, 20)
-        framework.testTestCases(server, categoryName, testCases)
+            categoryName = '原生币swt压力测试，分多个case执行'
+            testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, 20)
+            framework.testTestCases(server, categoryName, testCases)
 
-        categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
-        testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
-        framework.testTestCases(server, categoryName, testCases)
+            categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
+            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
+            framework.testTestCases(server, categoryName, testCases)
 
-        categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
-        testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
-        framework.testTestCases(server, categoryName, testCases)
+            categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
+            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
+            framework.testTestCases(server, categoryName, testCases)
+        })
     },
 
     createTestCasesForPressureTest: function(server, categoryName, testCount){
@@ -525,9 +526,8 @@ module.exports = tcsPressureSendTx = {
     //region pure pressure test
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
-    testForPurePressureTest: function(server){
+    testForPurePressureTest: function(server, describeTitle){
         let testCases = []
-        let categoryName = '纯压力测试'
         let accountParams = []
         let addresses = server.mode.addresses
         let value = '0.000001'
@@ -598,7 +598,7 @@ module.exports = tcsPressureSendTx = {
         //endregion
 
         testCases = tcsPressureSendTx.createTestCaseForPurePressureTest(server,  accountParams)
-        framework.testTestCases(server, categoryName, testCases)
+        framework.testTestCases(server, describeTitle, testCases)
     },
 
     createTestCaseForPurePressureTest: function(server, accountParams){

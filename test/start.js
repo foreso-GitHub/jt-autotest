@@ -62,7 +62,7 @@ describe('Jingtum测试', function() {
             this.timeout(120000)
         }
         else if(mode.service == serviceType.newChain){
-            this.timeout(9930000)
+            this.timeout(30000)
         }
         else if(mode.service == serviceType.ipfs){
             this.timeout(35000)
@@ -79,7 +79,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -110,7 +110,11 @@ describe('Jingtum测试', function() {
 
                 tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-                tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
+                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
+                tcsPressureSendTx.testForPressureTest(server, '交易发送压力测试')
+
+                tcsPressureSendTx.testForPurePressureTest(server, '交易压力测试：最大压力')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
@@ -119,7 +123,13 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
-                tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                //
+                // tcsPressureSendTx.testForPressureTest(server, '交易发送压力测试')
+                //
+                // tcsPressureSendTx.testForPurePressureTest(server, '交易压力测试：最大压力')
+
+                // tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 

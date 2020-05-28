@@ -7,12 +7,15 @@ const { modes, allModes, configCommons } = require("../config")
 let { chainDatas } = require("../testData/chainDatas")
 const consts = require("../framework/lib/base/consts.js")
 const utility = require("../framework/testUtility.js")
+const AccountsDealer = require('./accountsDealer')
+let accountsDealer = new AccountsDealer()
 //endregion
 
 
 function chainDataCreator(){
 
-    chainDataCreator.prototype.create = async function(modes, forceCreate){
+    chainDataCreator.prototype.create = async function(modes, modeAccounts, forceCreate){
+        logger.debug('===start chainDataCreator===')
         return new Promise((resolve, reject) =>{
             if(forceCreate == null){
                 forceCreate = false
@@ -44,6 +47,7 @@ function chainDataCreator(){
                         }
                         for(let i = 0; i < modesNeedCreateChainData.length; i++) {
                             let createMode = modesNeedCreateChainData[i]
+                            createMode.addresses = accountsDealer.getAddressesByMode(modeAccounts, createMode)
                             let newChainData = await createChainData(createMode)
                             chainDatas.push(newChainData)
                             createCount++
@@ -65,19 +69,21 @@ function chainDataCreator(){
         let txResults = []
         let server = mode.server
         server.init(mode)
-        let root = mode.root
-        const to = "j9h2qmiAP1efVoTZQeH2DGmByQVZbmmCdT"
+        // let root = mode.root
+        let sender = mode.addresses.sender1
+        let sequence3 = mode.addresses.sequence3
+        const to = mode.addresses.receiver1.address
         let params
         let result
 
         //get sequence
-        let response = await server.responseGetAccount(server, root.address)
+        let response = await server.responseGetAccount(server, sender.address)
         let sequence = response.result.Sequence
 
         //issue token
         let tokenName = utility.getDynamicTokenName()
-        params = server.createIssueTokenParams(root.address, root.secret, sequence++,
-            tokenName.name, tokenName.symbol, '8', '99999999', false, consts.flags.normal, '10')
+        params = server.createIssueTokenParams(sender.address, sender.secret, sequence++,
+            tokenName.name, tokenName.symbol, '8', '99999999', false, consts.flags.normal, '0.00001')
         result = await server.responseSendTx(server, params)
         txResults.push(result)
 
@@ -85,20 +91,20 @@ function chainDataCreator(){
         let hash = result.result[0]
         await utility.getTxByHash(server, hash, 0) //wait for issue token done
         let showSymbol = utility.getShowSymbol(tokenName.symbol, 'jjjjjjjjjjjjjjjjjjjjjhoLvTp')
-        params = server.createTxParams(root.address, root.secret, sequence++, to, '1', null, null,
+        params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
             null, null, null, null, null, null, null)
         params[0].value = '1' + showSymbol
         result = await server.responseSendTx(server, params)
         txResults.push(result)
 
         //normal swtc tx
-        params = server.createTxParams(root.address, root.secret, sequence++, to, '1', null, null,
+        params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
             null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
         txResults.push(result)
 
         //memo swtc tx
-        params = server.createTxParams(root.address, root.secret, sequence++, to, '1', null,
+        params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null,
             ['create test chain data for ' + mode.name + ' at ' + (new Date()).toISOString()],
             null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
@@ -106,12 +112,18 @@ function chainDataCreator(){
 
         //batch txs
         for(let i = 0; i < 20; i++){
-            params = server.createTxParams(root.address, root.secret, sequence++, to, '1', null,
+            params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null,
                 ['create test chain data for ' + mode.name + ' at ' + (new Date()).toISOString()],
                 null, null, null, null, null, null, null)
             result = await server.responseSendTx(server, params)
             txResults.push(result)
         }
+
+        //make a tx for sequence3 account, to make 0650 case work
+        params = server.createTxParams(sequence3.address, sequence3.secret, 1, to, '1',
+            null, null,null, null, null, null, null, null, null)
+        result = await server.responseSendTx(server, params)
+        txResults.push(result)
 
         //wait 10s and then get tx and block
         let txs = []
