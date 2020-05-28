@@ -10,7 +10,7 @@ let { modeAccounts } = require("../testData/accounts")
 const utility = require("../framework/testUtility.js")
 //endregion
 
-const ACCOUNT_COUNT = 50
+const ACCOUNT_COUNT = 100
 const ACCOUNT_MIN_BALANCE = 50*1000000
 const ACCOUNT_CHARGE_AMOUNT = 100
 let charger = new Charger()

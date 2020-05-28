@@ -19,6 +19,8 @@ const { token, } = require("../testData/testData")
 //endregion
 //endregion
 
+const SINGER_PRESSURE_TEST_COUNT = 300
+
 module.exports = tcsPressureSendTx = {
 
     testForPressureSendTx: function(server, describeTitle){
@@ -532,7 +534,7 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        let count = 30
+        let count = SINGER_PRESSURE_TEST_COUNT
 
         //region push account params
 
