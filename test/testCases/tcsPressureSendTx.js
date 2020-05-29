@@ -19,7 +19,7 @@ const { token, } = require("../testData/testData")
 //endregion
 //endregion
 
-const SINGER_PRESSURE_TEST_COUNT = 300
+const SINGER_PRESSURE_TEST_COUNT = 10
 
 module.exports = tcsPressureSendTx = {
 
