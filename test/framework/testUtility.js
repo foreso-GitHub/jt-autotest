@@ -70,10 +70,10 @@ module.exports = testUtility = {
                 + '\r\nmodule.exports = { ' + moduleName +' }'
             fs.writeFile(filePath, fileString, function (err) {
                 if (err) {
-                    logger.debug(err)
+                    logger.info(err)
                     reject(err)
                 } else {
-                    logger.debug('Accounts js saved: ' + filePath)
+                    logger.info('Accounts js saved: ' + filePath)
                     resolve(jsonObject)
                 }
             })

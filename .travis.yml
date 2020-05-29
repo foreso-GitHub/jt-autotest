@@ -18,6 +18,7 @@ branches:
   only:
     - master
     - Dev
+    - 20200528-XuOu-BoxChainAutoTest
 
 notifications:
   email: foreso@sina.com

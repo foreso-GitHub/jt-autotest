@@ -664,7 +664,7 @@ module.exports = tcsPressureSendTx = {
                         totalSuccessCount++
                     }
 
-                    logger.debug(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: ' + result)
+                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: ' + result)
 
                     if(executeCount == totalCount){
                         testCase.otherParams.executeCount = executeCount
@@ -706,24 +706,24 @@ module.exports = tcsPressureSendTx = {
 
         let txCountInBlocks = 0
         for(let blockTpsInfo of blockTpsInfoList){
-            logger.debug('------ block tps status ------')
-            logger.debug("blockNumber: " + blockTpsInfo.blockNumber)
-            logger.debug("txCount: " + blockTpsInfo.txCount)
-            logger.debug("tps: " + blockTpsInfo.tps)
+            logger.info('------ block tps status ------')
+            logger.info("blockNumber: " + blockTpsInfo.blockNumber)
+            logger.info("txCount: " + blockTpsInfo.txCount)
+            logger.info("tps: " + blockTpsInfo.tps)
             txCountInBlocks += blockTpsInfo.txCount
         }
 
         let blockCount = endBlockNumber - startBlockNumber + 1
         let tps1 = totalSuccessCount / blockCount / blockTime
         let tps2 = txCountInBlocks / blockCount / blockTime
-        logger.debug("======== tps status ========")
-        logger.debug("startBlockNumber: " + startBlockNumber)
-        logger.debug("endBlockNumber: " + endBlockNumber)
-        logger.debug("blockCount: " + blockCount)
-        logger.debug("totalSuccessCount: " + totalSuccessCount)
-        logger.debug("tps1: " + tps1)
-        logger.debug("txCountInBlocks: " + txCountInBlocks)
-        logger.debug("tps2: " + tps2)
+        logger.info("======== tps status ========")
+        logger.info("startBlockNumber: " + startBlockNumber)
+        logger.info("endBlockNumber: " + endBlockNumber)
+        logger.info("blockCount: " + blockCount)
+        logger.info("totalSuccessCount: " + totalSuccessCount)
+        logger.info("tps1: " + tps1)
+        logger.info("txCountInBlocks: " + txCountInBlocks)
+        logger.info("tps2: " + tps2)
 
         expect(totalSuccessCount).to.be.equal(totalCount)
     },

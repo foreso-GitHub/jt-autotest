@@ -15,7 +15,7 @@ let accountsDealer = new AccountsDealer()
 function chainDataCreator(){
 
     chainDataCreator.prototype.create = async function(modes, modeAccounts, forceCreate){
-        logger.debug('===start chainDataCreator===')
+        logger.info('===start chainDataCreator===')
         return new Promise((resolve, reject) =>{
             if(forceCreate == null){
                 forceCreate = false
