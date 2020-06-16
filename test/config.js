@@ -63,7 +63,7 @@ let mode_rpc_box01 = {
 let mode_rpc_box02 = {
     name: "rpc_box02",
     server: rpc_box01,
-    initParams: {url:'http://box-admin.elerp.net:10201/v1/jsonrpc'},
+    initParams: {url:'http://box-admin.elerp.net:10202/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,

@@ -62,7 +62,7 @@ describe('Jingtum测试', function() {
             this.timeout(120000)
         }
         else if(mode.service == serviceType.newChain){
-            this.timeout(30000)
+            this.timeout(9930000)
         }
         else if(mode.service == serviceType.ipfs){
             this.timeout(35000)
@@ -79,7 +79,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -123,9 +123,9 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
-                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易')
+                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
 
-                // tcsPressureSendTx.testForPressureSendTx(server, '交易发送压力测试')
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 

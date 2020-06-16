@@ -1,8 +1,8 @@
 {
-  "name": "test_demo",
+  "name": "jt_autotest",
   "version": "1.0.0",
-  "description": "just try",
-  "main": "index.js",
+  "description": "Auto test for Jingtum new chain.",
+  "main": "./test/start.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha"
   },
@@ -17,7 +17,9 @@
     "request": "^2.79.0",
     "log4js": "^6.1.0",
     "swtc-lib": "^1.6.39",
-    "hashmap": "^2.4.0"
+    "hashmap": "^2.4.0",
+    "async": "",
+    "ssh2-utils": "^1.0.28"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
