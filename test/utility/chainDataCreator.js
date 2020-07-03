@@ -81,21 +81,23 @@ function chainDataCreator(){
         let sequence = response.result.Sequence
 
         //issue token
-        let tokenName = utility.getDynamicTokenName()
-        params = server.createIssueTokenParams(sender.address, sender.secret, sequence++,
-            tokenName.name, tokenName.symbol, '8', '99999999', false, consts.flags.normal, '0.00001')
-        result = await server.responseSendTx(server, params)
-        txResults.push(result)
+        //todo now only CNYT can be issue, need update here
+        // let tokenName = utility.getDynamicTokenName()
+        // params = server.createIssueTokenParams(sender.address, sender.secret, sequence++,
+        //     tokenName.name, tokenName.symbol, '8', '99999999', false, consts.flags.normal, '0.00001')
+        // result = await server.responseSendTx(server, params)
+        // txResults.push(result)
 
         //token tx
-        let hash = result.result[0]
-        await utility.getTxByHash(server, hash, 0) //wait for issue token done
-        let showSymbol = utility.getShowSymbol(tokenName.symbol, 'jjjjjjjjjjjjjjjjjjjjjhoLvTp')
-        params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
-            null, null, null, null, null, null, null)
-        params[0].value = '1' + showSymbol
-        result = await server.responseSendTx(server, params)
-        txResults.push(result)
+        //todo now only CNYT can be issue, need update here
+        // let hash = result.result[0]
+        // await utility.getTxByHash(server, hash, 0) //wait for issue token done
+        // let showSymbol = utility.getShowSymbol(tokenName.symbol, 'jjjjjjjjjjjjjjjjjjjjjhoLvTp')
+        // params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
+        //     null, null, null, null, null, null, null)
+        // params[0].value = '1' + showSymbol
+        // result = await server.responseSendTx(server, params)
+        // txResults.push(result)
 
         //normal swtc tx
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,

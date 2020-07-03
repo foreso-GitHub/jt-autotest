@@ -330,7 +330,7 @@ function accountsDealer() {
         }
     }
 
-    accountsDealer.prototype.startInit = async function(){
+    accountsDealer.prototype.startInit = async function(allModes){
         let modeAccounts = await this.initAccounts(allModes)
         await this.chargeAccounts(allModes)
         return modeAccounts

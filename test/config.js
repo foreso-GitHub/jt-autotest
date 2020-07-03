@@ -15,6 +15,7 @@ const { data, token, txs, blocks } = require("./testData/testData")
 let rpc_7545 = new rpc()
 let rpc_9545 = new rpc()
 let rpc_box01 = new rpc()
+let rpc_yun_ali = new rpc()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
@@ -64,6 +65,22 @@ let mode_rpc_box02 = {
     name: "rpc_box02",
     server: rpc_box01,
     initParams: {url:'http://box-admin.elerp.net:10202/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+
+let mode_rpc_yun_ali = {
+    name: "rpc_yun_ali",
+    server: rpc_yun_ali,
+    initParams: {url:'http://121.89.209.19:9545/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
@@ -149,16 +166,18 @@ let mode_lib_testnet = {
 }
 
 let modes = [
+    mode_rpc_yun_ali,
     // mode_rpc_newChain,
-    mode_rpc_box01,
+    // mode_rpc_box01,
     // mode_rpc_ipfs,
     // mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 
 let allModes = [
+    mode_rpc_yun_ali,
     // mode_rpc_newChain,
-    mode_rpc_box01,
+    // mode_rpc_box01,
     // mode_rpc_box02,
     // mode_rpc_ipfs,
     // mode_lib_mainnet,

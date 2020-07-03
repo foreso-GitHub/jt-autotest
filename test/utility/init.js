@@ -8,8 +8,10 @@ let creator = new ChainDataCreator()
 init()
 
 async function init(){
-    let modeAccounts = await dealer.startInit()
+    let modeAccounts = await dealer.startInit(allModes)
     await utility.timeout(11000)  //wait for charge finish
+
+    // let modeAccounts = require('../testData/accounts')
     await creator.create(allModes, modeAccounts, false)
 }
 

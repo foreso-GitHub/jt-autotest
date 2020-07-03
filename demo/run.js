@@ -16,11 +16,25 @@ let servers = []
 // // server.cmd = 'echo hello'
 // server.cmd = 'systemctl list-unit-files'
 
+// let a = Math.pow(65, 17)
+// let b = 3233
+// let c = 2790
+// let d = a % b
+// let e = (a - d) / b
+// let f = a - b * e
+// console.log("A:" + a)
+// console.log("B:" + b)
+// console.log("C:" + c)
+// console.log("D:" + d)
+// console.log("E:" + e)
+// console.log("F:" + f)
+
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', 'systemctl list-unit-files'))
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', 'echo hello'))
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', 'date'))
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', '/work/test.sh'))
 servers.push(createServer('box.elerp.net', '2003', 'jt', 'jt', 'sudo systemctl stop jt'))
+// servers.push(createServer('box.elerp.net', '2003', 'tester', 'test', 'echo hello world'))
 
 // servers.push(createServer('10.0.0.201', '22', 'jt', 'jt', 'echo hello'))
 // servers.push(createServer('10.0.0.202', '22', 'jt', 'jt', 'echo hello'))
