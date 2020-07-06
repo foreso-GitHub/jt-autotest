@@ -619,7 +619,7 @@ module.exports = tcsSendAndSignTx = {
         {
             testCaseParams.otherParams.oldBalance = '49382716041'
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].total_supply = '-9876543210000'
+                testCaseParams.txParams[0].total_supply = '-98765432100000000'
                 let burnable = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags)
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     burnable ? 'telINSUF_FUND Fund insufficient' : 'tefNO_PERMISSION_ISSUE No permission issue')
@@ -730,6 +730,33 @@ module.exports = tcsSendAndSignTx = {
         framework.testTestCases(server, describeTitle, testCases)
     },
 
+    testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
+        let testName = ''
+        let describeTitle = ''
+        let testCases = []
+
+        let txParam = configToken
+        let tokenName = txParam.name
+        let tokenSymbol = txParam.symbol
+        let issuer = txParam.issuer
+
+        //token transfer
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+
+        //mint token
+        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        testCases = tcsSendAndSignTx.createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestCases(server, describeTitle, testCases)
+
+        //burn token
+        describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        testCases = tcsSendAndSignTx.createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestCases(server, describeTitle, testCases)
+    },
+
     testForIssueTokenInComplexMode: function(server, txFunctionName){
         let account = server.mode.addresses.sender3
 
@@ -773,6 +800,12 @@ module.exports = tcsSendAndSignTx = {
             tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
         })
 
+        configToken = token.CNYT
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
+                server.mode.addresses.rootAccount, configToken)
+        })
+
     },
     //endregion
 
@@ -784,7 +817,8 @@ module.exports = tcsSendAndSignTx = {
     // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
     // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
     // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
-    // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
+    // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C.
+    // 全局幣比如CNYT，local必須是false。
 
     canMint: function(flags){
         if(flags === consts.flags.mintable || flags === consts.flags.both){

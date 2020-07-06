@@ -674,6 +674,18 @@ let token = {
         name: "TestCoin1576652216",
         symbol: "5df9cdf0",
     },
+    CNYT:{
+        testName: "全局CNYT",
+        type: "IssueCoin",
+        name: "CNY Token",
+        symbol: "CNYT",
+        decimals: "8",
+        total_supply: "9876543210",
+        local:false,  //it is global CNYT, local must be false.
+        flags: consts.flags.both,
+        fee: "10",
+        issuer:"jjjjjjjjjjjjjjjjjjjjjhoLvTp",
+    },
 }
 
 let txs = {
