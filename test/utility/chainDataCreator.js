@@ -70,18 +70,34 @@ function chainDataCreator(){
         let server = mode.server
         server.init(mode)
         // let root = mode.root
+        let root = mode.addresses.rootAccount
         let sender = mode.addresses.sender1
         let sequence3 = mode.addresses.sequence3
         const to = mode.addresses.receiver1.address
         let params
         let result
 
+        //todo now only CNYT can be issue, need update here
+        let rootResponse = await server.responseGetAccount(server, root.address)
+        let rootSequence = rootResponse.result.Sequence
+        let cnytCount = '999999'
+        let cnytSymbol = 'CNYT'
+        let cnytIssuer = 'jjjjjjjjjjjjjjjjjjjjjhoLvTp'
+        let value = cnytCount + '/' + cnytSymbol + '/' + cnytIssuer
+        params = server.createTxParams(
+            root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, '1', null, null,
+            null, null, null, null, null, null, null
+        )
+        params[0].value = value
+        result = await server.responseSendTx(server, params)
+        txResults.push(result)
+
         //get sequence
         let response = await server.responseGetAccount(server, sender.address)
         let sequence = response.result.Sequence
 
         //issue token
-        //todo now only CNYT can be issue, need update here
+        //todo need issue 2 tokens, with and without issuer.
         // let tokenName = utility.getDynamicTokenName()
         // params = server.createIssueTokenParams(sender.address, sender.secret, sequence++,
         //     tokenName.name, tokenName.symbol, '8', '99999999', false, consts.flags.normal, '0.00001')
@@ -135,10 +151,11 @@ function chainDataCreator(){
             txs.push(tx.result)
         }
 
-        chainData.tx1 = txs[2]
-        chainData.tx_memo = txs[3]
-        chainData.tx_issue_token = txs[0]
-        chainData.tx_token = txs[1]
+        chainData.tx_token_CNYT = txs[0]
+        // chainData.tx_issue_token = txs[1]
+        // chainData.tx_token = txs[2]
+        chainData.tx1 = txs[1]
+        chainData.tx_memo = txs[2]
 
         let blockNumber = chainData.tx1.ledger_index
         let blockResult = await server.responseGetBlockByNumber(server, blockNumber.toString(), false)

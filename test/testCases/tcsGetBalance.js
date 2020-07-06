@@ -14,7 +14,7 @@ const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/lib/base/consts')
-let utility = require('../framework/testUtility')
+const chainDatas = require('../testData/chainDatas').chainDatas[0]
 //endregion
 //endregion
 
@@ -27,6 +27,9 @@ module.exports = tcsGetBalance = {
             let symbol = null //swtc
             tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
             if(server.mode.service == serviceType.newChain){
+                symbol = 'CNYT'   //token without issuer
+                tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
+                //todo need make symbol dynamic, generated in init prog.
                 symbol = '5e69b0cc'   //token without issuer
                 tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
                 symbol = '5e69b0d4'   //token with issuer
@@ -40,8 +43,8 @@ module.exports = tcsGetBalance = {
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, 'current')
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, 'validated')
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, 'closed')
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, '4136')  //block number  //todo: always timeout, need restore
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, 'C0B53E636BE844AD4AD1D54391E589931A71F08D72CA7AE6E103312CB30C1D91')  //block 4136
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, chainDatas.block.blockNumber)  //block number
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, chainDatas.block.blockHash)  //block hash
     },
 
     testForGetBalanceBySymbolAndTag: function(server, symbol, tag){
