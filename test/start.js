@@ -123,9 +123,13 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
-                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
+                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易')
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
+
+                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 

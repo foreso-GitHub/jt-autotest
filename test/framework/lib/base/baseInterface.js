@@ -32,8 +32,15 @@ function baseInterface() {
 
     //region block number
     baseInterface.prototype.getBlockNumber = async function(server, ){
-        let response = await this.responseBlockNumber(server, )
-        return response.result
+        // let response = await this.responseBlockNumber(server, )
+        // return response.result
+        return new Promise((resolve, reject) => {
+            this.responseBlockNumber(server).then(function(response){
+                resolve(response.result)
+            }, function (err) {
+                resolve(-1000)
+            })
+        })
     }
 
     baseInterface.prototype.responseBlockNumber = function(server, ) {

@@ -33,8 +33,15 @@ let servers = []
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', 'echo hello'))
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', 'date'))
 // servers.push(createServer('39.99.174.194', '22', 'tester', 'test', '/work/test.sh'))
-servers.push(createServer('box.elerp.net', '2003', 'jt', 'jt', 'sudo systemctl stop jt'))
+// servers.push(createServer('box.elerp.net', '2003', 'jt', 'jt', 'sudo systemctl stop jt'))
 // servers.push(createServer('box.elerp.net', '2003', 'tester', 'test', 'echo hello world'))
+
+// let ip = '121.89.209.19'
+let ip = '180.76.125.22'
+// servers.push(createServer(ip, '22', 'root', 'Lianjing@123456', '/root/node/skywell.chain -log_level=2 -rpc -rpcaddr="0.0.0.0" -rpcport=9545'))
+// servers.push(createServer('121.89.209.19', '22', 'root', 'Lianjing@123456', 'echo hello'))
+// servers.push(createServer('121.89.209.19', '22', 'tester', 'test', 'echo hello'))
+servers.push(createServer(ip, '22', 'root', 'Lianjing@123456', 'sudo /root/start.sh'))
 
 // servers.push(createServer('10.0.0.201', '22', 'jt', 'jt', 'echo hello'))
 // servers.push(createServer('10.0.0.202', '22', 'jt', 'jt', 'echo hello'))
