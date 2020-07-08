@@ -12,19 +12,34 @@ const utility = require("../framework/testUtility.js")
 function nodeMonitor(){
 
     nodeMonitor.prototype.checkSync = function(nodes){
-        let netSync = {}
-        let doneNodes = []
-        nodes.forEach(async (node) => {
-            let server = new rpc()
-            server.url = node.url
-            node.server = server
-            node.blockNumber = await server.getBlockNumber(server)
-            doneNodes.push(node)
+        return new Promise(async (resolve, reject) => {
+            let netSync = {}
+            let doneNodes = []
+            nodes.forEach(async (node) => {
+                let server = new rpc()
+                server.url = node.url
+                node.server = server
+                node.blockNumber = await server.getBlockNumber(server)
+                doneNodes.push(node)
 
-            if(doneNodes.length == nodes.length){
-                netSync = getNetSyncStatus(nodes)
-                logger.debug(JSON.stringify(netSync))
-            }
+                if(doneNodes.length == nodes.length){
+                    netSync = getNetSyncStatus(nodes)
+                    // logger.debug(JSON.stringify(netSync))
+                    resolve(netSync)
+                }
+            })
+        })
+
+    }
+
+    nodeMonitor.prototype.printNetSync = function(netSync){
+        logger.debug('=== jt net sync status ===')
+        logger.debug('status: ' + netSync.status)
+        logger.debug('syncCount: ' + netSync.syncCount)
+        logger.debug('blockNumber: ' + netSync.blockNumber)
+        let index = 1;
+        netSync.syncNodes.forEach(node=>{
+            logger.debug('node_' + index++ + ': ' + node.name)
         })
     }
 
@@ -46,15 +61,22 @@ function nodeMonitor(){
 
         let mainBlockStatus = findMainBlock(blockStatusList)
         netSync.blockNumber = mainBlockStatus.blockNumber
-        // netSync.syncNodes = mainBlockStatus.nodes
+        netSync.syncNodes = mainBlockStatus.nodes
         netSync.syncCount = mainBlockStatus.nodes.length
-        // netSync.blockStatusList = blockStatusList
+        netSync.blockStatusList = blockStatusList
+
+        //井通网络一般由3f+1个节点组成。这时，最小节点数为2f+1。低于2f+1，无法共识，无法出块。
+        let f = Math.floor(count / 3)
+        let backup = count - f * 3
 
         if(netSync.syncCount == count){
             netSync.status = 'fullSync'
         }
-        else if(netSync.syncCount >= count * 2 / 3){
+        else if(netSync.syncCount >= 3 * f + 1){
             netSync.status = 'safeSync'
+        }
+        else if(netSync.syncCount >= 2 * f + 1){
+            netSync.status = 'justSync'
         }
         else{
             netSync.status = 'notSync'

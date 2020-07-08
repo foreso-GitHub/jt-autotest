@@ -38,10 +38,13 @@ let servers = []
 
 // let ip = '121.89.209.19'
 let ip = '180.76.125.22'
+let port = '22'
+let user = 'root'
+let pw = 'Lianjing@123456'
 // servers.push(createServer(ip, '22', 'root', 'Lianjing@123456', '/root/node/skywell.chain -log_level=2 -rpc -rpcaddr="0.0.0.0" -rpcport=9545'))
 // servers.push(createServer('121.89.209.19', '22', 'root', 'Lianjing@123456', 'echo hello'))
 // servers.push(createServer('121.89.209.19', '22', 'tester', 'test', 'echo hello'))
-servers.push(createServer(ip, '22', 'root', 'Lianjing@123456', 'sudo /root/start.sh'))
+servers.push(createServer(ip, port, user, pw, 'sudo /root/start.sh'))
 
 // servers.push(createServer('10.0.0.201', '22', 'jt', 'jt', 'echo hello'))
 // servers.push(createServer('10.0.0.202', '22', 'jt', 'jt', 'echo hello'))

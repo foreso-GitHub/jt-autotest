@@ -153,7 +153,7 @@ function chainDataCreator(){
 
         chainData.tx_token_CNYT = txs[0]
         // chainData.tx_issue_token = txs[1]
-        // chainData.tx_token = txs[2]
+        chainData.tx_token = txs[0]  //todo need be replaced by real issued token
         chainData.tx1 = txs[1]
         chainData.tx_memo = txs[2]
 

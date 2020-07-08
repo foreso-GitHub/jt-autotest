@@ -3,6 +3,8 @@ let rpc = require('./framework/lib/rpc/rpcInterface.js')
 let swtclib = require('./framework/lib/swtclib/swtclibInterface.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
 const { data, token, txs, blocks } = require("./testData/testData")
+const { sshCmd, createNode, createServer} = require('./utility/sshCmd')
+let HashMap = require('hashmap')
 //endregion
 
 //const RPC_URL_7545 = 'http://139.198.191.254:7545/v1/jsonrpc'
@@ -16,6 +18,7 @@ let rpc_7545 = new rpc()
 let rpc_9545 = new rpc()
 let rpc_box01 = new rpc()
 let rpc_yun_ali = new rpc()
+let rpc_yun_baidu = new rpc()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
@@ -81,6 +84,70 @@ let mode_rpc_yun_ali = {
     name: "rpc_yun_ali",
     server: rpc_yun_ali,
     initParams: {url:'http://121.89.209.19:9545/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+
+let mode_rpc_yun_baidu = {
+    name: "rpc_yun_ali",
+    server: rpc_yun_baidu,
+    initParams: {url:'http://180.76.125.22:9545/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+
+let mode_rpc_yun_tengxun = {
+    name: "rpc_yun_ali",
+    server: rpc_yun_baidu,
+    initParams: {url:'http://45.40.240.50:9545/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+
+let mode_rpc_yun_huawei = {
+    name: "rpc_yun_ali",
+    server: rpc_yun_baidu,
+    initParams: {url:'http://121.37.216.100:9545/v1/jsonrpc'},
+    service: serviceType.newChain,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+
+let mode_rpc_yun_tianyi = {
+    name: "rpc_yun_ali",
+    server: rpc_yun_baidu,
+    initParams: {url:'http://61.171.12.71:9545/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
@@ -166,7 +233,9 @@ let mode_lib_testnet = {
 }
 
 let modes = [
-    mode_rpc_yun_ali,
+    // mode_rpc_yun_ali,
+    // mode_rpc_yun_baidu,
+    mode_rpc_yun_tengxun,
     // mode_rpc_newChain,
     // mode_rpc_box01,
     // mode_rpc_ipfs,
@@ -176,11 +245,15 @@ let modes = [
 
 let allModes = [
     mode_rpc_yun_ali,
+    mode_rpc_yun_baidu,
+    mode_rpc_yun_tengxun,
+    mode_rpc_yun_huawei,
+    mode_rpc_yun_tianyi,
     // mode_rpc_newChain,
     // mode_rpc_box01,
     // mode_rpc_box02,
     // mode_rpc_ipfs,
-    // mode_lib_mainnet,
+    mode_lib_mainnet,
     // mode_lib_testnet,
 ]
 
@@ -192,9 +265,34 @@ let configCommons = {
     chain_data_js_file_path: ".\\test\\testData\\chainDatas.js",
 }
 
+//region set jt nodes
+let jt_node_al = createNode('al', '121.89.209.19', '22', '9545','root', 'Lianjing@123456')
+let jt_node_bd = createNode('bd', '180.76.125.22', '22', '9545','root', 'Lianjing@123456')
+let jt_node_tx = createNode('tx', '45.40.240.50', '22', '9545','ubuntu', 'Lianjing@123456')
+let jt_node_hw = createNode('hw', '121.37.216.100', '22', '9545','root', 'Lianjing@123456')
+let jt_node_ty = createNode('ty', '61.171.12.71', '22', '9545','root', 'Lianjing@13579')
+let nodes = []
+nodes.push(jt_node_al)
+nodes.push(jt_node_bd)
+nodes.push(jt_node_tx)
+nodes.push(jt_node_hw)
+nodes.push(jt_node_ty)
+let jtNodes = nodes
+//endregion
+
+//region set cmd
+let sshCommands = new HashMap()
+const cmd_start_jt = 'sudo /root/start.sh'
+const cmd_stop_jt = 'sudo /root/stop.sh'
+sshCommands.set('start', cmd_start_jt)
+sshCommands.set('stop', cmd_stop_jt)
+//endregion
+
 module.exports = {
     configCommons,
     servers,
     modes,
     allModes,
+    jtNodes,
+    sshCommands,
 }
