@@ -229,5 +229,41 @@ module.exports = testUtility = {
     },
     //endregion
 
+    //region rand number
+    getRand: function(min, max){
+        let time = new Date().getTime()
+        let gap = max - min + 1
+        let rawRand = time % gap
+        let rand = rawRand + min
+        return rand
+    },
+
+    //count: the count of return rand numbers.
+    //canBeSame: if the rand numbers can be same.
+    //todo the second rand is always 1 larger than the first rand.  because 2nd is calculated just behind 1st.
+    //solution: digest the big rand (time) to generate a new rand.
+    getRandList: function(min, max, count, canBeSame){
+        let rands = []
+        if(canBeSame){
+            for(let i = 0; i < count; i++){
+                rands.push[testUtility.getRand(min, max)]
+            }
+        }
+        else{
+            let i = 0
+            while(i < count){
+                let rand = testUtility.getRand(min, max)
+                if(!testUtility.ifArrayHas(rands, rand)){
+                    rands.push(rand)
+                    i++
+                }
+            }
+        }
+        return rands
+    },
+
+
+    //endregion
+
 }
 

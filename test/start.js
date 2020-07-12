@@ -80,7 +80,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
@@ -126,7 +126,7 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
-                tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
 

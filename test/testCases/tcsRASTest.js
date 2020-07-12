@@ -31,19 +31,28 @@ module.exports = tcsRASTest = {
         let title
         let otherParams
         let testCase
+        let titleIndex = 1
 
-        title = '0030\t减少共识节点 - 5个节点减少1个'
-        otherParams = {}
-        otherParams.reduceCount = 1
-        testCase = tcsRASTest.createTestCase(server, title, otherParams)
-        framework.addTestCase(testCases, testCase)
+        describe(describeTitle, async function () {
+            title = '0030\t减少共识节点 - 5个节点减少1个'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.reduceCount = 1
+            testCase = tcsRASTest.createTestCase(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+            framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)  //node operation will conflict.  so one case, one test.
 
-        title = '0030\t减少共识节点 - 5个节点减少2个'
-        otherParams = {}
-        otherParams.reduceCount = 2
-        testCase = tcsRASTest.createTestCase(server, title, otherParams)
-        framework.addTestCase(testCases, testCase)
-        framework.testTestCases(server, describeTitle, testCases)
+            title = '0030\t减少共识节点 - 5个节点减少2个'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.reduceCount = 2
+            testCase = tcsRASTest.createTestCase(server, title, otherParams)
+            testCases = []
+            framework.addTestCase(testCases, testCase)
+            framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
+        })
+
+
     },
 
     createTestCase: function(server, title, otherParams){
@@ -70,39 +79,45 @@ module.exports = tcsRASTest = {
             monitor.printNetSync(netSync)
             testCase.actualResult.push(netSync)
 
-            let reduceCount = testCase.otherParams.reduceCount
-            let nodes = []
-            for (let i = 0; i < reduceCount; i++){
-                nodes.push(jtNodes[i])
+            let initNodeCount = testCase.otherParams.initNodeCount
+            if(netSync.syncCount != initNodeCount){
+                reject("init node count is not " + initNodeCount)
             }
+            else{
+                let reduceCount = testCase.otherParams.reduceCount
+                let nodes = []
+                // let rands = testUtility.getRandList(0, initNodeCount - 1, reduceCount, false)
 
-            tcsRASTest.stopJtByNodes(nodes)
-            await utility.timeout(10000)
-            netSync = await monitor.checkSync(jtNodes)
-            monitor.printNetSync(netSync)
-            testCase.actualResult.push(netSync)
+                for (let i = 0; i < reduceCount; i++){
+                    nodes.push(jtNodes[i])
+                }
 
-            tcsRASTest.startJtByNodes(nodes)
-            await utility.timeout(60000)
-            netSync = await monitor.checkSync(jtNodes)
-            monitor.printNetSync(netSync)
-            testCase.actualResult.push(netSync)
+                tcsRASTest.stopJtByNodes(nodes)
+                await utility.timeout(10000)
+                netSync = await monitor.checkSync(jtNodes)
+                monitor.printNetSync(netSync)
+                testCase.actualResult.push(netSync)
 
-            resolve(testCase)
+                tcsRASTest.startJtByNodes(nodes)
+                await utility.timeout(60000)
+                netSync = await monitor.checkSync(jtNodes)
+                monitor.printNetSync(netSync)
+                testCase.actualResult.push(netSync)
+
+                resolve(testCase)
+            }
         })
     },
 
     checkChangeNodeCount: function(testCase){
+        let initNodeCount = testCase.otherParams.initNodeCount
         let netSyncList = testCase.actualResult
-
         let reduceCount = testCase.otherParams.reduceCount
-
-        expect(netSyncList[0].syncCount).to.be.equals(jtNodes.length)
-        expect(netSyncList[1].syncCount).to.be.equals(jtNodes.length - reduceCount)
+        expect(netSyncList[0].syncCount).to.be.equals(initNodeCount)
+        expect(netSyncList[1].syncCount).to.be.equals(initNodeCount - reduceCount)
         expect(netSyncList[1].blockNumber > netSyncList[0].blockNumber).to.be.ok
-        expect(netSyncList[2].syncCount).to.be.equals(jtNodes.length)
+        expect(netSyncList[2].syncCount).to.be.equals(initNodeCount)
         expect(netSyncList[2].blockNumber > netSyncList[1].blockNumber).to.be.ok
-
     },
 
     //region ssh cmd

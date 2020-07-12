@@ -27,6 +27,8 @@ const cmd_start_jt = 'sudo /root/start.sh'
 const cmd_stop_jt = 'sudo /root/stop.sh'
 //endregion
 
+// startJt(jt_node_al)
+// stopJt(jt_node_al)
 // test()
 testMonitor()
 // testSshCmd()
