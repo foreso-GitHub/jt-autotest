@@ -235,7 +235,9 @@ let mode_lib_testnet = {
 let modes = [
     // mode_rpc_yun_ali,
     // mode_rpc_yun_baidu,
-    mode_rpc_yun_tengxun,
+    // mode_rpc_yun_tengxun,
+    mode_rpc_yun_huawei,
+    // mode_rpc_yun_tianyi,
     // mode_rpc_newChain,
     // mode_rpc_box01,
     // mode_rpc_ipfs,

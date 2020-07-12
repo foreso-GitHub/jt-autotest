@@ -7,17 +7,17 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
 let utility = require("./framework/testUtility.js")
-const schema = require("./framework/schema.js")
-const consts = require('./framework/lib/base/consts')
-const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
+// const schema = require("./framework/schema.js")
+// const consts = require('./framework/lib/base/consts')
+// const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
 const { chainDatas } = require("./testData/chainDatas")
 let { modeAccounts } = require('./testData/accounts')
 const AccountsDealer = require('./utility/accountsDealer')
 let accountsDealer = new AccountsDealer()
 const { configCommons, modes, } = require("./config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
-const status = responseStatus
-const testModeEnums = testMode
+// const status = responseStatus
+// const testModeEnums = testMode
 const framework = require('./framework/framework')
 //endregion
 
@@ -34,6 +34,7 @@ const tcsGetTxCount = require('./testCases/tcsGetTxCount')
 const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
 const tcsIpfs = require('./testCases/tcsIpfs')
+const tcsRASTest = require('./testCases/tcsRASTest')
 //endregion
 
 //region global fields
@@ -118,10 +119,14 @@ describe('Jingtum测试', function() {
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
+                tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+
             })
             //*/
 
             describe('is working', async function () {
+
+                tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
 
