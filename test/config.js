@@ -23,6 +23,7 @@ let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
 
+//region old config
 let mode_rpc_newChain = {
     name: "rpc_9545",
     server: rpc_9545,
@@ -47,6 +48,57 @@ let mode_rpc_newChain = {
     txCountInBlock: 20,
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
 }
+
+let mode_rpc_ipfs = {
+    name: "rpc_7545",
+    server: rpc_7545,
+    initParams: {url:'http://139.198.191.254:7545/v1/jsonrpc'},
+    // initParams: {url:'http://139.198.177.59:7545/v1/jsonrpc'},
+    service: serviceType.ipfs,
+    interface: interfaceType.rpc,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L2,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultFee: "10",
+    txs:{
+        tx1: data.chain.tx,
+        tx_memo: data.chain.tx_memo,
+        tx_token: data.chain.tx_token,
+        tx_issue_token: data.chain.tx_issue_token
+    },
+    blockNumber: '107600',
+    blockHash: '06DA6A9900FDBBCA1CBE8E9A2146ED8D664FE49102CCE5FAB3554AF0E72F6E38',
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+
+let mode_lib_testnet = {
+    name: "lib_test",
+    server: lib_test,
+    initParams: {url:'ws://139.198.19.157:5055', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
+    service: serviceType.oldChain,
+    interface: interfaceType.websocket,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L2,
+    defaultBlockTime: 10000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultFee: "10000",
+    txs:{
+        tx1: data.swtclib_Test.tx,
+        tx_memo: data.swtclib_Test.tx_memo,
+        tx_token: data.swtclib_Test.tx_token,
+        tx_issue_token: data.swtclib_Test.tx_issue_token,
+    },
+    blockNumber: '785909',
+    blockHash: '928A72FA819C0812FA7BCCAB8A6EAB36830F40FC18E5F504CA61AB54514027BB',
+    txCountInBlock: 1,
+}
+
+//endregion
+
+//region box config
 
 let mode_rpc_box01 = {
     name: "rpc_box01",
@@ -80,6 +132,9 @@ let mode_rpc_box02 = {
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
 }
 
+//endregion
+
+//region cloud config
 let mode_rpc_yun_ali = {
     name: "rpc_yun_ali",
     server: rpc_yun_ali,
@@ -160,29 +215,9 @@ let mode_rpc_yun_tianyi = {
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
 }
 
-let mode_rpc_ipfs = {
-    name: "rpc_7545",
-    server: rpc_7545,
-    initParams: {url:'http://139.198.191.254:7545/v1/jsonrpc'},
-    // initParams: {url:'http://139.198.177.59:7545/v1/jsonrpc'},
-    service: serviceType.ipfs,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L2,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultFee: "10",
-    txs:{
-        tx1: data.chain.tx,
-        tx_memo: data.chain.tx_memo,
-        tx_token: data.chain.tx_token,
-        tx_issue_token: data.chain.tx_issue_token
-    },
-    blockNumber: '107600',
-    blockHash: '06DA6A9900FDBBCA1CBE8E9A2146ED8D664FE49102CCE5FAB3554AF0E72F6E38',
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+//endregion
+
+//region current jingtum config
 
 let mode_lib_mainnet = {
     name: "lib_main",
@@ -209,29 +244,9 @@ let mode_lib_mainnet = {
     txCountInBlock: 9,
 }
 
-let mode_lib_testnet = {
-    name: "lib_test",
-    server: lib_test,
-    initParams: {url:'ws://139.198.19.157:5055', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
-    service: serviceType.oldChain,
-    interface: interfaceType.websocket,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L2,
-    defaultBlockTime: 10000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultFee: "10000",
-    txs:{
-        tx1: data.swtclib_Test.tx,
-        tx_memo: data.swtclib_Test.tx_memo,
-        tx_token: data.swtclib_Test.tx_token,
-        tx_issue_token: data.swtclib_Test.tx_issue_token,
-    },
-    blockNumber: '785909',
-    blockHash: '928A72FA819C0812FA7BCCAB8A6EAB36830F40FC18E5F504CA61AB54514027BB',
-    txCountInBlock: 1,
-}
+//endregion
 
+//region modes
 let modes = [
     // mode_rpc_yun_ali,
     // mode_rpc_yun_baidu,
@@ -258,6 +273,7 @@ let allModes = [
     mode_lib_mainnet,
     // mode_lib_testnet,
 ]
+//endregion
 
 let configCommons = {
     test_data_path: ".\\test\\testData\\",
@@ -268,11 +284,16 @@ let configCommons = {
 }
 
 //region set jt nodes
-let jt_node_al = createNode('al', '121.89.209.19', '22', '9545','root', 'Lianjing@123456')
-let jt_node_bd = createNode('bd', '180.76.125.22', '22', '9545','root', 'Lianjing@123456')
-let jt_node_tx = createNode('tx', '45.40.240.50', '22', '9545','ubuntu', 'Lianjing@123456')
-let jt_node_hw = createNode('hw', '121.37.216.100', '22', '9545','root', 'Lianjing@123456')
-let jt_node_ty = createNode('ty', '61.171.12.71', '22', '9545','root', 'Lianjing@13579')
+let jt_node_al = createNode('al', '121.89.209.19', '22', '9545',
+    'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
+let jt_node_bd = createNode('bd', '180.76.125.22', '22', '9545',
+    'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
+let jt_node_tx = createNode('tx', '45.40.240.50', '22', '9545',
+    'ubuntu', 'Lianjing@123456', {start: 'sudo /home/ubuntu/start.sh', stop: 'sudo /home/ubuntu/stop.sh'})
+let jt_node_hw = createNode('hw', '121.37.216.100', '22', '9545',
+    'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
+let jt_node_ty = createNode('ty', '61.171.12.71', '22', '9545',
+    'root', 'Lianjing@13579', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
 let nodes = []
 nodes.push(jt_node_al)
 nodes.push(jt_node_bd)
@@ -283,11 +304,11 @@ let jtNodes = nodes
 //endregion
 
 //region set cmd
-let sshCommands = new HashMap()
-const cmd_start_jt = 'sudo /root/start.sh'
-const cmd_stop_jt = 'sudo /root/stop.sh'
-sshCommands.set('start', cmd_start_jt)
-sshCommands.set('stop', cmd_stop_jt)
+// let sshCommands = new HashMap()
+// const cmd_start_jt = 'sudo /root/start.sh'
+// const cmd_stop_jt = 'sudo /root/stop.sh'
+// sshCommands.set('start', cmd_start_jt)
+// sshCommands.set('stop', cmd_stop_jt)
 //endregion
 
 module.exports = {
@@ -296,5 +317,4 @@ module.exports = {
     modes,
     allModes,
     jtNodes,
-    sshCommands,
 }

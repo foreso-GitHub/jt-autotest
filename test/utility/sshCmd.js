@@ -26,7 +26,7 @@ exports.sshCmd = function(servers, callback) {
     })
 }
 
-exports.createNode = function(name, ip, sshPort, rpcPort, user, pw){
+exports.createNode = function(name, ip, sshPort, rpcPort, user, pw, cmds){
     let node = {}
     node.name = name
     node.host = ip
@@ -35,6 +35,7 @@ exports.createNode = function(name, ip, sshPort, rpcPort, user, pw){
     node.username = user
     node.password = pw
     node.url = 'http://' + ip + ':' + rpcPort + '/v1/jsonrpc'
+    node.cmds = cmds
     return node
 }
 

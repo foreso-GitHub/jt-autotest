@@ -19,7 +19,7 @@ let utility = require('../framework/testUtility')
 const nodeMonitor = require('../utility/monitor')
 let monitor = new nodeMonitor()
 const { sshCmd, createNode, createServer} = require('../utility/sshCmd')
-const { jtNodes, sshCommands } = require("../config")
+const { jtNodes, } = require("../config")
 //endregion
 
 module.exports = tcsRASTest = {
@@ -86,10 +86,10 @@ module.exports = tcsRASTest = {
             else{
                 let reduceCount = testCase.otherParams.reduceCount
                 let nodes = []
-                // let rands = testUtility.getRandList(0, initNodeCount - 1, reduceCount, false)
+                let rands = testUtility.getRandList(0, initNodeCount - 1, reduceCount, false)
 
                 for (let i = 0; i < reduceCount; i++){
-                    nodes.push(jtNodes[i])
+                    nodes.push(jtNodes[rands[i]])
                 }
 
                 tcsRASTest.stopJtByNodes(nodes)
@@ -133,11 +133,11 @@ module.exports = tcsRASTest = {
     },
 
     startJt: function(node){
-        tcsRASTest.execSshCmd(node, sshCommands.get('start'))
+        tcsRASTest.execSshCmd(node, node.cmds.start)
     },
 
     stopJt: function(node){
-        tcsRASTest.execSshCmd(node, sshCommands.get('stop'))
+        tcsRASTest.execSshCmd(node, node.cmds.stop)
     },
 
     startJtByNodes: function(nodes){
