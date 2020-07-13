@@ -19,6 +19,9 @@ let rpc_9545 = new rpc()
 let rpc_box01 = new rpc()
 let rpc_yun_ali = new rpc()
 let rpc_yun_baidu = new rpc()
+let rpc_yun_tengxun = new rpc()
+let rpc_yun_huawei = new rpc()
+let rpc_yun_tianyi = new rpc()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
@@ -169,7 +172,7 @@ let mode_rpc_yun_baidu = {
 
 let mode_rpc_yun_tengxun = {
     name: "rpc_yun_ali",
-    server: rpc_yun_baidu,
+    server: rpc_yun_tengxun,
     initParams: {url:'http://45.40.240.50:9545/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,
@@ -185,7 +188,7 @@ let mode_rpc_yun_tengxun = {
 
 let mode_rpc_yun_huawei = {
     name: "rpc_yun_ali",
-    server: rpc_yun_baidu,
+    server: rpc_yun_huawei,
     initParams: {url:'http://121.37.216.100:9545/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,
@@ -201,7 +204,7 @@ let mode_rpc_yun_huawei = {
 
 let mode_rpc_yun_tianyi = {
     name: "rpc_yun_ali",
-    server: rpc_yun_baidu,
+    server: rpc_yun_tianyi,
     initParams: {url:'http://61.171.12.71:9545/v1/jsonrpc'},
     service: serviceType.newChain,
     interface: interfaceType.rpc,

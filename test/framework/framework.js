@@ -844,7 +844,8 @@ module.exports = framework = {
     //region process sequence
     getSequence: function(server, from){
         return new Promise(function (resolve){
-            let key = from + '@' + server.getName()
+            // let key = from + '@' + server.getName()
+            let key = from
             if(_SequenceMap.has(key)){
                 logger.debug("===sequence   _SequenceMap:" + _SequenceMap.get(key))
                 resolve(_SequenceMap.get(key))
@@ -863,7 +864,8 @@ module.exports = framework = {
     },
 
     setSequence: function(serverName, from, sequence){
-        let key = from + '@' + serverName
+        // let key = from + '@' + serverName
+        let key = from
         _SequenceMap.set(key, sequence)
     },
     //endregion
@@ -894,6 +896,18 @@ module.exports = framework = {
     },
     //endregion
 
+    //endregion
+
+    //region active server
+    activeServer: function(mode){
+        let server = mode.server
+        server.init(mode)
+        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
+            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
+            mode.txs = utility.findMode(chainDatas, mode.name)
+        }
+        return server
+    }
     //endregion
 
     // endregion

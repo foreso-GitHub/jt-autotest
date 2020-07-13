@@ -262,7 +262,18 @@ module.exports = testUtility = {
         return rands
     },
 
+    //endregion
 
+    //region create memos with special length
+    createMemosWithSpecialLength: function(length){
+        let memos = []
+        let content = ''
+        for(let i = 0; i < length; i++){
+            content += 'A'
+        }
+        memos.push(content)
+        return memos
+    }
     //endregion
 
 }
