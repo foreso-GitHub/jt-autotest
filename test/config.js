@@ -142,6 +142,8 @@ let mode_rpc_yun_ali = {
     name: "rpc_yun_ali",
     server: rpc_yun_ali,
     initParams: {url:'http://121.89.209.19:9545/v1/jsonrpc'},
+    chainDataName: "rpc_yun_ali",
+    accountsName: "rpc_yun_ali",
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
@@ -155,10 +157,12 @@ let mode_rpc_yun_ali = {
 }
 
 let mode_rpc_yun_baidu = {
-    name: "rpc_yun_ali",
+    name: "rpc_yun_baidu",
     server: rpc_yun_baidu,
     initParams: {url:'http://180.76.125.22:9545/v1/jsonrpc'},
     service: serviceType.newChain,
+    chainDataName: "rpc_yun_ali",
+    accountsName: "rpc_yun_ali",
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
     restrictedLevel: restrictedLevel.L3,
@@ -171,9 +175,11 @@ let mode_rpc_yun_baidu = {
 }
 
 let mode_rpc_yun_tengxun = {
-    name: "rpc_yun_ali",
+    name: "rpc_yun_tengxun",
     server: rpc_yun_tengxun,
     initParams: {url:'http://45.40.240.50:9545/v1/jsonrpc'},
+    chainDataName: "rpc_yun_ali",
+    accountsName: "rpc_yun_ali",
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
@@ -187,9 +193,11 @@ let mode_rpc_yun_tengxun = {
 }
 
 let mode_rpc_yun_huawei = {
-    name: "rpc_yun_ali",
+    name: "rpc_yun_huawei",
     server: rpc_yun_huawei,
     initParams: {url:'http://121.37.216.100:9545/v1/jsonrpc'},
+    chainDataName: "rpc_yun_ali",
+    accountsName: "rpc_yun_ali",
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,
@@ -203,9 +211,11 @@ let mode_rpc_yun_huawei = {
 }
 
 let mode_rpc_yun_tianyi = {
-    name: "rpc_yun_ali",
+    name: "rpc_yun_tianyi",
     server: rpc_yun_tianyi,
     initParams: {url:'http://61.171.12.71:9545/v1/jsonrpc'},
+    chainDataName: "rpc_yun_ali",
+    accountsName: "rpc_yun_ali",
     service: serviceType.newChain,
     interface: interfaceType.rpc,
     testMode: testMode.batchMode,

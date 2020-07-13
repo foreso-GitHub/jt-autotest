@@ -904,7 +904,7 @@ module.exports = framework = {
         server.init(mode)
         if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
             mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
-            mode.txs = utility.findMode(chainDatas, mode.name)
+            mode.txs = utility.findMode(chainDatas, mode.chainDataName)
         }
         return server
     }

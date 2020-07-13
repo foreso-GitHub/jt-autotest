@@ -257,7 +257,7 @@ function accountsDealer() {
     }
 
     accountsDealer.prototype.getAddressesByMode = function(modeAccounts, mode){
-        let accounts = findModeAccounts(modeAccounts, mode.name)
+        let accounts = findModeAccounts(modeAccounts, mode.accountsName)
         return this.getAddresses(accounts)
     }
 

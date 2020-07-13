@@ -65,7 +65,7 @@ function chainDataCreator(){
 
     async function createChainData(mode){
         let chainData = {}
-        chainData.modeName = mode.name
+        chainData.modeName = mode.chainDataName
         let txResults = []
         let server = mode.server
         server.init(mode)
