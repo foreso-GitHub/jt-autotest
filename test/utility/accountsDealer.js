@@ -274,7 +274,7 @@ function accountsDealer() {
             let needCreateMode = []
             let checkedCount = 0
             modes.forEach(async mode=>{
-                let accounts = utility.findMode(modeAccounts, mode.name)
+                let accounts = utility.findMode(modeAccounts, mode.accountsName)
                 if (accounts == null){
                     needCreateMode.push(mode)
                     needSaveAccountsJsFile = true
@@ -306,7 +306,7 @@ function accountsDealer() {
         init(createMode)
         let accounts = await createAccounts(createMode.server, ACCOUNT_COUNT)
         let newModeAccount = {}
-        newModeAccount.modeName = createMode.name
+        newModeAccount.modeName = createMode.accountsName
         newModeAccount.accounts = accounts
         return newModeAccount
     }
@@ -325,7 +325,7 @@ function accountsDealer() {
             let mode = modes[i]
             let server = mode.server
             server.init(mode)
-            let accounts = findModeAccounts(modeAccounts, mode.name)
+            let accounts = findModeAccounts(modeAccounts, mode.accountsName)
             await charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
         }
     }
