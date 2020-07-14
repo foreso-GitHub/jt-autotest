@@ -258,7 +258,7 @@ function accountsDealer() {
 
     accountsDealer.prototype.getAddressesByMode = function(modeAccounts, mode){
         // let accounts = findModeAccounts(modeAccounts, mode.accountsName)
-        let accounts = utility.findAccounts(modeAccounts, mode.accountsName)
+        let accounts = utility.findAccounts(modeAccounts, mode.accountsName).accounts
         return this.getAddresses(accounts)
     }
 
@@ -319,14 +319,14 @@ function accountsDealer() {
         return newModeAccount
     }
 
-    function findModeAccounts(modeAccounts, modeName){
-        let accounts = []
-        let mode = utility.findMode(modeAccounts, modeName)
-        if(mode && mode.accounts){
-            accounts = mode.accounts
-        }
-        return accounts
-    }
+    // function findModeAccounts(modeAccounts, modeName){
+    //     let accounts = []
+    //     let mode = utility.findMode(modeAccounts, modeName)
+    //     if(mode && mode.accounts){
+    //         accounts = mode.accounts
+    //     }
+    //     return accounts
+    // }
 
     accountsDealer.prototype.chargeAccounts = async function(modes){
         for(let i = 0; i < modes.length; i++) {

@@ -31,9 +31,11 @@ function chainDataCreator(){
             let modesNeedCreateChainData = []
             let checkedCount = 0
             modes.forEach(async mode => {
-                let chainData = utility.findMode(chainDatas, mode.modeName)
-                if (chainData == null) {
-                    modesNeedCreateChainData.push(mode)
+                let chainData = utility.findChainData(chainDatas, mode.chainDataName)
+                if (utility.findChainData(chainDatas, mode.chainDataName) == null) {
+                    if(utility.findChainData(modesNeedCreateChainData, mode.chainDataName) == null){
+                        modesNeedCreateChainData.push(mode)
+                    }
                 }
                 checkedCount++
                 if(checkedCount == modes.length){
@@ -65,7 +67,7 @@ function chainDataCreator(){
 
     async function createChainData(mode){
         let chainData = {}
-        chainData.modeName = mode.chainDataName
+        chainData.chainDataName = mode.chainDataName
         let txResults = []
         let server = mode.server
         server.init(mode)

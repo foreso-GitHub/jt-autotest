@@ -43,20 +43,6 @@ module.exports = testUtility = {
     //endregion
 
     //region find mode/object
-    // findMode: function(modes, modeName) {
-    //     let resultMode = null
-    //     let count = 0
-    //     for(i = 0; i < modes.length; i++){
-    //         let mode = modes[i]
-    //         if(mode.modeName == modeName){
-    //             resultMode = mode
-    //         }
-    //         count++
-    //         if(modes.length == count){
-    //             return resultMode
-    //         }
-    //     }
-    // },
 
     findItem: function(items, itemName, getPropertyName) {
         let result = null
@@ -90,6 +76,7 @@ module.exports = testUtility = {
             return mode.accountsName
         })
     },
+
     //endregion
 
     //region save js file
