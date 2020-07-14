@@ -27,6 +27,7 @@ let _FullTestCaseList = []
 let accountsDealer = new AccountsDealer()
 let START
 let END
+let NEED_CHECK_ExpectedResult = true
 //endregion
 
 module.exports = framework = {
@@ -405,8 +406,11 @@ module.exports = framework = {
                 })
             }
             else{
-                let expectedResult = testCase.expectedResult
-                expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
+                if(NEED_CHECK_ExpectedResult){
+                    let expectedResult = testCase.expectedResult
+                    expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message)
+                        .to.contains(expectedResult.expectedError)
+                }
             }
         }
         else{
