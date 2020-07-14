@@ -94,6 +94,106 @@ let chainDatas = [
             "hash": "815459CA446C9D9A0C53E373917AA517D516BDBB099F79F341361F5A2A8D92C3",
         },
 
+        "tx_token_CNYT": {
+            "TransactionType": "Payment",
+            "Flags": 2147483648,
+            "Account": "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh",
+            "Sequence": 2735,
+            "Fee": "10",
+            "SigningPubKey": "0330E7FC9D56BB25D6893BA3F317AE5BCF33B3291BD63DB32654A313222F7FD020",
+            "TxnSignature": "304402204A173AFC98A545C2324C0F6B9CE837AB0C818EF848D4071F065936DA9A1C1C61022057C6047AEB6F777F2F1550A7761AE1C28EBCFD6D08F4F96B833F6394C4D09075",
+            "hash": "4D8B84246E71B58C093E3E9BF8D3E6CAB545B0F058F6BADA0955A47382E67ABD",
+            "Destination": "jD9QHwGBURFACp4z3ErVupG7B4q8D6MsyH",
+            "Amount": {
+                "value": "999999",
+                "currency": "CNYT",
+                "issuer": "jjjjjjjjjjjjjjjjjjjjjhoLvTp"
+            },
+            "date": 648013495,
+            "inLedger": 137604,
+            "ledger_index": 137604,
+            "meta": {
+                "AffectedNodes": [
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jhCVwTcg5aYWMMdfDmwqYxBr5NMA1PDfyg",
+                                "Sequence": 0,
+                                "Balance": "178860"
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "PreviousFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jhCVwTcg5aYWMMdfDmwqYxBr5NMA1PDfyg",
+                                "Sequence": 0,
+                                "Balance": "178850"
+                            }
+                        }
+                    },
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh",
+                                "Sequence": 2735,
+                                "Balance": "99838722968749"
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "PreviousFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh",
+                                "Sequence": 2734,
+                                "Balance": "99838722968759"
+                            }
+                        }
+                    },
+                    {
+                        "ModifiedNode": {
+                            "FinalFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh",
+                                "Sequence": 2735,
+                                "Balance": {
+                                    "value": "102933319219412",
+                                    "currency": "CNYT",
+                                    "issuer": "jjjjjjjjjjjjjjjjjjjjjhoLvTp"
+                                }
+                            },
+                            "LedgerEntryType": "AccountRoot",
+                            "PreviousFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh",
+                                "Sequence": 2635,
+                                "Balance": {
+                                    "value": "102933320219411",
+                                    "currency": "CNYT",
+                                    "issuer": "jjjjjjjjjjjjjjjjjjjjjhoLvTp"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "CreatedNode": {
+                            "LedgerEntryType": "AccountRoot",
+                            "NewFields": {
+                                "Hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "Account": "jD9QHwGBURFACp4z3ErVupG7B4q8D6MsyH",
+                                "Sequence": 0,
+                                "Balance": {
+                                    "value": "999999",
+                                    "currency": "CNYT",
+                                    "issuer": "jjjjjjjjjjjjjjjjjjjjjhoLvTp"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "TransactionIndex": 0,
+                "TransactionResult": "tesSUCCESS"
+            }
+        },
+
         "block": {
             "blockNumber": "16417699",
             "blockHash": "BF95A512631F2F714CEDD38BD69605E789B024C208AD324D77F0BC0984F05B1A",

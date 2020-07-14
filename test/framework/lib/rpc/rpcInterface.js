@@ -46,12 +46,19 @@ function rpcInterface() {
                     resolve(data)
                 }
                 else{
-                    reject('result format is wrong: ' + data)
+                    rpcInterface.prototype.createError(data)
                 }
-            }, function (err) {
-                reject(err)
+            }, function (error) {
+                resolve(rpcInterface.prototype.createError(error))
             })
         })
+    }
+
+    rpcInterface.prototype.createError = function(error){
+        let result = {}
+        result.status = 'error'
+        result.error = error
+        return result
     }
 
     rpcInterface.prototype.valueToAmount = function (value) {

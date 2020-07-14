@@ -53,6 +53,7 @@ function rpcServer() {
             request(options, function (error, response, body) {
                 // logger.debug("request return: " + JSON.stringify(response))
                 if (error) {
+                    logger.debug("request error: " + JSON.stringify(error))
                     reject(error)
                 } else if (response.statusCode !== 200) {
                     resolve(response)
@@ -60,6 +61,7 @@ function rpcServer() {
                     try {
                         resolve(JSON.parse(body))
                     } catch (e) {
+                        logger.debug("request exception: " + JSON.stringify(e))
                         resolve(body)
                     }
                 }
