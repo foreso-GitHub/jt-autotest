@@ -1,6 +1,6 @@
 let chainDatas = [
     {
-        modeName: "lib_main",
+        chainDataMode: "lib_main",
         tx1:{
             "Account": "jnPytUkcu5F1hEZtiMAThA1KxHBMgLLgiu",
             "Amount": "100000000000",
@@ -101,7 +101,7 @@ let chainDatas = [
         }
     },
     {
-        "modeName": "rpc_yun_ali",
+        "chainDataMode": "rpc_yun_ali",
         "tx_token_CNYT": {
             "TransactionType": "Payment",
             "Flags": 2147483648,

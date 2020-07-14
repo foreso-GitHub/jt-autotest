@@ -43,19 +43,52 @@ module.exports = testUtility = {
     //endregion
 
     //region find mode/object
-    findMode: function(modes, modeName) {
-        let resultMode = null
+    // findMode: function(modes, modeName) {
+    //     let resultMode = null
+    //     let count = 0
+    //     for(i = 0; i < modes.length; i++){
+    //         let mode = modes[i]
+    //         if(mode.modeName == modeName){
+    //             resultMode = mode
+    //         }
+    //         count++
+    //         if(modes.length == count){
+    //             return resultMode
+    //         }
+    //     }
+    // },
+
+    findItem: function(items, itemName, getPropertyName) {
+        let result = null
         let count = 0
-        for(i = 0; i < modes.length; i++){
-            let mode = modes[i]
-            if(mode.modeName == modeName){
-                resultMode = mode
+        for(i = 0; i < items.length; i++){
+            let item = items[i]
+            if(getPropertyName(item) == itemName){
+                result = item
             }
             count++
-            if(modes.length == count){
-                return resultMode
+            if(items.length == count){
+                return result
             }
         }
+    },
+
+    findMode: function(modes, modeName) {
+        return testUtility.findItem(modes, modeName, function(mode){
+            return mode.modeName
+        })
+    },
+
+    findChainData: function(modes, chainDataName) {
+        return testUtility.findItem(modes, chainDataName, function(mode){
+            return mode.chainDataName
+        })
+    },
+
+    findAccounts: function(modes, accountsName) {
+        return testUtility.findItem(modes, accountsName, function(mode){
+            return mode.accountsName
+        })
     },
     //endregion
 

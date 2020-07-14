@@ -257,7 +257,8 @@ function accountsDealer() {
     }
 
     accountsDealer.prototype.getAddressesByMode = function(modeAccounts, mode){
-        let accounts = findModeAccounts(modeAccounts, mode.accountsName)
+        // let accounts = findModeAccounts(modeAccounts, mode.accountsName)
+        let accounts = utility.findAccounts(modeAccounts, mode.accountsName)
         return this.getAddresses(accounts)
     }
 
@@ -267,6 +268,7 @@ function accountsDealer() {
     //init accounts, and send swtc in them.
     accountsDealer.prototype.initAccounts = async function(modes){
         return new Promise((resolve, reject) =>{
+            let result = {}
             if(!modeAccounts){
                 modeAccounts = []
             }
@@ -274,15 +276,19 @@ function accountsDealer() {
             let needCreateMode = []
             let checkedCount = 0
             modes.forEach(async mode=>{
-                let accounts = utility.findMode(modeAccounts, mode.accountsName)
-                if (accounts == null){
-                    needCreateMode.push(mode)
-                    needSaveAccountsJsFile = true
+                // let accounts = utility.findMode(modeAccounts, mode.accountsName)
+                if (utility.findAccounts(modeAccounts, mode.accountsName) == null){ //not exist in current accounts
+                    if(utility.findAccounts(needCreateMode, mode.accountsName) == null){  //not exist in the accounts will be created
+                        needCreateMode.push(mode)
+                        needSaveAccountsJsFile = true
+                    }
                 }
                 checkedCount++
                 if(checkedCount == modes.length){
                     if(needCreateMode.length==0){
-                        resolve(modeAccounts)
+                        result.modeAccounts = modeAccounts
+                        result.needCreateModes = needCreateMode
+                        resolve(result)
                     }
                     let createCount = 0
                     for(let i=0;i<needCreateMode.length;i++) {
@@ -293,7 +299,9 @@ function accountsDealer() {
                         if(createCount == needCreateMode.length) {
                             if(needSaveAccountsJsFile){
                                 await utility.saveJsFile('modeAccounts', modeAccounts, configCommons.accounts_js_file_path)
-                                resolve(modeAccounts)
+                                result.modeAccounts = modeAccounts
+                                result.needCreateModes = needCreateMode
+                                resolve(result)
                             }
                         }
                     }
@@ -306,7 +314,7 @@ function accountsDealer() {
         init(createMode)
         let accounts = await createAccounts(createMode.server, ACCOUNT_COUNT)
         let newModeAccount = {}
-        newModeAccount.modeName = createMode.accountsName
+        newModeAccount.accountsName = createMode.accountsName
         newModeAccount.accounts = accounts
         return newModeAccount
     }
@@ -325,15 +333,16 @@ function accountsDealer() {
             let mode = modes[i]
             let server = mode.server
             server.init(mode)
-            let accounts = findModeAccounts(modeAccounts, mode.accountsName)
+            // let accounts = findModeAccounts(modeAccounts, mode.accountsName)
+            let accounts = utility.findAccounts(modeAccounts, mode.accountsName).accounts
             await charger.chargeBasedOnBalance(server, accounts[0], accounts, ACCOUNT_MIN_BALANCE, ACCOUNT_CHARGE_AMOUNT)
         }
     }
 
     accountsDealer.prototype.startInit = async function(allModes){
-        let modeAccounts = await this.initAccounts(allModes)
-        await this.chargeAccounts(allModes)
-        return modeAccounts
+        let result = await this.initAccounts(allModes)
+        await this.chargeAccounts(result.needCreateModes)
+        return result.modeAccounts
     }
     //endregion
 
