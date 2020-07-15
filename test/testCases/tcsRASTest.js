@@ -65,7 +65,7 @@ module.exports = tcsRASTest = {
             tcsRASTest.execReduceNode,
             tcsRASTest.checkChangeNodeCount,
             null,
-            restrictedLevel.L2,
+            restrictedLevel.L3,
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )

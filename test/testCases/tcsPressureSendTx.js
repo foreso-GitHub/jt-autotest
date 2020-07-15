@@ -16,10 +16,11 @@ const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLeve
 const consts = require('../framework/lib/base/consts')
 let utility = require('../framework/testUtility')
 const { token, } = require("../testData/testData")
+const { allModes, } = require("../config")
 //endregion
 //endregion
 
-const SINGER_PRESSURE_TEST_COUNT = 10
+
 
 module.exports = tcsPressureSendTx = {
 
@@ -525,7 +526,7 @@ module.exports = tcsPressureSendTx = {
 
     //endregion
 
-    //region pure pressure test
+    //region pure pressure test, send without getTx
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
     testForPurePressureTest: function(server, describeTitle){
@@ -534,6 +535,7 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
+        const SINGER_PRESSURE_TEST_COUNT = 2
         let count = SINGER_PRESSURE_TEST_COUNT
 
         //region push account params
@@ -635,9 +637,9 @@ module.exports = tcsPressureSendTx = {
             let executeCount = 0
             let totalSuccessCount = 0
             accountParams.forEach(async accountParam=>{
-            // for (let accountParam of accountParams){
-            // for (let j = 0; j < accountParams.length; j++){
-            //     let accountParam = accountParams[j]
+                // for (let accountParam of accountParams){
+                // for (let j = 0; j < accountParams.length; j++){
+                //     let accountParam = accountParams[j]
                 let count = accountParam.count
                 let txFunctionName = accountParam.txFunctionName
 
@@ -739,6 +741,403 @@ module.exports = tcsPressureSendTx = {
         if(txFunctionName != null) accountParam.txFunctionName = txFunctionName
         if(count != null) accountParam.count = count
         return accountParam
+    },
+
+    //endregion
+
+    //region performance test, multi nodes, multi tx, send/sign mix.
+
+    //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
+    testForPerformanceTest: function(server, describeTitle){
+        let testCases = []
+        let titles = []
+        let allServers = tcsPressureSendTx.activeAllServers()
+        let txFunction
+        let addresses = server.mode.addresses
+        let value = '0.000001'
+        let fee = '0.00001'
+        let memos = null
+        let restrictedLevel = restrictedLevel.L2
+        const SINGER_PRESSURE_TEST_COUNT = 10
+        let count = SINGER_PRESSURE_TEST_COUNT
+
+        //region 0010	同一账户向同一节点连续发送交易（不带memo）测试性能上限
+        testCases = []
+        restrictedLevel = restrictedLevel.L2
+
+        txFunction = consts.rpcFunctions.sendTx
+        titles = []
+        titles.push('0010\t同一账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0020\t同一账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0030\t同一账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0040\t同一账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0050\t同一账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+            addresses, value, fee, memos, consts.rpcFunctions.sendTx, restrictedLevel, count))
+
+        txFunction = consts.rpcFunctions.signTx
+        titles = []
+        titles.push('0010\t同一账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0020\t同一账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0030\t同一账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0040\t同一账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0050\t同一账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+            addresses, value, fee, memos, consts.rpcFunctions.sendTx, restrictedLevel, count))
+
+        // framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
+        //endregion
+
+        //region 0060	不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限
+        testCases = []
+
+        txFunction = consts.rpcFunctions.sendTx
+        titles = []
+        titles.push('0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0080\t不同账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0090\t不同账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0100\t不同账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
+            addresses, value, fee, memos, txFunction, restrictedLevel, count))
+
+        txFunction = consts.rpcFunctions.signTx
+        titles = []
+        titles.push('0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0080\t不同账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0090\t不同账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        titles.push('0100\t不同账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
+            addresses, value, fee, memos, txFunction, restrictedLevel, count))
+
+        framework.testTestCases(server, describeTitle + '不同账户向节点连续发送交易', testCases)
+        //endregion
+
+        //region 0110	同一账户向同一节点连续发送交易（带8字节memo）测试性能上限
+        testCases = []
+
+        txFunction = consts.rpcFunctions.sendTx
+        memos = utility.createMemosWithSpecialLength(8)
+        titles = []
+        titles.push('0110\t同一账户向同一节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t同一账户向2个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t同一账户向3个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t同一账户向4个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0120\t同一账户向5个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+            addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
+
+        txFunction = consts.rpcFunctions.signTx
+        titles = []
+        titles.push('0110\t同一账户向同一节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t同一账户向2个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t同一账户向3个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t同一账户向4个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0120\t同一账户向5个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+            addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
+
+        framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
+        //endregion
+
+        //region 同一账户连续发送交易
+
+        // title = '0010\t同一账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 1)
+        //     accountParams = []
+        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0020\t同一账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 2)
+        //     accountParams = []
+        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0030\t同一账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 3)
+        //     accountParams = []
+        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0040\t同一账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 4)
+        //     accountParams = []
+        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0050\t同一账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 5)
+        //     accountParams = []
+        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        // endregion
+
+        //region 不同账户连续发送交易
+
+        // title = '0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 1)
+        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 2)
+        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 3)
+        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 4)
+        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
+        // {
+        //     servers = tcsPressureSendTx.createServers(allServers, 5)
+        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
+        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        //endregion
+
+
+    },
+
+    createTestCaseForPerformanceTest: function(server, title, servers, accountParams){
+        let totalCount = 0
+        for (let accountParam of accountParams){
+            totalCount += accountParam.count
+        }
+        title = title + ',数量：' + totalCount
+        let testCase = framework.createTestCase(title, server,
+            '', '', null,
+            null, null, null,
+            restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
+
+        testCase.otherParams = {}
+        testCase.otherParams.servers = servers
+        testCase.otherParams.accountParams = accountParams
+        testCase.otherParams.totalCount = totalCount
+        testCase.executeFunction = tcsPressureSendTx.executePerformanceTest
+        testCase.checkFunction = tcsPressureSendTx.checkPurePressureTest
+
+        return testCase
+    },
+
+    executePerformanceTest: function(testCase){
+        testCase.hasExecuted = true
+        return new Promise(async (resolve, reject) => {
+            let servers = testCase.otherParams.servers
+            let server = servers[0]
+            let serverCount = servers.length
+            let accountParams = testCase.otherParams.accountParams
+            let totalCount = testCase.otherParams.totalCount
+            let executeCount = 0
+            let totalSuccessCount = 0
+            accountParams.forEach(async accountParam=>{
+                let count = accountParam.count
+                let txFunctionName = accountParam.txFunctionName
+
+                //get sequence
+                let currentSequence = await framework.getSequence(server, accountParam.from)
+                currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+                let sequence = currentSequence
+
+                accountParam.results = []
+                accountParam.successCount = 0
+
+                //transfer
+                for(let i = 0; i < count; i++){
+                    let index = i % serverCount
+                    server = servers[index]
+                    logger.debug('sent by server: ' + server.getName())
+                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence++,
+                        accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
+                    let result = await server.getResponse(server, txFunctionName, params)
+                    if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
+                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
+                    }
+                    executeCount++
+                    accountParam.results.push(result)
+                    if(result.status == responseStatus.success) {
+                        framework.setSequence(server.getName(), accountParam.from, sequence)
+                        accountParam.successCount++
+                        totalSuccessCount++
+                    }
+
+                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: ' + result)
+
+                    if(executeCount == totalCount){
+                        testCase.otherParams.executeCount = executeCount
+                        testCase.otherParams.totalSuccessCount = totalSuccessCount
+                        resolve(testCase.otherParams)
+                    }
+                }
+            })
+        })
+    },
+
+    createServers: function(allServers, count){
+        servers = []
+        for(let i = 0; i < count; i++){
+            servers.push(allServers[i])
+        }
+        return servers
+    },
+
+    createAccountParamsWithDifferentAccount: function(addresses, value, fee, memo, txFunction, testCount){
+        let accountParams = []
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+            addresses.receiver1.address, value, fee, memo, txFunction, testCount))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
+            addresses.receiver2.address, value, fee, memo, txFunction, testCount))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
+            addresses.receiver3.address, value, fee, memo, txFunction, testCount))
+        return accountParams
+    },
+
+    testForPerformanceTestByOneAccount: function(server, titles, allServers, addresses, value, fee, memos, txFunction, testCount){
+
+        let testCases = []
+        let testCase
+        let accountParams = []
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+            addresses.receiver1.address, value, fee, memos, txFunction, testCount))
+        let servers = []
+        let title
+
+        //region 同一账户连续发送交易
+
+        title = titles[0]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 1)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[1]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 2)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[2]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 3)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[3]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 4)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[4]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 5)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        //endregion
+
+        return testCases
+
+    },
+
+    testForPerformanceTestBySeveralAccounts: function(server, titles, allServers, addresses, value, fee, memos, txFunction, testCount){
+
+        let testCases = []
+        let testCase
+        let accountParams = tcsPressureSendTx.createAccountParamsWithDifferentAccount(
+            addresses, value, fee, memos, txFunction, testCount)
+        let servers = []
+        let title
+
+        //region 同一账户连续发送交易
+
+        title = titles[0]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 1)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[1]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 2)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[2]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 3)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[3]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 4)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titles[4]
+        {
+            servers = tcsPressureSendTx.createServers(allServers, 5)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        //endregion
+
+        return testCases
+
     },
 
     //endregion
@@ -900,6 +1299,26 @@ module.exports = tcsPressureSendTx = {
         }
     },
 
+    //endregion
+
+    //region active nodes
+    activeAllServers: function(){
+        let servers = []
+
+        servers.push(framework.activeServer(allModes[0]))
+        servers.push(framework.activeServer(allModes[1]))
+        servers.push(framework.activeServer(allModes[2]))
+        servers.push(framework.activeServer(allModes[3]))
+        servers.push(framework.activeServer(allModes[4]))
+
+        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
+        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
+        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
+        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
+        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
+
+        return servers
+    },
     //endregion
 
     //endregion

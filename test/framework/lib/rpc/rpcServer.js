@@ -54,6 +54,7 @@ function rpcServer() {
                 // logger.debug("request return: " + JSON.stringify(response))
                 if (error) {
                     logger.debug("request error: " + JSON.stringify(error))
+                    logger.debug("request options: " + JSON.stringify(options))
                     reject(error)
                 } else if (response.statusCode !== 200) {
                     resolve(response)
