@@ -749,200 +749,322 @@ module.exports = tcsPressureSendTx = {
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
     testForPerformanceTest: function(server, describeTitle){
-        let testCases = []
         let titles = []
-        let allServers = tcsPressureSendTx.activeAllServers()
-        let txFunction
-        let addresses = server.mode.addresses
-        let value = '0.000001'
-        let fee = '0.00001'
+        let caseRestrictedLevel = restrictedLevel.L2
         let memos = null
-        let restrictedLevel = restrictedLevel.L2
-        const SINGER_PRESSURE_TEST_COUNT = 10
-        let count = SINGER_PRESSURE_TEST_COUNT
+        const SINGER_PRESSURE_TEST_COUNT = 5
+        let testCount = SINGER_PRESSURE_TEST_COUNT
 
         //region 0010	同一账户向同一节点连续发送交易（不带memo）测试性能上限
-        testCases = []
-        restrictedLevel = restrictedLevel.L2
+        // testCases = []
+        //
+        // txFunction = consts.rpcFunctions.sendTx
+        // titles = []
+        // titles.push('0010\t同一账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0020\t同一账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0030\t同一账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0040\t同一账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0050\t同一账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
+        //
+        // txFunction = consts.rpcFunctions.signTx
+        // titles = []
+        // titles.push('0010\t同一账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0020\t同一账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0030\t同一账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0040\t同一账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0050\t同一账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
+        //
+        // framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
+        //endregion
 
-        txFunction = consts.rpcFunctions.sendTx
+        //region 0060	不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限
+        // testCases = []
+        //
+        // txFunction = consts.rpcFunctions.sendTx
+        // titles = []
+        // titles.push('0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0080\t不同账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0090\t不同账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // titles.push('0100\t不同账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
+        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
+        //     addresses, value, fee, memos, txFunction, count))
+        //
+        // txFunction = consts.rpcFunctions.signTx
+        // titles = []
+        // titles.push('0060\t不同账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0070\t不同账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0080\t不同账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0090\t不同账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // titles.push('0100\t不同账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
+        //     addresses, value, fee, memos, txFunction, count))
+        //
+        // framework.testTestCases(server, describeTitle + '不同账户向节点连续发送交易', testCases)
+        //endregion
+
+        //region 0110	同一账户向同一节点连续发送交易（带8字节memo）测试性能上限
+        // testCases = []
+        //
+        // txFunction = consts.rpcFunctions.sendTx
+        // memos = utility.createMemosWithSpecialLength(8)
+        // titles = []
+        // titles.push('0110\t同一账户向同一节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        // titles.push('0110\t同一账户向2个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        // titles.push('0110\t同一账户向3个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        // titles.push('0110\t同一账户向4个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        // titles.push('0120\t同一账户向5个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
+        //
+        // txFunction = consts.rpcFunctions.signTx
+        // titles = []
+        // titles.push('0110\t同一账户向同一节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        // titles.push('0110\t同一账户向2个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        // titles.push('0110\t同一账户向3个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        // titles.push('0110\t同一账户向4个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        // titles.push('0120\t同一账户向5个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
+        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
+
+        // framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
+        //endregion
+
+        //region no memos
+        caseRestrictedLevel = restrictedLevel.L2
+        memos = null
         titles = []
+
         titles.push('0010\t同一账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0020\t同一账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0030\t同一账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0040\t同一账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0050\t同一账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-            addresses, value, fee, memos, consts.rpcFunctions.sendTx, restrictedLevel, count))
 
-        txFunction = consts.rpcFunctions.signTx
-        titles = []
         titles.push('0010\t同一账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
         titles.push('0020\t同一账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
         titles.push('0030\t同一账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
         titles.push('0040\t同一账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
         titles.push('0050\t同一账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-            addresses, value, fee, memos, consts.rpcFunctions.sendTx, restrictedLevel, count))
 
-        // framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
-        //endregion
-
-        //region 0060	不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限
-        testCases = []
-
-        txFunction = consts.rpcFunctions.sendTx
-        titles = []
         titles.push('0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0080\t不同账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0090\t不同账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
         titles.push('0100\t不同账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
-            addresses, value, fee, memos, txFunction, restrictedLevel, count))
 
-        txFunction = consts.rpcFunctions.signTx
-        titles = []
-        titles.push('0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        titles.push('0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        titles.push('0080\t不同账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        titles.push('0090\t不同账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        titles.push('0100\t不同账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
-            addresses, value, fee, memos, txFunction, restrictedLevel, count))
+        titles.push('0060\t不同账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0070\t不同账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0080\t不同账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0090\t不同账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
+        titles.push('0100\t不同账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
 
-        framework.testTestCases(server, describeTitle + '不同账户向节点连续发送交易', testCases)
+        tcsPressureSendTx.testForPerformanceTestForOneRound(server, describeTitle, titles, memos, caseRestrictedLevel, testCount)
         //endregion
 
-        //region 0110	同一账户向同一节点连续发送交易（带8字节memo）测试性能上限
-        testCases = []
-
-        txFunction = consts.rpcFunctions.sendTx
+        //region 8b memos
+        caseRestrictedLevel = restrictedLevel.L2
         memos = utility.createMemosWithSpecialLength(8)
         titles = []
+
         titles.push('0110\t同一账户向同一节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
         titles.push('0110\t同一账户向2个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
         titles.push('0110\t同一账户向3个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
         titles.push('0110\t同一账户向4个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
         titles.push('0120\t同一账户向5个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
-        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-            addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
 
-        txFunction = consts.rpcFunctions.signTx
-        titles = []
         titles.push('0110\t同一账户向同一节点连续发送交易（signTx, 带8字节memo）测试性能上限')
         titles.push('0110\t同一账户向2个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
         titles.push('0110\t同一账户向3个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
         titles.push('0110\t同一账户向4个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
         titles.push('0120\t同一账户向5个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
-        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-            addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
 
-        framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
+        titles.push('0110\t不同账户向同一节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t不同账户向2个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t不同账户向3个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t不同账户向4个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+        titles.push('0120\t不同账户向5个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
+
+        titles.push('0110\t不同账户向同一节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t不同账户向2个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t不同账户向3个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0110\t不同账户向4个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+        titles.push('0120\t不同账户向5个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
+
+        tcsPressureSendTx.testForPerformanceTestForOneRound(server, describeTitle, titles, memos, caseRestrictedLevel, testCount)
         //endregion
 
-        //region 同一账户连续发送交易
+        //region 64b memos
+        caseRestrictedLevel = restrictedLevel.L3
+        memos = utility.createMemosWithSpecialLength(64)
+        titles = []
 
-        // title = '0010\t同一账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 1)
-        //     accountParams = []
-        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0020\t同一账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 2)
-        //     accountParams = []
-        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0030\t同一账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 3)
-        //     accountParams = []
-        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0040\t同一账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 4)
-        //     accountParams = []
-        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0050\t同一账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 5)
-        //     accountParams = []
-        //     accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-        //         addresses.receiver1.address, value, fee, null, consts.rpcFunctions.sendTx, count))
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
+        titles.push('0130\t同一账户向同一节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t同一账户向2个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t同一账户向3个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t同一账户向4个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0140\t同一账户向5个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
 
-        // endregion
+        titles.push('0130\t同一账户向同一节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t同一账户向2个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t同一账户向3个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t同一账户向4个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0140\t同一账户向5个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
 
-        //region 不同账户连续发送交易
+        titles.push('0130\t不同账户向同一节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t不同账户向2个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t不同账户向3个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t不同账户向4个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
+        titles.push('0140\t不同账户向5个不同的节点连续发送交易（sendTx, 带64字节memo）测试性能上限')
 
-        // title = '0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 1)
-        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 2)
-        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 3)
-        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 4)
-        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = '0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限'
-        // {
-        //     servers = tcsPressureSendTx.createServers(allServers, 5)
-        //     accountParams = tcsPressureSendTx.createAccountParamsWithDifferentFrom(addresses, value, fee, null, consts.rpcFunctions.sendTx, count)
-        //     testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
-        //     framework.addTestCase(testCases, testCase)
-        // }
+        titles.push('0130\t不同账户向同一节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t不同账户向2个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t不同账户向3个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0130\t不同账户向4个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
+        titles.push('0140\t不同账户向5个不同的节点连续发送交易（signTx, 带64字节memo）测试性能上限')
 
+        tcsPressureSendTx.testForPerformanceTestForOneRound(server, describeTitle, titles, memos, caseRestrictedLevel, testCount)
         //endregion
 
+        //region 512b memos
+        caseRestrictedLevel = restrictedLevel.L4
+        memos = utility.createMemosWithSpecialLength(512)
+        titles = []
 
+        titles.push('0150\t同一账户向同一节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t同一账户向2个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t同一账户向3个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t同一账户向4个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0160\t同一账户向5个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+
+        titles.push('0150\t同一账户向同一节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t同一账户向2个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t同一账户向3个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t同一账户向4个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0160\t同一账户向5个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+
+        titles.push('0150\t不同账户向同一节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t不同账户向2个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t不同账户向3个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t不同账户向4个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+        titles.push('0160\t不同账户向5个不同的节点连续发送交易（sendTx, 带512字节memo）测试性能上限')
+
+        titles.push('0150\t不同账户向同一节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t不同账户向2个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t不同账户向3个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0150\t不同账户向4个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+        titles.push('0160\t不同账户向5个不同的节点连续发送交易（signTx, 带512字节memo）测试性能上限')
+
+        tcsPressureSendTx.testForPerformanceTestForOneRound(server, describeTitle, titles, memos, caseRestrictedLevel, testCount)
+        //endregion
+
+        //region 4096b memos
+        caseRestrictedLevel = restrictedLevel.L4
+        memos = utility.createMemosWithSpecialLength(4096)
+        titles = []
+
+        titles.push('0170\t同一账户向同一节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t同一账户向2个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t同一账户向3个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t同一账户向4个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0180\t同一账户向5个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+
+        titles.push('0170\t同一账户向同一节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t同一账户向2个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t同一账户向3个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t同一账户向4个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0180\t同一账户向5个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+
+        titles.push('0170\t不同账户向同一节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t不同账户向2个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t不同账户向3个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t不同账户向4个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+        titles.push('0180\t不同账户向5个不同的节点连续发送交易（sendTx, 带4096字节memo）测试性能上限')
+
+        titles.push('0170\t不同账户向同一节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t不同账户向2个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t不同账户向3个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0170\t不同账户向4个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+        titles.push('0180\t不同账户向5个不同的节点连续发送交易（signTx, 带4096字节memo）测试性能上限')
+
+        tcsPressureSendTx.testForPerformanceTestForOneRound(server, describeTitle, titles, memos, caseRestrictedLevel, testCount)
+        //endregion
+
+        //region 32768b memos
+        caseRestrictedLevel = restrictedLevel.L4
+        memos = utility.createMemosWithSpecialLength(32768)
+        titles = []
+
+        titles.push('0190\t同一账户向同一节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t同一账户向2个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t同一账户向3个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t同一账户向4个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0200\t同一账户向5个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+
+        titles.push('0190\t同一账户向同一节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t同一账户向2个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t同一账户向3个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t同一账户向4个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0200\t同一账户向5个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+
+        titles.push('0190\t不同账户向同一节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t不同账户向2个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t不同账户向3个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t不同账户向4个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+        titles.push('0200\t不同账户向5个不同的节点连续发送交易（sendTx, 带32768字节memo）测试性能上限')
+
+        titles.push('0190\t不同账户向同一节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t不同账户向2个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t不同账户向3个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0190\t不同账户向4个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+        titles.push('0200\t不同账户向5个不同的节点连续发送交易（signTx, 带32768字节memo）测试性能上限')
+
+        tcsPressureSendTx.testForPerformanceTestForOneRound(server, describeTitle, titles, memos, caseRestrictedLevel, testCount)
+        //endregion
     },
 
-    createTestCaseForPerformanceTest: function(server, title, servers, accountParams){
+    testForPerformanceTestForOneRound: function(server, describeTitle, titles, memos, caseRestrictedLevel, testCount){
+        let testCases = []
+        let subTitles
+        let allServers = tcsPressureSendTx.activeAllServers()
+        let txFunction
+        let addresses = server.mode.addresses
+        let value = '0.000001'
+        let fee = '0.00001'
+        let memosLength = memos ? memos[0].length : 0;
+
+        //region 0010	同一账户向同一节点连续发送交易（不带memo）测试性能上限
+        testCases = []
+        txFunction = consts.rpcFunctions.sendTx
+        subTitles = titles.slice(0, 5)
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, subTitles, allServers,
+            addresses, value, fee, memos, txFunction, caseRestrictedLevel, testCount))
+        txFunction = consts.rpcFunctions.signTx
+        subTitles = titles.slice(5, 10)
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, subTitles, allServers,
+            addresses, value, fee, memos, txFunction, caseRestrictedLevel, testCount))
+        framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易, memos长度为' + memosLength, testCases)
+        //endregion
+
+        //region 0060	不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限
+        testCases = []
+        txFunction = consts.rpcFunctions.sendTx
+        subTitles = titles.slice(10, 15)
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, subTitles, allServers,
+            addresses, value, fee, memos, txFunction, caseRestrictedLevel, testCount))
+        txFunction = consts.rpcFunctions.signTx
+        subTitles = titles.slice(15, 20)
+        testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, subTitles, allServers,
+            addresses, value, fee, memos, txFunction, caseRestrictedLevel, testCount))
+        framework.testTestCases(server, describeTitle + '不同账户向节点连续发送交易, memos长度为' + memosLength, testCases)
+        //endregion
+    },
+
+    createTestCaseForPerformanceTest: function(server, title, servers, accountParams, caseRestrictedLevel){
         let totalCount = 0
         for (let accountParam of accountParams){
             totalCount += accountParam.count
@@ -951,7 +1073,7 @@ module.exports = tcsPressureSendTx = {
         let testCase = framework.createTestCase(title, server,
             '', '', null,
             null, null, null,
-            restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
+            caseRestrictedLevel, [serviceType.newChain, serviceType.oldChain])
 
         testCase.otherParams = {}
         testCase.otherParams.servers = servers
@@ -1035,7 +1157,8 @@ module.exports = tcsPressureSendTx = {
         return accountParams
     },
 
-    testForPerformanceTestByOneAccount: function(server, titles, allServers, addresses, value, fee, memos, txFunction, testCount){
+    testForPerformanceTestByOneAccount: function(server, titles, allServers, addresses, value, fee, memos,
+                                                 txFunction, caseRestrictedLevel, testCount){
 
         let testCases = []
         let testCase
@@ -1050,35 +1173,35 @@ module.exports = tcsPressureSendTx = {
         title = titles[0]
         {
             servers = tcsPressureSendTx.createServers(allServers, 1)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[1]
         {
             servers = tcsPressureSendTx.createServers(allServers, 2)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[2]
         {
             servers = tcsPressureSendTx.createServers(allServers, 3)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[3]
         {
             servers = tcsPressureSendTx.createServers(allServers, 4)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[4]
         {
             servers = tcsPressureSendTx.createServers(allServers, 5)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
@@ -1088,7 +1211,8 @@ module.exports = tcsPressureSendTx = {
 
     },
 
-    testForPerformanceTestBySeveralAccounts: function(server, titles, allServers, addresses, value, fee, memos, txFunction, testCount){
+    testForPerformanceTestBySeveralAccounts: function(server, titles, allServers, addresses, value, fee, memos,
+                                                      txFunction, caseRestrictedLevel, testCount){
 
         let testCases = []
         let testCase
@@ -1102,35 +1226,35 @@ module.exports = tcsPressureSendTx = {
         title = titles[0]
         {
             servers = tcsPressureSendTx.createServers(allServers, 1)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[1]
         {
             servers = tcsPressureSendTx.createServers(allServers, 2)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[2]
         {
             servers = tcsPressureSendTx.createServers(allServers, 3)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[3]
         {
             servers = tcsPressureSendTx.createServers(allServers, 4)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[4]
         {
             servers = tcsPressureSendTx.createServers(allServers, 5)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
