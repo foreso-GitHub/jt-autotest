@@ -2,10 +2,8 @@
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-const fs = require('fs');
 const { modes, allModes, configCommons } = require("../config")
 let { chainDatas } = require("../testData/chainDatas")
-const consts = require("../framework/lib/base/consts.js")
 const utility = require("../framework/testUtility.js")
 const AccountsDealer = require('./accountsDealer')
 let accountsDealer = new AccountsDealer()
@@ -73,7 +71,7 @@ function chainDataCreator(){
         server.init(mode)
         // let root = mode.root
         let root = mode.addresses.rootAccount
-        let sender = mode.addresses.sender1
+        let sender = mode.addresses.rootAccount
         let sequence3 = mode.addresses.sequence3
         const to = mode.addresses.receiver1.address
         let params
@@ -82,17 +80,20 @@ function chainDataCreator(){
         //todo now only CNYT can be issue, need update here
         let rootResponse = await server.responseGetAccount(server, root.address)
         let rootSequence = rootResponse.result.Sequence
-        let cnytCount = '999999'
-        let cnytSymbol = 'CNYT'
-        let cnytIssuer = 'jjjjjjjjjjjjjjjjjjjjjhoLvTp'
-        let value = cnytCount + '/' + cnytSymbol + '/' + cnytIssuer
-        params = server.createTxParams(
-            root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, '1', null, null,
-            null, null, null, null, null, null, null
-        )
-        params[0].value = value
-        result = await server.responseSendTx(server, params)
+
+        // params = server.createTxParams(
+        //     root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, '1', null, null,
+        //     null, null, null, null, null, null, null)
+        // params[0].value = value
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address)
         txResults.push(result)
+        //batch charge CNYT
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.sender1.address)
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.sender2.address)
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.sender3.address)
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.receiver1.address)
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address)
+        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address)
 
         //get sequence
         let response = await server.responseGetAccount(server, sender.address)
@@ -132,6 +133,7 @@ function chainDataCreator(){
 
         //batch txs
         for(let i = 0; i < 20; i++){
+            //swt txs
             params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null,
                 ['create test chain data for ' + mode.name + ' at ' + (new Date()).toISOString()],
                 null, null, null, null, null, null, null)
@@ -168,6 +170,19 @@ function chainDataCreator(){
         chainData.block.txCountInBlock = block.transactions.length
 
         return chainData
+    }
+
+    async function chargeCNYT(server, from, secret, sequence, to){
+        let cnytCount = '999999'
+        let cnytSymbol = 'CNYT'
+        let cnytIssuer = 'jjjjjjjjjjjjjjjjjjjjjhoLvTp'
+        // let value = cnytCount + '/' + cnytSymbol + '/' + cnytIssuer
+        let value = utility.getShowValue(cnytCount, cnytSymbol, cnytIssuer)
+        let params = server.createTxParams(from, secret, sequence, to, '1', null, null,
+            null, null, null, null, null, null, null)
+        params[0].value = value
+        let result = await server.responseSendTx(server, params)
+        return result
     }
 
 }

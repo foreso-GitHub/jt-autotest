@@ -4,6 +4,7 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let util = require('util')
 const consts = require("../base/consts")
+const enums = require("../../enums")
 const Remote = require('swtc-lib').Remote
 let baseInterface = require('../base/baseInterface')
 //endregion
@@ -235,7 +236,7 @@ function swtclibInterface() {
 
     this.createResponse = function(data){
         let response = this.createEmptyResponse()
-        response.status = 'success'
+        response.status = enums.responseStatus.success
         response.result = data
         return response
     }
@@ -248,7 +249,7 @@ function swtclibInterface() {
 
     this.createError = function(code, error){
         let response = this.createEmptyResponse()
-        response.status = 'error'
+        response.status = enums.responseStatus.error
         response.result = this.makeupErrorInfo(error)
         return response
     }

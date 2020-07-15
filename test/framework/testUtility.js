@@ -24,19 +24,26 @@ module.exports = testUtility = {
 
     //region judge if json format
     isJSON: function(str) {
+        let obj
         if (typeof str == 'string') {
             try {
-                let obj = JSON.parse(str)
-                if(typeof obj == 'object' && obj ){
-                    return true
-                }else{
-                    return false
-                }
+                obj = JSON.parse(str)
             } catch(e) {
                 // console.log('error：'+str+'!!!'+e)
                 return false
             }
+        }else{
+            if(typeof str == 'object'){
+                obj = str
+            }
         }
+
+        if(typeof obj == 'object' && obj ){
+            return true
+        }else{
+            return false
+        }
+
         // console.log('It is not a string!')
         return false
     },
@@ -173,6 +180,10 @@ module.exports = testUtility = {
 
     getShowSymbol: function(symbol, issuer){
         return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
+    },
+
+    getShowValue: function(value, symbol, issuer){
+        return value + this.getShowSymbol(symbol, issuer)
     },
     //endregion
 

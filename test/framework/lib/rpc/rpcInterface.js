@@ -3,8 +3,9 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let util = require('util')
-let RpcServer = require('./rpcServer.js')
+let RpcServer = require('./rpcServer')
 let baseInterface = require('../base/baseInterface')
+let enums = require('../../enums')
 //endregion
 
 
@@ -56,7 +57,7 @@ function rpcInterface() {
 
     rpcInterface.prototype.createError = function(error){
         let result = {}
-        result.status = 'error'
+        result.status = enums.responseStatus.error
         result.error = error
         return result
     }
