@@ -804,6 +804,7 @@ module.exports = framework = {
 
     // region utility methods
 
+    //region check balance change
     //swt example:
     // { id: 38,
     //     jsonrpc: '2.0',
@@ -822,6 +823,7 @@ module.exports = framework = {
             return balance
         }
     },
+    //endregion
 
     //region normal response check
 
@@ -911,9 +913,167 @@ module.exports = framework = {
             mode.txs = utility.findChainData(chainDatas, mode.chainDataName)
         }
         return server
-    }
+    },
     //endregion
 
     // endregion
+
+    //region execute and check for batch sub cases
+
+    createSubCase: function(from, secret, to, value, fee, memos, txFunctionName, count, shouldSuccessCount){
+        let subCase = {}
+        if(from != null) subCase.from = from
+        if(secret != null) subCase.secret = secret
+        if(to != null) subCase.to = to
+        if(value != null) subCase.value = value
+        if(fee != null) subCase.fee = fee
+        if(memos != null) subCase.memos = memos
+        if(txFunctionName != null) subCase.txFunctionName = txFunctionName
+        if(count != null) subCase.count = count
+        if(shouldSuccessCount != null) subCase.shouldSuccessCount = shouldSuccessCount
+        return subCase
+    },
+
+    executeSubCases: function(testCase){
+        testCase.hasExecuted = true
+        return new Promise(async (resolve, reject) => {
+            let servers = testCase.otherParams.servers
+            let server = servers[0]
+            let serverCount = servers.length
+            let subCases = testCase.otherParams.subCases
+            let totalCount = testCase.otherParams.totalCount
+            let executeCount = 0
+            let totalShouldSuccessCount = 0
+            let totalShouldFailCount = 0
+            let totalSuccessCount = 0
+            let totalFailCount = 0
+            testCase.otherParams.successResults = []
+            testCase.otherParams.failResults = []
+            for(let i = 0; i < subCases.length; i++){
+                let accountParam = subCases[i]
+
+                let count = accountParam.count
+                let txFunctionName = accountParam.txFunctionName
+
+                //get sequence
+                let currentSequence = await framework.getSequence(server, accountParam.from)
+                currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+                let sequence = currentSequence
+
+                accountParam.results = []
+                accountParam.successCount = 0
+                accountParam.failCount = 0
+
+                totalShouldSuccessCount += accountParam.shouldSuccessCount
+                totalShouldFailCount += accountParam.count - accountParam.shouldSuccessCount
+
+                //transfer
+                for(let i = 0; i < count; i++){
+                    let index = i % serverCount
+                    server = servers[index]
+                    logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
+                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
+                        accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
+                    let result = await server.getResponse(server, txFunctionName, params)
+                    if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
+                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
+                    }
+                    executeCount++
+                    accountParam.results.push(result)
+                    if(result.status == responseStatus.success) {
+                        sequence++
+                        framework.setSequence(server.getName(), accountParam.from, sequence)
+                        testCase.otherParams.successResults.push(result)
+                        accountParam.successCount++
+                        totalSuccessCount++
+
+                        //print wrong failed/success tx
+                        //todo need be remove when such jingtum bug (invalid tx will be success in pressure test) is fixed
+                        if(accountParam.shouldSuccessCount < accountParam.count){
+                            logger.debug('===attention===')
+                            logger.debug(JSON.stringify(accountParam))
+                            logger.debug('sequence: ' + (sequence - 1))
+                            logger.debug(JSON.stringify(result))
+                        }
+
+                    }else{
+                        testCase.otherParams.failResults.push(result)
+                        accountParam.failCount++
+                        totalFailCount++
+                    }
+
+
+                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: '
+                        + JSON.stringify(result))
+
+                    if(executeCount == totalCount){
+                        testCase.otherParams.executeCount = executeCount
+                        testCase.otherParams.totalSuccessCount = totalSuccessCount
+                        testCase.otherParams.totalFailCount = totalFailCount
+                        testCase.otherParams.totalShouldSuccessCount = totalShouldSuccessCount
+                        testCase.otherParams.totalShouldFailCount = totalShouldFailCount
+                        resolve(testCase.otherParams)
+                    }
+                }
+            }
+        })
+    },
+
+    checkSubCases: async function(testCase){
+        let totalCount = testCase.otherParams.totalCount
+        let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        let totalFailCount = testCase.otherParams.totalFailCount
+
+        //check tps
+        let server = testCase.server
+        let blockTime = server.mode.defaultBlockTime / 1000
+
+        let startTxHash = testCase.otherParams.successResults[0].result[0]
+        let startTx = await utility.getTxByHash(server, startTxHash)
+        let startBlockNumber = startTx.result.ledger_index
+
+        let endTxHash = testCase.otherParams.successResults[testCase.otherParams.successResults.length - 1].result[0]
+        let endTx = await utility.getTxByHash(server, endTxHash)
+        let endBlockNumber = endTx.result.ledger_index
+
+        let blockTpsInfoList = []
+        for(let i = startBlockNumber; i <= endBlockNumber; i++){
+            let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
+            let block = blockResponse.result
+            let blockTpsInfo = {}
+            blockTpsInfo.blockNumber = block.ledger_index
+            blockTpsInfo.txCount = block.transactions.length
+            blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
+            blockTpsInfoList.push(blockTpsInfo)
+        }
+
+        let txCountInBlocks = 0
+        for(let blockTpsInfo of blockTpsInfoList){
+            logger.info('------ block tps status ------')
+            logger.info("blockNumber: " + blockTpsInfo.blockNumber)
+            logger.info("txCount: " + blockTpsInfo.txCount)
+            logger.info("tps: " + blockTpsInfo.tps)
+            txCountInBlocks += blockTpsInfo.txCount
+        }
+
+        let blockCount = endBlockNumber - startBlockNumber + 1
+        let tps1 = totalSuccessCount / blockCount / blockTime
+        let tps2 = txCountInBlocks / blockCount / blockTime
+        logger.info("======== tps status ========")
+        logger.info("startBlockNumber: " + startBlockNumber)
+        logger.info("endBlockNumber: " + endBlockNumber)
+        logger.info("blockCount: " + blockCount)
+        logger.info("totalSuccessCount: " + totalSuccessCount)
+        logger.info("totalFailCount: " + totalFailCount)
+        logger.info("tps1: " + tps1)
+        logger.info("txCountInBlocks: " + txCountInBlocks)
+        logger.info("tps2: " + tps2)
+
+        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
+        expect(totalSuccessCount).to.be.equal(testCase.otherParams.totalShouldSuccessCount)
+        expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
+    },
+
+    //endregion
 }
 

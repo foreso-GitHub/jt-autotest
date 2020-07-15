@@ -1111,7 +1111,7 @@ module.exports = tcsPressureSendTx = {
                 for(let i = 0; i < count; i++){
                     let index = i % serverCount
                     server = servers[index]
-                    logger.debug('sent by server: ' + server.getName())
+                    logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence++,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
