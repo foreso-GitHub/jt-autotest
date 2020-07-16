@@ -71,7 +71,7 @@ function chainDataCreator(){
         server.init(mode)
         // let root = mode.root
         let root = mode.addresses.rootAccount
-        let sender = mode.addresses.rootAccount
+        let sender = mode.addresses.sender1
         let sequence3 = mode.addresses.sequence3
         const to = mode.addresses.receiver1.address
         let params

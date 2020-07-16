@@ -12,6 +12,8 @@ const consts = require('./lib/base/consts')
 const { chainDatas } = require("../testData/chainDatas")
 let { modeAccounts } = require('../testData/accounts')
 const AccountsDealer = require('../utility/accountsDealer')
+const rpc = require('./lib/rpc/rpcInterface.js')
+const swtclib = require('./lib/swtclib/swtclibInterface.js')
 const { configCommons, modes, } = require("../config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
@@ -903,18 +905,6 @@ module.exports = framework = {
 
     //endregion
 
-    //region active server
-    activeServer: function(mode){
-        let server = mode.server
-        server.init(mode)
-        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
-            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
-            mode.txs = utility.findChainData(chainDatas, mode.chainDataName)
-        }
-        return server
-    },
-    //endregion
-
     // endregion
 
     //region execute and check for batch sub cases
@@ -1073,6 +1063,27 @@ module.exports = framework = {
         expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
     },
 
+    //endregion
+
+    //region active server
+    initServer: function(mode){
+        if(mode.service ==  serviceType.newChain){
+            mode.server = new rpc()
+        }else if(mode.service ==  serviceType.oldChain){
+            mode.server = new swtclib()
+        }
+        mode.server.init(mode)
+    },
+
+    activeServer: function(mode){
+        let server = mode.server
+        mode.server.init(mode)
+        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
+            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
+            mode.txs = utility.findChainData(chainDatas, mode.chainDataName)
+        }
+        return server
+    },
     //endregion
 }
 

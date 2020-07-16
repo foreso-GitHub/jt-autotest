@@ -3,7 +3,6 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const consts = require('./consts')
-const testUtility = require('../../testUtility')
 //endregion
 
 function baseInterface() {
@@ -27,6 +26,7 @@ function baseInterface() {
         this.mode = mode
         this.url = mode.initParams.url
     }
+
     //endregion
 
     //region interfaces
@@ -181,11 +181,13 @@ function baseInterface() {
         if(sequence != null) data.sequence = sequence
         if(to != null) data.to = to
         if(value != null) {
-            if(!testUtility.isJSON(value)){
+            if(!this.isJSON(value)){
                 data.value = this.valueToAmount(value)
             }else{
                 let amount = value.amount
-                data.value = testUtility.getShowValue(amount, value.symbol, value.issuer)
+                let symbol = value.symbol
+                let issuer = value.issuer
+                data.value = amount + (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
             }
         }
         if(fee != null) data.fee = this.valueToAmount(fee)
@@ -229,6 +231,33 @@ function baseInterface() {
     //todo: may be it is a bug.
     baseInterface.prototype.valueToAmount = function (value) {
         return value
+    }
+    //endregion
+
+    //region judge if json format
+    this.isJSON = function(str) {
+        let obj
+        if (typeof str == 'string') {
+            try {
+                obj = JSON.parse(str)
+            } catch(e) {
+                // console.log('error：'+str+'!!!'+e)
+                return false
+            }
+        }else{
+            if(typeof str == 'object'){
+                obj = str
+            }
+        }
+
+        if(typeof obj == 'object' && obj ){
+            return true
+        }else{
+            return false
+        }
+
+        // console.log('It is not a string!')
+        return false
     }
     //endregion
 

@@ -4,6 +4,8 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const fs = require('fs')
 const { configCommons } = require("../config")
+const {responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel,} = require('./enums')
+
 //endregion
 
 let _LastDynamicalTimeSeed = 0
@@ -304,8 +306,7 @@ module.exports = testUtility = {
         }
         memos.push(content)
         return memos
-    }
+    },
     //endregion
-
 }
 

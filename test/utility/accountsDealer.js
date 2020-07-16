@@ -7,7 +7,7 @@ const { modes, allModes, configCommons } = require("../config")
 const consts = require("../framework/lib/base/consts.js")
 const Charger = require('./charger')
 let { modeAccounts } = require("../testData/accounts")
-const utility = require("../framework/testUtility")
+const utility = require("../framework/testUtility.js")
 //endregion
 
 const ACCOUNT_COUNT = 100
