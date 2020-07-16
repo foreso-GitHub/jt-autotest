@@ -53,7 +53,8 @@ function baseInterface() {
     //region balance
     baseInterface.prototype.getBalance = async function (server, address, symbol) {
         let response = await this.responseBalance(server, address, symbol)
-        return response.result.balance
+        let balance = response.result ? response.result.balance : null
+        return balance
     }
 
     baseInterface.prototype.processBalanceResponse = function(response){
