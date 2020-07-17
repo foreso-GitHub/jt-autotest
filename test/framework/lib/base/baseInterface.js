@@ -184,7 +184,7 @@ function baseInterface() {
         if(to != null) data.to = to
         if(value != null) {
             if(!utility.isJSON(value)){
-                data.value = value.toString()
+                data.value = this.valueToAmount(value)
             }else{
                 let amount = value.amount
                 let symbol = value.symbol
@@ -233,33 +233,6 @@ function baseInterface() {
     //todo: may be it is a bug.
     baseInterface.prototype.valueToAmount = function (value) {
         return value
-    }
-    //endregion
-
-    //region judge if json format
-    this.isJSON = function(str) {
-        let obj
-        if (typeof str == 'string') {
-            try {
-                obj = JSON.parse(str)
-            } catch(e) {
-                // console.log('error：'+str+'!!!'+e)
-                return false
-            }
-        }else{
-            if(typeof str == 'object'){
-                obj = str
-            }
-        }
-
-        if(typeof obj == 'object' && obj ){
-            return true
-        }else{
-            return false
-        }
-
-        // console.log('It is not a string!')
-        return false
     }
     //endregion
 
