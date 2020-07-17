@@ -21,7 +21,6 @@ const { allModes, } = require("../config")
 //endregion
 
 
-
 module.exports = tcsPressureSendTx = {
 
     testForPressureSendTx: function(server, describeTitle){
@@ -444,7 +443,7 @@ module.exports = tcsPressureSendTx = {
             let testCase = framework.createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
                 txFunctionName, txParams, null,
                 executeFunction, checkFunction, expectedResult,
-                restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
+                restrictedLevel.L3, [serviceType.newChain, serviceType.oldChain])
             framework.addTestCase(testCases, testCase)
         }
         return testCases
@@ -455,6 +454,7 @@ module.exports = tcsPressureSendTx = {
         let testCases = []
         let title = '9000\t交易压力测试，交易数量：' + count
         let testCase = tcsPressureSendTx.createTestCaseForPressureTest(server, title, txFunctionName, count)
+        testCase.restrictedLevel = restrictedLevel.L3
         framework.addTestCase(testCases, testCase)
         return testCases
     },
@@ -616,7 +616,7 @@ module.exports = tcsPressureSendTx = {
         let testCase = framework.createTestCase(title, server,
             '', '', null,
             null, null, null,
-            restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
+            restrictedLevel.L3, [serviceType.newChain, serviceType.oldChain])
 
         testCase.otherParams = {}
         testCase.otherParams.accountParams = accountParams
@@ -653,7 +653,7 @@ module.exports = tcsPressureSendTx = {
 
                 //transfer
                 for(let i = 0; i < count; i++){
-                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence++,
+                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
                     if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
@@ -662,6 +662,8 @@ module.exports = tcsPressureSendTx = {
                     executeCount++
                     accountParam.results.push(result)
                     if(result.status == responseStatus.success) {
+                        sequence++
+                        framework.setSequence(server.getName(), accountParam.from, sequence)
                         accountParam.successCount++
                         totalSuccessCount++
                     }
@@ -681,6 +683,7 @@ module.exports = tcsPressureSendTx = {
     checkPurePressureTest: async function(testCase){
         let totalCount = testCase.otherParams.totalCount
         let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        let totalFailCount = testCase.otherParams.totalFailCount
 
         //check tps
         let server = testCase.server
@@ -723,6 +726,7 @@ module.exports = tcsPressureSendTx = {
         logger.info("endBlockNumber: " + endBlockNumber)
         logger.info("blockCount: " + blockCount)
         logger.info("totalSuccessCount: " + totalSuccessCount)
+        logger.info("totalFailCount: " + totalFailCount)
         logger.info("tps1: " + tps1)
         logger.info("txCountInBlocks: " + txCountInBlocks)
         logger.info("tps2: " + tps2)
@@ -730,7 +734,7 @@ module.exports = tcsPressureSendTx = {
         expect(totalSuccessCount).to.be.equal(totalCount)
     },
 
-    createAccountParam: function(from, secret, to, value, fee, memos, txFunctionName, count){
+    createAccountParam: function(from, secret, to, value, fee, memos, txFunctionName, count, shouldSuccessCount){
         let accountParam = {}
         if(from != null) accountParam.from = from
         if(secret != null) accountParam.secret = secret
@@ -740,6 +744,7 @@ module.exports = tcsPressureSendTx = {
         if(memos != null) accountParam.memos = memos
         if(txFunctionName != null) accountParam.txFunctionName = txFunctionName
         if(count != null) accountParam.count = count
+        if(shouldSuccessCount != null) accountParam.shouldSuccessCount = shouldSuccessCount
         return accountParam
     },
 
@@ -754,85 +759,6 @@ module.exports = tcsPressureSendTx = {
         let memos = null
         const SINGER_PRESSURE_TEST_COUNT = 5
         let testCount = SINGER_PRESSURE_TEST_COUNT
-
-        //region 0010	同一账户向同一节点连续发送交易（不带memo）测试性能上限
-        // testCases = []
-        //
-        // txFunction = consts.rpcFunctions.sendTx
-        // titles = []
-        // titles.push('0010\t同一账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0020\t同一账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0030\t同一账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0040\t同一账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0050\t同一账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
-        //
-        // txFunction = consts.rpcFunctions.signTx
-        // titles = []
-        // titles.push('0010\t同一账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0020\t同一账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0030\t同一账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0040\t同一账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0050\t同一账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
-        //
-        // framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
-        //endregion
-
-        //region 0060	不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限
-        // testCases = []
-        //
-        // txFunction = consts.rpcFunctions.sendTx
-        // titles = []
-        // titles.push('0060\t不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0070\t不同账户向2个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0080\t不同账户向3个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0090\t不同账户向4个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // titles.push('0100\t不同账户向5个不同的节点连续发送交易（sendTx, 不带memo）测试性能上限')
-        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
-        //     addresses, value, fee, memos, txFunction, count))
-        //
-        // txFunction = consts.rpcFunctions.signTx
-        // titles = []
-        // titles.push('0060\t不同账户向同一节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0070\t不同账户向2个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0080\t不同账户向3个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0090\t不同账户向4个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // titles.push('0100\t不同账户向5个不同的节点连续发送交易（signTx, 不带memo）测试性能上限')
-        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, titles, allServers,
-        //     addresses, value, fee, memos, txFunction, count))
-        //
-        // framework.testTestCases(server, describeTitle + '不同账户向节点连续发送交易', testCases)
-        //endregion
-
-        //region 0110	同一账户向同一节点连续发送交易（带8字节memo）测试性能上限
-        // testCases = []
-        //
-        // txFunction = consts.rpcFunctions.sendTx
-        // memos = utility.createMemosWithSpecialLength(8)
-        // titles = []
-        // titles.push('0110\t同一账户向同一节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
-        // titles.push('0110\t同一账户向2个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
-        // titles.push('0110\t同一账户向3个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
-        // titles.push('0110\t同一账户向4个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
-        // titles.push('0120\t同一账户向5个不同的节点连续发送交易（sendTx, 带8字节memo）测试性能上限')
-        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
-        //
-        // txFunction = consts.rpcFunctions.signTx
-        // titles = []
-        // titles.push('0110\t同一账户向同一节点连续发送交易（signTx, 带8字节memo）测试性能上限')
-        // titles.push('0110\t同一账户向2个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
-        // titles.push('0110\t同一账户向3个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
-        // titles.push('0110\t同一账户向4个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
-        // titles.push('0120\t同一账户向5个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限')
-        // testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, titles, allServers,
-        //     addresses, value, fee, memos, consts.rpcFunctions.sendTx, count))
-
-        // framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易', testCases)
-        //endregion
 
         //region no memos
         caseRestrictedLevel = restrictedLevel.L2
@@ -867,7 +793,7 @@ module.exports = tcsPressureSendTx = {
         //endregion
 
         //region 8b memos
-        caseRestrictedLevel = restrictedLevel.L2
+        caseRestrictedLevel = restrictedLevel.L3
         memos = utility.createMemosWithSpecialLength(8)
         titles = []
 
@@ -1073,14 +999,14 @@ module.exports = tcsPressureSendTx = {
         let testCase = framework.createTestCase(title, server,
             '', '', null,
             null, null, null,
-            caseRestrictedLevel, [serviceType.newChain, serviceType.oldChain])
+            caseRestrictedLevel, [serviceType.newChain])
 
         testCase.otherParams = {}
         testCase.otherParams.servers = servers
         testCase.otherParams.accountParams = accountParams
         testCase.otherParams.totalCount = totalCount
         testCase.executeFunction = tcsPressureSendTx.executePerformanceTest
-        testCase.checkFunction = tcsPressureSendTx.checkPurePressureTest
+        testCase.checkFunction = tcsPressureSendTx.checkPerforamnceTest
 
         return testCase
     },
@@ -1094,7 +1020,12 @@ module.exports = tcsPressureSendTx = {
             let accountParams = testCase.otherParams.accountParams
             let totalCount = testCase.otherParams.totalCount
             let executeCount = 0
+            let totalShouldSuccessCount = 0
+            let totalShouldFailCount = 0
             let totalSuccessCount = 0
+            let totalFailCount = 0
+            testCase.otherParams.successResults = []
+            testCase.otherParams.failResults = []
             accountParams.forEach(async accountParam=>{
                 let count = accountParam.count
                 let txFunctionName = accountParam.txFunctionName
@@ -1106,13 +1037,17 @@ module.exports = tcsPressureSendTx = {
 
                 accountParam.results = []
                 accountParam.successCount = 0
+                accountParam.failCount = 0
+
+                totalShouldSuccessCount += accountParam.shouldSuccessCount
+                totalShouldFailCount += accountParam.count - accountParam.shouldSuccessCount
 
                 //transfer
                 for(let i = 0; i < count; i++){
                     let index = i % serverCount
                     server = servers[index]
                     logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
-                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence++,
+                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
                     if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
@@ -1121,21 +1056,97 @@ module.exports = tcsPressureSendTx = {
                     executeCount++
                     accountParam.results.push(result)
                     if(result.status == responseStatus.success) {
+                        sequence++
                         framework.setSequence(server.getName(), accountParam.from, sequence)
+                        testCase.otherParams.successResults.push(result)
                         accountParam.successCount++
                         totalSuccessCount++
+
+                        //print wrong failed/success tx
+                        //todo need be remove when such jingtum bug (invalid tx will be success in pressure test) is fixed
+                        if(accountParam.shouldSuccessCount < accountParam.count){
+                            logger.debug('===attention===')
+                            logger.debug(JSON.stringify(accountParam))
+                            logger.debug('sequence: ' + (sequence - 1))
+                            logger.debug(JSON.stringify(result))
+                        }
+
+                    }else{
+                        testCase.otherParams.failResults.push(result)
+                        accountParam.failCount++
+                        totalFailCount++
                     }
 
-                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: ' + result)
+
+                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: '
+                        + JSON.stringify(result))
 
                     if(executeCount == totalCount){
                         testCase.otherParams.executeCount = executeCount
                         testCase.otherParams.totalSuccessCount = totalSuccessCount
+                        testCase.otherParams.totalFailCount = totalFailCount
+                        testCase.otherParams.totalShouldSuccessCount = totalShouldSuccessCount
+                        testCase.otherParams.totalShouldFailCount = totalShouldFailCount
                         resolve(testCase.otherParams)
                     }
                 }
             })
         })
+    },
+
+    checkPerforamnceTest: async function(testCase){
+        let totalCount = testCase.otherParams.totalCount
+        let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        let totalFailCount = testCase.otherParams.totalFailCount
+
+        //check tps
+        let server = testCase.server
+        let blockTime = server.mode.defaultBlockTime / 1000
+
+        let startTxHash = testCase.otherParams.successResults[0].result[0]
+        let startTx = await utility.getTxByHash(server, startTxHash)
+        let startBlockNumber = startTx.result.ledger_index
+
+        let endTxHash = testCase.otherParams.successResults[testCase.otherParams.successResults.length - 1].result[0]
+        let endTx = await utility.getTxByHash(server, endTxHash)
+        let endBlockNumber = endTx.result.ledger_index
+
+        let blockTpsInfoList = []
+        for(let i = startBlockNumber; i <= endBlockNumber; i++){
+            let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
+            let block = blockResponse.result
+            let blockTpsInfo = {}
+            blockTpsInfo.blockNumber = block.ledger_index
+            blockTpsInfo.txCount = block.transactions.length
+            blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
+            blockTpsInfoList.push(blockTpsInfo)
+        }
+
+        let txCountInBlocks = 0
+        for(let blockTpsInfo of blockTpsInfoList){
+            logger.info('------ block tps status ------')
+            logger.info("blockNumber: " + blockTpsInfo.blockNumber)
+            logger.info("txCount: " + blockTpsInfo.txCount)
+            logger.info("tps: " + blockTpsInfo.tps)
+            txCountInBlocks += blockTpsInfo.txCount
+        }
+
+        let blockCount = endBlockNumber - startBlockNumber + 1
+        let tps1 = totalSuccessCount / blockCount / blockTime
+        let tps2 = txCountInBlocks / blockCount / blockTime
+        logger.info("======== tps status ========")
+        logger.info("startBlockNumber: " + startBlockNumber)
+        logger.info("endBlockNumber: " + endBlockNumber)
+        logger.info("blockCount: " + blockCount)
+        logger.info("totalSuccessCount: " + totalSuccessCount)
+        logger.info("totalFailCount: " + totalFailCount)
+        logger.info("tps1: " + tps1)
+        logger.info("txCountInBlocks: " + txCountInBlocks)
+        logger.info("tps2: " + tps2)
+
+        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
+        expect(totalSuccessCount).to.be.equal(testCase.otherParams.totalShouldSuccessCount)
+        expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
     },
 
     createServers: function(allServers, count){
@@ -1146,14 +1157,16 @@ module.exports = tcsPressureSendTx = {
         return servers
     },
 
-    createAccountParamsWithDifferentAccount: function(addresses, value, fee, memo, txFunction, testCount){
+    createAccountParamsWithDifferentAccount: function(addresses, value, fee, memos, txFunction, testCount){
         let accountParams = []
         accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-            addresses.receiver1.address, value, fee, memo, txFunction, testCount))
+            addresses.receiver1.address, value, fee, memos, txFunction, testCount, testCount))
         accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
-            addresses.receiver2.address, value, fee, memo, txFunction, testCount))
+            addresses.receiver2.address, value, fee, memos, txFunction, testCount, testCount))
         accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
-            addresses.receiver3.address, value, fee, memo, txFunction, testCount))
+            addresses.receiver3.address, value, fee, memos, txFunction, testCount, testCount))
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
+            addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
         return accountParams
     },
 
@@ -1164,7 +1177,9 @@ module.exports = tcsPressureSendTx = {
         let testCase
         let accountParams = []
         accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
-            addresses.receiver1.address, value, fee, memos, txFunction, testCount))
+            addresses.receiver1.address, value, fee, memos, txFunction, testCount, testCount))  //need success
+        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
+            addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
         let servers = []
         let title
 

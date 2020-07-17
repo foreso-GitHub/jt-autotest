@@ -923,6 +923,8 @@ module.exports = framework = {
         return subCase
     },
 
+    //region normal sub cases
+
     executeSubCases: function(testCase){
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {
@@ -1025,43 +1027,171 @@ module.exports = framework = {
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index
 
-        let blockTpsInfoList = []
-        for(let i = startBlockNumber; i <= endBlockNumber; i++){
-            let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
-            let block = blockResponse.result
-            let blockTpsInfo = {}
-            blockTpsInfo.blockNumber = block.ledger_index
-            blockTpsInfo.txCount = block.transactions.length
-            blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
-            blockTpsInfoList.push(blockTpsInfo)
-        }
+        let blockCount = await framework.getBlockTxCount(server, startBlockNumber, endBlockNumber)
 
-        let txCountInBlocks = 0
-        for(let blockTpsInfo of blockTpsInfoList){
-            logger.info('------ block tps status ------')
-            logger.info("blockNumber: " + blockTpsInfo.blockNumber)
-            logger.info("txCount: " + blockTpsInfo.txCount)
-            logger.info("tps: " + blockTpsInfo.tps)
-            txCountInBlocks += blockTpsInfo.txCount
-        }
-
-        let blockCount = endBlockNumber - startBlockNumber + 1
         let tps1 = totalSuccessCount / blockCount / blockTime
-        let tps2 = txCountInBlocks / blockCount / blockTime
-        logger.info("======== tps status ========")
-        logger.info("startBlockNumber: " + startBlockNumber)
-        logger.info("endBlockNumber: " + endBlockNumber)
-        logger.info("blockCount: " + blockCount)
         logger.info("totalSuccessCount: " + totalSuccessCount)
         logger.info("totalFailCount: " + totalFailCount)
-        logger.info("tps1: " + tps1)
-        logger.info("txCountInBlocks: " + txCountInBlocks)
-        logger.info("tps2: " + tps2)
+        logger.info("Success tx tps: " + tps1)
 
         expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
         expect(totalSuccessCount).to.be.equal(testCase.otherParams.totalShouldSuccessCount)
         expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
     },
+
+    //endregion
+
+    //region fast performance
+
+    executeSubCasesWithoutResponse: function(testCase){
+        testCase.hasExecuted = true
+        let txNumber = 1
+        return new Promise(async (resolve, reject) => {
+            let servers = testCase.otherParams.servers
+            let server = servers[0]
+            let serverCount = servers.length
+            let subCases = testCase.otherParams.subCases
+            let totalCount = testCase.otherParams.totalCount
+            let executedCount = 0
+            let totalShouldSuccessCount = 0
+            let totalShouldFailCount = 0
+            let totalFailCount = 0
+            let startBlockNumber = await server.getBlockNumber(server)
+            if(startBlockNumber < 0){
+                expect().to.be.not.ok
+            }
+            else{
+                testCase.otherParams.startBlockNumber = startBlockNumber + 1
+            }
+            testCase.otherParams.successResults = []
+            testCase.otherParams.failResults = []
+            for(let i = 0; i < subCases.length; i++){
+                let accountParam = subCases[i]
+
+                let count = accountParam.count
+                let txFunctionName = accountParam.txFunctionName
+
+                //get sequence
+                let currentSequence = await framework.getSequence(server, accountParam.from)
+                currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+                let sequence = currentSequence
+
+                accountParam.results = []
+                accountParam.successCount = 0
+                accountParam.failCount = 0
+
+                totalShouldSuccessCount += accountParam.shouldSuccessCount
+                totalShouldFailCount += accountParam.count - accountParam.shouldSuccessCount
+
+                //transfer
+                for(let i = 0; i < count; i++){
+                    let index = i % serverCount
+                    server = servers[index]
+                    logger.debug((txNumber++).toString() + '/' + totalCount
+                        + '. sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
+                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
+                        accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
+                    let result = server.getResponse(server, txFunctionName, params)
+                    executedCount++
+                    sequence++
+                    framework.setSequence(server.getName(), accountParam.from, sequence)
+
+                    if(executedCount == totalCount){
+                        testCase.otherParams.executedCount = executedCount
+                        testCase.otherParams.totalSuccessCount = executedCount
+                        testCase.otherParams.totalFailCount = totalFailCount
+                        testCase.otherParams.totalShouldSuccessCount = totalShouldSuccessCount
+                        testCase.otherParams.totalShouldFailCount = totalShouldFailCount
+                        resolve(testCase.otherParams)
+                    }
+                }
+            }
+        })
+    },
+
+    checkSubCasesWithoutResponse: async function(testCase){
+        let totalCount = testCase.otherParams.totalCount
+        let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        let totalFailCount = testCase.otherParams.totalFailCount
+
+        //check tps
+        let server = testCase.server
+        let blockTime = server.mode.defaultBlockTime / 1000
+        let supportedTps = 15
+        let startBlockNumber = testCase.otherParams.startBlockNumber
+        let endBlockNumber = startBlockNumber + Math.floor(totalCount / supportedTps / blockTime)
+        // let endBlockNumber = startBlockNumber + 20
+        let waitTime = (endBlockNumber - startBlockNumber + 1) * blockTime * 1000
+        logger.info("startBlockNumber: " + startBlockNumber)
+        logger.info("endBlockNumber: " + endBlockNumber)
+        logger.info("waitTime: " + waitTime)
+        await utility.timeout(waitTime)
+
+        let blockCount = await framework.getBlockTxCount(server, startBlockNumber, endBlockNumber)
+
+        let tps1 = totalSuccessCount / blockCount / blockTime
+        logger.info("totalCount: " + totalCount)
+        logger.info("totalSuccessCount: " + totalSuccessCount)
+        logger.info("totalFailCount: " + totalFailCount)
+        logger.info("Success tx tps: " + tps1)
+
+        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
+    },
+
+    //endregion
+
+    //region common
+    getBlockTxCount: async function(server, startBlockNumber, endBlockNumber){
+        return new Promise(async (resolve, reject) => {
+            let blockTime = server.mode.defaultBlockTime / 1000
+            let blockTpsInfoList = []
+            let blockWhichHasTxList = []
+            for(let i = startBlockNumber; i <= endBlockNumber; i++){
+                let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
+                let block = blockResponse.result
+                let blockTpsInfo = {}
+                blockTpsInfo.blockNumber = block.ledger_index
+                blockTpsInfo.txCount = block.transactions.length
+                blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
+                blockTpsInfoList.push(blockTpsInfo)
+                if(blockTpsInfo.txCount > 0){
+                    blockWhichHasTxList.push(blockTpsInfo)
+                }
+            }
+
+            let txCountInBlocks = 0
+            for(let blockTpsInfo of blockTpsInfoList){
+                if(blockTpsInfo.txCount > 0){
+                    logger.info('------ block tps status ------')
+                    logger.info("blockNumber: " + blockTpsInfo.blockNumber)
+                    logger.info("txCount: " + blockTpsInfo.txCount)
+                    logger.info("tps: " + blockTpsInfo.tps)
+                    txCountInBlocks += blockTpsInfo.txCount
+                }
+            }
+
+            let blockCount = endBlockNumber - startBlockNumber + 1
+            let tps = txCountInBlocks / blockCount / blockTime
+            logger.info("======== tps status ========")
+            logger.info("startBlockNumber: " + startBlockNumber)
+            logger.info("endBlockNumber: " + endBlockNumber)
+            logger.info("blockCount: " + blockCount)
+            logger.info("txCountInBlocks: " + txCountInBlocks)
+            logger.info("block tps: " + tps)
+
+            let blockWhichHasTxCount = blockWhichHasTxList.length
+            logger.info("Tx Block Count: " + blockWhichHasTxCount)
+            logger.info("Tx Block Average Tps: " + txCountInBlocks / blockWhichHasTxCount / blockTime)
+
+            resolve(blockCount)
+        })
+
+    },
+    //endregion
+
+
+
+
 
     //endregion
 

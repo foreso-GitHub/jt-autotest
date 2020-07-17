@@ -11,11 +11,12 @@ const { jtNodes, } = require("../config")
 
 //region set nodes
 let nodes = jtNodes
-let jt_node_al = jtNodes[0]
-let jt_node_bd = jtNodes[1]
-let jt_node_tx = jtNodes[2]
-let jt_node_hw = jtNodes[3]
-let jt_node_ty = jtNodes[4]
+
+let jt_node_bd = jtNodes[0]
+let jt_node_tx = jtNodes[1]
+let jt_node_hw = jtNodes[2]
+let jt_node_ty = jtNodes[3]
+let jt_node_al = jtNodes[4]
 //endregion
 
 //region set cmd
@@ -23,12 +24,14 @@ const cmd_start_jt = 'sudo /root/start.sh'
 const cmd_stop_jt = 'sudo /root/stop.sh'
 //endregion
 
-// restNodes()
+// stopJt(jt_node_bd)
+// startJt(jt_node_bd)
 // startJt(jt_node_al)
 // stopJt(jt_node_al)
-// test()
+
+// restNodes()
 testMonitor()
-// testSshCmd()
+
 
 //region functions
 async function test(){
