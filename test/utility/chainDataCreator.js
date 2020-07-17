@@ -2,7 +2,8 @@
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-const { modes, allModes, configCommons } = require("../config")
+const { modes, allModes, } = require("../config/config")
+const { commonPaths } = require("../config/basicConfig")
 let { chainDatas } = require("../testData/chainDatas")
 const utility = require("../framework/testUtility.js")
 const AccountsDealer = require('./accountsDealer')
@@ -52,7 +53,7 @@ function chainDataCreator(){
                             chainDatas.push(newChainData)
                             createCount++
                             if(createCount == modesNeedCreateChainData.length) {
-                                await utility.saveJsFile("chainDatas", chainDatas, configCommons.chain_data_js_file_path)
+                                await utility.saveJsFile("chainDatas", chainDatas, commonPaths.chain_data_js_file_path)
                                 resolve(chainDatas)
                             }
                         }

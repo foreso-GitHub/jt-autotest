@@ -1,9 +1,9 @@
 //region require
-let rpc = require('./framework/lib/rpc/rpcInterface.js')
-let swtclib = require('./framework/lib/swtclib/swtclibInterface.js')
-const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
-const { data, token, txs, blocks } = require("./testData/testData")
-const { sshCmd, createNode, createServer} = require('./utility/sshCmd')
+let rpc = require('../framework/lib/rpc/rpcInterface.js')
+let swtclib = require('../framework/lib/swtclib/swtclibInterface.js')
+const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
+const { data, token, txs, blocks } = require("../testData/testData")
+const { sshCmd, createNode, createServer} = require('../utility/sshCmd')
 let HashMap = require('hashmap')
 //endregion
 
@@ -290,14 +290,6 @@ let allModes = [
 ]
 //endregion
 
-let configCommons = {
-    test_data_path: ".\\test\\testData\\",
-    test_data_backup_path: ".\\test\\testData\\backup\\",
-    ipfs_test_files_path: ".\\test\\testData\\testFiles\\",
-    accounts_js_file_path: ".\\test\\testData\\accounts.js",
-    chain_data_js_file_path: ".\\test\\testData\\chainDatas.js",
-}
-
 //region set jt nodes
 let jt_node_al = createNode('al', '121.89.209.19', '22', '9545',
     'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
@@ -327,7 +319,6 @@ let jtNodes = nodes
 //endregion
 
 module.exports = {
-    configCommons,
     servers,
     modes,
     allModes,

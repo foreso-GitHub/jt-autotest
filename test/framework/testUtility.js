@@ -3,7 +3,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const fs = require('fs')
-const { configCommons } = require("../config")
+const { commonPaths } = require("../config/basicConfig")
 const {responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel,} = require('./enums')
 
 //endregion
@@ -91,7 +91,7 @@ module.exports = testUtility = {
     //region save js file
     saveJsFile: function(moduleName, jsonObject, filePath){
         return new Promise(async (resolve, reject) =>{
-            let destFilePath = configCommons.test_data_backup_path
+            let destFilePath = commonPaths.test_data_backup_path
                 + moduleName + '_backup_' + (new Date()).toDateString() + '_' + (new Date()).getTime() + '.js'
             await testUtility.copyFile(filePath, destFilePath)  //backup
             let fileString = 'let ' + moduleName + ' = '

@@ -3,6 +3,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const consts = require('./consts')
+const utility = require('../../testUtility')
 //endregion
 
 function baseInterface() {
@@ -182,13 +183,13 @@ function baseInterface() {
         if(sequence != null) data.sequence = sequence
         if(to != null) data.to = to
         if(value != null) {
-            if(!this.isJSON(value)){
-                data.value = this.valueToAmount(value)
+            if(!utility.isJSON(value)){
+                data.value = value.toString()
             }else{
                 let amount = value.amount
                 let symbol = value.symbol
                 let issuer = value.issuer
-                data.value = amount + (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
+                data.value = utility.getShowValue(amount, symbol, issuer)
             }
         }
         if(fee != null) data.fee = this.valueToAmount(fee)

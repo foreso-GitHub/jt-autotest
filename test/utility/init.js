@@ -1,4 +1,4 @@
-const { allModes } = require("../config")
+const { allModes } = require("../config/config")
 const utility = require('../framework/testUtility')
 const AccountsDealer = require('./accountsDealer')
 const ChainDataCreator = require('./chainDataCreator')

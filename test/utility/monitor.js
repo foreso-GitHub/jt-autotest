@@ -3,10 +3,6 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let rpc = require('../framework/lib/rpc/rpcInterface.js')
-const { modes, allModes, configCommons } = require("../config")
-const consts = require("../framework/lib/base/consts.js")
-let { modeAccounts } = require("../testData/accounts")
-const utility = require("../framework/testUtility.js")
 //endregion
 
 function nodeMonitor(){

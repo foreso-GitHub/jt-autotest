@@ -19,7 +19,7 @@ let utility = require('../framework/testUtility')
 const nodeMonitor = require('../utility/monitor')
 let monitor = new nodeMonitor()
 const { sshCmd, createNode, createServer} = require('../utility/sshCmd')
-const { jtNodes, } = require("../config")
+const { jtNodes, } = require("../config/config")
 //endregion
 
 module.exports = tcsRASTest = {

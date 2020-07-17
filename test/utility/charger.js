@@ -2,7 +2,7 @@
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-const { allModes } = require("../config")
+const { allModes } = require("../config/config")
 const utility = require("../framework/testUtility.js")
 //endregion
 

@@ -14,7 +14,7 @@ let { modeAccounts } = require('../testData/accounts')
 const AccountsDealer = require('../utility/accountsDealer')
 const rpc = require('./lib/rpc/rpcInterface.js')
 const swtclib = require('./lib/swtclib/swtclibInterface.js')
-const { configCommons, modes, } = require("../config")
+const { commonPaths, } = require("../config/basicConfig")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const status = responseStatus
 const testModeEnums = testMode
@@ -915,6 +915,16 @@ module.exports = framework = {
         if(secret != null) subCase.secret = secret
         if(to != null) subCase.to = to
         if(value != null) subCase.value = value
+        // if(value != null) {
+        //     if(!utility.isJSON(value)){
+        //         subCase.value = value
+        //     }else{
+        //         let amount = value.amount
+        //         let symbol = value.symbol
+        //         let issuer = value.issuer
+        //         subCase.value = utility.getShowValue(amount, symbol, issuer)
+        //     }
+        // }
         if(fee != null) subCase.fee = fee
         if(memos != null) subCase.memos = memos
         if(txFunctionName != null) subCase.txFunctionName = txFunctionName

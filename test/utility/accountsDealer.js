@@ -3,7 +3,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const fs = require('fs')
-const { modes, allModes, configCommons } = require("../config")
+const { commonPaths } = require("../config/basicConfig")
 const consts = require("../framework/lib/base/consts.js")
 const Charger = require('./charger')
 let { modeAccounts } = require("../testData/accounts")
@@ -298,7 +298,7 @@ function accountsDealer() {
                         createCount++
                         if(createCount == needCreateMode.length) {
                             if(needSaveAccountsJsFile){
-                                await utility.saveJsFile('modeAccounts', modeAccounts, configCommons.accounts_js_file_path)
+                                await utility.saveJsFile('modeAccounts', modeAccounts, commonPaths.accounts_js_file_path)
                                 result.modeAccounts = modeAccounts
                                 result.needCreateModes = needCreateMode
                                 resolve(result)

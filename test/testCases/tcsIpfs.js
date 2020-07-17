@@ -1070,7 +1070,7 @@ module.exports = tcsIpfs = {
         let title = ''
         let txFunctionName = consts.ipfsFunctions.uploadFile
         let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
-        let testFilePath = configCommons.ipfs_test_files_path
+        let testFilePath = commonPaths.ipfs_test_files_path
 
         title = '0010\t上传存在的文件：通过API接口上传文件，指定的文件存在'
         {
@@ -1224,7 +1224,7 @@ module.exports = tcsIpfs = {
             txFunctionName = consts.ipfsFunctions.uploadFile
             let url = server.mode.initParams.url + '/' + consts.ipfsFunctions.uploadFile
             // let testFilePath = '.\\test\\testData\\testFiles\\'
-            let testFilePath = configCommons.ipfs_test_files_path
+            let testFilePath = commonPaths.ipfs_test_files_path
             let testFile = ipfs_data.uploadFile_1
             let fileName = testFilePath + testFile.name
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
