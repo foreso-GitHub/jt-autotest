@@ -6,18 +6,8 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
-let utility = require("./framework/testUtility.js")
-// const schema = require("./framework/schema.js")
-// const consts = require('./framework/lib/base/consts')
-// const { chains, data, token, txs, blocks, ipfs_data } = require("./testData/testData")
-const { chainDatas } = require("./testData/chainDatas")
-let { modeAccounts } = require('./testData/accounts')
-const AccountsDealer = require('./utility/accountsDealer')
-let accountsDealer = new AccountsDealer()
-const { configCommons, modes, } = require("./config")
+const {  modes, } = require("./config/config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
-// const status = responseStatus
-// const testModeEnums = testMode
 const framework = require('./framework/framework')
 //endregion
 
@@ -35,6 +25,7 @@ const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
 const tcsIpfs = require('./testCases/tcsIpfs')
 const tcsRASTest = require('./testCases/tcsRASTest')
+const tcsInteractiveTest = require('./testCases/tcsInteractiveTest')
 //endregion
 
 //region global fields
@@ -50,12 +41,14 @@ describe('Jingtum测试', function() {
 
     for(let mode of modes){
 
-        let server = mode.server
-        server.init(mode)
-        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
-            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
-            mode.txs = utility.findMode(chainDatas, mode.name)
-        }
+        let server = framework.activeServer(mode)
+
+        // let server = mode.server
+        // server.init(mode)
+        // if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
+        //     mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
+        //     mode.txs = utility.findMode(chainDatas, mode.name)
+        // }
 
         // this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
 
@@ -63,7 +56,7 @@ describe('Jingtum测试', function() {
             this.timeout(120000)
         }
         else if(mode.service == serviceType.newChain){
-            this.timeout(9930000)
+            this.timeout(999930000)
         }
         else if(mode.service == serviceType.ipfs){
             this.timeout(35000)
@@ -82,6 +75,8 @@ describe('Jingtum测试', function() {
 
             // /*
             describe('用例测试', function () {
+
+                //region basic test
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
@@ -109,17 +104,34 @@ describe('Jingtum测试', function() {
 
                 tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
+                //endregion
+
                 tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
+                //region performance test
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易')
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps')
 
-                // tcsIpfs.testForIpfsTest(server, '测试ipfs')
+                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
+
+                tcsPressureSendTx.testForFastPerformance(server,
+                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
+                    30)
+
+                tcsPressureSendTx.testForFastPerformance(server,
+                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
+                    30, 'WithoutResponse')
+
+                // endregion
+
+                tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
 
                 tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+
+                // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
             })
             //*/
@@ -134,9 +146,25 @@ describe('Jingtum测试', function() {
 
                 // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
 
-                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易')
+                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps')
+
+                // tcsPressureSendTx.testForFastPerformance(server,
+                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
+                //     10)
+
+                // tcsPressureSendTx.testForFastPerformance(server,
+                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
+                //     100, 'WithoutResponse')
+
+                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
+
+                // tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
+
+                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
+
+
 
             })
         })

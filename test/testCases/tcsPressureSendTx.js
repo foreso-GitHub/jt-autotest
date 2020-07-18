@@ -535,7 +535,7 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        const SINGER_PRESSURE_TEST_COUNT = 2
+        const SINGER_PRESSURE_TEST_COUNT = 5  //better to be the times of the count of servers
         let count = SINGER_PRESSURE_TEST_COUNT
 
         //region push account params
@@ -751,6 +751,37 @@ module.exports = tcsPressureSendTx = {
     //endregion
 
     //region performance test, multi nodes, multi tx, send/sign mix.
+
+    //pure performance test means just send tx, no send rawtx, whithout checking balance, getting tx, etc checks.
+    //several accounts, several nodes
+    testForFastPerformance: function(server, describeTitle, testRound, mode){
+        let serverCount = 5
+        let testCount = serverCount
+        let memosLength = 8
+
+        let testCases = []
+        let title = '0120\t不同账户向5个不同的节点连续发送交易（signTx, 带8字节memo）测试性能上限'
+        let caseRestrictedLevel = restrictedLevel.L3
+        let memos = utility.createMemosWithSpecialLength(memosLength)
+        let txFunction = consts.rpcFunctions.sendTx
+        let value = '0.000001'
+        let fee = '0.00001'
+        let addresses = server.mode.addresses
+
+        let subCases = []
+        for(let i = 0; i < testRound; i++){
+            subCases = subCases.concat(tcsPressureSendTx.createAccountParamsWithDifferentAccount(addresses, value, fee, memos, txFunction, testCount, true))
+        }
+        let allServers = tcsPressureSendTx.activeAllServers()
+        let servers = tcsPressureSendTx.createServers(allServers, serverCount)
+        let testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
+        if(mode && mode == 'WithoutResponse'){
+            testCase.executeFunction = framework.executeSubCasesWithoutResponse
+            testCase.checkFunction = framework.checkSubCasesWithoutResponse
+        }
+        framework.addTestCase(testCases, testCase)
+        framework.testTestCases(server, describeTitle + '， 数量： ' + testCase.otherParams.totalCount, testCases)
+    },
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
     testForPerformanceTest: function(server, describeTitle){
@@ -1011,7 +1042,7 @@ module.exports = tcsPressureSendTx = {
         return testCase
     },
 
-    createAccountParamsWithDifferentAccount: function(addresses, value, fee, memos, txFunction, testCount){
+    createAccountParamsWithDifferentAccount: function(addresses, value, fee, memos, txFunction, testCount, notIncludeErrorTx){
         let subCases = []
         subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
             addresses.receiver1.address, value, fee, memos, txFunction, testCount, testCount))
@@ -1019,8 +1050,10 @@ module.exports = tcsPressureSendTx = {
             addresses.receiver2.address, value, fee, memos, txFunction, testCount, testCount))
         subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
             addresses.receiver3.address, value, fee, memos, txFunction, testCount, testCount))
-        subCases.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
-            addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
+        if(!notIncludeErrorTx){
+            subCases.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
+                addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
+        }
         return subCases
     },
 
@@ -1184,7 +1217,7 @@ module.exports = tcsPressureSendTx = {
             }
             else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
                 let responseOfSignTx = await testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
-                let blob = responseOfSignTx.result[0]
+                let blob = responseOfSignTx.status == responseStatus.success ? responseOfSignTx.result[0] : ''
                 //sign tx, need record signed tx
                 let check_0 = {
                     title: 'sign tx result',
@@ -1298,17 +1331,11 @@ module.exports = tcsPressureSendTx = {
     activeAllServers: function(){
         let servers = []
 
-        servers.push(testUtility.activeServer(allModes[0]))
+        servers.push(framework.activeServer(allModes[0]))
         servers.push(framework.activeServer(allModes[1]))
         servers.push(framework.activeServer(allModes[2]))
         servers.push(framework.activeServer(allModes[3]))
         servers.push(framework.activeServer(allModes[4]))
-
-        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
-        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
-        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
-        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
-        // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
 
         return servers
     },

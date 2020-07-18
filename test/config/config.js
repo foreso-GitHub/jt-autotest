@@ -7,6 +7,8 @@ const { sshCmd, createNode, createServer} = require('../utility/sshCmd')
 let HashMap = require('hashmap')
 //endregion
 
+//region init
+
 //const RPC_URL_7545 = 'http://139.198.191.254:7545/v1/jsonrpc'
 //const RPC_URL_9545 = 'http://139.198.177.59:9545/v1/jsonrpc'
 //主链： wss://c04.jingtum.com:5020
@@ -25,6 +27,8 @@ let rpc_yun_tianyi = new rpc()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
+
+//endregion
 
 //region old config
 let mode_rpc_newChain = {

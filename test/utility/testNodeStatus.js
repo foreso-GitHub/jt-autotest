@@ -24,12 +24,13 @@ const cmd_start_jt = 'sudo /root/start.sh'
 const cmd_stop_jt = 'sudo /root/stop.sh'
 //endregion
 
-// stopJt(jt_node_bd)
-// startJt(jt_node_bd)
+// resetNode('bd')
+// stopJt(getNode('bd'))
+// startJt(getNode('bd'))
 // startJt(jt_node_al)
 // stopJt(jt_node_al)
 
-// restNodes()
+// resetNodes()
 testMonitor()
 
 
@@ -67,7 +68,7 @@ function testSshCmd(){
     })
 }
 
-async function restNodes(){
+async function resetNodes(){
     for(let i = 0; i < jtNodes.length; i++){
         stopJt(jtNodes[i])
     }
@@ -77,6 +78,12 @@ async function restNodes(){
     for(let i = 0; i < jtNodes.length; i++){
         startJt(jtNodes[i])
     }
+}
+
+function resetNode(name){
+    let node = getNode(name)
+    stopJt(node)
+    startJt(node)
 }
 
 function startJt(node){
@@ -99,6 +106,17 @@ function stopJt(node){
             logger.debug('cmd result:' + result.cmdResult)
         })
     })
+}
+
+function getNode(name, nodes){
+    let node = null
+    for(let i = 0; i < nodes.length; i++){
+        if(nodes[i].name == name){
+            node = nodes[i]
+            break;
+        }
+    }
+    return node
 }
 
 //endregion

@@ -1037,7 +1037,8 @@ module.exports = framework = {
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index
 
-        let blockCount = await framework.getBlockTxCount(server, startBlockNumber, endBlockNumber)
+        let blocksInfo = await framework.getBlocksInfo(server, startBlockNumber, endBlockNumber)
+        let blockCount = blocksInfo.txBlockCount
 
         let tps1 = totalSuccessCount / blockCount / blockTime
         logger.info("totalSuccessCount: " + totalSuccessCount)
@@ -1137,7 +1138,8 @@ module.exports = framework = {
         logger.info("waitTime: " + waitTime)
         await utility.timeout(waitTime)
 
-        let blockCount = await framework.getBlockTxCount(server, startBlockNumber, endBlockNumber)
+        let blocksInfo = await framework.getBlocksInfo(server, startBlockNumber, endBlockNumber)
+        let blockCount = blocksInfo.txBlockCount
 
         let tps1 = totalSuccessCount / blockCount / blockTime
         logger.info("totalCount: " + totalCount)
@@ -1151,7 +1153,7 @@ module.exports = framework = {
     //endregion
 
     //region common
-    getBlockTxCount: async function(server, startBlockNumber, endBlockNumber){
+    getBlocksInfo: async function(server, startBlockNumber, endBlockNumber){
         return new Promise(async (resolve, reject) => {
             let blockTime = server.mode.defaultBlockTime / 1000
             let blockTpsInfoList = []
@@ -1170,6 +1172,8 @@ module.exports = framework = {
             }
 
             let txCountInBlocks = 0
+            let maxBlock = null
+            let maxCount = -1
             for(let blockTpsInfo of blockTpsInfoList){
                 if(blockTpsInfo.txCount > 0){
                     logger.info('------ block tps status ------')
@@ -1177,23 +1181,32 @@ module.exports = framework = {
                     logger.info("txCount: " + blockTpsInfo.txCount)
                     logger.info("tps: " + blockTpsInfo.tps)
                     txCountInBlocks += blockTpsInfo.txCount
+                    if(blockTpsInfo.txCount > maxCount){
+                        maxCount = blockTpsInfo.txCount
+                        maxBlock = blockTpsInfo
+                    }
                 }
             }
 
             let blockCount = endBlockNumber - startBlockNumber + 1
             let tps = txCountInBlocks / blockCount / blockTime
             logger.info("======== tps status ========")
-            logger.info("startBlockNumber: " + startBlockNumber)
-            logger.info("endBlockNumber: " + endBlockNumber)
-            logger.info("blockCount: " + blockCount)
-            logger.info("txCountInBlocks: " + txCountInBlocks)
-            logger.info("block tps: " + tps)
+            logger.info("Start BlockNumber: " + startBlockNumber)
+            logger.info("End BlockNumber: " + endBlockNumber)
+            logger.info("Block Count: " + blockCount)
+            logger.info("Tx Count: " + txCountInBlocks)
+            logger.info("Block Tps: " + tps)
+            logger.info("Max Count Block: " + maxBlock.blockNumber)
+            logger.info("Max Count : " + maxCount)
 
             let blockWhichHasTxCount = blockWhichHasTxList.length
             logger.info("Tx Block Count: " + blockWhichHasTxCount)
             logger.info("Tx Block Average Tps: " + txCountInBlocks / blockWhichHasTxCount / blockTime)
 
-            resolve(blockCount)
+            let blocksInfo = {}
+            blocksInfo.blockTpsInfoList = blockTpsInfoList
+            blocksInfo.txBlockCount = blockCount
+            resolve(blocksInfo)
         })
 
     },
