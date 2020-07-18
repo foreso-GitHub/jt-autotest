@@ -129,7 +129,7 @@ describe('Jingtum测试', function() {
 
                 tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
 
-                tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
