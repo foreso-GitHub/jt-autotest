@@ -16,7 +16,7 @@ const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLeve
 const consts = require('../framework/lib/base/consts')
 let utility = require('../framework/testUtility')
 const { token, } = require("../testData/testData")
-const { allModes, } = require("../config")
+const { allModes, } = require("../config/config")
 //endregion
 //endregion
 
@@ -990,10 +990,10 @@ module.exports = tcsPressureSendTx = {
         //endregion
     },
 
-    createTestCaseForPerformanceTest: function(server, title, servers, accountParams, caseRestrictedLevel){
+    createTestCaseForPerformanceTest: function(server, title, servers, subCases, caseRestrictedLevel){
         let totalCount = 0
-        for (let accountParam of accountParams){
-            totalCount += accountParam.count
+        for (let subCase of subCases){
+            totalCount += subCase.count
         }
         title = title + ',数量：' + totalCount
         let testCase = framework.createTestCase(title, server,
@@ -1003,171 +1003,25 @@ module.exports = tcsPressureSendTx = {
 
         testCase.otherParams = {}
         testCase.otherParams.servers = servers
-        testCase.otherParams.accountParams = accountParams
+        testCase.otherParams.subCases = subCases
         testCase.otherParams.totalCount = totalCount
-        testCase.executeFunction = tcsPressureSendTx.executePerformanceTest
-        testCase.checkFunction = tcsPressureSendTx.checkPerforamnceTest
+        testCase.executeFunction = framework.executeSubCases
+        testCase.checkFunction = framework.checkSubCases
 
         return testCase
     },
 
-    executePerformanceTest: function(testCase){
-        testCase.hasExecuted = true
-        return new Promise(async (resolve, reject) => {
-            let servers = testCase.otherParams.servers
-            let server = servers[0]
-            let serverCount = servers.length
-            let accountParams = testCase.otherParams.accountParams
-            let totalCount = testCase.otherParams.totalCount
-            let executeCount = 0
-            let totalShouldSuccessCount = 0
-            let totalShouldFailCount = 0
-            let totalSuccessCount = 0
-            let totalFailCount = 0
-            testCase.otherParams.successResults = []
-            testCase.otherParams.failResults = []
-            accountParams.forEach(async accountParam=>{
-                let count = accountParam.count
-                let txFunctionName = accountParam.txFunctionName
-
-                //get sequence
-                let currentSequence = await framework.getSequence(server, accountParam.from)
-                currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-                let sequence = currentSequence
-
-                accountParam.results = []
-                accountParam.successCount = 0
-                accountParam.failCount = 0
-
-                totalShouldSuccessCount += accountParam.shouldSuccessCount
-                totalShouldFailCount += accountParam.count - accountParam.shouldSuccessCount
-
-                //transfer
-                for(let i = 0; i < count; i++){
-                    let index = i % serverCount
-                    server = servers[index]
-                    logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
-                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
-                        accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
-                    let result = await server.getResponse(server, txFunctionName, params)
-                    if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
-                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
-                    }
-                    executeCount++
-                    accountParam.results.push(result)
-                    if(result.status == responseStatus.success) {
-                        sequence++
-                        framework.setSequence(server.getName(), accountParam.from, sequence)
-                        testCase.otherParams.successResults.push(result)
-                        accountParam.successCount++
-                        totalSuccessCount++
-
-                        //print wrong failed/success tx
-                        //todo need be remove when such jingtum bug (invalid tx will be success in pressure test) is fixed
-                        if(accountParam.shouldSuccessCount < accountParam.count){
-                            logger.debug('===attention===')
-                            logger.debug(JSON.stringify(accountParam))
-                            logger.debug('sequence: ' + (sequence - 1))
-                            logger.debug(JSON.stringify(result))
-                        }
-
-                    }else{
-                        testCase.otherParams.failResults.push(result)
-                        accountParam.failCount++
-                        totalFailCount++
-                    }
-
-
-                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: '
-                        + JSON.stringify(result))
-
-                    if(executeCount == totalCount){
-                        testCase.otherParams.executeCount = executeCount
-                        testCase.otherParams.totalSuccessCount = totalSuccessCount
-                        testCase.otherParams.totalFailCount = totalFailCount
-                        testCase.otherParams.totalShouldSuccessCount = totalShouldSuccessCount
-                        testCase.otherParams.totalShouldFailCount = totalShouldFailCount
-                        resolve(testCase.otherParams)
-                    }
-                }
-            })
-        })
-    },
-
-    checkPerforamnceTest: async function(testCase){
-        let totalCount = testCase.otherParams.totalCount
-        let totalSuccessCount = testCase.otherParams.totalSuccessCount
-        let totalFailCount = testCase.otherParams.totalFailCount
-
-        //check tps
-        let server = testCase.server
-        let blockTime = server.mode.defaultBlockTime / 1000
-
-        let startTxHash = testCase.otherParams.successResults[0].result[0]
-        let startTx = await utility.getTxByHash(server, startTxHash)
-        let startBlockNumber = startTx.result.ledger_index
-
-        let endTxHash = testCase.otherParams.successResults[testCase.otherParams.successResults.length - 1].result[0]
-        let endTx = await utility.getTxByHash(server, endTxHash)
-        let endBlockNumber = endTx.result.ledger_index
-
-        let blockTpsInfoList = []
-        for(let i = startBlockNumber; i <= endBlockNumber; i++){
-            let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
-            let block = blockResponse.result
-            let blockTpsInfo = {}
-            blockTpsInfo.blockNumber = block.ledger_index
-            blockTpsInfo.txCount = block.transactions.length
-            blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
-            blockTpsInfoList.push(blockTpsInfo)
-        }
-
-        let txCountInBlocks = 0
-        for(let blockTpsInfo of blockTpsInfoList){
-            logger.info('------ block tps status ------')
-            logger.info("blockNumber: " + blockTpsInfo.blockNumber)
-            logger.info("txCount: " + blockTpsInfo.txCount)
-            logger.info("tps: " + blockTpsInfo.tps)
-            txCountInBlocks += blockTpsInfo.txCount
-        }
-
-        let blockCount = endBlockNumber - startBlockNumber + 1
-        let tps1 = totalSuccessCount / blockCount / blockTime
-        let tps2 = txCountInBlocks / blockCount / blockTime
-        logger.info("======== tps status ========")
-        logger.info("startBlockNumber: " + startBlockNumber)
-        logger.info("endBlockNumber: " + endBlockNumber)
-        logger.info("blockCount: " + blockCount)
-        logger.info("totalSuccessCount: " + totalSuccessCount)
-        logger.info("totalFailCount: " + totalFailCount)
-        logger.info("tps1: " + tps1)
-        logger.info("txCountInBlocks: " + txCountInBlocks)
-        logger.info("tps2: " + tps2)
-
-        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
-        expect(totalSuccessCount).to.be.equal(testCase.otherParams.totalShouldSuccessCount)
-        expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
-    },
-
-    createServers: function(allServers, count){
-        servers = []
-        for(let i = 0; i < count; i++){
-            servers.push(allServers[i])
-        }
-        return servers
-    },
-
     createAccountParamsWithDifferentAccount: function(addresses, value, fee, memos, txFunction, testCount){
-        let accountParams = []
-        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        let subCases = []
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
             addresses.receiver1.address, value, fee, memos, txFunction, testCount, testCount))
-        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender2.address, addresses.sender2.secret,
             addresses.receiver2.address, value, fee, memos, txFunction, testCount, testCount))
-        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
             addresses.receiver3.address, value, fee, memos, txFunction, testCount, testCount))
-        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
             addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
-        return accountParams
+        return subCases
     },
 
     testForPerformanceTestByOneAccount: function(server, titles, allServers, addresses, value, fee, memos,
@@ -1175,10 +1029,10 @@ module.exports = tcsPressureSendTx = {
 
         let testCases = []
         let testCase
-        let accountParams = []
-        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
+        let subCases = []
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender1.address, addresses.sender1.secret,
             addresses.receiver1.address, value, fee, memos, txFunction, testCount, testCount))  //need success
-        accountParams.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
             addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
         let servers = []
         let title
@@ -1188,35 +1042,35 @@ module.exports = tcsPressureSendTx = {
         title = titles[0]
         {
             servers = tcsPressureSendTx.createServers(allServers, 1)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[1]
         {
             servers = tcsPressureSendTx.createServers(allServers, 2)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[2]
         {
             servers = tcsPressureSendTx.createServers(allServers, 3)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[3]
         {
             servers = tcsPressureSendTx.createServers(allServers, 4)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[4]
         {
             servers = tcsPressureSendTx.createServers(allServers, 5)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
@@ -1231,7 +1085,7 @@ module.exports = tcsPressureSendTx = {
 
         let testCases = []
         let testCase
-        let accountParams = tcsPressureSendTx.createAccountParamsWithDifferentAccount(
+        let subCases = tcsPressureSendTx.createAccountParamsWithDifferentAccount(
             addresses, value, fee, memos, txFunction, testCount)
         let servers = []
         let title
@@ -1241,35 +1095,35 @@ module.exports = tcsPressureSendTx = {
         title = titles[0]
         {
             servers = tcsPressureSendTx.createServers(allServers, 1)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[1]
         {
             servers = tcsPressureSendTx.createServers(allServers, 2)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[2]
         {
             servers = tcsPressureSendTx.createServers(allServers, 3)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[3]
         {
             servers = tcsPressureSendTx.createServers(allServers, 4)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[4]
         {
             servers = tcsPressureSendTx.createServers(allServers, 5)
-            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, accountParams, caseRestrictedLevel)
+            testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
@@ -1444,7 +1298,7 @@ module.exports = tcsPressureSendTx = {
     activeAllServers: function(){
         let servers = []
 
-        servers.push(framework.activeServer(allModes[0]))
+        servers.push(testUtility.activeServer(allModes[0]))
         servers.push(framework.activeServer(allModes[1]))
         servers.push(framework.activeServer(allModes[2]))
         servers.push(framework.activeServer(allModes[3]))
@@ -1456,6 +1310,14 @@ module.exports = tcsPressureSendTx = {
         // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
         // servers.push(framework.activeServer(utility.findMode(allModes, 'rpc_yun_ali')))
 
+        return servers
+    },
+
+    createServers: function(allServers, count){
+        servers = []
+        for(let i = 0; i < count; i++){
+            servers.push(allServers[i])
+        }
         return servers
     },
     //endregion
