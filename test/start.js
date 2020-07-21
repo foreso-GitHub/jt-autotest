@@ -73,7 +73,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -158,7 +158,7 @@ describe('Jingtum测试', function() {
 
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
 
-                // tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
+                tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
 
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
