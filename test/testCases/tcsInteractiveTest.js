@@ -20,10 +20,11 @@ const { allModes, } = require("../config/config")
 //endregion
 //endregion
 
+const _FEE = 0.00001
 
 module.exports = tcsInteractiveTest = {
 
-    //region performance test, multi nodes, multi tx, send/sign mix.
+    //region interactive test
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
     testForPerformanceTest: function(server, describeTitle){
@@ -32,7 +33,7 @@ module.exports = tcsInteractiveTest = {
         let account1= addresses.sender3
         let account2= addresses.receiver3
 
-        let currency = 'swtc'
+        let currency = {symbol:'swt', issuer:''}
         let txFunction = consts.rpcFunctions.sendTx
         let title
         let testCase
@@ -43,7 +44,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0010\t同时发起多个底层币发送交易_余额足够（通过jt_sendTransaction测试）'
             {
-                currency = 'swtc'
+                currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
@@ -53,7 +54,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0020\t同时发起多个底层币发送交易_余额足够（通过jt_signTransaction测试）'
             {
-                currency = 'swtc'
+                currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
@@ -63,7 +64,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0030\t同时发起多个底层币发送交易_余额不够（通过jt_sendTransaction测试）'
             {
-                currency = 'swtc'
+                currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -73,7 +74,47 @@ module.exports = tcsInteractiveTest = {
 
             title = '0040\t同时发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）'
             {
-                currency = 'swtc'
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0050\t同时发起多个代币发送交易_余额足够（通过jt_sendTransaction测试）'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0060\t同时发起多个代币发送交易_余额足够（通过jt_signTransaction测试）'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0070\t同时发起多个代币发送交易_余额不够（通过jt_sendTransaction测试）'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0080\t同时发起多个代币发送交易_余额不够（通过jt_signTransaction测试）'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -109,7 +150,7 @@ module.exports = tcsInteractiveTest = {
         for (let subCase of subCases){
             totalCount += subCase.count
         }
-        testCase.otherParams.accountParams = subCases
+        testCase.otherParams.subCases = subCases
         testCase.otherParams.totalCount = totalCount
         testCase.otherParams.servers = [testCase.server]
 
@@ -130,11 +171,24 @@ module.exports = tcsInteractiveTest = {
     },
 
     createSubCases: async function(server, account1, account2, currency, txFunction, moreActionsFunction){
-        let symbol = currency == 'swtc' ? null : currency
-        let balance1 = parseInt(await server.getBalance(server, account1.address, symbol))
-        let balance2 = parseInt(await server.getBalance(server, account2.address, symbol))
-        let subCases = []
+        let isSwt = currency.symbol == 'swt'
+        let symbol
+        let balance1
+        let balance2
 
+        if(isSwt){
+            symbol = null
+            balance1 = parseInt(await server.getBalance(server, account1.address, symbol))
+            balance2 = parseInt(await server.getBalance(server, account2.address, symbol))
+        }else{
+            symbol = currency.symbol
+            let balanceResult = await server.getBalance(server, account1.address, symbol)
+            balance1 = parseInt(balanceResult.value)
+            balanceResult = await server.getBalance(server, account2.address, symbol)
+            balance2 = parseInt(balanceResult.value)
+        }
+
+        let subCases = []
         if(balance1 < 100 && balance2 < 100){
             expect('Accounts balance is not enough!').to.be.not.ok
         }
@@ -143,13 +197,24 @@ module.exports = tcsInteractiveTest = {
             let receiver = balance1 >= balance2 ? account2 : account1
             let balance = balance1 >= balance2 ? balance1 : balance2
 
-            let value = 1
-            let fee = 0.00001
+            let value
+            let amount = 1
+            let fee = _FEE
             let txCount = 5
-            let restBalance = balance - (value + fee) * txCount
+            let restBalance
+            if(isSwt){
+                value = amount
+                restBalance = balance - (amount + fee) * txCount
+            }else{
+                value = {}
+                value.amount = amount
+                value.symbol = currency.symbol
+                value.issuer = currency.issuer
+                restBalance = balance - amount * txCount
+            }
 
-            subCases.push(framework.createSubCase(sender.address, sender.secret,
-                receiver.address, value.toString(), fee.toString(), null, txFunction, txCount, txCount))
+            subCases.push(framework.createSubCase(sender.address, sender.secret, receiver.address,
+                value, fee, null, txFunction, txCount, txCount))
 
             if(moreActionsFunction){
                 moreActionsFunction(subCases, sender, receiver, currency, balance, restBalance)
@@ -166,11 +231,21 @@ module.exports = tcsInteractiveTest = {
     //在生成区块的间隔，某钱包同时发起多个底层币发送交易，每个交易的交易额都小于发起钱包的余额，但是总交易额大于发起钱包的余额
     createSubCasesForTotalNotEnough: async function(server, account1, account2, currency, txFunction){
         let moreActionsFunction = function(subCases, sender, receiver, currency, balance, restBalance){
-            let value = restBalance + 1
-            expect(value < balance).to.be.ok
-            let fee = 0.00001
-            subCases.push(framework.createSubCase(sender.address, sender.secret,
-                receiver.address, value.toString(), fee.toString(), null, txFunction, 1, 0))
+            let isSwt = currency.symbol == 'swt'
+            let amount = restBalance + 1
+            expect(amount < balance).to.be.ok
+            let value
+            if(isSwt){
+                value = amount
+            }else{
+                value = {}
+                value.amount = amount
+                value.symbol = currency.symbol
+                value.issuer = currency.issuer
+            }
+            let fee = _FEE
+            subCases.push(framework.createSubCase(sender.address, sender.secret, receiver.address,
+                value, fee, null, txFunction, 1, 0))
         }
         return tcsInteractiveTest.createSubCases(server, account1, account2, currency, txFunction, moreActionsFunction)
     },

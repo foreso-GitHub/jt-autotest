@@ -111,9 +111,9 @@ describe('Jingtum测试', function() {
                 //region performance test
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
+                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 20)
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps')
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
 
                 tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
 
@@ -144,9 +144,9 @@ describe('Jingtum测试', function() {
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-                // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易')
+                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 20)
 
-                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps')
+                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
 
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
@@ -158,7 +158,7 @@ describe('Jingtum测试', function() {
 
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
 
-                tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
+                // tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
 
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 

@@ -413,21 +413,21 @@ module.exports = tcsPressureSendTx = {
     // endregion
 
     //region pressure test
-    testForPressureTest: function(server, describeTitle){
+    testForPressureTest: function(server, describeTitle, testRound){
         describe(describeTitle, function () {
             let categoryName = ''
             let testCases = []
 
             categoryName = '原生币swt压力测试，分多个case执行'
-            testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, 20)
+            testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, testRound)
             framework.testTestCases(server, categoryName, testCases)
 
             categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
-            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, 50)
+            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, testRound)
             framework.testTestCases(server, categoryName, testCases)
 
             categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
-            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, 50)
+            testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, testRound)
             framework.testTestCases(server, categoryName, testCases)
         })
     },
@@ -529,14 +529,14 @@ module.exports = tcsPressureSendTx = {
     //region pure pressure test, send without getTx
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
-    testForPurePressureTest: function(server, describeTitle){
+    testForPurePressureTest: function(server, describeTitle, testCountOfSingleCase){
         let testCases = []
         let accountParams = []
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        const SINGER_PRESSURE_TEST_COUNT = 5  //better to be the times of the count of servers
-        let count = SINGER_PRESSURE_TEST_COUNT
+        // const SINGER_PRESSURE_TEST_COUNT = 5  //better to be the times of the count of servers
+        let count = testCountOfSingleCase
 
         //region push account params
 
