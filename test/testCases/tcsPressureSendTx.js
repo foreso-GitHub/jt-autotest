@@ -784,12 +784,12 @@ module.exports = tcsPressureSendTx = {
     },
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
-    testForPerformanceTest: function(server, describeTitle){
+    testForPerformanceTest: function(server, describeTitle, testCountOfSingleCase){
         let titles = []
         let caseRestrictedLevel = restrictedLevel.L2
         let memos = null
-        const SINGER_PRESSURE_TEST_COUNT = 5
-        let testCount = SINGER_PRESSURE_TEST_COUNT
+        // const SINGER_PRESSURE_TEST_COUNT = 5
+        let testCount = testCountOfSingleCase
 
         //region no memos
         caseRestrictedLevel = restrictedLevel.L2
@@ -1119,7 +1119,7 @@ module.exports = tcsPressureSendTx = {
         let testCases = []
         let testCase
         let subCases = tcsPressureSendTx.createAccountParamsWithDifferentAccount(
-            addresses, value, fee, memos, txFunction, testCount)
+            addresses, value, fee, memos, txFunction, testCount, false)
         let servers = []
         let title
 
