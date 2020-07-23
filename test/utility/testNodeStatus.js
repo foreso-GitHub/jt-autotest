@@ -12,11 +12,11 @@ const { jtNodes, } = require("../config/config")
 //region set nodes
 let nodes = jtNodes
 
-let jt_node_bd = jtNodes[0]
-let jt_node_tx = jtNodes[1]
-let jt_node_hw = jtNodes[2]
-let jt_node_ty = jtNodes[3]
-let jt_node_al = jtNodes[4]
+// let jt_node_bd = jtNodes[0]
+// let jt_node_tx = jtNodes[1]
+// let jt_node_hw = jtNodes[2]
+// let jt_node_ty = jtNodes[3]
+// let jt_node_al = jtNodes[4]
 //endregion
 
 //region set cmd
@@ -25,8 +25,8 @@ const cmd_stop_jt = 'sudo /root/stop.sh'
 //endregion
 
 // resetNode('bd')
-// stopJt(getNode('bd'))
-// startJt(getNode('bd'))
+// stopJt(getNode('bd', jtNodes)))
+// startJt(getNode('ty', jtNodes))
 // startJt(jt_node_al)
 // stopJt(jt_node_al)
 
@@ -81,7 +81,7 @@ async function resetNodes(){
 }
 
 function resetNode(name){
-    let node = getNode(name)
+    let node = getNode(name, jtNodes)
     stopJt(node)
     startJt(node)
 }
