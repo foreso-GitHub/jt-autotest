@@ -23,7 +23,7 @@ module.exports = tcsInteractiveTest = {
     //region interactive test
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
-    testForPerformanceTest: function(server, describeTitle){
+    testForInteractiveTest: function(server, describeTitle){
         let caseRestrictedLevel = restrictedLevel.L2
         let addresses = server.mode.addresses
         let account1= addresses.sender3

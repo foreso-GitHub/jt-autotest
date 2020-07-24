@@ -73,7 +73,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -127,7 +127,7 @@ describe('Jingtum测试', function() {
 
                 // endregion
 
-                tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
+                tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
@@ -138,32 +138,27 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
-                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
-                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
+                //region performance test
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                //
                 // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 20)
-
+                //
                 // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
+
+                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
 
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
                 //     30)
-
+                //
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
-                //     100, 'WithoutResponse')
+                //     30, 'WithoutResponse')
 
-                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 5)
+                // endregion
 
-                // tcsInteractiveTest.testForPerformanceTest(server, '交互性测试')
-
-                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
-
-                // tcsIpfs.testForIpfsTest(server, '测试ipfs')
-
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
 
             })
