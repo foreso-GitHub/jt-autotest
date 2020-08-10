@@ -17,6 +17,7 @@ function nodeMonitor(){
                 node.server = server
                 node.blockNumber = await server.getBlockNumber(server)
                 doneNodes.push(node)
+                logger.debug(server.getName())
 
                 if(doneNodes.length == nodes.length){
                     netSync = getNetSyncStatus(nodes)

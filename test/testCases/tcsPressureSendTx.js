@@ -756,7 +756,7 @@ module.exports = tcsPressureSendTx = {
     //several accounts, several nodes
     testForFastPerformance: function(server, describeTitle, testRound, mode){
         let serverCount = 5
-        let testCount = serverCount
+        let testCount = serverCount * 1
         let memosLength = 8
 
         let testCases = []
@@ -1050,6 +1050,15 @@ module.exports = tcsPressureSendTx = {
             addresses.receiver2.address, value, fee, memos, txFunction, testCount, testCount))
         subCases.push(tcsPressureSendTx.createAccountParam(addresses.sender3.address, addresses.sender3.secret,
             addresses.receiver3.address, value, fee, memos, txFunction, testCount, testCount))
+        // subCases.push(tcsPressureSendTx.createAccountParam(addresses.receiver1.address, addresses.receiver1.secret,
+        //     addresses.sender1.address, value, fee, memos, txFunction, testCount, testCount))
+        // subCases.push(tcsPressureSendTx.createAccountParam(addresses.receiver2.address, addresses.receiver2.secret,
+        //     addresses.sender2.address, value, fee, memos, txFunction, testCount, testCount))
+        // subCases.push(tcsPressureSendTx.createAccountParam(addresses.sequence1.address, addresses.sequence1.secret,
+        //     addresses.sequence3.address, value, fee, memos, txFunction, testCount, testCount))
+        // subCases.push(tcsPressureSendTx.createAccountParam(addresses.sequence2.address, addresses.sequence2.secret,
+        //     addresses.sequence4.address, value, fee, memos, txFunction, testCount, testCount))
+
         if(!notIncludeErrorTx){
             subCases.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
                 addresses.receiver1.address, value, fee, memos, txFunction, testCount, 0))  //need fail
