@@ -377,7 +377,7 @@ const RESPONSE_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -386,8 +386,11 @@ const RESPONSE_SCHEMA = {
         jsonrpc: {
             type: "string"
         },
+        // status: {
+        //     type: "string"
+        // },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -464,7 +467,7 @@ const OLD_SENDTX_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -481,7 +484,7 @@ const OLD_SENDTX_SCHEMA = {
             }
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -493,7 +496,7 @@ const SENDTX_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -517,7 +520,7 @@ const SENDTX_SCHEMA = {
             },
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -529,7 +532,7 @@ const SIGNTX_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -546,7 +549,7 @@ const SIGNTX_SCHEMA = {
             }
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -560,7 +563,7 @@ const NODEINFO_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -585,7 +588,7 @@ const NODEINFO_SCHEMA = {
             },
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -597,7 +600,7 @@ const UPLOAD_DATA_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -630,7 +633,7 @@ const UPLOAD_DATA_SCHEMA = {
             },
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -642,7 +645,7 @@ const DOWNLOAD_DATA_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -659,7 +662,7 @@ const DOWNLOAD_DATA_SCHEMA = {
             }
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -671,7 +674,7 @@ const REMOVE_DATA_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -688,7 +691,7 @@ const REMOVE_DATA_SCHEMA = {
             }
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
@@ -700,7 +703,7 @@ const UPLOAD_FILE_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
-        "status",
+        // "status",
     ],
     properties: {
         id: {
@@ -737,7 +740,7 @@ const UPLOAD_FILE_SCHEMA = {
             },
         },
         status: {
-            type: "string"
+            type: "integer"
         },
     },
 }
