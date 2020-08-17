@@ -315,7 +315,7 @@ module.exports = testUtility = {
         if(!response)
             return false
         return !response.status || response.status == responseStatus.success
-    }
+    },
     //endregion
 }
 

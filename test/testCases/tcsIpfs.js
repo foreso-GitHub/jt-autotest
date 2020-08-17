@@ -210,8 +210,7 @@ module.exports = tcsIpfs = {
             expect(max >= usage).to.be.ok
         }
         else{
-            let expectedResult = check.expectedResult
-            expect(response.result).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, check.expectedResult.expectedError)
         }
     },
 
@@ -481,8 +480,7 @@ module.exports = tcsIpfs = {
             }
         }
         else{
-            let expectedResult = check.expectedResult
-            expect(response.result).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, check.expectedResult.expectedError)
         }
     },
 
@@ -619,8 +617,7 @@ module.exports = tcsIpfs = {
             }
         }
         else{
-            let expectedResult = check.expectedResult
-            expect(response.result).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, check.expectedResult.expectedError)
         }
     },
 
@@ -782,8 +779,7 @@ module.exports = tcsIpfs = {
             }
         }
         else{
-            let expectedResult = check.expectedResult
-            expect(response.result).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, check.expectedResult.expectedError)
         }
     },
 
@@ -1120,8 +1116,7 @@ module.exports = tcsIpfs = {
             expect(file.size).to.be.equal(rawFile.size)
         }
         else{
-            let expectedResult = check.expectedResult
-            expect(response.result).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, check.expectedResult.expectedError)
         }
     },
 
@@ -1192,8 +1187,7 @@ module.exports = tcsIpfs = {
             expect(content).to.be.equal(rawContent)
         }
         else{
-            let expectedResult = check.expectedResult
-            expect(expectedResult.isErrorInResult ? response.result : response.message).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, check.expectedResult.expectedError)
         }
     },
 

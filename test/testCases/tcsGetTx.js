@@ -122,7 +122,7 @@ module.exports = tcsGetTx = {
             expect(response.result.hash).to.be.equal(hash)
         }
         else{
-            expect(response.result).to.contains(testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
         }
     },
     //endregion
@@ -303,7 +303,7 @@ module.exports = tcsGetTx = {
             framework.compareTx(tx1, response.result)
         }
         else{
-            expect(response.result).to.contains(testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
         }
     },
 

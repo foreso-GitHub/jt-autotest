@@ -407,9 +407,7 @@ module.exports = framework = {
             }
             else{
                 if(NEED_CHECK_ExpectedResult){
-                    let expectedResult = testCase.expectedResult
-                    expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message)
-                        .to.contains(expectedResult.expectedError)
+                    framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
                 }
             }
         }
@@ -586,8 +584,7 @@ module.exports = framework = {
             await framework.checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
         }
         else{
-            let expectedResult = testCase.expectedResult
-            expect((expectedResult.isErrorInResult) ? responseOfSendTx.result : responseOfSendTx.message).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
         }
     },
     //endregion
@@ -843,6 +840,14 @@ module.exports = framework = {
         // expect(value.status).to.equal(isSuccess ? status.success: status.error)
         expect(utility.isResponseStatusSuccess(value)).to.equal(isSuccess)
     },
+
+    //region check response error
+    checkResponseError: function(testCase, message, expectedError){
+        if(testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
+            expect(message).to.contains(expectedError)
+        }
+    },
+    //endregion
 
     //endregion
 

@@ -1312,7 +1312,7 @@ module.exports = tcsPressureSendTx = {
             }
             else{
                 let expectedResult = check.expectedResult
-                expect(responseOfSendTx.result).to.contains(expectedResult.expectedError)
+                framework.checkResponseError(testCase, responseOfSendTx.message, expectedResult.expectedError)
             }
         }
         else{
@@ -1344,7 +1344,7 @@ module.exports = tcsPressureSendTx = {
         }
         else{
             let expectedResult = check.expectedResult
-            expect(responseOfSendTx.result).to.contains(expectedResult.expectedError)
+            framework.checkResponseError(testCase, responseOfSendTx.message, expectedResult.expectedError)
         }
     },
 

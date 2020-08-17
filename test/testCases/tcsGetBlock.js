@@ -211,7 +211,7 @@ module.exports = tcsGetBlock = {
             }
         }
         else{
-            expect(response.result).to.contains(testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
         }
     },
 

@@ -91,7 +91,7 @@ module.exports = tcsCreateAccount = {
             expect(account.nickname).to.equal(nickName)  //todo: bug, nickname should be nickName
         }
         else{
-            expect(response.result).to.contains(testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
         }
     },
     //endregion
