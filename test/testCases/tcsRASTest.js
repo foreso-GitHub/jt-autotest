@@ -99,7 +99,7 @@ module.exports = tcsRASTest = {
                 testCase.actualResult.push(netSync)
 
                 tcsRASTest.startJtByNodes(nodes)
-                await utility.timeout(60000)
+                await utility.timeout(80000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)

@@ -803,7 +803,7 @@ module.exports = tcsSendAndSignTx = {
         configToken = token.CNYT
         describe(configToken.testName + '测试：' + txFunctionName, async function () {
             tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
-                server.mode.addresses.rootAccount, configToken)
+                server.mode.addresses.sender1, configToken)
         })
 
     },
