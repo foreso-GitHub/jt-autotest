@@ -976,12 +976,12 @@ module.exports = framework = {
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
-                    if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
+                    if (txFunctionName == consts.rpcFunctions.signTx && utility.isResponseStatusSuccess(result)){
                         result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
                     }
                     executeCount++
                     accountParam.results.push(result)
-                    if(result.status == responseStatus.success) {
+                    if(utility.isResponseStatusSuccess(result)) {
                         sequence++
                         framework.setSequence(server.getName(), accountParam.from, sequence)
                         testCase.otherParams.successResults.push(result)
@@ -1034,8 +1034,10 @@ module.exports = framework = {
         let startBlockNumber = startTx.result.ledger_index
 
         let endTxHash = testCase.otherParams.successResults[testCase.otherParams.successResults.length - 1].result[0]
+        // logger.info("------endTxHash: " + endTxHash)
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index
+        logger.info("------endTx: " + JSON.stringify(endTx))
 
         let blocksInfo = await framework.getBlocksInfo(server, startBlockNumber, endBlockNumber)
         let blockCount = blocksInfo.txBlockCount
@@ -1196,7 +1198,7 @@ module.exports = framework = {
             logger.info("Block Count: " + blockCount)
             logger.info("Tx Count: " + txCountInBlocks)
             logger.info("Block Tps: " + tps)
-            logger.info("Max Count Block: " + maxBlock.blockNumber)
+            logger.info("Max Count Block: " + (maxBlock == null ? -1 : maxBlock.blockNumber))
             logger.info("Max Count : " + maxCount)
 
             let blockWhichHasTxCount = blockWhichHasTxList.length

@@ -308,5 +308,11 @@ module.exports = testUtility = {
         return memos
     },
     //endregion
+
+    //region is response status success
+    isResponseStatusSuccess: function(response){
+        return !response.status || response.status == responseStatus.success
+    }
+    //endregion
 }
 

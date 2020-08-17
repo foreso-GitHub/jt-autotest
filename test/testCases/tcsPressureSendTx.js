@@ -656,12 +656,12 @@ module.exports = tcsPressureSendTx = {
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
-                    if (txFunctionName == consts.rpcFunctions.signTx && result.status == responseStatus.success){
+                    if (txFunctionName == consts.rpcFunctions.signTx && utility.isResponseStatusSuccess(result)){
                         result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
                     }
                     executeCount++
                     accountParam.results.push(result)
-                    if(result.status == responseStatus.success) {
+                    if(utility.isResponseStatusSuccess(result)) {
                         sequence++
                         framework.setSequence(server.getName(), accountParam.from, sequence)
                         accountParam.successCount++
@@ -1058,6 +1058,20 @@ module.exports = tcsPressureSendTx = {
         //     addresses.sequence3.address, value, fee, memos, txFunction, testCount, testCount))
         // subCases.push(tcsPressureSendTx.createAccountParam(addresses.sequence2.address, addresses.sequence2.secret,
         //     addresses.sequence4.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount1.address, addresses.pressureAccount1.secret,
+            addresses.pressureAccount2.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount3.address, addresses.pressureAccount3.secret,
+            addresses.pressureAccount4.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount5.address, addresses.pressureAccount5.secret,
+            addresses.pressureAccount6.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount7.address, addresses.pressureAccount7.secret,
+            addresses.pressureAccount8.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount9.address, addresses.pressureAccount9.secret,
+            addresses.pressureAccount10.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount11.address, addresses.pressureAccount11.secret,
+            addresses.pressureAccount12.address, value, fee, memos, txFunction, testCount, testCount))
+        subCases.push(tcsPressureSendTx.createAccountParam(addresses.pressureAccount13.address, addresses.pressureAccount13.secret,
+            addresses.pressureAccount14.address, value, fee, memos, txFunction, testCount, testCount))
 
         if(!notIncludeErrorTx){
             subCases.push(tcsPressureSendTx.createAccountParam(addresses.inactiveAccount1.address, addresses.inactiveAccount1.secret,
@@ -1226,7 +1240,7 @@ module.exports = tcsPressureSendTx = {
             }
             else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
                 let responseOfSignTx = await testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
-                let blob = responseOfSignTx.status == responseStatus.success ? responseOfSignTx.result[0] : ''
+                let blob = utility.isResponseStatusSuccess(responseOfSignTx) ? responseOfSignTx.result[0] : ''
                 //sign tx, need record signed tx
                 let check_0 = {
                     title: 'sign tx result',
