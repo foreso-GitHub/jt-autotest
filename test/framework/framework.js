@@ -16,7 +16,6 @@ const rpc = require('./lib/rpc/rpcInterface.js')
 const swtclib = require('./lib/swtclib/swtclibInterface.js')
 const { commonPaths, } = require("../config/basicConfig")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
-const status = responseStatus
 const testModeEnums = testMode
 //endregion
 
@@ -276,7 +275,7 @@ module.exports = framework = {
         return framework.executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
             // testCase.hasExecuted = true
             testCase.actualResult.push(responseOfSign)
-            if(responseOfSign.status === status.success){
+            if(utility.isResponseStatusSuccess(responseOfSign)){
                 if(testCase.expectedResult.needPass){
                     if(!testCase.subTestCases || testCase.subTestCases.length == 0){
                         testCase.executionResult = false
@@ -317,7 +316,7 @@ module.exports = framework = {
     addSequenceAfterResponseSuccess: function(response, testCase){
         let data = testCase.txParams[0]
         let serverName = testCase.server.getName()
-        if(response.status === status.success){
+        if(utility.isResponseStatusSuccess(response)){
             framework.setSequence(serverName, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
         }
     },
@@ -841,7 +840,8 @@ module.exports = framework = {
 
     checkResponse: function(isSuccess, value){
         expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-        expect(value.status).to.equal(isSuccess ? status.success: status.error)
+        // expect(value.status).to.equal(isSuccess ? status.success: status.error)
+        expect(utility.isResponseStatusSuccess(value)).to.equal(isSuccess)
     },
 
     //endregion

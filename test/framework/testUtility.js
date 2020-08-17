@@ -147,17 +147,18 @@ module.exports = testUtility = {
         }
         return new Promise(async function(resolve, reject){
             server.responseGetTxByHash(server, hash)
-                .then(async function (value) {
+                .then(async function (response) {
                     //retry
-                    if(retriedCount < server.mode.retryMaxCount && (value.result.toString().indexOf('can\'t find transaction') != -1
-                        || value.result.toString().indexOf('no such transaction') != -1)){
+                    // if(retriedCount < server.mode.retryMaxCount && (response.result.toString().indexOf('can\'t find transaction') != -1
+                    //     || response.result.toString().indexOf('no such transaction') != -1)){
+                    if(retriedCount < server.mode.retryMaxCount && !testUtility.isResponseStatusSuccess(response)){
                         retriedCount++
                         logger.debug("===Try responseGetTxByHash again! The " + retriedCount + " retry!===")
                         await testUtility.timeout(server.mode.retryPauseTime)
                         resolve(await testUtility.getTxByHash(server, hash, retriedCount))
                     }
                     else{
-                        resolve(value)
+                        resolve(response)
                     }
                 })
                 .catch(function(error){
@@ -311,6 +312,8 @@ module.exports = testUtility = {
 
     //region is response status success
     isResponseStatusSuccess: function(response){
+        if(!response)
+            return false
         return !response.status || response.status == responseStatus.success
     }
     //endregion
