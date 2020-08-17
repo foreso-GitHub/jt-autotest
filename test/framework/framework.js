@@ -396,7 +396,7 @@ module.exports = framework = {
                 // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
                 // let hash = responseOfSendTx.result[0]
                 // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-                await framework.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+                await utility.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
                     framework.checkResponse(true, responseOfGetTx)
                     // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
                     expect(responseOfGetTx.result.hash).to.be.equal(hash)
@@ -415,7 +415,7 @@ module.exports = framework = {
             if(testCase.expectedResult.needPass){
                 expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
                 let hash = responseOfSendTx.result.hash  //for swtclib
-                await framework.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
+                await utility.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
                     framework.checkResponse(true, responseOfGetTx)
                     // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
                     expect(responseOfGetTx.result.hash).to.be.equal(hash)
