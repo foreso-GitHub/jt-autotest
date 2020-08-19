@@ -143,16 +143,7 @@ module.exports = tcsGetTx = {
         let needPass = true
         let expectedError = ''
         let testCase
-
-        let title = '0010\t查询有效交易哈希-底层币'
-        {
-            tx = txs.tx1
-            hash = tx.hash
-            from = tx.Account
-            index = tx.Sequence
-            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
-        }
+        let title
 
         title = '0010\t查询有效交易哈希-token'
         {
@@ -164,12 +155,96 @@ module.exports = tcsGetTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0010\t有效的地址，有效的sequence：查询有效的地址，遍历所有的有效sequence'
+        title = '0010\t查询有效交易哈希-底层币'
         {
             tx = txs.tx1
             hash = tx.hash
             from = tx.Account
             index = tx.Sequence
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0010\t有效的地址，遍历部分有效sequence：'
+        {
+            tx = txs.tx1
+            from = tx.Account
+            let lastIndex = 10
+            for(let i = 1; i <= lastIndex; i++){
+                index = i
+                testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title + index,
+                    hash, from, index, needPass, expectedError)
+                testCase.checkFunction = tcsGetTx.checkTransactionByIndex
+                framework.addTestCase(testCases, testCase)
+            }
+        }
+
+        title = '0020\t有效的地址，无效的sequence：很大的数值'
+        {
+            index = 99999999
+            needPass = false
+            expectedError = 'can\'t find transaction'
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t有效的地址，无效的sequence：0'
+        {
+            index = 0
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t有效的地址，无效的sequence：负数'
+        {
+            index = -1
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t有效的地址，无效的sequence：小数'
+        {
+            index = 5.87
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t有效的地址，无效的sequence：乱码字符串'
+        {
+            index = 'sjdflsajf32241kjksd'
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0030\t无效的地址参数_01：地址长度不够'
+        {
+            from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSV'
+            index = 1
+            needPass = false
+            expectedError = 'Bad account address'
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0030\t无效的地址参数_01：地址长度过长'
+        {
+            from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm1'
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0030\t无效的地址参数_01：地址不以j开头'
+        {
+            from = 'tpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm'
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0040\t无效的地址参数_02：地址长度没问题且以j开头，但是一个不存在没被使用过的地址'
+        {
+            from = server.mode.addresses.inactiveAccount1.address
+            needPass = false
+            expectedError = 'can\'t find transaction'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -207,6 +282,22 @@ module.exports = tcsGetTx = {
         testCase.checkParams.hash = hash;
 
         return testCase
+    },
+
+    checkTransactionByIndex: function(testCase){
+        let response = testCase.actualResult[0]
+        let needPass = testCase.expectedResult.needPass
+        framework.checkResponse(needPass, response)
+        if(needPass){
+            let from = testCase.txParams[0]
+            let index = testCase.txParams[1]
+            // expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
+            expect(response.result.Account).to.be.equal(from)
+            expect(response.result.Sequence).to.be.equal(index)
+        }
+        else{
+            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+        }
     },
     //endregion
 
