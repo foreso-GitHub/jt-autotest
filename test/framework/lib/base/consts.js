@@ -15,6 +15,7 @@ let consts = {
         getBalance:'jt_getBalance',
         getTransactionReceipt:'jt_getTransactionReceipt',
         getTransactionByHash:'jt_getTransactionByHash',
+        getTransactionByIndex:'jt_getTransactionByIndex',
         getTransactionByBlockHashAndIndex:'jt_getTransactionByBlockHashAndIndex',
         getTransactionByBlockNumberAndIndex: 'jt_getTransactionByBlockNumberAndIndex',
         getBlockTransactionCountByHash:'jt_getBlockTransactionCountByHash',

@@ -109,6 +109,9 @@ module.exports = tcsGetTx = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
 
+        testCase.checkParams = {}
+        testCase.checkParams.hash = hash;
+
         return testCase
     },
 
@@ -117,13 +120,93 @@ module.exports = tcsGetTx = {
         let needPass = testCase.expectedResult.needPass
         framework.checkResponse(needPass, response)
         if(needPass){
-            let hash = testCase.txParams[0]
+            // let hash = testCase.txParams[0]
+            let hash = testCase.checkParams.hash
             // expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
             expect(response.result.hash).to.be.equal(hash)
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
         }
+    },
+    //endregion
+
+    //region get tx by index
+    testForGetTransactionByIndex: function(server, describeTitle){
+        let testCases = []
+
+        let txs = server.mode.txs
+        let tx = txs.tx1
+        let hash = tx.hash
+        let from = tx.Account
+        let index = tx.Sequence
+        let needPass = true
+        let expectedError = ''
+        let testCase
+
+        let title = '0010\t查询有效交易哈希-底层币'
+        {
+            tx = txs.tx1
+            hash = tx.hash
+            from = tx.Account
+            index = tx.Sequence
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0010\t查询有效交易哈希-token'
+        {
+            tx = txs.tx_token_CNYT
+            hash = tx.hash
+            from = tx.Account
+            index = tx.Sequence
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0010\t有效的地址，有效的sequence：查询有效的地址，遍历所有的有效sequence'
+        {
+            tx = txs.tx1
+            hash = tx.hash
+            from = tx.Account
+            index = tx.Sequence
+            testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        framework.testTestCases(server, describeTitle, testCases)
+    },
+
+    createSingleTestCaseForGetTransactionByIndex: function(server, title, hash, from, index, needPass, expectedError){
+
+        let functionName = consts.rpcFunctions.getTransactionByIndex
+        let txParams = []
+        txParams.push(from)
+        txParams.push(index)
+
+        let expectedResult = {}
+        expectedResult.needPass = needPass
+        expectedResult.isErrorInResult = false
+        expectedResult.expectedError = expectedError
+
+        let testCase = framework.createTestCase(
+            title,
+            server,
+            functionName,
+            txParams,
+            null,
+            framework.executeTestCaseForGet,
+            tcsGetTx.checkTransaction,
+            expectedResult,
+            restrictedLevel.L2,
+            [serviceType.newChain, serviceType.oldChain],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+
+        testCase.checkParams = {}
+        testCase.checkParams.hash = hash;
+
+        return testCase
     },
     //endregion
 
