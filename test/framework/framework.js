@@ -955,70 +955,74 @@ module.exports = framework = {
             let totalFailCount = 0
             testCase.otherParams.successResults = []
             testCase.otherParams.failResults = []
-            for(let i = 0; i < subCases.length; i++){
-                let accountParam = subCases[i]
+            if(totalCount == 0){
+                resolve(null)
+            }else{
+                for(let i = 0; i < subCases.length; i++){
+                    let accountParam = subCases[i]
 
-                let count = accountParam.count
-                let txFunctionName = accountParam.txFunctionName
+                    let count = accountParam.count
+                    let txFunctionName = accountParam.txFunctionName
 
-                //get sequence
-                let currentSequence = await framework.getSequence(server, accountParam.from)
-                currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-                let sequence = currentSequence
+                    //get sequence
+                    let currentSequence = await framework.getSequence(server, accountParam.from)
+                    currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+                    let sequence = currentSequence
 
-                accountParam.results = []
-                accountParam.successCount = 0
-                accountParam.failCount = 0
+                    accountParam.results = []
+                    accountParam.successCount = 0
+                    accountParam.failCount = 0
 
-                totalShouldSuccessCount += accountParam.shouldSuccessCount
-                totalShouldFailCount += accountParam.count - accountParam.shouldSuccessCount
+                    totalShouldSuccessCount += accountParam.shouldSuccessCount
+                    totalShouldFailCount += accountParam.count - accountParam.shouldSuccessCount
 
-                //transfer
-                for(let i = 0; i < count; i++){
-                    let index = i % serverCount
-                    server = servers[index]
-                    logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
-                    let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
-                        accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
-                    let result = await server.getResponse(server, txFunctionName, params)
-                    if (txFunctionName == consts.rpcFunctions.signTx && utility.isResponseStatusSuccess(result)){
-                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
-                    }
-                    executeCount++
-                    accountParam.results.push(result)
-                    if(utility.isResponseStatusSuccess(result)) {
-                        sequence++
-                        framework.setSequence(server.getName(), accountParam.from, sequence)
-                        testCase.otherParams.successResults.push(result)
-                        accountParam.successCount++
-                        totalSuccessCount++
+                    //transfer
+                    for(let i = 0; i < count; i++){
+                        let index = i % serverCount
+                        server = servers[index]
+                        logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
+                        let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
+                            accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
+                        let result = await server.getResponse(server, txFunctionName, params)
+                        if (testCase.otherParams.executeBothSignAndSend && txFunctionName == consts.rpcFunctions.signTx && utility.isResponseStatusSuccess(result)){
+                            result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
+                        }
+                        executeCount++
+                        accountParam.results.push(result)
+                        if(utility.isResponseStatusSuccess(result)) {
+                            sequence++
+                            framework.setSequence(server.getName(), accountParam.from, sequence)
+                            testCase.otherParams.successResults.push(result)
+                            accountParam.successCount++
+                            totalSuccessCount++
 
-                        //print wrong failed/success tx
-                        //todo need be remove when such jingtum bug (invalid tx will be success in pressure test) is fixed
-                        if(accountParam.shouldSuccessCount < accountParam.count){
-                            logger.debug('===attention===')
-                            logger.debug(JSON.stringify(accountParam))
-                            logger.debug('sequence: ' + (sequence - 1))
-                            logger.debug(JSON.stringify(result))
+                            //print wrong failed/success tx
+                            //todo need be remove when such jingtum bug (invalid tx will be success in pressure test) is fixed
+                            if(accountParam.shouldSuccessCount < accountParam.count){
+                                logger.debug('===attention===')
+                                logger.debug(JSON.stringify(accountParam))
+                                logger.debug('sequence: ' + (sequence - 1))
+                                logger.debug(JSON.stringify(result))
+                            }
+
+                        }else{
+                            testCase.otherParams.failResults.push(result)
+                            accountParam.failCount++
+                            totalFailCount++
                         }
 
-                    }else{
-                        testCase.otherParams.failResults.push(result)
-                        accountParam.failCount++
-                        totalFailCount++
-                    }
 
+                        logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: '
+                            + JSON.stringify(result))
 
-                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: '
-                        + JSON.stringify(result))
-
-                    if(executeCount == totalCount){
-                        testCase.otherParams.executeCount = executeCount
-                        testCase.otherParams.totalSuccessCount = totalSuccessCount
-                        testCase.otherParams.totalFailCount = totalFailCount
-                        testCase.otherParams.totalShouldSuccessCount = totalShouldSuccessCount
-                        testCase.otherParams.totalShouldFailCount = totalShouldFailCount
-                        resolve(testCase.otherParams)
+                        if(executeCount == totalCount){
+                            testCase.otherParams.executeCount = executeCount
+                            testCase.otherParams.totalSuccessCount = totalSuccessCount
+                            testCase.otherParams.totalFailCount = totalFailCount
+                            testCase.otherParams.totalShouldSuccessCount = totalShouldSuccessCount
+                            testCase.otherParams.totalShouldFailCount = totalShouldFailCount
+                            resolve(testCase.otherParams)
+                        }
                     }
                 }
             }

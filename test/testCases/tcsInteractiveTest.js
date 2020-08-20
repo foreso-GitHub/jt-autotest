@@ -252,6 +252,8 @@ module.exports = tcsInteractiveTest = {
         return testCase
     },
 
+    //1. create sub cases from subCaseFunctionParams
+    //2. execute sub cases by framework.executeSubCases
     executeTest: async function(testCase){
         let subCaseFunctionParamsList = testCase.otherParams.subCaseFunctionParamsList
         let totalCount = 0
