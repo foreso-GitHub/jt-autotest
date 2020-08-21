@@ -772,8 +772,8 @@ module.exports = tcsPressureSendTx = {
         for(let i = 0; i < testRound; i++){
             subCases = subCases.concat(tcsPressureSendTx.createAccountParamsWithDifferentAccount(addresses, value, fee, memos, txFunction, testCount, true))
         }
-        let allServers = tcsPressureSendTx.activeAllServers()
-        let servers = tcsPressureSendTx.createServers(allServers, serverCount)
+        let allServers = framework.activeAllServers()
+        let servers = framework.createServers(allServers, serverCount)
         let testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
         if(mode && mode == 'WithoutResponse'){
             testCase.executeFunction = framework.executeSubCasesWithoutResponse
@@ -987,7 +987,7 @@ module.exports = tcsPressureSendTx = {
     testForPerformanceTestForOneRound: function(server, describeTitle, titles, memos, caseRestrictedLevel, testCount){
         let testCases = []
         let subTitles
-        let allServers = tcsPressureSendTx.activeAllServers()
+        let allServers = framework.activeAllServers()
         let txFunction
         let addresses = server.mode.addresses
         let value = '0.000001'
@@ -1036,6 +1036,7 @@ module.exports = tcsPressureSendTx = {
         testCase.otherParams.servers = servers
         testCase.otherParams.subCases = subCases
         testCase.otherParams.totalCount = totalCount
+        testCase.otherParams.executeBothSignAndSend = true
         testCase.executeFunction = framework.executeSubCases
         testCase.checkFunction = framework.checkSubCases
 
@@ -1097,35 +1098,35 @@ module.exports = tcsPressureSendTx = {
 
         title = titles[0]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 1)
+            servers = framework.createServers(allServers, 1)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[1]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 2)
+            servers = framework.createServers(allServers, 2)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[2]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 3)
+            servers = framework.createServers(allServers, 3)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[3]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 4)
+            servers = framework.createServers(allServers, 4)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[4]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 5)
+            servers = framework.createServers(allServers, 5)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
@@ -1150,35 +1151,35 @@ module.exports = tcsPressureSendTx = {
 
         title = titles[0]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 1)
+            servers = framework.createServers(allServers, 1)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[1]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 2)
+            servers = framework.createServers(allServers, 2)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[2]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 3)
+            servers = framework.createServers(allServers, 3)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[3]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 4)
+            servers = framework.createServers(allServers, 4)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
 
         title = titles[4]
         {
-            servers = tcsPressureSendTx.createServers(allServers, 5)
+            servers = framework.createServers(allServers, 5)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
             framework.addTestCase(testCases, testCase)
         }
@@ -1348,28 +1349,6 @@ module.exports = tcsPressureSendTx = {
         }
     },
 
-    //endregion
-
-    //region active nodes
-    activeAllServers: function(){
-        let servers = []
-
-        servers.push(framework.activeServer(allModes[0]))
-        servers.push(framework.activeServer(allModes[1]))
-        servers.push(framework.activeServer(allModes[2]))
-        servers.push(framework.activeServer(allModes[3]))
-        servers.push(framework.activeServer(allModes[4]))
-
-        return servers
-    },
-
-    createServers: function(allServers, count){
-        servers = []
-        for(let i = 0; i < count; i++){
-            servers.push(allServers[i])
-        }
-        return servers
-    },
     //endregion
 
     //endregion

@@ -17,6 +17,7 @@ const swtclib = require('./lib/swtclib/swtclibInterface.js')
 const { commonPaths, } = require("../config/basicConfig")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const testModeEnums = testMode
+const { allModes, } = require("../config/config")
 //endregion
 
 //region global fields
@@ -1322,6 +1323,27 @@ module.exports = framework = {
         }
         return server
     },
+
+    activeAllServers: function(){
+        let servers = []
+
+        servers.push(framework.activeServer(allModes[0]))
+        servers.push(framework.activeServer(allModes[1]))
+        servers.push(framework.activeServer(allModes[2]))
+        servers.push(framework.activeServer(allModes[3]))
+        servers.push(framework.activeServer(allModes[4]))
+
+        return servers
+    },
+
+    createServers: function(allServers, count){
+        let servers = []
+        for(let i = 0; i < count; i++){
+            servers.push(allServers[i])
+        }
+        return servers
+    },
+
     //endregion
 }
 
