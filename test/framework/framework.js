@@ -1017,6 +1017,7 @@ module.exports = framework = {
         return testCase
     },
 
+    //execute sub cases by multiple servers, accounts
     executeSubCases: function(testCase){
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {

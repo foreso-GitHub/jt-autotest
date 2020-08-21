@@ -19,6 +19,24 @@ const { token, } = require("../testData/testData")
 //endregion
 //endregion
 
+let _FailRawTx_UsedSequence = {tx: '1200002280000000240000099761400000000000000168400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201b28ce06c536141010a0b3819cff70f0687bc8d8087506eef4405cb7b86ee2510220319930cc252a1cc42550ea854b1bec81f0a22ac45dfd22b4c85f8e4387ca84488114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1',
+    code: -278, message: 'temBAD_SEQUENCE Malformed: Sequence is not in the past.'}
+let _FailRawTx_InactiveAccount = {tx: '1200002280000000240000000161400000000000000168400000000000000a732102e082405d139f369b49c17c248981f09aad269bc9ca6e9a163870e24fd80cd42174473045022100cba484fb47b3f87f3c0bd78839c61c7ea89df0626be455b4f55e44a09525b6b4022050254bd30ec8d0384b3305760ad8cb518128ad91e360d4b5d1872b5d8a27ed518114ce5c4f04da35752b9323442fc8c731a3672ff3e483144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1',
+    code: -278, message: 'terNO_ACCOUNT The source account does not exist.'}
+let _FailRawTx_LessFund = {tx: '120000228000000024000f24cb61400009184e729fff68400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201617e755869b46252cdcaf0d1647b05029b55a67abe80ef877b796b765527da102205acf91905badfe2163a8ce7b64a360b69327399b04d1f21aafe863f684bd22fd8114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1',
+    code: -278, message: 'telINSUF_FEE_P Fee insufficient.'}
+let _FailRawTx_EmptyRawTx = {tx: '',
+    code: -278, message: 'empty raw transaction'}
+let _FailRawTx_WrongFormat_1 = {tx: '120000228000000024000f24cb61400009184e729fff68400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201617e755869b46252cdcaf0d1647b05029b55a67abe80ef877b796b765527da102205acf91905badfe2163a8ce7b64a360b69327399b04d1f21aafe863f684bd22fd8114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1a',
+    code: -189, message: 'runtime error: invalid memory address or nil pointer dereference'}
+let _FailRawTx_WrongFormat_2 = {tx: '120000228000000024000f24cb61400009184e729fff68400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201617e755869b46252cdcaf0d1647b05029b55a67abe80ef877b796b765527da102205acf91905badfe2163a8ce7b64a360b69327399b04d1f21aafe863f684bd22fd8114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1fa',
+    code: 0, message: ''}
+let _FailRawTx_WrongFormat_3 = {tx: 123123,
+    code: -189, message: 'interface conversion: interface {} is float64, not string'}
+let _FailRawTx_WrongFormat_4 = {tx: null,
+    code: -189, message: 'interface conversion: interface {} is nil, not string'}
+// let _FailRawTxs = []
+// _FailRawTxs.push()
 
 module.exports = tcsSendRawTx = {
     testForSendRawTx: function(server, describeTitle){
@@ -38,37 +56,128 @@ module.exports = tcsSendRawTx = {
         let currency = {symbol:'swt', issuer:''}
         let txFunction = consts.rpcFunctions.signTx
         let successCount = 1
-        let failCount = 0
+        let failRawTxs = []
 
         title = '0010\t有效的单个交易数据\n'
         {
             successCount = 1
-            failCount = 0
+            failRawTxs = []
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
 
-        //todo add more error raw tx like not_enough_fund, bad_format_tx, etc
-        title = '0020\t无效的单个交易数据\n'
+        //region different error raw tx like not_enough_fund, bad_format_tx, etc
+
+        title = '0020\t无效的单个交易数据：使用过的sequence'
         {
             successCount = 0
-            failCount = 1
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_UsedSequence, 1)
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
+
+        title = '0020\t无效的单个交易数据：未激活的发送帐号'
+        {
+            successCount = 0
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_InactiveAccount, 1)
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t无效的单个交易数据：余额不足'
+        {
+            successCount = 0
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_LessFund, 1)
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t无效的单个交易数据：空交易'
+        {
+            successCount = 0
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_EmptyRawTx, 1)
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t无效的单个交易数据：参数为空数组'
+        {
+            successCount = 0
+            failRawTxs = []
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t无效的单个交易数据：错误的rawTx格式1'
+        {
+            successCount = 0
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_1, 1)
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        // title = '0020\t无效的单个交易数据：错误的rawTx格式2'
+        // {
+        //     successCount = 0
+        //     failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_2, 1)
+        //     subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+        //         txFunction, successCount, failRawTxs, framework.createSubCases)
+        //     testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+        //         caseRestrictedLevel, subCaseFunctionParams)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        title = '0020\t无效的单个交易数据：错误的rawTx格式3'
+        {
+            successCount = 0
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_3, 1)
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\t无效的单个交易数据：错误的rawTx格式4'
+        {
+            successCount = 0
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_4, 1)
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                caseRestrictedLevel, subCaseFunctionParams)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        //endregion
 
         title = '0030\t多个有效的交易数据\n'
         {
             successCount = 10
-            failCount = 0
+            failRawTxs = []
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
@@ -77,9 +186,9 @@ module.exports = tcsSendRawTx = {
         title = '0040\t多个无效的交易数据'
         {
             successCount = 0
-            failCount = 10
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_UsedSequence, 10)
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
@@ -88,9 +197,9 @@ module.exports = tcsSendRawTx = {
         title = '0050\t多个交易数据，部分有效部分无效\n'
         {
             successCount = 10
-            failCount = 10
+            failRawTxs = []
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
@@ -99,9 +208,9 @@ module.exports = tcsSendRawTx = {
         title = '0060\t大量交易数据测试_01：输入上千、上万个有效的交易数据，测试大量交易数据是否有上限\n'
         {
             successCount = 20
-            failCount = 0
+            failRawTxs = []
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
@@ -110,9 +219,9 @@ module.exports = tcsSendRawTx = {
         title = '0070\t大量交易数据测试_02：输入上万、几十万个无效的交易数据\n'
         {
             successCount = 0
-            failCount = 1000
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_UsedSequence, 1000)
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, framework.createSubCases)
+                txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
@@ -121,15 +230,33 @@ module.exports = tcsSendRawTx = {
         framework.testTestCases(server, describeTitle, testCases)
     },
 
-    createSubCasesParams: function(server, account1, account2, currency, txFunction, successCount, failCount, createSubCasesFunction){
+    createFailRawTxs: function(failRawTx, count){
+        let failRawTxs = []
+        let newTx = tcsSendRawTx.cloneRawTx(failRawTx)
+        for(let i = 0; i < count; i++){
+            failRawTxs.push(newTx)
+            newTx = tcsSendRawTx.cloneRawTx(newTx)
+            newTx.tx += '1'
+        }
+        return failRawTxs
+    },
+
+    cloneRawTx: function(rawTx){
+        let newRawTx = {}
+        newRawTx.tx = rawTx.tx
+        newRawTx.code = rawTx.code
+        newRawTx.message = rawTx.message
+        return newRawTx
+    },
+
+    createSubCasesParams: function(server, account1, account2, currency, txFunction, successCount, failRawTxs, createSubCasesFunction){
         let subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency, txFunction, createSubCasesFunction)
         subCaseFunctionParams.successCount = successCount
-        subCaseFunctionParams.failCount = failCount
+        subCaseFunctionParams.failRawTxs = failRawTxs
         return subCaseFunctionParams
     },
 
     executeForSendRawTxs: async function(testCase){
-        let failSignedTx = '1200002280000000240000099761400000000000000168400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201b28ce06c536141010a0b3819cff70f0687bc8d8087506eef4405cb7b86ee2510220319930cc252a1cc42550ea854b1bec81f0a22ac45dfd22b4c85f8e4387ca84488114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1'
         let subCaseFunctionParamsList = testCase.otherParams.subCaseFunctionParamsList
         let totalCount = 0
         testCase.otherParams.servers = [testCase.server]
@@ -158,9 +285,11 @@ module.exports = tcsSendRawTx = {
             }
         }
         //create fail raw tx
-        for (let i = 0; i < testCase.otherParams.subCaseFunctionParamsList[0].failCount; i++){
-            signedTxs.push(failSignedTx)
-            failSignedTx = failSignedTx + '1'
+        let failRawTxs = testCase.otherParams.subCaseFunctionParamsList[0].failRawTxs
+        if(failRawTxs && failRawTxs.length > 0){
+            for(let i = 0; i < failRawTxs.length; i++){
+                signedTxs.push(failRawTxs[i].tx)
+            }
         }
         testCase.otherParams.signedTxs = signedTxs
 
@@ -170,15 +299,15 @@ module.exports = tcsSendRawTx = {
 
     checkForSendRawTxs: async function(testCase){
         let successCount = testCase.otherParams.subCaseFunctionParamsList[0].successCount
-        let failCount = testCase.otherParams.subCaseFunctionParamsList[0].failCount
+        let failRawTxs = testCase.otherParams.subCaseFunctionParamsList[0].failRawTxs
+        let failCount = failRawTxs.length
         let response = testCase.otherParams.sendRawTxResult
 
         if(failCount > 0){
-            expect(response.status).to.be.equal(-278)
-            expect(response.message).to.contains('Sequence is not in the past')
-
-            // expect(response.status).to.be.equal(-189)
-            // expect(response.message).to.contains('runtime error: invalid memory address or nil pointer dereference')
+            let expectedStatus = failRawTxs[0].code
+            let expectedMessage = failRawTxs[0].message
+            expect(response.status).to.be.equal(expectedStatus)
+            expect(response.message).to.contains(expectedMessage)
         }
 
         if(successCount > 0){
