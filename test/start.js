@@ -22,6 +22,7 @@ const tcsGetReceipt = require('./testCases/tcsGetReceipt')
 const tcsGetTx = require('./testCases/tcsGetTx')
 const tcsGetTxCount = require('./testCases/tcsGetTxCount')
 const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
+const tcsSendRawTx = require('./testCases/tcsSendRawTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
 const tcsIpfs = require('./testCases/tcsIpfs')
 const tcsRASTest = require('./testCases/tcsRASTest')
@@ -73,7 +74,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -96,6 +97,8 @@ describe('Jingtum测试', function() {
 
                 tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
 
+                tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
+
                 tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
 
                 tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
@@ -106,60 +109,66 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
+                //region send and sign
+
                 tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
+                tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
+
+                //endregion
 
                 //region performance test
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 20)
+                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
 
-                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
-
-                tcsPressureSendTx.testForFastPerformance(server,
-                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
-                    30)
+                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
 
                 tcsPressureSendTx.testForFastPerformance(server,
-                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
-                    30, 'WithoutResponse')
+                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',1)
+
+                tcsPressureSendTx.testForFastPerformance(server,
+                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',1, 'WithoutResponse')
 
                 // endregion
 
-                tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
+                //region special
 
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
+                //endregion
 
             })
             //*/
 
             describe('is working', async function () {
 
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
+                // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
                 //region performance test
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-                //
-                // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 20)
-                //
-                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
 
-                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：')
-
-                // tcsPressureSendTx.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
-                //     30)
+                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
                 //
                 // tcsPressureSendTx.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
-                //     30, 'WithoutResponse')
+                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', 1)
+                //
+                // tcsPressureSendTx.testForFastPerformance(server,
+                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',1, 'WithoutResponse')
 
                 // endregion
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
+                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
             })
         })
