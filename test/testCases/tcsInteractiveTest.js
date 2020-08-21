@@ -17,6 +17,7 @@ const consts = require('../framework/lib/base/consts')
 //endregion
 
 const _FEE = 0.00001
+const _TxCount = 5
 
 module.exports = tcsInteractiveTest = {
 
@@ -47,7 +48,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -57,7 +58,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -67,7 +68,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -77,7 +78,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -94,7 +95,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -104,7 +105,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -114,7 +115,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -124,7 +125,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -142,13 +143,13 @@ module.exports = tcsInteractiveTest = {
                 //swt first
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
 
                 //then token
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -159,13 +160,13 @@ module.exports = tcsInteractiveTest = {
                 //swt first
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
 
                 //then token
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -175,7 +176,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -185,7 +186,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account3, account4, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -195,7 +196,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -205,7 +206,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account3, account4, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -215,7 +216,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account1, account2, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -225,7 +226,7 @@ module.exports = tcsInteractiveTest = {
             {
                 currency = {symbol:'swt', issuer:''}
                 txFunction = consts.rpcFunctions.signTx
-                subCaseFunctionParams = tcsInteractiveTest.createSubCasesParams(server, account3, account4, currency,
+                subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 framework.addTestCase(testCases, testCase)
@@ -241,19 +242,13 @@ module.exports = tcsInteractiveTest = {
     },
 
     createTestCase: function(server, title, caseRestrictedLevel, subCaseFunctionParams){
-        let testCase = framework.createTestCase(title, server,
-            null, '', null,
-            tcsInteractiveTest.executeTest, framework.checkSubCases, null,
-            caseRestrictedLevel, [serviceType.newChain])
-
-        testCase.otherParams = {}
-        testCase.otherParams.subCaseFunctionParamsList = []
-        testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
-        return testCase
+        return framework.createTestCaseForSubCases(server, title, tcsInteractiveTest.executeTest,
+            framework.checkSubCases, caseRestrictedLevel, subCaseFunctionParams)
     },
 
     //1. create sub cases from subCaseFunctionParams
     //2. execute sub cases by framework.executeSubCases
+
     executeTest: async function(testCase){
         let subCaseFunctionParamsList = testCase.otherParams.subCaseFunctionParamsList
         let totalCount = 0
@@ -275,79 +270,15 @@ module.exports = tcsInteractiveTest = {
 
     //region create sub cases
 
-    createSubCasesParams: function(server, account1, account2, currency, txFunction, createSubCasesFunction){
-        let subCaseFunctionParams = {}
-        subCaseFunctionParams.server = server
-        subCaseFunctionParams.account1 = account1
-        subCaseFunctionParams.account2 = account2
-        subCaseFunctionParams.currency = currency
-        subCaseFunctionParams.txFunction = txFunction
-        subCaseFunctionParams.createSubCasesFunction = createSubCasesFunction
-        return subCaseFunctionParams
-    },
-
-    createSubCases: async function(server, account1, account2, currency, txFunction, moreActionsFunction){
-        let symbol
-        let balance1
-        let balance2
-
-        let isSwt = currency.symbol == 'swt'
-        if(isSwt){
-            symbol = null
-            balance1 = parseInt(await server.getBalance(server, account1.address, symbol))
-            balance2 = parseInt(await server.getBalance(server, account2.address, symbol))
-        }else{
-            symbol = currency.symbol
-            let balanceResult = await server.getBalance(server, account1.address, symbol)
-            balance1 = parseInt(balanceResult.value)
-            balanceResult = await server.getBalance(server, account2.address, symbol)
-            balance2 = parseInt(balanceResult.value)
-        }
-
-        let subCases = []
-        if(balance1 < 100 && balance2 < 100){
-            expect('Accounts balance is not enough!').to.be.not.ok
-        }
-        else{
-            let sender = balance1 >= balance2 ? account1 : account2
-            let receiver = balance1 >= balance2 ? account2 : account1
-            let balance = balance1 >= balance2 ? balance1 : balance2
-
-            let value
-            let amount = 1
-            let fee = _FEE
-            let txCount = 5
-            let restBalance
-            if(isSwt){
-                value = amount
-                restBalance = balance - (amount + fee) * txCount
-            }else{
-                value = {}
-                value.amount = amount
-                value.symbol = currency.symbol
-                value.issuer = currency.issuer
-                restBalance = balance - amount * txCount
-            }
-
-            subCases.push(framework.createSubCase(sender.address, sender.secret, receiver.address,
-                value, fee, null, txFunction, txCount, txCount))
-
-            if(moreActionsFunction){
-                moreActionsFunction(subCases, sender, receiver, currency, balance, restBalance, txFunction)
-            }
-        }
-        return subCases
-    },
-
     //region 在生成区块的间隔，某钱包同时发起多个底层币发送交易，每个交易的交易额都小于发起钱包的余额，总交易额也小于发起钱包的余额
     createSubCasesForEnough: async function(server, account1, account2, currency, txFunction){
-        return tcsInteractiveTest.createSubCases(server, account1, account2, currency, txFunction)
+        return framework.createSubCases(server, account1, account2, currency, txFunction, _TxCount,)
     },
     //endregion
 
     //region 在生成区块的间隔，某钱包同时发起多个底层币发送交易，每个交易的交易额都小于发起钱包的余额，但是总交易额大于发起钱包的余额
     createSubCasesForTotalNotEnough: async function(server, account1, account2, currency, txFunction){
-        return tcsInteractiveTest.createSubCases(server, account1, account2, currency, txFunction,
+        return framework.createSubCases(server, account1, account2, currency, txFunction, _TxCount,
             tcsInteractiveTest.moreActionsFunctionFor0030)
     },
 
@@ -365,7 +296,7 @@ module.exports = tcsInteractiveTest = {
     //region 在生成区块的间隔，钱包A向另外一个钱包发送底层币（交易额大于余额），同时钱包B向钱包A发送底层币（可使钱包A的余额大于前面的交易额）；上述2个操作可以试着调整先后顺序看结果是否一致
 
     createSubCasesFor0110: async function(server, account1, account2, currency, txFunction){
-        return tcsInteractiveTest.createSubCases(server, account1, account2, currency, txFunction,
+        return framework.createSubCases(server, account1, account2, currency, txFunction, _TxCount,
             tcsInteractiveTest.moreActionsFunctionFor0110)
     },
 
@@ -387,7 +318,7 @@ module.exports = tcsInteractiveTest = {
     //region 在生成区块的间隔，某钱包发起一个发送底层币交易，使钱包余额不足以支付下一次的燃料；同时该钱包发起一个发送代币交易；上述2个操作可以试着调整先后顺序看结果是否一致，也可以尽量同时发起这2个交易
 
     createSubCasesFor0150: async function(server, account1, account2, currency, txFunction){
-        return tcsInteractiveTest.createSubCases(server, account1, account2, currency, txFunction,
+        return framework.createSubCases(server, account1, account2, currency, txFunction, _TxCount,
             tcsInteractiveTest.moreActionsFunctionFor0150)
     },
 

@@ -27,8 +27,8 @@ module.exports = tcsSendRawTx = {
         let testCases = []
         let subCaseFunctionParams
         let caseRestrictedLevel = restrictedLevel.L2
-        let needPass = true
-        let expectedError = ''
+        // let needPass = true
+        // let expectedError = ''
 
         let addresses = server.mode.addresses
         let account1= addresses.sender3
@@ -45,8 +45,8 @@ module.exports = tcsSendRawTx = {
             successCount = 1
             failCount = 0
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
@@ -57,8 +57,8 @@ module.exports = tcsSendRawTx = {
             successCount = 0
             failCount = 1
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
@@ -68,8 +68,8 @@ module.exports = tcsSendRawTx = {
             successCount = 10
             failCount = 0
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
@@ -79,8 +79,8 @@ module.exports = tcsSendRawTx = {
             successCount = 0
             failCount = 10
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
@@ -90,19 +90,19 @@ module.exports = tcsSendRawTx = {
             successCount = 10
             failCount = 10
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
 
         title = '0060\t大量交易数据测试_01：输入上千、上万个有效的交易数据，测试大量交易数据是否有上限\n'
         {
-            successCount = 50
+            successCount = 20
             failCount = 0
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
@@ -112,8 +112,8 @@ module.exports = tcsSendRawTx = {
             successCount = 0
             failCount = 1000
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
-                txFunction, successCount, failCount, tcsSendRawTx.createSubCases)
-            testCase = tcsSendRawTx.createTestCase(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
+                txFunction, successCount, failCount, framework.createSubCases)
+            testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
             framework.addTestCase(testCases, testCase)
         }
@@ -121,90 +121,12 @@ module.exports = tcsSendRawTx = {
         framework.testTestCases(server, describeTitle, testCases)
     },
 
-    //1. single exec
-    // params, sequence,  sign result
-    //2. sendraw
-    //3. send result
-
-    //region common  todo need combine in framework
     createSubCasesParams: function(server, account1, account2, currency, txFunction, successCount, failCount, createSubCasesFunction){
-        let subCaseFunctionParams = {}
-        subCaseFunctionParams.server = server
-        subCaseFunctionParams.account1 = account1
-        subCaseFunctionParams.account2 = account2
-        subCaseFunctionParams.currency = currency
-        subCaseFunctionParams.txFunction = txFunction
+        let subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency, txFunction, createSubCasesFunction)
         subCaseFunctionParams.successCount = successCount
         subCaseFunctionParams.failCount = failCount
-        subCaseFunctionParams.createSubCasesFunction = createSubCasesFunction
         return subCaseFunctionParams
     },
-
-    //to compare balance of account1 and account2, then decide send from account1 to account2, or from account2 to account1.
-    //normally, should send from bigger balance to smaller balance
-    createSubCases: async function(server, account1, account2, currency, txFunction, txCount, moreActionsFunction){
-        let symbol
-        let balance1
-        let balance2
-
-        let isSwt = currency.symbol == 'swt'
-        if(isSwt){
-            symbol = null
-            balance1 = parseInt(await server.getBalance(server, account1.address, symbol))
-            balance2 = parseInt(await server.getBalance(server, account2.address, symbol))
-        }else{
-            symbol = currency.symbol
-            let balanceResult = await server.getBalance(server, account1.address, symbol)
-            balance1 = parseInt(balanceResult.value)
-            balanceResult = await server.getBalance(server, account2.address, symbol)
-            balance2 = parseInt(balanceResult.value)
-        }
-
-        let subCases = []
-        if(balance1 < 100 && balance2 < 100){
-            expect('Accounts balance is not enough!').to.be.not.ok
-        }
-        else{
-            let sender = balance1 >= balance2 ? account1 : account2
-            let receiver = balance1 >= balance2 ? account2 : account1
-            let balance = balance1 >= balance2 ? balance1 : balance2
-
-            let value
-            let amount = 1
-            let fee = 0.00001
-            let restBalance
-            if(isSwt){
-                value = amount
-                restBalance = balance - (amount + fee) * txCount
-            }else{
-                value = {}
-                value.amount = amount
-                value.symbol = currency.symbol
-                value.issuer = currency.issuer
-                restBalance = balance - amount * txCount
-            }
-
-            //todo need split every sub case out!!!  one sub case, one position, with special sequence.
-            subCases.push(framework.createSubCase(sender.address, sender.secret, receiver.address,
-                value, fee, null, txFunction, txCount, txCount))
-
-            if(moreActionsFunction){
-                moreActionsFunction(subCases, sender, receiver, currency, balance, restBalance, txFunction)
-            }
-        }
-        return subCases
-    },
-
-    createTestCase: function(server, title, executeFunction, checkFunction, caseRestrictedLevel, subCaseFunctionParams){
-        let testCase = framework.createTestCase(title, server, null, '', null,
-            executeFunction, checkFunction, null, caseRestrictedLevel, [serviceType.newChain])
-
-        testCase.otherParams = {}
-        testCase.otherParams.subCaseFunctionParamsList = []
-        testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
-        return testCase
-    },
-    //endregion
 
     executeForSendRawTxs: async function(testCase){
         let failSignedTx = '1200002280000000240000099761400000000000000168400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201b28ce06c536141010a0b3819cff70f0687bc8d8087506eef4405cb7b86ee2510220319930cc252a1cc42550ea854b1bec81f0a22ac45dfd22b4c85f8e4387ca84488114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1'
@@ -228,12 +150,14 @@ module.exports = tcsSendRawTx = {
         await framework.executeSubCases(testCase)
 
         let signedTxs = []
+        //create success raw tx
         for(let i = 0; i < testCase.otherParams.subCases.length; i++){
             let subCase = testCase.otherParams.subCases[i]
             for(let j = 0; j < (subCase.results ? subCase.results.length : 0); j++){
                 signedTxs.push(testCase.otherParams.subCases[i].results[j].result[0])
             }
         }
+        //create fail raw tx
         for (let i = 0; i < testCase.otherParams.subCaseFunctionParamsList[0].failCount; i++){
             signedTxs.push(failSignedTx)
             failSignedTx = failSignedTx + '1'
@@ -274,6 +198,5 @@ module.exports = tcsSendRawTx = {
             }
         }
     },
-
 
 }

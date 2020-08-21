@@ -914,6 +914,17 @@ module.exports = framework = {
 
     //region execute and check for batch sub cases
 
+    createSubCasesParams: function(server, account1, account2, currency, txFunction, createSubCasesFunction){
+        let subCaseFunctionParams = {}
+        subCaseFunctionParams.server = server
+        subCaseFunctionParams.account1 = account1
+        subCaseFunctionParams.account2 = account2
+        subCaseFunctionParams.currency = currency
+        subCaseFunctionParams.txFunction = txFunction
+        subCaseFunctionParams.createSubCasesFunction = createSubCasesFunction
+        return subCaseFunctionParams
+    },
+
     createSubCase: function(from, secret, to, value, fee, memos, txFunctionName, count, shouldSuccessCount){
         let subCase = {}
         if(from != null) subCase.from = from
@@ -938,7 +949,73 @@ module.exports = framework = {
         return subCase
     },
 
+    //to compare balance of account1 and account2, then decide send from account1 to account2, or from account2 to account1.
+    //normally, should send from bigger balance to smaller balance
+    createSubCases: async function(server, account1, account2, currency, txFunction, txCount, moreActionsFunction){
+        let subCases = []
+        let symbol
+        let balance1
+        let balance2
+
+        let isSwt = currency.symbol == 'swt'
+        if(isSwt){
+            symbol = null
+            balance1 = parseInt(await server.getBalance(server, account1.address, symbol))
+            balance2 = parseInt(await server.getBalance(server, account2.address, symbol))
+        }else{
+            symbol = currency.symbol
+            let balanceResult = await server.getBalance(server, account1.address, symbol)
+            balance1 = parseInt(balanceResult.value)
+            balanceResult = await server.getBalance(server, account2.address, symbol)
+            balance2 = parseInt(balanceResult.value)
+        }
+
+        if(balance1 < 100 && balance2 < 100){
+            expect('Accounts balance is not enough!').to.be.not.ok
+        }
+        else{
+            let sender = balance1 >= balance2 ? account1 : account2
+            let receiver = balance1 >= balance2 ? account2 : account1
+            let balance = balance1 >= balance2 ? balance1 : balance2
+
+            let value
+            let amount = 1
+            let fee = 0.00001
+            let restBalance
+            if(isSwt){
+                value = amount
+                restBalance = balance - (amount + fee) * txCount
+            }else{
+                value = {}
+                value.amount = amount
+                value.symbol = currency.symbol
+                value.issuer = currency.issuer
+                restBalance = balance - amount * txCount
+            }
+
+            //todo need split every sub case out!!!  one sub case, one position, with special sequence.
+            subCases.push(framework.createSubCase(sender.address, sender.secret, receiver.address,
+                value, fee, null, txFunction, txCount, txCount))
+
+            if(moreActionsFunction){
+                moreActionsFunction(subCases, sender, receiver, currency, balance, restBalance, txFunction)
+            }
+        }
+        return subCases
+    },
+
     //region normal sub cases
+
+    createTestCaseForSubCases: function(server, title, executeFunction, checkFunction, caseRestrictedLevel, subCaseFunctionParams){
+        let testCase = framework.createTestCase(title, server, null, '', null,
+            executeFunction, checkFunction, null, caseRestrictedLevel, [serviceType.newChain])
+
+        testCase.otherParams = {}
+        testCase.otherParams.executeBothSignAndSend = true
+        testCase.otherParams.subCaseFunctionParamsList = []
+        testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
+        return testCase
+    },
 
     executeSubCases: function(testCase){
         testCase.hasExecuted = true
@@ -1222,10 +1299,6 @@ module.exports = framework = {
 
     },
     //endregion
-
-
-
-
 
     //endregion
 
