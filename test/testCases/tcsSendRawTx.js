@@ -137,7 +137,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // title = '0020\t无效的单个交易数据：错误的rawTx格式2'
+        // title = '0020\t无效的单个交易数据：错误的rawTx格式2'  //todo need add
         // {
         //     successCount = 0
         //     failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_2, 1)

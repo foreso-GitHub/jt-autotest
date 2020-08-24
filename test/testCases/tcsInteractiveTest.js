@@ -31,6 +31,7 @@ module.exports = tcsInteractiveTest = {
         let account2= addresses.receiver3
         let account3= addresses.sender2
         let account4= addresses.receiver2
+        let allServers = framework.activeAllServers()
 
         let currency = {symbol:'swt', issuer:''}
         let txFunction = consts.rpcFunctions.sendTx
@@ -38,6 +39,8 @@ module.exports = tcsInteractiveTest = {
         let testCase
         let testCases = []
         let subCaseFunctionParams
+
+        //NOTICE:0010到0080case会给receiver充值。如果不执行，0090开始的case可能因为receiver中的余额不足而失败。
 
         describe(describeTitle, async function () {
 
@@ -74,6 +77,17 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
+            title = '0031\t同时向不同节点发起多个底层币发送交易_余额不够（通过jt_sendTransaction测试）'
+            {
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
             title = '0040\t同时发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）'
             {
                 currency = {symbol:'swt', issuer:''}
@@ -81,6 +95,17 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0041\t同时向不同节点发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）\n'
+            {
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
                 framework.addTestCase(testCases, testCase)
             }
 
@@ -121,6 +146,17 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
+            title = '0071\t同时向不同节点发起多个代币发送交易_余额不够（通过jt_sendTransaction测试）\n'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
             title = '0080\t同时发起多个代币发送交易_余额不够（通过jt_signTransaction测试）'
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
@@ -131,6 +167,17 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
+            title = '0081\t同时向不同节点发起多个代币发送交易_余额不够（通过jt_signTransaction测试）\n'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
             framework.testTestCases(server, '发送底层币/代币的交互性测试：代币', testCases)
 
             //endregion
@@ -138,7 +185,41 @@ module.exports = tcsInteractiveTest = {
             //region mix
             testCases = []
 
-            title = '0090\t同时发起多个底层币、代币发送交易（通过jt_sendTransaction测试）'
+            title = '0090\t同时发起多个底层币、代币发送交易_余额足够（通过jt_sendTransaction测试）'
+            {
+                //swt first
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+
+                //then token
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForEnough)
+                testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0091\t同时发起多个底层币、代币发送交易_余额足够（通过jt_signTransaction测试）'
+            {
+                //swt first
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+
+                //then token
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForEnough)
+                testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0100\t同时发起多个底层币、代币发送交易_余额不够（通过jt_sendTransaction测试）'
             {
                 //swt first
                 currency = {symbol:'swt', issuer:''}
@@ -155,7 +236,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
-            title = '0100\t同时发起多个底层币、代币发送交易（通过jt_signTransaction测试）'
+            title = '0101\t同时发起多个底层币、代币发送交易_余额不够（通过jt_signTransaction测试）'
             {
                 //swt first
                 currency = {symbol:'swt', issuer:''}
@@ -172,6 +253,46 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
+            title = '0102\t同时向不同节点发起多个底层币、代币发送交易_余额不够（通过jt_sendTransaction测试）'
+            {
+                //swt first
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+
+                //then token
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0103\t同时向不同节点发起多个底层币、代币发送交易_余额不够（通过jt_signTransaction测试）'
+            {
+                //swt first
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+
+                //then token
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
+                testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
+            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币混合', testCases)
+
+            testCases = []
+
             title = '0110\t同时发送、接收底层币测试（通过jt_sendTransaction测试）'
             {
                 currency = {symbol:'swt', issuer:''}
@@ -179,6 +300,17 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0111\t同时向不同节点发送、接收底层币测试（通过jt_sendTransaction测试）'
+            {
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesFor0110)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
                 framework.addTestCase(testCases, testCase)
             }
 
@@ -192,6 +324,21 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
+            title = '0121\t同时向不同节点发送、接收底层币测试（通过jt_signTransaction测试）'
+            {
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesFor0110)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
+            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币混合', testCases)
+
+            testCases = []
+
             title = '0130\t同时发送、接收代币测试（通过jt_sendTransaction测试）'
             {
                 currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
@@ -199,6 +346,17 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0131\t同时向不同节点发送、接收代币测试（通过jt_sendTransaction测试）'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesFor0110)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
                 framework.addTestCase(testCases, testCase)
             }
 
@@ -212,6 +370,21 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
+            title = '0141\t同时向不同节点发送、接收代币测试（通过jt_signTransaction测试）'
+            {
+                currency = {symbol:'CNYT', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesFor0110)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
+            framework.testTestCases(server, '发送底层币/代币的交互性测试：代币混合', testCases)
+
+            testCases = []
+
             title = '0150\t同时发送底层币、代币测试（通过jt_sendTransaction测试）'
             {
                 currency = {symbol:'swt', issuer:''}
@@ -219,6 +392,17 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                framework.addTestCase(testCases, testCase)
+            }
+
+            title = '0151\t同时向不同节点发送底层币、代币测试（通过jt_sendTransaction测试）'
+            {
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.sendTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesFor0150)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
                 framework.addTestCase(testCases, testCase)
             }
 
@@ -232,7 +416,18 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestCase(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：混合', testCases)
+            title = '0161\t同时向不同节点发送底层币、代币测试（通过jt_signTransaction测试）'
+            {
+                currency = {symbol:'swt', issuer:''}
+                txFunction = consts.rpcFunctions.signTx
+                subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
+                    txFunction, tcsInteractiveTest.createSubCasesFor0150)
+                testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
+                testCase.otherParams.servers = allServers
+                framework.addTestCase(testCases, testCase)
+            }
+
+            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币同时混合', testCases)
             //endregion
 
         })
@@ -252,7 +447,6 @@ module.exports = tcsInteractiveTest = {
     executeTest: async function(testCase){
         let subCaseFunctionParamsList = testCase.otherParams.subCaseFunctionParamsList
         let totalCount = 0
-        testCase.otherParams.servers = [testCase.server]
         testCase.otherParams.subCases = []
         for(let i = 0; i < subCaseFunctionParamsList.length; i++){
             let subCaseFunctionParams = subCaseFunctionParamsList[i]
@@ -301,16 +495,13 @@ module.exports = tcsInteractiveTest = {
     },
 
     moreActionsFunctionFor0110: function(subCases, sender, receiver, currency, balance, restBalance, txFunction){
-
         tcsInteractiveTest.moreActionsFunctionFor0030(subCases, sender, receiver, currency, balance, restBalance, txFunction)
 
-        let amount = 15
+        let amount = 2
         let value = tcsInteractiveTest.convertAmount2Value(amount, currency)
         let fee = _FEE
         subCases.push(framework.createSubCase(receiver.address, receiver.secret, sender.address,
             value, fee, null, txFunction, 1, 1))
-
-        // tcsInteractiveTest.moreActionsFunctionFor0030(subCases, sender, receiver, currency, balance, restBalance, txFunction)
     },
 
     //endregion
@@ -323,7 +514,6 @@ module.exports = tcsInteractiveTest = {
     },
 
     moreActionsFunctionFor0150: function(subCases, sender, receiver, currency, balance, restBalance, txFunction){
-
         let amount = restBalance + _FEE
         expect(amount < balance).to.be.ok
         let value = tcsInteractiveTest.convertAmount2Value(amount, currency)
@@ -336,8 +526,6 @@ module.exports = tcsInteractiveTest = {
         fee = _FEE
         subCases.push(framework.createSubCase(receiver.address, receiver.secret, sender.address,
             value, fee, null, txFunction, 1, 1))
-
-        // tcsInteractiveTest.moreActionsFunctionFor0030(subCases, sender, receiver, currency, balance, restBalance, txFunction)
     },
 
     //endregion

@@ -978,9 +978,10 @@ module.exports = framework = {
             let sender = balance1 >= balance2 ? account1 : account2
             let receiver = balance1 >= balance2 ? account2 : account1
             let balance = balance1 >= balance2 ? balance1 : balance2
+            // let receiverBalance = balance1 >= balance2 ? balance1 : balance2
 
             let value
-            let amount = 1
+            let amount = 3
             let fee = 0.00001
             let restBalance
             if(isSwt){
@@ -1015,6 +1016,7 @@ module.exports = framework = {
         testCase.otherParams.executeBothSignAndSend = true
         testCase.otherParams.subCaseFunctionParamsList = []
         testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
+        testCase.otherParams.servers = [testCase.server]
         return testCase
     },
 
