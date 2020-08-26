@@ -134,6 +134,8 @@ describe('Jingtum测试', function() {
                 tcsPressureSendTx.testForFastPerformance(server,
                     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',1, 'WithoutResponse')
 
+                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 12)
+
                 // endregion
 
                 //region special
@@ -150,6 +152,8 @@ describe('Jingtum测试', function() {
 
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 12)
+
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
@@ -157,12 +161,12 @@ describe('Jingtum测试', function() {
                 //region performance test
 
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-                //
+
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', 1)
-                //
+
                 // tcsPressureSendTx.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',1, 'WithoutResponse')
+                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',2, 'WithoutResponse')
 
                 // endregion
 

@@ -332,22 +332,22 @@ module.exports = tcsSendRawTx = {
     //endregion
 
     //region performance test by sign and sendRaw
-    testForPerformanceTestBySendRaw: function(server, describeTitle){
+    testForPerformanceTestBySendRaw: function(server, describeTitle, testCountOfPerRound, testRound){
         let title
         let testCase
         let testCases = []
         let subCaseFunctionParams
         let caseRestrictedLevel = restrictedLevel.L2
-        // let allServers = framework.activeAllServers()
+        let allServers = framework.activeAllServers()
+        let serverCount = allServers.length
 
         let addresses = server.mode.addresses
         let account1= addresses.sender3
         let account2= addresses.receiver3
         let currency = {symbol:'swt', issuer:''}
         let txFunction = consts.rpcFunctions.signTx
-        let successCount = 100
+        let successCount = testCountOfPerRound
         let failRawTxs = []
-        let testRound = 120
 
         title = '1000\t性能测试，sendRaw，多个有效交易数据：' + successCount
         {
@@ -357,12 +357,14 @@ module.exports = tcsSendRawTx = {
             let checkFunc = function(testCase){}
             // let checkFunc = tcsSendRawTx.checkForSendRawTxs
             for(let i = 0; i < testRound; i++){
-                testCase = framework.createTestCaseForSubCases(server, title, executeFunc, checkFunc,
+                let index = i % serverCount
+                let runServer = allServers[index]
+                testCase = framework.createTestCaseForSubCases(runServer, title, executeFunc, checkFunc,
                     caseRestrictedLevel, subCaseFunctionParams)
                 // testCase.otherParams.servers = allServers
                 testCases = []
                 framework.addTestCase(testCases, testCase)
-                framework.testTestCases(server, describeTitle + i, testCases)
+                framework.testTestCases(runServer, describeTitle + "_" + (i + 1), testCases)
             }
         }
 
