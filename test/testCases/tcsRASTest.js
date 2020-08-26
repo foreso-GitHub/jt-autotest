@@ -16,9 +16,9 @@ const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLeve
 const consts = require('../framework/lib/base/consts')
 let utility = require('../framework/testUtility')
 //endregion
-const nodeMonitor = require('../utility/monitor')
+const nodeMonitor = require('../utility/monitor/monitor')
 let monitor = new nodeMonitor()
-const { sshCmd, createNode, createServer} = require('../utility/sshCmd')
+const { sshCmd, createNode, createServer} = require('../utility/monitor/sshCmd')
 const { jtNodes, } = require("../config/config")
 //endregion
 

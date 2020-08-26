@@ -5,8 +5,8 @@ let logger = log4js.getLogger('default')
 const nodeMonitor = require('./monitor')
 let monitor = new nodeMonitor()
 const { sshCmd, createNode, createServer} = require('./sshCmd')
-let utility = require("../framework/testUtility.js")
-const { jtNodes, } = require("../config/config")
+let utility = require("../../framework/testUtility.js")
+const { jtNodes, } = require("../../config/config")
 //endregion
 
 //region set nodes

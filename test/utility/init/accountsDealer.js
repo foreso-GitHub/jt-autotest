@@ -3,11 +3,11 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const fs = require('fs')
-const { commonPaths } = require("../config/basicConfig")
-const consts = require("../framework/lib/base/consts.js")
+const { commonPaths } = require("../../config/basicConfig")
+const consts = require("../../framework/lib/base/consts.js")
 const Charger = require('./charger')
-let { modeAccounts } = require("../testData/accounts")
-const utility = require("../framework/testUtility.js")
+let { modeAccounts } = require("../../testData/accounts")
+const utility = require("../../framework/testUtility.js")
 //endregion
 
 const ACCOUNT_COUNT = 100

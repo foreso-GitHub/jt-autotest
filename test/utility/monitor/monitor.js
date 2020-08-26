@@ -2,7 +2,7 @@
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-let rpc = require('../framework/lib/rpc/rpcInterface.js')
+let rpc = require('../../framework/lib/rpc/rpcInterface.js')
 //endregion
 
 function nodeMonitor(){

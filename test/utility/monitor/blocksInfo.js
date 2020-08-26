@@ -3,8 +3,8 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 // let utility = require("../framework/testUtility")
-const { modes, } = require("../config/config")
-const framekwork = require('../framework/framework')
+const { modes, } = require("../../config/config")
+const framekwork = require('../../framework/framework')
 //endregion
 
 getAllTxBlock()
