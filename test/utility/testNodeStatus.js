@@ -31,6 +31,8 @@ const cmd_stop_jt = 'sudo /root/stop.sh'
 // stopJt(jt_node_al)
 
 // resetNodes()
+// stopNodes()
+// startNodes()
 testMonitor()
 
 
@@ -79,6 +81,20 @@ async function resetNodes(){
         startJt(jtNodes[i])
     }
 }
+
+function stopNodes(){
+    for(let i = 0; i < jtNodes.length; i++){
+        stopJt(jtNodes[i])
+    }
+}
+
+function startNodes(){
+    for(let i = 0; i < jtNodes.length; i++){
+        startJt(jtNodes[i])
+    }
+}
+
+
 
 function resetNode(name){
     let node = getNode(name, jtNodes)

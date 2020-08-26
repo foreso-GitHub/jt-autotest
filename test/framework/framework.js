@@ -876,6 +876,20 @@ module.exports = framework = {
         })
     },
 
+    getSequenceByChain: function(server, from){
+        return new Promise(function (resolve){
+            let key = from
+            Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
+                // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
+                let sequence = Number(accountInfo.result.Sequence)
+                framework.setSequence(server.getName(), from, sequence)
+                resolve(sequence)
+            }).catch(function (error){
+                logger.debug("Error!!! " + error)
+            })
+        })
+    },
+
     setSequence: function(serverName, from, sequence){
         // let key = from + '@' + serverName
         let key = from

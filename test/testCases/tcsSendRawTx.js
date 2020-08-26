@@ -39,6 +39,8 @@ let _FailRawTx_WrongFormat_4 = {tx: null,
 // _FailRawTxs.push()
 
 module.exports = tcsSendRawTx = {
+
+    //region normal send raw tx
     testForSendRawTx: function(server, describeTitle){
         let title
         let testCase
@@ -197,7 +199,7 @@ module.exports = tcsSendRawTx = {
         title = '0050\t多个交易数据，部分有效部分无效\n'
         {
             successCount = 10
-            failRawTxs = []
+            failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_UsedSequence, 10)
             subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
@@ -327,5 +329,58 @@ module.exports = tcsSendRawTx = {
             }
         }
     },
+    //endregion
+
+    //region performance test by sign and sendRaw
+    testForPerformanceTestBySendRaw: function(server, describeTitle){
+        let title
+        let testCase
+        let testCases = []
+        let subCaseFunctionParams
+        let caseRestrictedLevel = restrictedLevel.L2
+        // let allServers = framework.activeAllServers()
+
+        let addresses = server.mode.addresses
+        let account1= addresses.sender3
+        let account2= addresses.receiver3
+        let currency = {symbol:'swt', issuer:''}
+        let txFunction = consts.rpcFunctions.signTx
+        let successCount = 100
+        let failRawTxs = []
+        let testRound = 120
+
+        title = '1000\t性能测试，sendRaw，多个有效交易数据：' + successCount
+        {
+            subCaseFunctionParams = tcsSendRawTx.createSubCasesParams(server, account1, account2, currency,
+                txFunction, successCount, failRawTxs, framework.createSubCases)
+            let executeFunc = tcsSendRawTx.executeForPerformanceBySendRawTxs
+            let checkFunc = function(testCase){}
+            // let checkFunc = tcsSendRawTx.checkForSendRawTxs
+            for(let i = 0; i < testRound; i++){
+                testCase = framework.createTestCaseForSubCases(server, title, executeFunc, checkFunc,
+                    caseRestrictedLevel, subCaseFunctionParams)
+                // testCase.otherParams.servers = allServers
+                testCases = []
+                framework.addTestCase(testCases, testCase)
+                framework.testTestCases(server, describeTitle + i, testCases)
+            }
+        }
+
+        // framework.testTestCases(server, describeTitle, testCases)
+    },
+
+    executeForPerformanceBySendRawTxs: async function(testCase){
+        await tcsSendRawTx.executeForSendRawTxs(testCase)
+        await utility.timeout(5000)
+        //reset sequence of from account
+        for(let i = 0; i < testCase.otherParams.subCases.length; i++){
+            let from = testCase.otherParams.subCases[i].from
+            let sequence = await framework.getSequenceByChain(testCase.server, from)
+            framework.setSequence(testCase.server.getName(), from, sequence)
+            logger.debug("===Current chain sequence: " + sequence)
+        }
+    },
+
+    //endregion
 
 }

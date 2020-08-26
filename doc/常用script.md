@@ -1,0 +1,4 @@
+journalctl -f -u jt
+
+
+
