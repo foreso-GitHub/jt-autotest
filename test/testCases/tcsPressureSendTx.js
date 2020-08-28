@@ -668,7 +668,7 @@ module.exports = tcsPressureSendTx = {
                         totalSuccessCount++
                     }
 
-                    logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: ' + result)
+                    logger.info('[' + executeCount.toString() + '/' + totalSuccessCount + '] - [' + accountParam.from + ']: ' + result)
 
                     if(executeCount == totalCount){
                         testCase.otherParams.executeCount = executeCount

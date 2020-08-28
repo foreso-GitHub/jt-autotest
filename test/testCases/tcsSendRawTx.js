@@ -361,7 +361,6 @@ module.exports = tcsSendRawTx = {
                 let runServer = allServers[index]
                 testCase = framework.createTestCaseForSubCases(runServer, title, executeFunc, checkFunc,
                     caseRestrictedLevel, subCaseFunctionParams)
-                // testCase.otherParams.servers = allServers
                 testCases = []
                 framework.addTestCase(testCases, testCase)
                 framework.testTestCases(runServer, describeTitle + "_" + (i + 1), testCases)
@@ -373,13 +372,13 @@ module.exports = tcsSendRawTx = {
 
     executeForPerformanceBySendRawTxs: async function(testCase){
         await tcsSendRawTx.executeForSendRawTxs(testCase)
-        await utility.timeout(5000)
+        await utility.timeout(6000)
         //reset sequence of from account
         for(let i = 0; i < testCase.otherParams.subCases.length; i++){
             let from = testCase.otherParams.subCases[i].from
             let sequence = await framework.getSequenceByChain(testCase.server, from)
             framework.setSequence(testCase.server.getName(), from, sequence)
-            logger.debug("===Current chain sequence: " + sequence)
+            logger.info("===Current chain sequence: " + sequence)
         }
     },
 

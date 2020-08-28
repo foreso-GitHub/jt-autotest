@@ -724,48 +724,48 @@ module.exports = framework = {
 
     startWork: function(){
         //region ===record start time===
-        logger.debug("======Start testing!======")
+        logger.info("======Start testing!======")
         START = new Date()
         END = new Date()
-        logger.debug("Start time: " + START.toTimeString())
+        logger.info("Start time: " + START.toTimeString())
         //endregion
     },
 
     closeTest: function(testCase){
         //region ===record start time===
-        logger.debug("======End testing!======")
+        logger.info("======End testing!======")
         END = new Date()
-        logger.debug("Start time: " + START.toTimeString())
-        logger.debug("End time: " + END.toTimeString())
+        logger.info("Start time: " + START.toTimeString())
+        logger.info("End time: " + END.toTimeString())
         let span = END - START
         let hour = Math.floor(span / 1000 / 60 / 60)
         span = span - hour * 1000 * 60 * 60
         let minute = Math.floor(span / 1000 / 60 )
         span = span - minute * 1000 * 60
         let second = Math.floor(span / 1000  )
-        logger.debug("Consume time: " + (END - START) / 1000 + 's, equals to ' + hour + ':' + minute + ':' + second + '!')
-        logger.debug('Closing server ...')
+        logger.info("Consume time: " + (END - START) / 1000 + 's, equals to ' + hour + ':' + minute + ':' + second + '!')
+        logger.info('Closing server ...')
         testCase.server.close()
         //endregion
     },
     //endregion
 
     printTestCaseInfo: function(testCase){
-        logger.debug('check title: ' + testCase.title)
-        logger.debug('function: ' + testCase.txFunctionName)
-        logger.debug('paraments: ' + JSON.stringify(testCase.txParams))
-        logger.debug('supportedServices: ' + JSON.stringify(testCase.supportedServices))
-        logger.debug('supportedInterfaces: ' + JSON.stringify(testCase.supportedInterfaces))
-        logger.debug('restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
-        logger.debug('hasExecuted: ' + testCase.hasExecuted)
+        logger.debug('---check title: ' + testCase.title)      //important logger
+        logger.debug('---function: ' + testCase.txFunctionName)
+        logger.debug('---paraments: ' + JSON.stringify(testCase.txParams))
+        logger.debug('---supportedServices: ' + JSON.stringify(testCase.supportedServices))
+        logger.debug('---supportedInterfaces: ' + JSON.stringify(testCase.supportedInterfaces))
+        logger.debug('---restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
+        logger.debug('---hasExecuted: ' + testCase.hasExecuted)
         for(let i = 0; i < testCase.actualResult.length; i++){
-            logger.debug('result[' +i + ']: ' + JSON.stringify(testCase.actualResult[i]))    }
+            logger.debug('---result[' +i + ']: ' + JSON.stringify(testCase.actualResult[i]))    }
         if(testCase.subTestCases != null && testCase.subTestCases.length > 0) {
-            logger.debug('subTestCases result: ' + JSON.stringify(testCase.subTestCases[0].actualResult[0]))
+            logger.debug('---subTestCases result: ' + JSON.stringify(testCase.subTestCases[0].actualResult[0]))
         }
         if(testCase.checks != null && testCase.checks.length > 0) {
             for(let i = 0; i < testCase.checks.length; i++){
-                logger.debug('check[' + i + ']: ' + JSON.stringify(testCase.checks[i]))
+                logger.debug('---check[' + i + ']: ' + JSON.stringify(testCase.checks[i]))
             }
         }
     },
@@ -860,7 +860,7 @@ module.exports = framework = {
             // let key = from + '@' + server.getName()
             let key = from
             if(_SequenceMap.has(key)){
-                logger.debug("===sequence   _SequenceMap:" + _SequenceMap.get(key))
+                logger.debug("===getSequence:" + _SequenceMap.get(key))
                 resolve(_SequenceMap.get(key))
             }
             else{
@@ -1075,7 +1075,7 @@ module.exports = framework = {
                     for(let i = 0; i < count; i++){
                         let index = i % serverCount
                         server = servers[index]
-                        logger.debug('sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
+                        logger.info('---Sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)  //important logger
                         let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                             accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                         let result = await server.getResponse(server, txFunctionName, params)
@@ -1106,8 +1106,7 @@ module.exports = framework = {
                             totalFailCount++
                         }
 
-
-                        logger.info(executeCount.toString() + '/' + totalSuccessCount + ' - [' + accountParam.from + ']: '
+                        logger.info('[' + executeCount.toString() + '/' + totalSuccessCount + '] - [' + accountParam.from + ']: '
                             + JSON.stringify(result))
 
                         if(executeCount == totalCount){

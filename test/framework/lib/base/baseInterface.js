@@ -225,8 +225,8 @@ function baseInterface() {
 
     //region common methods
     baseInterface.prototype.getResponse = function (server, methodName, params) {
-        logger.debug('Trying to invoke ' + methodName + '!')
-        logger.debug('Params: ' + JSON.stringify(params))
+        logger.debug('---Trying to invoke ' + methodName + '!')     //important logger
+        // logger.debug('---Params: ' + JSON.stringify(params))   //important logger
     }
 
     //convert value, because in old chain and new chain, value is different.  in old chain, value decimals is 6. in new chain, value must be integer.

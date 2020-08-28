@@ -83,7 +83,7 @@ function rpcServer() {
         data.id = this.id++
         data.method = method
         data.params = params
-        logger.debug(JSON.stringify(data))
+        logger.debug('---Params: ' + JSON.stringify(data))  //important logger
         return this.sendRequest(url, requestMethod, parserText, data, username, password)
     }
     // endregion

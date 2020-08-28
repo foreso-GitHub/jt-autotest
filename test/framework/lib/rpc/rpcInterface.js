@@ -43,7 +43,7 @@ function rpcInterface() {
         return new Promise((resolve, reject) => {
             this.server.RPC_POST(this.url, methodName, params).then(function(data){
                 if (data != null && JSON.stringify(data.result) !== '{}'){
-                    logger.debug('result: ', data)
+                    logger.debug('---Result: ', data)  //important logger
                     resolve(data)
                 }
                 else{
