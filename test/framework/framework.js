@@ -737,13 +737,8 @@ module.exports = framework = {
         END = new Date()
         logger.info("Start time: " + START.toTimeString())
         logger.info("End time: " + END.toTimeString())
-        let span = END - START
-        let hour = Math.floor(span / 1000 / 60 / 60)
-        span = span - hour * 1000 * 60 * 60
-        let minute = Math.floor(span / 1000 / 60 )
-        span = span - minute * 1000 * 60
-        let second = Math.floor(span / 1000  )
-        logger.info("Consume time: " + (END - START) / 1000 + 's, equals to ' + hour + ':' + minute + ':' + second + '!')
+        let time = utility.duration2Time(START, END)
+        logger.info("Consume time: " + (END - START) / 1000 + 's, equals to ' + utility.printTime(time) + '!')
         logger.info('Closing server ...')
         testCase.server.close()
         //endregion
@@ -1075,7 +1070,7 @@ module.exports = framework = {
                     for(let i = 0; i < count; i++){
                         let index = i % serverCount
                         server = servers[index]
-                        logger.info('---Sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)  //important logger
+                        logger.debug('---Sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)  //important logger
                         let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                             accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                         let result = await server.getResponse(server, txFunctionName, params)
@@ -1106,8 +1101,8 @@ module.exports = framework = {
                             totalFailCount++
                         }
 
-                        logger.info('[' + executeCount.toString() + '/' + totalSuccessCount + '] - [' + accountParam.from + ']: '
-                            + JSON.stringify(result))
+                        // logger.info('[' + executeCount.toString() + '/' + totalSuccessCount + '] - [' + accountParam.from + ']: '
+                        //     + JSON.stringify(result))
 
                         if(executeCount == totalCount){
                             testCase.otherParams.executeCount = executeCount
@@ -1203,8 +1198,8 @@ module.exports = framework = {
                 for(let i = 0; i < count; i++){
                     let index = i % serverCount
                     server = servers[index]
-                    logger.debug((txNumber++).toString() + '/' + totalCount
-                        + '. sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)
+                    logger.debug('---[' + (txNumber++).toString() + '/' + totalCount
+                        + ']. sent by server: ' + server.mode.name + '@' + server.mode.initParams.url) //important logger
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = server.getResponse(server, txFunctionName, params)

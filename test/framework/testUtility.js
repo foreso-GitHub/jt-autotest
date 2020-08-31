@@ -125,6 +125,35 @@ module.exports = testUtility = {
     },
     //endregion
 
+    //region load/save json file
+    loadJsonFile: function(filePath, fileName, ){
+        return new Promise((resolve, reject) => {
+            fs.readFile( filePath + fileName, 'binary', function (err, data) {
+                if (err) {
+                    throw err
+                }
+                let reportJson = JSON.parse(data)
+                resolve(reportJson)
+            })
+        })
+    },
+
+    saveJsonFile: function(filePath, fileName, jsonObject){
+        return new Promise(async (resolve, reject) =>{
+            let destFilePath = filePath + fileName + '_' + (new Date()).toDateString() + '_' + (new Date()).getTime() + '.json'
+            let fileString = JSON.stringify(jsonObject)
+            fs.writeFile(destFilePath, fileString, function (err) {
+                if (err) {
+                    throw err
+                } else {
+                    logger.info('Json saved: ' + destFilePath)
+                    resolve(fileString)
+                }
+            })
+        })
+    },
+    //endregion
+
     //region send tx
     sendTx: async function (server, params, waitSpan){
         return new Promise((resolve, reject) => {
@@ -315,6 +344,30 @@ module.exports = testUtility = {
         if(!response)
             return false
         return !response.status || response.status == responseStatus.success
+    },
+    //endregion
+
+    //region duration to time
+    duration2Time: function(start, end){
+        let span = end - start
+        return testUtility.span2Time(span)
+    },
+
+    span2Time: function(span){
+        let time = {}
+        let hour = Math.floor(span / 1000 / 60 / 60)
+        span = span - hour * 1000 * 60 * 60
+        let minute = Math.floor(span / 1000 / 60 )
+        span = span - minute * 1000 * 60
+        let second = Math.floor(span / 1000 )
+        time.hour = hour
+        time.minute = minute
+        time.second = second
+        return time
+    },
+
+    printTime: function(time){
+      return time.hour + ':' + time.minute + ':' + time.second
     },
     //endregion
 }
