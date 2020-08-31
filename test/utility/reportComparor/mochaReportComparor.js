@@ -92,6 +92,9 @@ const utility = require('../../framework/testUtility')
 //endregion
 
 module.exports = mochaReportComparor = {
+
+    //region stats
+
     compareStats: function(stats1, stats2){
         let result = {}
         result.statList = {}
@@ -169,6 +172,35 @@ module.exports = mochaReportComparor = {
 
         return result
     },
+
+    //endregion
+
+    //region tests
+
+    collectTests: function(results){
+        let testList = []
+        testList = mochaReportComparor.goThroughSuites(results, testList)
+        // logger.debug('===testList: ' + JSON.stringify(testList.length))
+        return testList
+    },
+
+    goThroughSuites: function(suites, testList){
+        for(let i = 0; i < suites.length; i++){
+            let suite = suites[i]
+            testList = mochaReportComparor.goThroughTests(suite.tests, testList)
+            testList = mochaReportComparor.goThroughSuites(suite.suites, testList)
+        }
+        return testList
+    },
+
+    goThroughTests: function(tests, testList){
+        testList = testList.concat(tests)
+        // logger.debug('===testList: ' + JSON.stringify(testList.length))
+        return testList
+    },
+
+    //region
+
 }
 
 

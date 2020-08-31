@@ -128,7 +128,7 @@ module.exports = testUtility = {
     //region load/save json file
     loadJsonFile: function(filePath, fileName, ){
         return new Promise((resolve, reject) => {
-            fs.readFile( filePath + fileName, 'binary', function (err, data) {
+            fs.readFile( filePath + fileName, 'utf8', function (err, data) {
                 if (err) {
                     throw err
                 }

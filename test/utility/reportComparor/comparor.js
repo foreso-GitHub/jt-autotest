@@ -17,6 +17,12 @@ async function test(){
     let statResult = reportComparor.compareStats(report1.stats, report2.stats)
 
     logger.debug(JSON.stringify(statResult.differences))
-    logger.debug(JSON.stringify(statResult.fullComparison))
+    // logger.debug(JSON.stringify(statResult.fullComparison))
+
+    let testList1 = reportComparor.collectTests(report1.results)
+    let testList2 = reportComparor.collectTests(report2.results)
+
+    logger.debug('===testList1: ' + JSON.stringify(testList1.length))
+    logger.debug('===testList2: ' + JSON.stringify(testList2.length))
 
 }
