@@ -92,7 +92,7 @@ module.exports = testUtility = {
     saveJsFile: function(moduleName, jsonObject, filePath){
         return new Promise(async (resolve, reject) =>{
             let destFilePath = commonPaths.test_data_backup_path
-                + moduleName + '_backup_' + (new Date()).toDateString() + '_' + (new Date()).getTime() + '.js'
+                + moduleName + '_backup_' + testUtility.getNowDateTimeString() + '.js'
             await testUtility.copyFile(filePath, destFilePath)  //backup
             let fileString = 'let ' + moduleName + ' = '
                 + JSON.stringify(jsonObject)
@@ -140,7 +140,7 @@ module.exports = testUtility = {
 
     saveJsonFile: function(filePath, fileName, jsonObject){
         return new Promise(async (resolve, reject) =>{
-            let destFilePath = filePath + fileName + '_' + (new Date()).toDateString() + '_' + (new Date()).getTime() + '.json'
+            let destFilePath = filePath + fileName + '_' + testUtility.getNowDateTimeString() + '.json'
             let fileString = JSON.stringify(jsonObject)
             fs.writeFile(destFilePath, fileString, function (err) {
                 if (err) {
@@ -280,6 +280,10 @@ module.exports = testUtility = {
         return result
     },
 
+    ifArrayHas2: function(array, item){
+        return testUtility.indexOf(array, item) != -1
+    },
+
     addItemInEmptyArray: function(item){
         let array = []
         array.push(item)
@@ -289,6 +293,35 @@ module.exports = testUtility = {
     addItemInArray: function(array, item){
         array.push(item)
         return array
+    },
+
+    indexOf: function(array, item){
+        let index = -1
+        for(let i = 0; i < array.length; i++){
+            if(array[i] == item){
+                index = i
+                break;
+            }
+        }
+        return index
+    },
+
+    remove: function(array, item){
+        let result = false
+        let index = testUtility.indexOf(array, item)
+        if(index != -1){
+            array.splice(index, 1)
+            result = true
+        }
+        return result
+    },
+
+    cloneArray: function(array){
+        let cloneArray = []
+        array.forEach((item) => {
+            cloneArray.push(item)
+        })
+        return cloneArray
     },
     //endregion
 
@@ -369,6 +402,19 @@ module.exports = testUtility = {
     printTime: function(time){
       return time.hour + ':' + time.minute + ':' + time.second
     },
+    //endregion
+
+    //region clone json
+    cloneJson: function(json) {
+        return JSON.parse(JSON.stringify(json));
+    },
+    //endregion
+
+    //region
+    getNowDateTimeString: function(){
+        let date = new Date()
+        return date.toDateString() + '_' + date.getTime()
+    }
     //endregion
 }
 

@@ -38,4 +38,12 @@ let restrictedLevel = {
     L5: 50, //higher
 }
 
-module.exports = { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, }
+let reportTestState = {
+    passed: 'passed',
+    failed: 'failed',
+    pending: 'pending',
+    hooked: 'hooked',
+    skipped: 'skipped',
+}
+
+module.exports = { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, reportTestState, }

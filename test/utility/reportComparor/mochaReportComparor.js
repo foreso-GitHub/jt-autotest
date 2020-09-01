@@ -3,6 +3,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const utility = require('../../framework/testUtility')
+const testState = require('../../framework/enums').reportTestState
 //endregion
 
 //region design
@@ -91,6 +92,8 @@ const utility = require('../../framework/testUtility')
 
 //endregion
 
+const CHANGE_SIGNAL = ' ==> '
+
 module.exports = mochaReportComparor = {
 
     //region stats
@@ -107,7 +110,6 @@ module.exports = mochaReportComparor = {
     },
 
     checkStats: function(stats1, stats2, ifOutputFull){
-        const CHANGE_SIGNAL = ' ==> '
         let result = {}
 
         if(ifOutputFull || stats1.suites != stats2.suites){
@@ -177,6 +179,7 @@ module.exports = mochaReportComparor = {
 
     //region tests
 
+    //region collect all tests in report
     collectTests: function(results){
         let testList = []
         testList = mochaReportComparor.goThroughSuites(results, testList)
@@ -199,7 +202,136 @@ module.exports = mochaReportComparor = {
         return testList
     },
 
-    //region
+    //endregion
+
+    //region compare tests in 2 reports
+
+    compareTests: function(testList1, testList2){
+        let result = {}
+        result.same = {}
+        mochaReportComparor.createClassByState(result.same)
+        result.differences = {}
+        result.differences.passed = {}
+        mochaReportComparor.createClassByState(result.differences.passed)
+        result.differences.notPassed = {}
+        mochaReportComparor.createClassByState(result.differences.notPassed)
+        result.differences.beRemoved = {}
+        mochaReportComparor.createClassByState(result.differences.beRemoved)
+        result.differences.beAdded = {}
+        mochaReportComparor.createClassByState(result.differences.beAdded)
+
+        let cloneTestList1 = utility.cloneArray(testList1)
+        let cloneTestList2 = utility.cloneArray(testList2)
+
+        for(let i = 0; i < testList1.length; i++){
+            let j = 0
+            let length = cloneTestList2.length
+            while(j < length){
+                let test1 = testList1[i]
+                let test2 = cloneTestList2[j]
+                if(test1.title === test2.title){
+                    if(mochaReportComparor.compareTest(test1, test2)){
+                        mochaReportComparor.createCompareResult(test1, test2, result.same)
+                    }else{
+
+                    }
+                    //existed in both list, now removed in clone lists.
+                    let r1 = testUtility.remove(cloneTestList1, test1)
+                    let r2 = testUtility.remove(cloneTestList2, test2)
+                    length = cloneTestList2.length
+                    break
+                }
+                j++
+            }
+
+            // for(let j = 0; j < testList2.length; j++){
+            //     let test1 = testList1[i]
+            //     let test2 = testList2[j]
+            //     if(test1.title === test2.title){
+            //         if(mochaReportComparor.compareTest(test1, test2)){
+            //             mochaReportComparor.createCompareResult(test1, test2, result.same)
+            //         }else{
+            //
+            //         }
+            //         //existed in both list, now removed in clone lists.
+            //         let r1 = testUtility.remove(cloneTestList1, test1)
+            //         let r2 = testUtility.remove(cloneTestList2, test2)
+            //         if(r1 != r2){
+            //             let aaa = 1
+            //         }
+            //         break
+            //     }
+            // }
+        }
+
+        //classify removed tests
+        for(let i = 0; i < cloneTestList1.length; i++){
+            mochaReportComparor.createCompareResult(cloneTestList1[i], null, result.differences.beRemoved)
+        }
+
+        //classify new tests
+        for(let i = 0; i < cloneTestList2.length; i++){
+            mochaReportComparor.createCompareResult(null, cloneTestList2[i], result.differences.beAdded)
+        }
+
+        return result
+    },
+
+    compareTest: function(test1, test2){
+        return test1.state === test2.state
+    },
+
+    createClassByState: function(container){
+        container.passed = []
+        container.failed = []
+        container.pending = []
+        container.hooked = []
+        container.skipped = []
+        container.others = []
+    },
+
+    createCompareResult: function(test1, test2, container){
+        let result = {}
+        let test = test1 ? test1 : test2
+        result.title = test.title
+        result.state = test.state
+        result.test1 = test1
+        result.test2 = test2
+        mochaReportComparor.classifyByState(result.state, container, result)
+    },
+
+    classifyByState: function(state, container, item){
+        if(state === testState.passed){
+            container.passed.push(item)
+        }else if(state === testState.failed){
+            container.failed.push(item)
+        }else if(state === testState.pending){
+            container.pending.push(item)
+        }else if(state === testState.hooked){
+            container.hooked.push(item)
+        }else if(state === testState.skipped){
+            container.skipped.push(item)
+        }else{
+            container.others.push(item)
+        }
+    },
+
+    //endregion
+
+    //endregion
+
+    //region report
+    compareReports: function(report1, report2){
+        let result = {}
+        result.statsChanges = mochaReportComparor.compareStats(report1.stats, report2.stats)
+
+        let testList1 = mochaReportComparor.collectTests(report1.results)
+        let testList2 = mochaReportComparor.collectTests(report2.results)
+        result.testsChanges = mochaReportComparor.compareTests(testList1, testList2)
+
+        return result
+    },
+    //endregion
 
 }
 
