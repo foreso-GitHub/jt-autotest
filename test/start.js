@@ -74,7 +74,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -154,8 +154,8 @@ describe('Jingtum测试', function() {
 
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
-                // this.timeout(30000)
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
+                this.timeout(30000)
+                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
 
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
