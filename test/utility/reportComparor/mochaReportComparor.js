@@ -206,7 +206,7 @@ module.exports = mochaReportComparor = {
 
     //region compare tests in 2 reports
 
-    compareTests: function(testList1, testList2){
+    compareTests: function(testList1, testList2, ifAttachRawTest){
         let result = {}
         result.same = {}
         mochaReportComparor.createClassByState(result.same)
@@ -231,11 +231,11 @@ module.exports = mochaReportComparor = {
                 let test2 = cloneTestList2[j]
                 if(test1.title === test2.title){
                     if(mochaReportComparor.compareState(test1, test2)){
-                        mochaReportComparor.createCompareResult(test1, test2, result.same)
+                        mochaReportComparor.createCompareResult(test1, test2, result.same, ifAttachRawTest)
                     }else{
-                        mochaReportComparor.createCompareResult(test1, test2,
-                            test1.state == testState.passed ?
-                                result.differences.passed : result.differences.notPassed)
+                        let container = test1.state == testState.passed ?
+                            result.differences.passed : result.differences.notPassed
+                        mochaReportComparor.createCompareResult(test1, test2, container, ifAttachRawTest)
                     }
                     //existed in both list, now removed in clone lists.
                     let r1 = testUtility.remove(cloneTestList1, test1)
@@ -249,12 +249,14 @@ module.exports = mochaReportComparor = {
 
         //classify removed tests
         for(let i = 0; i < cloneTestList1.length; i++){
-            mochaReportComparor.createCompareResult(cloneTestList1[i], null, result.differences.beRemoved)
+            mochaReportComparor.createCompareResult(cloneTestList1[i], null,
+                result.differences.beRemoved, ifAttachRawTest)
         }
 
         //classify new tests
         for(let i = 0; i < cloneTestList2.length; i++){
-            mochaReportComparor.createCompareResult(null, cloneTestList2[i], result.differences.beAdded)
+            mochaReportComparor.createCompareResult(null, cloneTestList2[i],
+                result.differences.beAdded, ifAttachRawTest)
         }
 
         mochaReportComparor.countByState(result.same)
@@ -295,7 +297,7 @@ module.exports = mochaReportComparor = {
         container.others = []
     },
 
-    createCompareResult: function(test1, test2, container){
+    createCompareResult: function(test1, test2, container, ifAttachRawTest){
         let result = {}
         let test
         if(test1 != null && test2 != null){
@@ -313,8 +315,11 @@ module.exports = mochaReportComparor = {
             result.state = mochaReportComparor.convertState(test)
         }
 
-        // result.test1 = test1  //todo need be restored
-        // result.test2 = test2
+        if(ifAttachRawTest != null && ifAttachRawTest){
+            result.test1 = test1
+            result.test2 = test2
+        }
+
         mochaReportComparor.classifyByState(result.state, container, result)
     },
 
@@ -436,17 +441,32 @@ module.exports = mochaReportComparor = {
     //endregion
 
     //region report
-    compareReports: function(report1, report2){
+    compareReports: function(report1, report2, ifAttachRawTest){
         let result = {}
         result.statsChanges = mochaReportComparor.compareStats(report1.stats, report2.stats)
 
         let testList1 = mochaReportComparor.collectTests(report1.results)
         let testList2 = mochaReportComparor.collectTests(report2.results)
-        result.testsChanges = mochaReportComparor.compareTests(testList1, testList2)
+        result.testsChanges = mochaReportComparor.compareTests(testList1, testList2, ifAttachRawTest)
 
         return result
     },
     //endregion
+
+    //region report file
+    compareReportFiles: async function(file1, file2, ifAttachRawTest){
+        let report1 = await utility.loadJsonFile(file1)
+        let report2 = await utility.loadJsonFile(file2)
+        let result = mochaReportComparor.compareReports(report1, report2, ifAttachRawTest)
+        result.misc = {}
+        let date = new Date()
+        result.misc.compareTime = date.toISOString()
+        result.misc.time = date.getTime()
+        result.misc.report1 = file1
+        result.misc.report2 = file2
+        return result
+    },
+    //region
 
 }
 

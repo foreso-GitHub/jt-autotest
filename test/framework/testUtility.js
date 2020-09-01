@@ -126,9 +126,9 @@ module.exports = testUtility = {
     //endregion
 
     //region load/save json file
-    loadJsonFile: function(filePath, fileName, ){
+    loadJsonFile: function(file, ){
         return new Promise((resolve, reject) => {
-            fs.readFile( filePath + fileName, 'utf8', function (err, data) {
+            fs.readFile( file, 'utf8', function (err, data) {
                 if (err) {
                     throw err
                 }
@@ -413,7 +413,7 @@ module.exports = testUtility = {
     //region
     getNowDateTimeString: function(){
         let date = new Date()
-        return date.toDateString() + '_' + date.getTime()
+        return date.toISOString().replace(/:/g, '-')
     }
     //endregion
 }
