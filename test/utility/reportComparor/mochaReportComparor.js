@@ -212,9 +212,9 @@ module.exports = mochaReportComparor = {
         mochaReportComparor.createClassByState(result.same)
         result.differences = {}
         result.differences.passed = {}
-        mochaReportComparor.createClassByState(result.differences.passed)
+        mochaReportComparor.createClassForPassed(result.differences.passed)
         result.differences.notPassed = {}
-        mochaReportComparor.createClassByState(result.differences.notPassed)
+        mochaReportComparor.createClassForNotPassed(result.differences.notPassed)
         result.differences.beRemoved = {}
         mochaReportComparor.createClassByState(result.differences.beRemoved)
         result.differences.beAdded = {}
@@ -230,10 +230,12 @@ module.exports = mochaReportComparor = {
                 let test1 = testList1[i]
                 let test2 = cloneTestList2[j]
                 if(test1.title === test2.title){
-                    if(mochaReportComparor.compareTest(test1, test2)){
+                    if(mochaReportComparor.compareState(test1, test2)){
                         mochaReportComparor.createCompareResult(test1, test2, result.same)
                     }else{
-
+                        mochaReportComparor.createCompareResult(test1, test2,
+                            test1.state == testState.passed ?
+                                result.differences.passed : result.differences.notPassed)
                     }
                     //existed in both list, now removed in clone lists.
                     let r1 = testUtility.remove(cloneTestList1, test1)
@@ -243,25 +245,6 @@ module.exports = mochaReportComparor = {
                 }
                 j++
             }
-
-            // for(let j = 0; j < testList2.length; j++){
-            //     let test1 = testList1[i]
-            //     let test2 = testList2[j]
-            //     if(test1.title === test2.title){
-            //         if(mochaReportComparor.compareTest(test1, test2)){
-            //             mochaReportComparor.createCompareResult(test1, test2, result.same)
-            //         }else{
-            //
-            //         }
-            //         //existed in both list, now removed in clone lists.
-            //         let r1 = testUtility.remove(cloneTestList1, test1)
-            //         let r2 = testUtility.remove(cloneTestList2, test2)
-            //         if(r1 != r2){
-            //             let aaa = 1
-            //         }
-            //         break
-            //     }
-            // }
         }
 
         //classify removed tests
@@ -274,10 +257,16 @@ module.exports = mochaReportComparor = {
             mochaReportComparor.createCompareResult(null, cloneTestList2[i], result.differences.beAdded)
         }
 
+        mochaReportComparor.countByState(result.same)
+        mochaReportComparor.countByState(result.differences.passed)
+        mochaReportComparor.countByState(result.differences.notPassed)
+        mochaReportComparor.countByState(result.differences.beRemoved)
+        mochaReportComparor.countByState(result.differences.beAdded)
+
         return result
     },
 
-    compareTest: function(test1, test2){
+    compareState: function(test1, test2){
         return test1.state === test2.state
     },
 
@@ -290,30 +279,112 @@ module.exports = mochaReportComparor = {
         container.others = []
     },
 
+    createClassForPassed: function(container){
+        container.p2f = []
+        container.p2pd = []
+        container.p2h = []
+        container.p2s = []
+        container.others = []
+    },
+
+    createClassForNotPassed: function(container){
+        container.f2p = []
+        container.pd2p = []
+        container.h2p = []
+        container.s2p = []
+        container.others = []
+    },
+
     createCompareResult: function(test1, test2, container){
         let result = {}
-        let test = test1 ? test1 : test2
-        result.title = test.title
-        result.state = test.state
-        result.test1 = test1
-        result.test2 = test2
+        let test
+        if(test1 != null && test2 != null){
+            result.title = test1.title
+            let state1 = mochaReportComparor.convertState(test1)
+            let state2 = mochaReportComparor.convertState(test2)
+            if(state1 === state2){
+                result.state = state1
+            }else{
+                result.state = state1 + CHANGE_SIGNAL + state2
+            }
+        }else{
+            test = test1 ? test1 : test2
+            result.title = test.title
+            result.state = mochaReportComparor.convertState(test)
+        }
+
+        // result.test1 = test1  //todo need be restored
+        // result.test2 = test2
         mochaReportComparor.classifyByState(result.state, container, result)
     },
 
-    classifyByState: function(state, container, item){
-        if(state === testState.passed){
-            container.passed.push(item)
-        }else if(state === testState.failed){
-            container.failed.push(item)
-        }else if(state === testState.pending){
-            container.pending.push(item)
-        }else if(state === testState.hooked){
-            container.hooked.push(item)
-        }else if(state === testState.skipped){
-            container.skipped.push(item)
-        }else{
-            container.others.push(item)
+    //if state == null, try to make it match to other right state
+    convertState: function(test){
+        let state = test.state
+        if(state == null){
+            if(test.skipped){
+                state = testState.skipped
+            }else if (test.pending){
+                state = testState.pending
+            }else if (test.isHook){
+                state = testState.hooked
+            }
         }
+        return state
+    },
+
+    classifyByState: function(state, container, compareResult){
+        if(state === testState.passed){
+            container.passed.push(compareResult)
+        }else if(state === testState.failed){
+            container.failed.push(compareResult)
+        }else if(state === testState.skipped){
+            container.skipped.push(compareResult)
+        }else if(state === testState.pending){
+            container.pending.push(compareResult)
+        }else if(state === testState.hooked){
+            container.hooked.push(compareResult)
+        }
+        else if(state === testState.p2f){
+            container.p2f.push(compareResult)
+        }else if(state === testState.p2pd){
+            container.p2pd.push(compareResult)
+        }else if(state === testState.p2h){
+            container.p2h.push(compareResult)
+        }else if(state === testState.p2s){
+            container.p2s.push(compareResult)
+        }
+        else if(state === testState.f2p){
+            container.f2p.push(compareResult)
+        }else if(state === testState.pd2p){
+            container.pd2p.push(compareResult)
+        }else if(state === testState.h2p){
+            container.h2p.push(compareResult)
+        }else if(state === testState.s2p){
+            container.s2p.push(compareResult)
+        }
+        else{
+            container.others.push(compareResult)
+        }
+    },
+
+    countByState: function(container){
+        if(container.passed) container.passedCount = container.passed.length
+        if(container.failed) container.failedCount = container.failed.length
+        if(container.skipped) container.skippedCount = container.skipped.length
+        if(container.pending) container.pendingCount = container.pending.length
+        if(container.hooked) container.hookedCount = container.hooked.length
+        if(container.others) container.othersCount = container.others.length
+
+        if(container.p2f) container.passed2failedCount = container.p2f.length
+        if(container.p2pd) container.passed2pendingCount = container.p2pd.length
+        if(container.p2h) container.passed2hookedCount = container.p2h.length
+        if(container.p2s) container.passed2skippedCount = container.p2s.length
+
+        if(container.f2p) container.failed2passedCount = container.f2p.length
+        if(container.pd2p) container.pending2passedCount = container.pd2p.length
+        if(container.h2p) container.hooked2passedCount = container.h2p.length
+        if(container.s2p) container.skipped2passedCount = container.s2p.length
     },
 
     //endregion

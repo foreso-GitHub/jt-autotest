@@ -44,6 +44,14 @@ let reportTestState = {
     pending: 'pending',
     hooked: 'hooked',
     skipped: 'skipped',
+    p2f: 'passed ==> failed',
+    p2pd: 'passed ==> pending',
+    p2h: 'passed ==> hooked',
+    p2s: 'passed ==> skipped',
+    f2p: 'failed ==> passed',
+    pd2p: 'pending ==> passed',
+    h2p: 'hooked ==> passed',
+    s2p: 'skipped ==> passed',
 }
 
 module.exports = { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, reportTestState, }
