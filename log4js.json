@@ -11,7 +11,7 @@
     }
   },
   "categories": {
-    "default": { "appenders": [ "console", "dateFile" ], "level": "OFF" },
+    "default": { "appenders": [ "console", "dateFile" ], "level": "DEBUG" },
     "travis": { "appenders": [ "console" ], "level": "OFF" }
   }
 }
