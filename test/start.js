@@ -57,7 +57,7 @@ describe('Jingtum测试', function() {
             this.timeout(120000)
         }
         else if(mode.service == serviceType.newChain){
-            this.timeout(999930000)
+            this.timeout(180000)
         }
         else if(mode.service == serviceType.ipfs){
             this.timeout(35000)
@@ -115,12 +115,13 @@ describe('Jingtum测试', function() {
 
                 tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
+                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
                 tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 //endregion
 
                 //region performance test
-                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
 
@@ -134,7 +135,7 @@ describe('Jingtum测试', function() {
                 tcsPressureSendTx.testForFastPerformance(server,
                     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',1, 'WithoutResponse')
 
-                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 12)
+                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
 
                 // endregion
 
@@ -143,6 +144,7 @@ describe('Jingtum测试', function() {
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
+
                 //endregion
 
             })
@@ -152,7 +154,8 @@ describe('Jingtum测试', function() {
 
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 12)
+                // this.timeout(30000)
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
 
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
