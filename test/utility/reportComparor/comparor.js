@@ -12,8 +12,8 @@ test()
 async function test(){
 
     // let path = '.\\test\\utility\\reportComparor\\sample\\'
-    // let report1 = await utility.loadJsonFile(path,'report1.json')
-    // let report2 = await utility.loadJsonFile(path,'report2.json')
+    // let file1 = path + 'report1.json'
+    // let file2 = path + 'report2.json'
 
     let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
     let file1 = path + '\\mochawesome-report-20200527a\\' + 'mochawesome.json'
@@ -23,6 +23,5 @@ async function test(){
 
     let resultsPath = '.\\test\\utility\\reportComparor\\results\\'
     utility.saveJsonFile(resultsPath, 'compare_result', reportsChanges)
-
 
 }
