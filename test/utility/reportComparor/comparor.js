@@ -11,20 +11,13 @@ test()
 
 async function test(){
 
-    let path = '.\\test\\utility\\reportComparor\\sample\\'
-    let report1 = await utility.loadJsonFile(path,'report1.json')
-    let report2 = await utility.loadJsonFile(path,'report2.json')
+    // let path = '.\\test\\utility\\reportComparor\\sample\\'
+    // let report1 = await utility.loadJsonFile(path,'report1.json')
+    // let report2 = await utility.loadJsonFile(path,'report2.json')
 
-    // let statsChanges = reportComparor.compareStats(report1.stats, report2.stats)
-    // logger.debug('===statsChanges: ' + JSON.stringify(statsChanges.differences))
-    // // logger.debug(JSON.stringify(statResult.fullComparison))
-
-    // let testList1 = reportComparor.collectTests(report1.results)
-    // let testList2 = reportComparor.collectTests(report2.results)
-    // logger.debug('===testList1: ' + JSON.stringify(testList1.length))
-    // logger.debug('===testList2: ' + JSON.stringify(testList2.length))
-    // let testsChanges = reportComparor.compareTests(testList1, testList2)
-    // logger.debug('===testsChanges: ' + JSON.stringify(testsChanges))
+    let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
+    let report1 = await utility.loadJsonFile(path + '\\mochawesome-report-20200831a\\','mochawesome.json')
+    let report2 = await utility.loadJsonFile(path + '\\mochawesome-report-20200901a\\','mochawesome.json')
 
     let reportsChanges = reportComparor.compareReports(report1, report2)
 

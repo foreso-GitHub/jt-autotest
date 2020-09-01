@@ -369,22 +369,66 @@ module.exports = mochaReportComparor = {
     },
 
     countByState: function(container){
-        if(container.passed) container.passedCount = container.passed.length
-        if(container.failed) container.failedCount = container.failed.length
-        if(container.skipped) container.skippedCount = container.skipped.length
-        if(container.pending) container.pendingCount = container.pending.length
-        if(container.hooked) container.hookedCount = container.hooked.length
-        if(container.others) container.othersCount = container.others.length
+        container.totalCount = 0
+        if(container.passed) {
+            container.passedCount = container.passed.length
+            container.totalCount += container.passedCount
+        }
+        if(container.failed) {
+            container.failedCount = container.failed.length
+            container.totalCount += container.failedCount
+        }
+        if(container.skipped) {
+            container.skippedCount = container.skipped.length
+            container.totalCount += container.skippedCount
+        }
+        if(container.pending) {
+            container.pendingCount = container.pending.length
+            container.totalCount += container.pendingCount
+        }
+        if(container.hooked) {
+            container.hookedCount = container.hooked.length
+            container.totalCount += container.hookedCount
+        }
 
-        if(container.p2f) container.passed2failedCount = container.p2f.length
-        if(container.p2pd) container.passed2pendingCount = container.p2pd.length
-        if(container.p2h) container.passed2hookedCount = container.p2h.length
-        if(container.p2s) container.passed2skippedCount = container.p2s.length
+        if(container.p2f) {
+            container.passed2failedCount = container.p2f.length
+            container.totalCount += container.passed2failedCount
+        }
+        if(container.p2pd) {
+            container.passed2pendingCount = container.p2pd.length
+            container.totalCount += container.passed2pendingCount
+        }
+        if(container.p2h) {
+            container.passed2hookedCount = container.p2h.length
+            container.totalCount += container.passed2hookedCount
+        }
+        if(container.p2s) {
+            container.passed2skippedCount = container.p2s.length
+            container.totalCount += container.passed2skippedCount
+        }
 
-        if(container.f2p) container.failed2passedCount = container.f2p.length
-        if(container.pd2p) container.pending2passedCount = container.pd2p.length
-        if(container.h2p) container.hooked2passedCount = container.h2p.length
-        if(container.s2p) container.skipped2passedCount = container.s2p.length
+        if(container.f2p) {
+            container.failed2passedCount = container.f2p.length
+            container.totalCount += container.failed2passedCount
+        }
+        if(container.pd2p) {
+            container.pending2passedCount = container.pd2p.length
+            container.totalCount += container.pending2passedCount
+        }
+        if(container.h2p) {
+            container.hooked2passedCount = container.h2p.length
+            container.totalCount += container.hooked2passedCount
+        }
+        if(container.s2p) {
+            container.skipped2passedCount = container.s2p.length
+            container.totalCount += container.skipped2passedCount
+        }
+
+        if(container.others) {
+            container.othersCount = container.others.length
+            container.totalCount += container.othersCount
+        }
     },
 
     //endregion
