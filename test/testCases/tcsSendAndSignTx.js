@@ -49,7 +49,9 @@ module.exports = tcsSendAndSignTx = {
 
             //region token test
 
-            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
+            if(server.mode.service == serviceType.newChain
+                && server.mode.restrictedLevel >= restrictedLevel.L4 //todo need reset to L3 when create token function restore
+            ){
 
                 txFunctionName = consts.rpcFunctions.sendTx
                 describe('代币测试：' + txFunctionName, async function () {
@@ -422,7 +424,7 @@ module.exports = tcsSendAndSignTx = {
     createTestCasesForCreateToken: function(server, categoryName, txFunctionName, txParams){
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L5  //todo need reset to L3 when create token function restore
+        testCaseParams.restrictedLevel = restrictedLevel.L3
 
         //region test cases
 
@@ -569,7 +571,7 @@ module.exports = tcsSendAndSignTx = {
     createTestCasesForMintToken: function(server, categoryName, txFunctionName, txParams){
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L5  //todo need reset to L3 when create token function restore
+        testCaseParams.restrictedLevel = restrictedLevel.L3
 
         // await utility.timeout(1)  //make sure create token done first!
 
@@ -597,7 +599,7 @@ module.exports = tcsSendAndSignTx = {
     createTestCasesForBurnToken: function(server, categoryName, txFunctionName, txParams){
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L5  //todo need reset to L3 when create token function restore
+        testCaseParams.restrictedLevel = restrictedLevel.L3
 
         //region test cases
         testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
