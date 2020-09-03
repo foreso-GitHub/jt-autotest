@@ -422,7 +422,7 @@ module.exports = tcsSendAndSignTx = {
     createTestCasesForCreateToken: function(server, categoryName, txFunctionName, txParams){
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L3
+        testCaseParams.restrictedLevel = restrictedLevel.L5  //todo need reset to L3 when create token function restore
 
         //region test cases
 
@@ -569,7 +569,7 @@ module.exports = tcsSendAndSignTx = {
     createTestCasesForMintToken: function(server, categoryName, txFunctionName, txParams){
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L3
+        testCaseParams.restrictedLevel = restrictedLevel.L5  //todo need reset to L3 when create token function restore
 
         // await utility.timeout(1)  //make sure create token done first!
 
@@ -597,7 +597,7 @@ module.exports = tcsSendAndSignTx = {
     createTestCasesForBurnToken: function(server, categoryName, txFunctionName, txParams){
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L3
+        testCaseParams.restrictedLevel = restrictedLevel.L5  //todo need reset to L3 when create token function restore
 
         //region test cases
         testCaseParams.title = '0380\t销毁' + testCaseParams.categoryName
