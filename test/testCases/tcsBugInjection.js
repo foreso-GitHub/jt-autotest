@@ -81,8 +81,8 @@ module.exports = tcsBugInjection = {
                 let rands = testUtility.getRandList(0, initNodeCount - 1, reduceCount, false)
 
                 for (let i = 0; i < reduceCount; i++){
-                    // nodes.push(jtNodes[rands[i]])
-                    nodes.push(jtNodes[0])  //todo use fixed node (bd node) for now. need change to rand node later.
+                    nodes.push(jtNodes[rands[i]])
+                    logger.debug('===selected service: ' + jtNodes[rands[i]].name)
                 }
 
                 tcsBugInjection.closeP2PByNodes(nodes)
