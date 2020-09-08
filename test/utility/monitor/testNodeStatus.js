@@ -24,7 +24,7 @@ const cmd_start_jt = 'sudo /root/start.sh'
 const cmd_stop_jt = 'sudo /root/stop.sh'
 //endregion
 
-resetNode('bd')
+// resetNode('bd')
 // stopJt(getNode('bd', jtNodes)))
 // startJt(getNode('ty', jtNodes))
 // startJt(jt_node_al)
