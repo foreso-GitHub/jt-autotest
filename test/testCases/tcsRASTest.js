@@ -18,7 +18,7 @@ let utility = require('../framework/testUtility')
 //endregion
 const nodeMonitor = require('../utility/monitor/monitor')
 let monitor = new nodeMonitor()
-let sshCmd = require('../utility/monitor/sshCmd')
+let sshCmd = require('../framework/sshCmd')
 const { jtNodes, } = require("../config/config")
 //endregion
 
@@ -42,13 +42,13 @@ module.exports = tcsRASTest = {
             framework.addTestCase(testCases, testCase)
             framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)  //node operation will conflict.  so one case, one test.
 
-            title = '0030\t减少共识节点 - 5个节点减少2个'
-            otherParams = {}
-            otherParams.initNodeCount = 5
-            otherParams.reduceCount = 2
-            testCase = tcsRASTest.createTestCase(server, title, otherParams)
-            testCases = []
-            framework.addTestCase(testCases, testCase)
+            // title = '0030\t减少共识节点 - 5个节点减少2个'
+            // otherParams = {}
+            // otherParams.initNodeCount = 5
+            // otherParams.reduceCount = 2
+            // testCase = tcsRASTest.createTestCase(server, title, otherParams)
+            // testCases = []
+            // framework.addTestCase(testCases, testCase)
             // framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
         })
 
@@ -98,7 +98,7 @@ module.exports = tcsRASTest = {
                 testCase.actualResult.push(netSync)
 
                 tcsRASTest.startJtByNodes(nodes)
-                await utility.timeout(480000)
+                await utility.timeout(1200000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
@@ -121,9 +121,9 @@ module.exports = tcsRASTest = {
 
     //region ssh cmd
     execSshCmd: function(service, cmd){
-        let servers = []
-        servers.push(sshCmd.setCmd(service, cmd))
-        sshCmd.execCmd(servers, function(error, results){
+        let services = []
+        services.push(sshCmd.setCmd(service, cmd))
+        sshCmd.execCmd(services, function(error, results){
             results.forEach(result=>{
                 logger.debug('service name:' + result.service.name)
                 logger.debug('cmd result:' + result.cmdResult)
