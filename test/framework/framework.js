@@ -1337,11 +1337,18 @@ module.exports = framework = {
     activeAllServers: function(){
         let servers = []
 
-        servers.push(framework.activeServer(allModes[0]))
-        servers.push(framework.activeServer(allModes[1]))
-        servers.push(framework.activeServer(allModes[2]))
-        servers.push(framework.activeServer(allModes[3]))
-        servers.push(framework.activeServer(allModes[4]))
+        // servers.push(framework.activeServer(allModes[0]))
+        // servers.push(framework.activeServer(allModes[1]))
+        // servers.push(framework.activeServer(allModes[2]))
+        // servers.push(framework.activeServer(allModes[3]))
+        // servers.push(framework.activeServer(allModes[4]))
+
+        for(let i = 0; i < allModes.length; i++){
+            let mode = allModes[i]
+            if(mode.name.indexOf('rpc') != -1){
+                servers.push(framework.activeServer(mode))
+            }
+        }
 
         return servers
     },
