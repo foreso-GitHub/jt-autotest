@@ -22,11 +22,11 @@ let sshCmd = require('../framework/sshCmd')
 const { jtNodes, } = require("../config/config")
 //endregion
 
-module.exports = tcsRASTest = {
+module.exports = tcsBugInjection = {
 
     //region tx receipt check
 
-    testChangeNodeCount: function(server, describeTitle){
+    test: function(server, describeTitle){
         let testCases = []
         let title
         let otherParams
@@ -34,22 +34,15 @@ module.exports = tcsRASTest = {
         let titleIndex = 1
 
         describe(describeTitle, async function () {
-            title = '0030\t减少共识节点 - 5个节点减少1个'
+
+            title = '0010\t共识节点故障测试_01：至少5个共识节点，断开一个共识节点的网络'
             otherParams = {}
             otherParams.initNodeCount = 5
             otherParams.reduceCount = 1
-            testCase = tcsRASTest.createTestCase(server, title, otherParams)
+            testCase = tcsBugInjection.createTestCase(server, title, otherParams)
             framework.addTestCase(testCases, testCase)
             framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)  //node operation will conflict.  so one case, one test.
 
-            // title = '0030\t减少共识节点 - 5个节点减少2个'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.reduceCount = 2
-            // testCase = tcsRASTest.createTestCase(server, title, otherParams)
-            // testCases = []
-            // framework.addTestCase(testCases, testCase)
-            // framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
         })
 
     },
@@ -61,8 +54,8 @@ module.exports = tcsRASTest = {
             null,
             null,
             otherParams,
-            tcsRASTest.execReduceNode,
-            tcsRASTest.checkChangeNodeCount,
+            tcsBugInjection.execCloseP2P,
+            tcsBugInjection.checkCloseP2P,
             null,
             restrictedLevel.L3,
             [serviceType.newChain, ],
@@ -71,7 +64,7 @@ module.exports = tcsRASTest = {
         return testCase
     },
 
-    execReduceNode: function(testCase){
+    execCloseP2P: function(testCase){
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {
             let netSync = await monitor.checkSync(jtNodes)
@@ -88,17 +81,18 @@ module.exports = tcsRASTest = {
                 let rands = testUtility.getRandList(0, initNodeCount - 1, reduceCount, false)
 
                 for (let i = 0; i < reduceCount; i++){
-                    nodes.push(jtNodes[rands[i]])
+                    // nodes.push(jtNodes[rands[i]])
+                    nodes.push(jtNodes[0])  //todo use fixed node (bd node) for now. need change to rand node later.
                 }
 
-                tcsRASTest.stopJtByNodes(nodes)
-                await utility.timeout(10000)
+                tcsBugInjection.closeP2PByNodes(nodes)
+                await utility.timeout(60000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
 
-                tcsRASTest.startJtByNodes(nodes)
-                await utility.timeout(720000)
+                tcsBugInjection.openP2PByNodes(nodes)
+                await utility.timeout(60000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
@@ -108,7 +102,7 @@ module.exports = tcsRASTest = {
         })
     },
 
-    checkChangeNodeCount: function(testCase){
+    checkCloseP2P: function(testCase){
         let initNodeCount = testCase.otherParams.initNodeCount
         let netSyncList = testCase.actualResult
         let reduceCount = testCase.otherParams.reduceCount
@@ -120,23 +114,23 @@ module.exports = tcsRASTest = {
     },
 
     //region ssh cmd
-    startJt: function(service){
-        sshCmd.execSshCmd(service, service.cmds.start)
+    closeP2P: function(service){
+        sshCmd.execSshCmd(service, service.cmds.closeP2P)
     },
 
-    stopJt: function(service){
-        sshCmd.execSshCmd(service, service.cmds.stop)
+    openP2P: function(service){
+        sshCmd.execSshCmd(service, service.cmds.openP2P)
     },
 
-    startJtByNodes: function(services){
+    closeP2PByNodes: function(services){
         services.forEach(service =>{
-            tcsRASTest.startJt(service)
+            tcsBugInjection.closeP2P(service)
         })
     },
 
-    stopJtByNodes: function(services){
+    openP2PByNodes: function(services){
         services.forEach(service =>{
-            tcsRASTest.stopJt(service)
+            tcsBugInjection.openP2P(service)
         })
     },
     //endregion

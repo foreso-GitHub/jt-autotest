@@ -46,4 +46,16 @@ module.exports = sshCmd = {
         return service
     },
 
+    execSshCmd: function(service, cmd){
+        let services = []
+        services.push(sshCmd.setCmd(service, cmd))
+        sshCmd.execCmd(services, function(error, results){
+            results.forEach(result=>{
+                logger.debug('service name:' + result.service.name)
+                logger.debug('cmd:' + result.service.cmd)
+                logger.debug('cmd result:' + result.cmdResult)
+            })
+        })
+    },
+
 }

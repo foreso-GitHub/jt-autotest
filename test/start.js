@@ -27,6 +27,7 @@ const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
 const tcsIpfs = require('./testCases/tcsIpfs')
 const tcsRASTest = require('./testCases/tcsRASTest')
 const tcsInteractiveTest = require('./testCases/tcsInteractiveTest')
+const tcsBugInjection = require('./testCases/tcsBugInjection')
 //endregion
 
 //region global fields
@@ -125,9 +126,9 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
 
-                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
+                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 5)
 
                 tcsPressureSendTx.testForFastPerformance(server,
                     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',1)
@@ -140,7 +141,8 @@ describe('Jingtum测试', function() {
                 // endregion
 
                 //region special
-
+                // this.timeout(1800000)
+                // tcsBugInjection.test(server, '故障注入测试')
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
@@ -154,8 +156,8 @@ describe('Jingtum测试', function() {
 
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
-                this.timeout(30000)
-                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
+                // this.timeout(30000)
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
 
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
@@ -175,7 +177,12 @@ describe('Jingtum测试', function() {
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
+                // this.timeout(1800000)
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+
+                this.timeout(1800000)
+                tcsBugInjection.test(server, '故障注入测试')
+
 
             })
         })
