@@ -316,13 +316,13 @@ module.exports = testUtility = {
         return result
     },
 
-    cloneArray: function(array){
-        let cloneArray = []
-        array.forEach((item) => {
-            cloneArray.push(item)
-        })
-        return cloneArray
-    },
+    // cloneArray: function(array){
+    //     let cloneArray = []
+    //     array.forEach((item) => {
+    //         cloneArray.push(item)
+    //     })
+    //     return cloneArray
+    // },
     //endregion
 
     //region rand number
@@ -410,11 +410,11 @@ module.exports = testUtility = {
     },
     //endregion
 
-    //region
+    //region get now
     getNowDateTimeString: function(){
         let date = new Date()
         return date.toISOString().replace(/:/g, '-')
-    }
+    },
     //endregion
 }
 

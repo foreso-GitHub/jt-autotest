@@ -49,7 +49,7 @@ module.exports = tcsRASTest = {
             testCase = tcsRASTest.createTestCase(server, title, otherParams)
             testCases = []
             framework.addTestCase(testCases, testCase)
-            framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
+            // framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
         })
 
 
@@ -99,7 +99,7 @@ module.exports = tcsRASTest = {
                 testCase.actualResult.push(netSync)
 
                 tcsRASTest.startJtByNodes(nodes)
-                await utility.timeout(80000)
+                await utility.timeout(480000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
