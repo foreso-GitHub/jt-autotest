@@ -18,7 +18,7 @@ let utility = require('../framework/testUtility')
 //endregion
 const nodeMonitor = require('../utility/monitor/monitor')
 let monitor = new nodeMonitor()
-const { sshCmd, createNode, createServer} = require('../utility/monitor/sshCmd')
+let sshCmd = require('../utility/monitor/sshCmd')
 const { jtNodes, } = require("../config/config")
 //endregion
 
@@ -51,7 +51,6 @@ module.exports = tcsRASTest = {
             framework.addTestCase(testCases, testCase)
             // framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
         })
-
 
     },
 
@@ -121,34 +120,34 @@ module.exports = tcsRASTest = {
     },
 
     //region ssh cmd
-    execSshCmd: function(node, cmd){
+    execSshCmd: function(service, cmd){
         let servers = []
-        servers.push(createServer(node, cmd))
-        sshCmd(servers, function(error, results){
+        servers.push(sshCmd.setCmd(service, cmd))
+        sshCmd.execCmd(servers, function(error, results){
             results.forEach(result=>{
-                logger.debug('node name:' + result.node.name)
+                logger.debug('service name:' + result.service.name)
                 logger.debug('cmd result:' + result.cmdResult)
             })
         })
     },
 
-    startJt: function(node){
-        tcsRASTest.execSshCmd(node, node.cmds.start)
+    startJt: function(service){
+        tcsRASTest.execSshCmd(service, service.cmds.start)
     },
 
-    stopJt: function(node){
-        tcsRASTest.execSshCmd(node, node.cmds.stop)
+    stopJt: function(service){
+        tcsRASTest.execSshCmd(service, service.cmds.stop)
     },
 
-    startJtByNodes: function(nodes){
-        nodes.forEach(node =>{
-            tcsRASTest.startJt(node)
+    startJtByNodes: function(services){
+        services.forEach(service =>{
+            tcsRASTest.startJt(service)
         })
     },
 
-    stopJtByNodes: function(nodes){
-        nodes.forEach(node =>{
-            tcsRASTest.stopJt(node)
+    stopJtByNodes: function(services){
+        services.forEach(service =>{
+            tcsRASTest.stopJt(service)
         })
     },
     //endregion

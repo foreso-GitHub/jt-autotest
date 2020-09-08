@@ -3,7 +3,7 @@ let rpc = require('../framework/lib/rpc/rpcInterface.js')
 let swtclib = require('../framework/lib/swtclib/swtclibInterface.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const { data, token, txs, blocks } = require("../testData/testData")
-const { sshCmd, createNode, createServer} = require('../utility/monitor/sshCmd')
+let sshCmd = require('../utility/monitor/sshCmd')
 let HashMap = require('hashmap')
 //endregion
 
@@ -295,15 +295,15 @@ let allModes = [
 //endregion
 
 //region set jt nodes
-let jt_node_al = createNode('al', '121.89.209.19', '22', '9545',
+let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
     'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
-let jt_node_bd = createNode('bd', '180.76.125.22', '22', '9545',
+let jt_node_bd = sshCmd.createService('bd', '180.76.125.22', '22', '9545',
     'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
-let jt_node_tx = createNode('tx', '45.40.240.50', '22', '9545',
+let jt_node_tx = sshCmd.createService('tx', '45.40.240.50', '22', '9545',
     'ubuntu', 'Lianjing@123456', {start: 'sudo /home/ubuntu/start.sh', stop: 'sudo /home/ubuntu/stop.sh'})
-let jt_node_hw = createNode('hw', '121.37.216.100', '22', '9545',
+let jt_node_hw = sshCmd.createService('hw', '121.37.216.100', '22', '9545',
     'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
-let jt_node_ty = createNode('ty', '61.171.12.71', '22', '9545',
+let jt_node_ty = sshCmd.createService('ty', '61.171.12.71', '22', '9545',
     'root', 'Lianjing@13579', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh'})
 let nodes = []
 nodes.push(jt_node_bd)
