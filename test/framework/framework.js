@@ -1263,7 +1263,7 @@ module.exports = framework = {
                 let block = blockResponse.result
                 let blockTpsInfo = {}
                 blockTpsInfo.blockNumber = block.ledger_index
-                blockTpsInfo.txCount = block.transactions.length
+                blockTpsInfo.txCount = block.transactions ? block.transactions.length : 0
                 blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
                 blockTpsInfoList.push(blockTpsInfo)
                 if(blockTpsInfo.txCount > 0){
