@@ -43,6 +43,18 @@ module.exports = tcsBugInjection = {
             framework.addTestCase(testCases, testCase)
             framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)  //node operation will conflict.  so one case, one test.
 
+
+            for(let i = 1; i <= 5; i++){
+                testCases = []
+                title = i + '. ' + '0011\t共识节点故障测试_01：多次断开一个共识节点的网络，第' + i + '次'
+                otherParams = {}
+                otherParams.initNodeCount = 5
+                otherParams.reduceCount = 1
+                testCase = tcsBugInjection.createTestCase(server, title, otherParams)
+                framework.addTestCase(testCases, testCase)
+                framework.testTestCases(server, describeTitle + '_' + title, testCases)  //node operation will conflict.  so one case, one test.
+            }
+
         })
 
     },
@@ -86,13 +98,13 @@ module.exports = tcsBugInjection = {
                 }
 
                 tcsBugInjection.closeP2PByNodes(nodes)
-                await utility.timeout(60000)
+                await utility.timeout(90000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
 
                 tcsBugInjection.openP2PByNodes(nodes)
-                await utility.timeout(60000)
+                await utility.timeout(90000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)

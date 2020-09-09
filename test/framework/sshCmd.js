@@ -22,7 +22,9 @@ module.exports = sshCmd = {
                 cb2()
             })
         }, function(err) {
-            logger.debug('error: ' + err)
+            if(err){
+                logger.debug('execCmd error: ' + err)
+            }
             // logger.debug('done: ' + JSON.stringify(results))
             callback(err, results)
         })
