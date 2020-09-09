@@ -98,13 +98,13 @@ module.exports = tcsBugInjection = {
                 }
 
                 tcsBugInjection.closeP2PByNodes(nodes)
-                await utility.timeout(90000)
+                await utility.timeout(60000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
 
                 tcsBugInjection.openP2PByNodes(nodes)
-                await utility.timeout(90000)
+                await utility.timeout(30000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
