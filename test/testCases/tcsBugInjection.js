@@ -104,7 +104,7 @@ module.exports = tcsBugInjection = {
                 testCase.actualResult.push(netSync)
 
                 tcsBugInjection.openP2PByNodes(nodes)
-                await utility.timeout(30000)
+                await utility.timeout(40000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
                 testCase.actualResult.push(netSync)
