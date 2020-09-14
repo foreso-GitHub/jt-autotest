@@ -295,21 +295,27 @@ let allModes = [
 //endregion
 
 //region set jt nodes
+const cmds_path = '/root/cmds/'
+const cmds_path_tx = '/home/ubuntu/cmds/'
+const cmds_start = 'start.sh'
+const cmds_stop = 'stop.sh'
+const cmds_openP2P = 'open7001.sh'
+const cmds_closeP2P = 'close7001.sh'
 let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
-    'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh',
-        closeP2P: 'sudo /root/close7001.sh', openP2P: 'sudo /root/open7001.sh'})
+    'root', 'Lianjing@123456', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
+        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
 let jt_node_bd = sshCmd.createService('bd', '180.76.125.22', '22', '9545',
-    'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh',
-        closeP2P: 'sudo /root/close7001.sh', openP2P: 'sudo /root/open7001.sh'})
+    'root', 'Lianjing@123456', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
+        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
 let jt_node_tx = sshCmd.createService('tx', '45.40.240.50', '22', '9545',
-    'ubuntu', 'Lianjing@123456', {start: 'sudo /home/ubuntu/start.sh', stop: 'sudo /home/ubuntu/stop.sh',
-        closeP2P: 'sudo /home/ubuntu/close7001.sh', openP2P: 'sudo /home/ubuntu/open7001.sh'})
+    'ubuntu', 'Lianjing@123456', {start: 'sudo ' + cmds_path_tx + cmds_start, stop: 'sudo ' + cmds_path_tx + cmds_stop,
+        openP2P: 'sudo ' + cmds_path_tx + cmds_openP2P, closeP2P: 'sudo ' + cmds_path_tx + cmds_closeP2P, })
 let jt_node_hw = sshCmd.createService('hw', '121.37.216.100', '22', '9545',
-    'root', 'Lianjing@123456', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh',
-        closeP2P: 'sudo /root/close7001.sh', openP2P: 'sudo /root/open7001.sh'})
+    'root', 'Lianjing@123456', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
+        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
 let jt_node_ty = sshCmd.createService('ty', '61.171.12.71', '22', '9545',
-    'root', 'Lianjing@13579', {start: 'sudo /root/start.sh', stop: 'sudo /root/stop.sh',
-        closeP2P: 'sudo /root/close7001.sh', openP2P: 'sudo /root/open7001.sh'})
+    'root', 'Lianjing@13579', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
+        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
 let nodes = []
 nodes.push(jt_node_bd)
 nodes.push(jt_node_tx)
