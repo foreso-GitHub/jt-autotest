@@ -301,21 +301,22 @@ const cmds_start = 'start.sh'
 const cmds_stop = 'stop.sh'
 const cmds_openP2P = 'open7001.sh'
 const cmds_closeP2P = 'close7001.sh'
+const cmds = {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
+    openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, }
+const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmds_start, stop: 'sudo ' + cmds_path_tx + cmds_stop,
+    openP2P: 'sudo ' + cmds_path_tx + cmds_openP2P, closeP2P: 'sudo ' + cmds_path_tx + cmds_closeP2P, }
+
 let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
-    'root', 'Lianjing@123456', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
-        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
+    'root', 'Lianjing@123456', cmds)
 let jt_node_bd = sshCmd.createService('bd', '180.76.125.22', '22', '9545',
-    'root', 'Lianjing@123456', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
-        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
+    'root', 'Lianjing@123456', cmds)
 let jt_node_tx = sshCmd.createService('tx', '45.40.240.50', '22', '9545',
-    'ubuntu', 'Lianjing@123456', {start: 'sudo ' + cmds_path_tx + cmds_start, stop: 'sudo ' + cmds_path_tx + cmds_stop,
-        openP2P: 'sudo ' + cmds_path_tx + cmds_openP2P, closeP2P: 'sudo ' + cmds_path_tx + cmds_closeP2P, })
+    'ubuntu', 'Lianjing@123456', cmds_tx)
 let jt_node_hw = sshCmd.createService('hw', '121.37.216.100', '22', '9545',
-    'root', 'Lianjing@123456', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
-        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
+    'root', 'Lianjing@123456', cmds)
 let jt_node_ty = sshCmd.createService('ty', '61.171.12.71', '22', '9545',
-    'root', 'Lianjing@13579', {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
-        openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, })
+    'root', 'Lianjing@13579', cmds)
+
 let nodes = []
 nodes.push(jt_node_bd)
 nodes.push(jt_node_tx)
