@@ -31,7 +31,7 @@ module.exports = tcsInteractiveTest = {
         let account2= addresses.receiver3
         let account3= addresses.sender2
         let account4= addresses.receiver2
-        let allServers = framework.activeAllServers()
+        let allServers = framework.activeAllRpcServers()
 
         let currency = {symbol:'swt', issuer:''}
         let txFunction = consts.rpcFunctions.sendTx

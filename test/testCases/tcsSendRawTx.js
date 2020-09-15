@@ -338,7 +338,7 @@ module.exports = tcsSendRawTx = {
         let testCases = []
         let subCaseFunctionParams
         let caseRestrictedLevel = restrictedLevel.L2
-        let allServers = framework.activeAllServers()
+        let allServers = framework.activeAllRpcServers()
         let serverCount = allServers.length
 
         let addresses = server.mode.addresses

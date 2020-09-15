@@ -1334,7 +1334,7 @@ module.exports = framework = {
         return server
     },
 
-    activeAllServers: function(){
+    activeAllRpcServers: function(){
         let servers = []
 
         // servers.push(framework.activeServer(allModes[0]))

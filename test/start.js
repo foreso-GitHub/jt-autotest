@@ -44,15 +44,7 @@ describe('Jingtum测试', function() {
     for(let mode of modes){
 
         let server = framework.activeServer(mode)
-
-        // let server = mode.server
-        // server.init(mode)
-        // if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
-        //     mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
-        //     mode.txs = utility.findMode(chainDatas, mode.name)
-        // }
-
-        // this.timeout(mode.service == serviceType.oldChain ? 120000: 30000)
+        let allRpcServers = framework.activeAllRpcServers()
 
         if(mode.service == serviceType.oldChain){
             this.timeout(120000)
@@ -75,7 +67,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -126,15 +118,15 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 5)
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
 
-                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 5)
-
-                tcsPressureSendTx.testForFastPerformance(server,
-                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',1)
+                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
 
                 tcsPressureSendTx.testForFastPerformance(server,
-                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',1, 'WithoutResponse')
+                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', allRpcServers, 1)
+
+                tcsPressureSendTx.testForFastPerformance(server,
+                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
 
                 tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
 
@@ -154,24 +146,24 @@ describe('Jingtum测试', function() {
 
             describe('is working', async function () {
 
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
                 // this.timeout(30000)
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
 
-                // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
-
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
                 //region performance test
 
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-
+                //
                 // tcsPressureSendTx.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', 1)
-
+                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',allRpcServers, 1)
+                //
                 // tcsPressureSendTx.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',2, 'WithoutResponse')
+                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
+
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
 
                 // endregion
 
@@ -180,9 +172,8 @@ describe('Jingtum测试', function() {
                 // this.timeout(1800000)
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
-                this.timeout(1800000)
-                tcsBugInjection.test(server, '故障注入测试')
-
+                // this.timeout(120000)
+                // tcsBugInjection.test(server, '故障注入测试')
 
             })
         })

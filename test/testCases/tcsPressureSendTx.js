@@ -15,8 +15,6 @@ const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/lib/base/consts')
 let utility = require('../framework/testUtility')
-const { token, } = require("../testData/testData")
-const { allModes, } = require("../config/config")
 //endregion
 //endregion
 
@@ -754,8 +752,8 @@ module.exports = tcsPressureSendTx = {
 
     //pure performance test means just send tx, no send rawtx, whithout checking balance, getting tx, etc checks.
     //several accounts, several nodes
-    testForFastPerformance: function(server, describeTitle, testRound, mode){
-        let serverCount = 5
+    testForFastPerformance: function(server, describeTitle, servers, testRound, mode){
+        let serverCount = servers.length
         let testCount = serverCount * 1
         let memosLength = 8
 
@@ -772,8 +770,6 @@ module.exports = tcsPressureSendTx = {
         for(let i = 0; i < testRound; i++){
             subCases = subCases.concat(tcsPressureSendTx.createAccountParamsWithDifferentAccount(addresses, value, fee, memos, txFunction, testCount, true))
         }
-        let allServers = framework.activeAllServers()
-        let servers = framework.createServers(allServers, serverCount)
         let testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
         if(mode && mode == 'WithoutResponse'){
             testCase.executeFunction = framework.executeSubCasesWithoutResponse
@@ -987,7 +983,7 @@ module.exports = tcsPressureSendTx = {
     testForPerformanceTestForOneRound: function(server, describeTitle, titles, memos, caseRestrictedLevel, testCount){
         let testCases = []
         let subTitles
-        let allServers = framework.activeAllServers()
+        let allServers = framework.activeAllRpcServers()
         let txFunction
         let addresses = server.mode.addresses
         let value = '0.000001'
