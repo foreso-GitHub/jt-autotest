@@ -302,6 +302,7 @@ module.exports = mochaReportComparor = {
         let test
         if(test1 != null && test2 != null){
             result.title = test1.title
+            result.fullTitle = test1.fullTitle
             let state1 = mochaReportComparor.convertState(test1)
             let state2 = mochaReportComparor.convertState(test2)
             if(state1 === state2){
@@ -312,6 +313,7 @@ module.exports = mochaReportComparor = {
         }else{
             test = test1 ? test1 : test2
             result.title = test.title
+            result.fullTitle = test.fullTitle
             result.state = mochaReportComparor.convertState(test)
         }
 
