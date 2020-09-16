@@ -407,9 +407,7 @@ module.exports = framework = {
                 })
             }
             else{
-                if(NEED_CHECK_ExpectedResult){
-                    framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
-                }
+                framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
             }
         }
         else{
