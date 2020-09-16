@@ -309,7 +309,7 @@ module.exports = tcsSendRawTx = {
             let expectedStatus = failRawTxs[0].code
             let expectedMessage = failRawTxs[0].message
             expect(response.status).to.be.equal(expectedStatus)
-            expect(response.message).to.contains(expectedMessage)
+            framework.checkResponseError(testCase, response.message, expectedMessage)
         }
 
         if(successCount > 0){
@@ -321,7 +321,7 @@ module.exports = tcsSendRawTx = {
             for(let i = 0; i < successCount; i++){
                 let hash = results[i]
                 let response = await utility.getTxByHash(testCase.server, hash, 0)
-                expect(response.status).to.be.equal(140)
+                // expect(response.status).to.be.equal(140)
                 let tx = response.result
                 expect(tx.Account).to.be.equal(from)
                 expect(tx.Destination).to.be.equal(to)
