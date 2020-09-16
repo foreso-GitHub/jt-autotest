@@ -614,6 +614,7 @@ module.exports = framework = {
     //region common
 
     testTestCases: function(server, describeTitle, testCases) {
+        describeTitle = '【' + describeTitle + '】'
         let testMode = server.mode.testMode
         if(!testMode || testMode == testModeEnums.batchMode){
             framework.testBatchTestCases(server, describeTitle, testCases)

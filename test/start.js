@@ -40,11 +40,11 @@ let _FullTestCaseList = []
 describe('Jingtum测试', function() {
 
     framework.startWork()
+    let allRpcServers = framework.activeAllServers()
 
     for(let mode of modes){
 
         let server = framework.activeServer(mode)
-        let allRpcServers = framework.activeAllRpcServers()
 
         if(mode.service == serviceType.oldChain){
             this.timeout(120000)
@@ -59,7 +59,7 @@ describe('Jingtum测试', function() {
             this.timeout(10000)
         }
 
-        describe('测试模式: ' + server.getName(), function () {
+        describe('【测试模式: ' + server.getName() + '】', function () {
 
             before(async function() {
                 // logger.debug('before connnect')
@@ -72,79 +72,79 @@ describe('Jingtum测试', function() {
 
                 //region basic test
 
-                tcsGetBlockNumber.testForGetBlockNumber(server, '[测试jt_blockNumber]')
+                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
-                tcsGetBlock.testForGetBlockByNumber(server, '[测试jt_getBlockByNumber]')
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
 
-                tcsGetBlock.testForGetBlockByHash(server, '[测试jt_getBlockByHash]')
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
-                tcsCreateAccount.testForCreateAccount(server, '[测试jt_createAccount]')
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
 
-                tcsGetAccount.testForGetAccount(server, '[测试jt_getAccount]')
+                tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
 
-                tcsGetAccounts.testForGetAccounts(server, '[测试jt_accounts]')
+                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
 
-                tcsGetBalance.testForGetBalance(server, '[测试jt_getBalance]')
+                tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
 
-                tcsGetReceipt.testForGetTransactionReceipt(server, '[测试jt_getTransactionReceipt]')
+                tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
 
-                tcsGetTx.testForGetTransaction(server, '[测试jt_getTransactionByHash]')
+                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
 
-                tcsGetTx.testForGetTransactionByIndex(server, '[测试jt_getTransactionByIndex]')
+                tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
-                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '[测试jt_getTransactionByBlockHashAndIndex]')
+                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
 
-                tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '[测试jt_getTransactionByBlockNumberAndIndex]')
+                tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
 
-                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '[测试jt_getBlockTransactionCountByHash]')
+                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
 
-                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '[测试jt_getBlockTransactionCountByNumber]')
+                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
                 //endregion
 
                 //region send and sign
 
-                tcsSendAndSignTx.testForSendTxAndSignTx(server, '[测试jt_sendTransaction和jt_signTransaction]')
+                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-                tcsSendRawTx.testForSendRawTx(server, '[测试jt_sendRawTransaction]')
+                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
-                tcsPressureSendTx.testForSequenceTest(server, '[Sequence测试]')
+                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsInteractiveTest.testForInteractiveTest(server, '[交互性测试]')
+                tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 //endregion
 
                 //region performance test
 
-                tcsPressureSendTx.testForPressureTest(server, '[测试连续发送交易]', 1)
+                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
 
-                tcsPressureSendTx.testForPurePressureTest(server, '[压力测试：发送交易，看tps]', 1)
+                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
 
-                tcsPressureSendTx.testForPerformanceTest(server, '[性能测试]', 1)
-
-                tcsPressureSendTx.testForFastPerformance(server,
-                    '[快速压力测试：多帐号多节点连续发送交易，等response，看tps]', allRpcServers, 1)
+                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
 
                 tcsPressureSendTx.testForFastPerformance(server,
-                    '[快速压力测试：多帐号多节点连续发送交易，不等response，看tps]', allRpcServers, 1, 'WithoutResponse')
+                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', allRpcServers, 1)
 
-                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '[用sendRaw进行性能测试]', 10, 2)
+                tcsPressureSendTx.testForFastPerformance(server,
+                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
+
+                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
 
                 // endregion
 
                 //region special
                 // this.timeout(1800000)
-                // tcsBugInjection.test(server, '[故障注入测试]')
-                // tcsRASTest.testChangeNodeCount(server, '[RAS测试]')
+                // tcsBugInjection.test(server, '故障注入测试')
+                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
-                // tcsIpfs.testForIpfsTest(server, '[测试ipfs]')
+                // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
                 //endregion
 
             })
             //*/
 
-            describe('is working', async function () {
+            describe('debug testing', async function () {
 
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
