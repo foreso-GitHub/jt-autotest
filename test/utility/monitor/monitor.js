@@ -36,7 +36,7 @@ function nodeMonitor(){
         logger.debug('blockNumber: ' + netSync.blockNumber)
         let index = 1;
         netSync.syncNodes.forEach(node=>{
-            logger.debug('node_' + index++ + ': ' + node.name)
+            logger.debug('node_' + index++ + ': ' + node)
         })
     }
 
@@ -45,8 +45,6 @@ function nodeMonitor(){
         netSync.status = 'unknown'  //unknown, fullSync, safeSync (> 2/3), notSync, zeroSync
         netSync.blockNumber = -1
         netSync.blockStatusList = []
-        // netSync.syncNodes = []
-        // netSync.asyncNodes = []
         netSync.syncCount = 0
 
         let count = nodes.length
@@ -62,7 +60,7 @@ function nodeMonitor(){
         for(let i = 0; i < nodes.length; i++){  //有时因为取blockNumber时存在微小时差，造成同步的状态下，各个节点返回的blockNumber会相差1.这种情况差1的节点也应该被认为是同步的。
             if(nodes[i].blockStatus.blockNumber != netSync.blockNumber){
                 if(Math.abs(nodes[i].blockStatus.blockNumber - netSync.blockNumber) <= 1){
-                    netSync.syncNodes.push(nodes[i])
+                    netSync.syncNodes.push(nodes[i].name)
                 }
             }
         }
@@ -92,13 +90,13 @@ function nodeMonitor(){
     function addBlockStatus(blockStatusList, node){
         let blockStatus = findBlockStatus(blockStatusList, node)
         if(blockStatus){
-            blockStatus.nodes.push(node)
+            blockStatus.nodes.push(node.name)
         }
         else{
             blockStatus = {}
             blockStatus.nodes = []
             blockStatus.blockNumber = node.blockNumber
-            blockStatus.nodes.push(node)
+            blockStatus.nodes.push(node.name)
             blockStatusList.push(blockStatus)
         }
         node.blockStatus = blockStatus

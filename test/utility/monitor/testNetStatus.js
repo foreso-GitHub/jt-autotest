@@ -9,9 +9,9 @@ const { jtNodes, } = require("../../config/config")
 
 let services = jtNodes
 
-// showTcAll()
+showTcAll()
 // resetTcAll()
-showNetAll()
+// showNetAll()
 // resetNetAll()
 
 //region traffic control
