@@ -55,12 +55,12 @@ module.exports = tcsBugInjection = {
             }
 
             testCases = []
-            title = '0130\t网络包重复测试_01:每个节点Duplicate30%'
+            title = '0130\t网络包重复测试_01:每个节点Duplicate30%，然后恢复'
             otherParams = {}
             otherParams.initNodeCount = 5
             otherParams.execNodeCount = 5
             testCase = tcsBugInjection.createTestCase(server, title, otherParams)
-            testCase.executeFunction = tcsBugInjection.exec
+            testCase.executeFunction = tcsBugInjection.execTcCmds
             testCase.checkFunction = tcsBugInjection.checkTcCmds
             testCase.execCmdsFunc = tcsBugInjection.duplicate30
             testCase.timeAfterExecCmds = 60000
@@ -68,12 +68,12 @@ module.exports = tcsBugInjection = {
             testCase.timeAfterResetCmds = 20000
             framework.addTestCase(testCases, testCase)
 
-            title = '0140\t网络包重复测试_02:单个节点Duplicate30%'
+            title = '0140\t网络包重复测试_02:单个节点Duplicate30%，然后恢复'
             otherParams = {}
             otherParams.initNodeCount = 5
             otherParams.execNodeCount = 1
             testCase = tcsBugInjection.createTestCase(server, title, otherParams)
-            testCase.executeFunction = tcsBugInjection.exec
+            testCase.executeFunction = tcsBugInjection.execTcCmds
             testCase.checkFunction = tcsBugInjection.checkTcCmds
             testCase.execCmdsFunc = tcsBugInjection.duplicate30
             testCase.timeAfterExecCmds = 60000
@@ -154,7 +154,8 @@ module.exports = tcsBugInjection = {
     },
     //endregion
 
-    exec: function(testCase){
+    //region exec/check tc
+    execTcCmds: function(testCase){
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {
             let netSync = await monitor.checkSync(jtNodes)
@@ -202,6 +203,7 @@ module.exports = tcsBugInjection = {
         // expect(netSyncList[2].syncCount).to.be.equals(initNodeCount)
         // expect(netSyncList[2].blockNumber > netSyncList[1].blockNumber).to.be.ok
     },
+    //endregion
 
     //region ssh cmd
 

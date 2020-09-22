@@ -59,6 +59,13 @@ function nodeMonitor(){
         let mainBlockStatus = findMainBlock(blockStatusList)
         netSync.blockNumber = mainBlockStatus.blockNumber
         netSync.syncNodes = mainBlockStatus.nodes
+        for(let i = 0; i < nodes.length; i++){  //有时因为取blockNumber时存在微小时差，造成同步的状态下，各个节点返回的blockNumber会相差1.这种情况差1的节点也应该被认为是同步的。
+            if(nodes[i].blockStatus.blockNumber != netSync.blockNumber){
+                if(Math.abs(nodes[i].blockStatus.blockNumber - netSync.blockNumber) <= 1){
+                    netSync.syncNodes.push(nodes[i])
+                }
+            }
+        }
         netSync.syncCount = mainBlockStatus.nodes.length
         netSync.blockStatusList = blockStatusList
 
@@ -94,6 +101,7 @@ function nodeMonitor(){
             blockStatus.nodes.push(node)
             blockStatusList.push(blockStatus)
         }
+        node.blockStatus = blockStatus
     }
 
     function findBlockStatus(blockStatusList, node){
