@@ -295,16 +295,48 @@ let allModes = [
 //endregion
 
 //region set jt nodes
+//region paths
 const cmds_path = '/root/cmds/'
 const cmds_path_tx = '/home/ubuntu/cmds/'
-const cmds_start = 'start.sh'
-const cmds_stop = 'stop.sh'
-const cmds_openP2P = 'open7001.sh'
-const cmds_closeP2P = 'close7001.sh'
-const cmds = {start: 'sudo ' + cmds_path + cmds_start, stop: 'sudo ' + cmds_path + cmds_stop,
-    openP2P: 'sudo ' + cmds_path + cmds_openP2P, closeP2P: 'sudo ' + cmds_path + cmds_closeP2P, }
-const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmds_start, stop: 'sudo ' + cmds_path_tx + cmds_stop,
-    openP2P: 'sudo ' + cmds_path_tx + cmds_openP2P, closeP2P: 'sudo ' + cmds_path_tx + cmds_closeP2P, }
+// const cmds_delay_path = 'delay/'
+// const cmds_loss_path = 'loss/'
+// const cmds_duplicate_path = 'duplicate/'
+// const cmds_corrupt_path = 'corrupt/'
+// const cmds_reorder_path = 'reorder/'
+//endregion
+//region commands
+const cmd_start = 'start.sh'
+const cmd_stop = 'stop.sh'
+
+const cmd_openP2P = 'open7001.sh'
+const cmd_closeP2P = 'close7001.sh'
+const cmd_showIptables = 'iptables -nL'
+const cmd_resetIptables = 'iptables -F'
+
+const cmd_resetTc = 'resetTc.sh'
+const cmd_showTc = 'showTc.sh'
+const cmd_delay6s = 'delay/delay6s.sh'
+const cmd_loss30 = 'loss/loss30.sh'
+const cmd_duplicate30 = 'duplicate/duplicate30.sh'
+const cmd_corrupt30 = 'corrupt/corrupt30.sh'
+const cmd_reorder30 = 'reorder/reorder30.sh'
+//endregion
+
+const cmds = {start: 'sudo ' + cmds_path + cmd_start, stop: 'sudo ' + cmds_path + cmd_stop,
+    resetNet: 'sudo ' + cmd_resetIptables, showNet: 'sudo ' + cmd_showIptables,
+    openP2P: 'sudo ' + cmds_path + cmd_openP2P, closeP2P: 'sudo ' + cmds_path + cmd_closeP2P,
+    resetTc: 'sudo ' + cmds_path + cmd_resetTc, showTc: 'sudo ' + cmds_path + cmd_showTc,
+    delay6s: 'sudo ' + cmds_path + cmd_delay6s,
+    loss30: 'sudo ' + cmds_path + cmd_loss30, duplicate30: 'sudo ' + cmds_path + cmd_duplicate30,
+    corrupt30: 'sudo ' + cmds_path + cmd_corrupt30, reorder30: 'sudo ' + cmds_path + cmd_reorder30, }
+
+const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmd_start, stop: 'sudo ' + cmds_path_tx + cmd_stop,
+    resetNet: 'sudo ' + cmd_resetIptables, showNet: 'sudo ' + cmd_showIptables,
+    openP2P: 'sudo ' + cmds_path_tx + cmd_openP2P, closeP2P: 'sudo ' + cmds_path_tx + cmd_closeP2P,
+    resetTc: 'sudo ' + cmds_path_tx + cmd_resetTc, showTc: 'sudo ' + cmds_path_tx + cmd_showTc,
+    delay6s: 'sudo ' + cmds_path_tx + cmd_delay6s,
+    loss30: 'sudo ' + cmds_path_tx + cmd_loss30, duplicate30: 'sudo ' + cmds_path_tx + cmd_duplicate30,
+    corrupt30: 'sudo ' + cmds_path_tx + cmd_corrupt30, reorder30: 'sudo ' + cmds_path_tx + cmd_reorder30,}
 
 let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
     'root', 'Lianjing@123456', cmds)

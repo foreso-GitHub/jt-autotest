@@ -40,7 +40,7 @@ let _FullTestCaseList = []
 describe('Jingtum测试', function() {
 
     framework.startWork()
-    let allRpcServers = framework.activeAllServers()
+    let allRpcServers = framework.activeAllRpcServers()
 
     for(let mode of modes){
 
@@ -67,7 +67,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -172,8 +172,8 @@ describe('Jingtum测试', function() {
                 // this.timeout(1800000)
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
-                // this.timeout(120000)
-                // tcsBugInjection.test(server, '故障注入测试')
+                this.timeout(180000)
+                tcsBugInjection.test(server, '故障注入测试')
 
             })
         })
