@@ -1,0 +1,1 @@
+netstat -ntulp |grep skywell
