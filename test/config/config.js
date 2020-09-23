@@ -315,6 +315,8 @@ const cmd_resetIptables = 'iptables -F'
 
 const cmd_resetTc = 'resetTc.sh'
 const cmd_showTc = 'showTc.sh'
+const cmd_delay0_1_5 = 'delay/delay0_1_5.sh'
+const cmd_delay1s = 'delay/delay1s.sh'
 const cmd_delay6s = 'delay/delay6s.sh'
 const cmd_loss30 = 'loss/loss30.sh'
 const cmd_duplicate30 = 'duplicate/duplicate30.sh'
@@ -326,7 +328,8 @@ const cmds = {start: 'sudo ' + cmds_path + cmd_start, stop: 'sudo ' + cmds_path 
     resetNet: 'sudo ' + cmd_resetIptables, showNet: 'sudo ' + cmd_showIptables,
     openP2P: 'sudo ' + cmds_path + cmd_openP2P, closeP2P: 'sudo ' + cmds_path + cmd_closeP2P,
     resetTc: 'sudo ' + cmds_path + cmd_resetTc, showTc: 'sudo ' + cmds_path + cmd_showTc,
-    delay6s: 'sudo ' + cmds_path + cmd_delay6s,
+    delay0_1_5: 'sudo ' + cmds_path + cmd_delay0_1_5,
+    delay1s: 'sudo ' + cmds_path + cmd_delay1s, delay6s: 'sudo ' + cmds_path + cmd_delay6s,
     loss30: 'sudo ' + cmds_path + cmd_loss30, duplicate30: 'sudo ' + cmds_path + cmd_duplicate30,
     corrupt30: 'sudo ' + cmds_path + cmd_corrupt30, reorder30: 'sudo ' + cmds_path + cmd_reorder30, }
 
@@ -334,7 +337,8 @@ const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmd_start, stop: 'sudo ' + cmds
     resetNet: 'sudo ' + cmd_resetIptables, showNet: 'sudo ' + cmd_showIptables,
     openP2P: 'sudo ' + cmds_path_tx + cmd_openP2P, closeP2P: 'sudo ' + cmds_path_tx + cmd_closeP2P,
     resetTc: 'sudo ' + cmds_path_tx + cmd_resetTc, showTc: 'sudo ' + cmds_path_tx + cmd_showTc,
-    delay6s: 'sudo ' + cmds_path_tx + cmd_delay6s,
+    delay0_1_5: 'sudo ' + cmds_path_tx + cmd_delay0_1_5,
+    delay1s: 'sudo ' + cmds_path_tx + cmd_delay1s, delay6s: 'sudo ' + cmds_path_tx + cmd_delay6s,
     loss30: 'sudo ' + cmds_path_tx + cmd_loss30, duplicate30: 'sudo ' + cmds_path_tx + cmd_duplicate30,
     corrupt30: 'sudo ' + cmds_path_tx + cmd_corrupt30, reorder30: 'sudo ' + cmds_path_tx + cmd_reorder30,}
 
