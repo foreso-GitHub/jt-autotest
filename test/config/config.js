@@ -347,7 +347,7 @@ let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
 let jt_node_bd = sshCmd.createService('bd', '180.76.125.22', '22', '9545',
     'root', 'Lianjing@123456', cmds)
 let jt_node_tx = sshCmd.createService('tx', '45.40.240.50', '22', '9545',
-    'ubuntu', 'Lianjing@123456', cmds_tx)
+    'ubuntu', 'Lianjing@13579', cmds_tx)
 let jt_node_hw = sshCmd.createService('hw', '121.37.216.100', '22', '9545',
     'root', 'Lianjing@123456', cmds)
 let jt_node_ty = sshCmd.createService('ty', '61.171.12.71', '22', '9545',

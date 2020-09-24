@@ -118,7 +118,7 @@ function nodeMonitor(){
         let maxCount = -1;
         for(let i = 0; i < blockStatusList.length; i++){
             let blockStatus = blockStatusList[i]
-            if(blockStatus.nodes.length > maxCount){
+            if(blockStatus.nodes.length > maxCount && blockStatus.blockNumber != undefined){
                 index = i;
                 maxCount = blockStatus.nodes.length
             }
