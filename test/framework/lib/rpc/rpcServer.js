@@ -49,14 +49,17 @@ function rpcServer() {
         }
 
         return new Promise((resolve, reject) => {
-            let requestTimer = setTimeout(function () {
-                req.abort();
-                let result = {}
-                result.status = enums.responseStatus.error
-                result.error = 'Error: Request Timeout'
-                reject(result)
-                logger.debug('===Request Timeout: ' + url + ' | ' + JSON.stringify(rawData))
-            }, rpcSettings.request_timeout)
+            let requestTimer
+            if(rpcSettings.request_timeout > 0){
+                requestTimer = setTimeout(function () {
+                    req.abort();
+                    let result = {}
+                    result.status = enums.responseStatus.error
+                    result.error = 'Error: Request Timeout'
+                    reject(result)
+                    logger.debug('===Request Timeout: ' + url + ' | ' + JSON.stringify(rawData))
+                }, rpcSettings.request_timeout)
+            }
 
             let req = request(options, function (error, response, body) {
                 // logger.debug("request return: " + JSON.stringify(response))
