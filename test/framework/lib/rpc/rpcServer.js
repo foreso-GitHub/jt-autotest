@@ -70,9 +70,11 @@ function rpcServer() {
         })
     },
 
-    this.RPC_POST = function (url, method, params, callback) {
+    this.RPC_POST = function (url, method, params) {
         if(url == null || url.isEmpty){
-            callback("Error: RPC URL hasn't been set!")
+            return new Promise((resolve, reject) => {
+                reject('Error: RPC URL hasn\'t been set!')
+            })
         }
         let requestMethod = 'POST'
         let username = null

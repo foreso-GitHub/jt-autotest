@@ -47,7 +47,7 @@ function rpcInterface() {
                     resolve(data)
                 }
                 else{
-                    rpcInterface.prototype.createError(data)
+                    resolve(rpcInterface.prototype.createError(data))
                 }
             }, function (error) {
                 resolve(rpcInterface.prototype.createError(error))

@@ -69,7 +69,7 @@ function nodeMonitor(){
 
         //井通网络一般由3f+1个节点组成。这时，最小节点数为2f+1。低于2f+1，无法共识，无法出块。
         let f = Math.floor(count / 3)
-        let backup = count - f * 3
+        netSync.backupCount = count - f * 3
 
         if(netSync.syncCount == count){
             netSync.status = 'fullSync'
@@ -118,7 +118,7 @@ function nodeMonitor(){
         let maxCount = -1;
         for(let i = 0; i < blockStatusList.length; i++){
             let blockStatus = blockStatusList[i]
-            if(blockStatus.nodes.length > maxCount && blockStatus.blockNumber != undefined){
+            if(blockStatus.nodes.length > maxCount && blockStatus.blockNumber >= 0){
                 index = i;
                 maxCount = blockStatus.nodes.length
             }
