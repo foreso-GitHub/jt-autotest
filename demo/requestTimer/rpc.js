@@ -4,29 +4,19 @@ let request = require('request')
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-let fs = require('fs')
-let enums = require('../../enums')
-const { rpcSettings } = require("../../../config/basicConfig")
+const consts = require('../../test/framework/lib/base/consts')
+let enums = require('../../test/framework/enums')
 //endregion
 
 const PARSER_TEXT_JSON = 'application/json'
 const PARSER_NAME_URLENCODED = 'urlencoded'
 const PARSER_TEXT_URLENCODED = 'application/x-www-form-urlencoded'
 
-function rpcServer() {
 
-    this.id = 1
 
-    // region send http request
-    this.send_request_get = function (url, callback) {
-        this.sendRequest(url, 'GET', PARSER_TEXT_JSON, null, null, null, callback)
-    },
+module.exports = rpc = {
 
-    this.send_request_post = function (url, data, callback) {
-        this.sendRequest(url, 'POST', PARSER_TEXT_JSON, data, null, null, callback)
-    },
-
-    this.sendRequest = function (url, method, parser, rawData, username, password) {
+    sendRequest: function(url, method, parser, rawData, username, password) {
         let data = JSON.stringify(rawData)
         let parserText = PARSER_TEXT_JSON // default is JSON
         if (parser === PARSER_NAME_URLENCODED) {
@@ -48,15 +38,15 @@ function rpcServer() {
             options.headers.Authorization = 'Basic ' + Buffer.from(username + ':' + password).toString('base64')
         }
 
+        // logger.debug("sendRequest: " + JSON.stringify(options))
+
         return new Promise((resolve, reject) => {
+            // logger.debug("sendRequest2: " + JSON.stringify(options))
             let requestTimer = setTimeout(function () {
                 req.abort();
-                let result = {}
-                result.status = enums.responseStatus.error
-                result.error = 'Error: Request Timeout'
-                reject(result)
-                logger.debug('===Request Timeout: ' + url + ' | ' + JSON.stringify(rawData))
-            }, rpcSettings.request_timeout)
+                reject(rpc.createError('Request Timeout'))
+                logger.debug('......Request Timeout......')
+            },3000)
 
             let req = request(options, function (error, response, body) {
                 // logger.debug("request return: " + JSON.stringify(response))
@@ -79,13 +69,10 @@ function rpcServer() {
         })
     },
 
-    this.RPC_POST = function (url, method, params) {
+    RPC_POST: function (url, method, params) {
         if(url == null || url.isEmpty){
             return new Promise((resolve, reject) => {
-                let result = {}
-                result.status = enums.responseStatus.error
-                result.error = 'Error: RPC URL hasn\'t been set!'
-                reject(result)
+                reject(rpc.createError('Error: RPC URL hasn\'t been set!'))
             })
         }
         let requestMethod = 'POST'
@@ -99,48 +86,44 @@ function rpcServer() {
         data.params = params
         logger.debug('---Params: ' + JSON.stringify(data))  //important logger
         return this.sendRequest(url, requestMethod, parserText, data, username, password)
-    }
-    // endregion
+    },
 
-    //region upload file
-    this.RPC_UPLOAD = async function (url, fileName, callback) {
-        if(url == null || url.isEmpty){
-            callback("Error: RPC URL hasn't been set!")
-        }
-        fs.stat(fileName,function(err,stats){
-            if(err){
-                callback("Error: File [" + fileName + "] doesn't exist!")
-            }
-            if(!stats.isFile()){
-                callback("Error: File [" + fileName + "] doesn't exist!")
-            }
-        })
-
-        let formData = {
-            file: fs.createReadStream(fileName),
-        }
-        let options = {
-            url: url,
-            method: 'POST',
-            formData : formData
-        }
+    getResponse: function (server, methodName, params) {
         return new Promise((resolve, reject) => {
-            request(options, function (error, response, body) {
-                if (error) {
-                    reject(error)
-                } else if (response.statusCode !== 200) {
-                    resolve(response)
-                } else {
-                    try {
-                        resolve(JSON.parse(body))
-                    } catch (e) {
-                        resolve(body)
-                    }
+            logger.debug('url: ' + server.url)
+            this.RPC_POST(server.url, methodName, params).then(function(data){
+                if (data != null && JSON.stringify(data.result) !== '{}'){
+                    logger.debug('---Result: ', data)  //important logger
+                    resolve(data)
                 }
+                else{
+                    resolve(data)
+                }
+            }, function (error) {
+                resolve(error)
             })
         })
-    }
-    //endregion
+    },
+
+    responseGetTxByHash: function (server, hash) {
+        let params = []
+        params.push(hash)
+        return this.getResponse(server, consts.rpcFunctions.getTransactionByHash, params)
+    },
+
+    responseBlockNumber: function(server, ) {
+        let params = []
+        return this.getResponse(server, consts.rpcFunctions.getBlockNumber, params)
+    },
+
+    createError: function(error){
+        let result = {}
+        result.status = enums.responseStatus.error
+        result.error = error
+        return result
+    },
 }
 
-module.exports = rpcServer
+
+
+

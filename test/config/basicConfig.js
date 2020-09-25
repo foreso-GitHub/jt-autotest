@@ -7,6 +7,11 @@ let commonPaths = {
     chain_data_js_file_path: ".\\test\\testData\\chainDatas.js",
 }
 
+let rpcSettings = {
+    request_timeout: 6000,
+}
+
 module.exports = {
     commonPaths,
+    rpcSettings,
 }

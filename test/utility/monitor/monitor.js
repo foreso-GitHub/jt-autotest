@@ -123,7 +123,7 @@ function nodeMonitor(){
                 maxCount = blockStatus.nodes.length
             }
         }
-        return blockStatusList[index]
+        return index == -1 ? {blockNumber: -1, nodes: []} : blockStatusList[index]
     }
 
 }

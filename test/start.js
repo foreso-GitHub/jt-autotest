@@ -6,7 +6,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let HashMap = require('hashmap')
-const {  modes, } = require("./config/config")
+const { modes, } = require("./config/config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
 const framework = require('./framework/framework')
 //endregion
@@ -172,8 +172,8 @@ describe('Jingtum测试', function() {
                 // this.timeout(1800000)
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
-                this.timeout(180000)
-                tcsBugInjection.test(server, '故障注入测试')
+                // this.timeout(180000)
+                // tcsBugInjection.test(server, '故障注入测试')
 
             })
         })
