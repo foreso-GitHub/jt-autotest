@@ -85,7 +85,7 @@ module.exports = nodeStatusTool = {
     },
 
     resetNode: async function(name){
-        let service = getNode(name, jtNodes)
+        let service = nodeStatusTool.getNode(name, jtNodes)
         nodeStatusTool.stopJt(service)
         await utility.timeout(5000)
         nodeStatusTool.startJt(service)
