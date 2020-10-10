@@ -13,17 +13,33 @@ module.exports = sshCmd = {
         let results = []
         async.each(services, function(service, cb2) {
             let _result = {}
+            let hasCallbacked = false
+            logger.debug('service.cmd: ' + service.cmd)
             ssh.exec(service, service.cmd, function(err, stdout, stderr, service, conn) {
-                if (err) throw err
                 _result['service'] = service
-                _result['cmdResult'] = stdout.replace('\n\n', '').replace('\n', '')
-                results.push(_result)
-                conn.end()
-                cb2()
+                if (err) {
+                    logger.debug('service: ' + service.name + ' | service.cmd: ' + service.cmd)
+                    logger.debug('execCmd_1 error: ' + err)
+                    if(!hasCallbacked) {  //if has callbacked, then ignore this error.
+                        _result['cmdResult'] = err
+                        results.push(_result)
+                        cb2(err)
+                    }else{
+                        logger.debug('execCmd_1 error: error is ignored!')
+                    }
+                    // throw err
+                }
+                else{
+                    _result['cmdResult'] = stdout.replace('\n\n', '').replace('\n', '')
+                    results.push(_result)
+                    conn.end()
+                    cb2()
+                    hasCallbacked = true
+                }
             })
         }, function(err) {
             if(err){
-                logger.debug('execCmd error: ' + err)
+                logger.debug('execCmd_2 error: ' + err)
             }
             // logger.debug('done: ' + JSON.stringify(results))
             callback(err, results)
