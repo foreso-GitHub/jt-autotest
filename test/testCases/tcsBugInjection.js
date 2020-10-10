@@ -65,102 +65,102 @@ module.exports = tcsBugInjection = {
 
             //endregion
 
-            // //region 网络丢包测试
-            //
-            // testCases = []
-            //
-            // title = '0110\t网络丢包测试_01:每个节点Loss30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 5
-            // otherParams.execCmdsFunc = tcsBugInjection.loss30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // title = '0120\t网络丢包测试_02:单个节点Loss30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 1
-            // otherParams.execCmdsFunc = tcsBugInjection.loss30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // framework.testTestCases(server, describeTitle + '_网络丢包测试', testCases)  //node operation will conflict.  so one case, one test.
-            //
-            // //endregion
-            //
-            // //region 网络包重复测试
-            //
-            // testCases = []
-            //
-            // title = '0130\t网络包重复测试_01:每个节点Duplicate30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 5
-            // otherParams.execCmdsFunc = tcsBugInjection.duplicate30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // title = '0140\t网络包重复测试_02:单个节点Duplicate30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 1
-            // otherParams.execCmdsFunc = tcsBugInjection.duplicate30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // framework.testTestCases(server, describeTitle + '_网络包重复测试', testCases)  //node operation will conflict.  so one case, one test.
-            //
-            // //endregion
-            //
-            // //region 网络包损坏测试
-            //
-            // testCases = []
-            //
-            // title = '0150\t网络包损坏测试_01:每个节点Corrupt30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 5
-            // otherParams.execCmdsFunc = tcsBugInjection.corrupt30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // title = '0160\t网络包损坏测试_02:单个节点Corrupt30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 1
-            // otherParams.execCmdsFunc = tcsBugInjection.corrupt30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // framework.testTestCases(server, describeTitle + '_网络包损坏测试', testCases)  //node operation will conflict.  so one case, one test.
-            //
-            // //endregion
-            //
-            // //region 网络包乱序测试
-            //
-            // testCases = []
-            //
-            // title = '0170\t网络包乱序测试_01:每个节点Reorder30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 5
-            // otherParams.execCmdsFunc = tcsBugInjection.reorder30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // title = '0180\t网络包乱序测试_02:单个节点Reorder30%，然后恢复'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.execNodeCount = 1
-            // otherParams.execCmdsFunc = tcsBugInjection.reorder30
-            // // otherParams.execNode = jtNodes[3]  //指定执行的node，不然会随机选择
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            // framework.addTestCase(testCases, testCase)
-            //
-            // framework.testTestCases(server, describeTitle + '_网络包乱序测试', testCases)  //node operation will conflict.  so one case, one test.
-            //
-            // //endregion
+            //region 网络丢包测试
+
+            testCases = []
+
+            title = '0110\t网络丢包测试_01:每个节点Loss30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 5
+            otherParams.execCmdsFunc = tcsBugInjection.loss30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            title = '0120\t网络丢包测试_02:单个节点Loss30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 1
+            otherParams.execCmdsFunc = tcsBugInjection.loss30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            framework.testTestCases(server, describeTitle + '_网络丢包测试', testCases)  //node operation will conflict.  so one case, one test.
+
+            //endregion
+
+            //region 网络包重复测试
+
+            testCases = []
+
+            title = '0130\t网络包重复测试_01:每个节点Duplicate30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 5
+            otherParams.execCmdsFunc = tcsBugInjection.duplicate30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            title = '0140\t网络包重复测试_02:单个节点Duplicate30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 1
+            otherParams.execCmdsFunc = tcsBugInjection.duplicate30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            framework.testTestCases(server, describeTitle + '_网络包重复测试', testCases)  //node operation will conflict.  so one case, one test.
+
+            //endregion
+
+            //region 网络包损坏测试
+
+            testCases = []
+
+            title = '0150\t网络包损坏测试_01:每个节点Corrupt30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 5
+            otherParams.execCmdsFunc = tcsBugInjection.corrupt30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            title = '0160\t网络包损坏测试_02:单个节点Corrupt30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 1
+            otherParams.execCmdsFunc = tcsBugInjection.corrupt30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            framework.testTestCases(server, describeTitle + '_网络包损坏测试', testCases)  //node operation will conflict.  so one case, one test.
+
+            //endregion
+
+            //region 网络包乱序测试
+
+            testCases = []
+
+            title = '0170\t网络包乱序测试_01:每个节点Reorder30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 5
+            otherParams.execCmdsFunc = tcsBugInjection.reorder30
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            title = '0180\t网络包乱序测试_02:单个节点Reorder30%，然后恢复'
+            otherParams = {}
+            otherParams.initNodeCount = 5
+            otherParams.execNodeCount = 1
+            otherParams.execCmdsFunc = tcsBugInjection.reorder30
+            // otherParams.execNode = jtNodes[3]  //指定执行的node，不然会随机选择
+            testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
+            framework.addTestCase(testCases, testCase)
+
+            framework.testTestCases(server, describeTitle + '_网络包乱序测试', testCases)  //node operation will conflict.  so one case, one test.
+
+            //endregion
 
             //region 网络延时测试
 
@@ -185,7 +185,7 @@ module.exports = tcsBugInjection = {
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestCase(testCases, testCase)
 
-            // framework.testTestCases(server, describeTitle + '_网络延时测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestCases(server, describeTitle + '_网络延时测试', testCases)  //node operation will conflict.  so one case, one test.
 
             //endregion
 
