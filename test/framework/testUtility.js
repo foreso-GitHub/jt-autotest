@@ -9,6 +9,7 @@ const {responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel
 //endregion
 
 let _LastDynamicalTimeSeed = 0
+let lastSeed
 
 module.exports = testUtility = {
 
@@ -326,23 +327,60 @@ module.exports = testUtility = {
     //endregion
 
     //region rand number
+    //region 伪随机数算法
+    //
+    // 　　伪随机数产生的方法有个逼格挺高的名字---伪随机数发生器。伪随机数产生器中最最最基础的思想是均匀分布(当然这不是唯一的思路)。一般来说，只敢说"一般来说"，因为我也不敢百分百肯定，如今主流的编程语言中使用的随机数函数基本采用这种均匀分布思想，而其中最常用的算法就是"线性同余法"（有着很多的别名，不过我喜欢用这个名字，原因你懂的→_→）。不BB别的算法，直接介绍线性同余法。
+    //
+    // 　　1. 什么是线性同余法？
+    // 　　对于计算机科学专业的学生来说，八成会接触一门课，叫作《离散数学》。里面有一章专门介绍初等数论，而线性同余法作为产生均匀型伪随机数的算法，有大概一页的论述（真是一个悲剧(-_-メ)）。当然，可能很多人在初中或者之后的数学竞赛中学过初等数论，线性同余法当然也一定是有过接触的。
+    // 　　线性同余法基于如下线性同余方程组
+    //      aX+bY=m
+    // 　　用于产生均匀型伪随机数的线性同余产生器（与上面的方程符号没有对应关系）
+    //      X[n]=(aX[n-1]+b)mod(m)              　
+    //
+    // 　　其中，a为"乘数"，b为"增量"，m为"模数",x0为"种子数"。
+    // 　　如果产生的是区间实在(0,1)之间的，则只需要每个数都除以m即可，即取
+    //         γ[n]=X[n]/m
+    // 　　
+    // 　　2. 线性同余法产生均匀型伪随机数需要注意什么？
+    //
+    // 　　　2.1）种子数是在计算时随机给出的。比如C语言中用srand(time(NULL))函数进行随机数种子初始化。
+    //
+    // 　　   2.2）决定伪随机数质量的是其余的三个参数，即a,b,m决定生成伪随机数的质量（质量指的是伪随机数序列的周期性）
+    //
+    // 　　   2.3）一般b不为0。如果b为零，线性同余法变成了乘同余法，也是最常用的均匀型伪随机数发生器。
+    //
+    // 　　3. 高性能线性同余法参数取值要求？
+    //
+    // 　　　3.1）一般选取方法：乘数a满足a=4p+1；增量b满足b=2q+1。其中p，q为正整数。 PS:不要问我为什么，我只是搬运工，没有深入研究过这个问题。
+    //
+    // 　　   3.2）m值得话最好是选择大的，因为m值直接影响伪随机数序列的周期长短。记得Java中是取得32位2进制数吧。
+    //
+    // 　　   3.3）a和b的值越大，产生的伪随机数越均匀
+    //
+    // 　　　3.4）a和m如果互质，产生随机数效果比不互质好。
+    //endregion
     getRand: function(min, max){
-        let time = new Date().getTime()
+        const a = 401  // a = 4p + 1
+        const b = 301  // b = 2q + 1
+        const m = 123456789
+        if(lastSeed == undefined) lastSeed = new Date().getTime()
+        let seed2 = (a * lastSeed + b) % m
+        lastSeed = seed2
         let gap = max - min + 1
-        let rawRand = time % gap
+        let rawRand = seed2 % gap
         let rand = rawRand + min
         return rand
     },
 
     //count: the count of return rand numbers.
     //canBeSame: if the rand numbers can be same.
-    //todo the second rand is always 1 larger than the first rand.  because 2nd is calculated just behind 1st.
     //solution: digest the big rand (time) to generate a new rand.
     getRandList: function(min, max, count, canBeSame){
         let rands = []
         if(canBeSame){
             for(let i = 0; i < count; i++){
-                rands.push[testUtility.getRand(min, max)]
+                rands.push(testUtility.getRand(min, max))
             }
         }
         else{
