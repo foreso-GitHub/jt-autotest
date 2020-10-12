@@ -265,7 +265,7 @@ module.exports = testUtility = {
     cloneArray: function(originalArray){
         let newArray = []
         originalArray.forEach((item) => {
-            newArray.push(item)
+            newArray.push(testUtility.isArray(item) ? testUtility.cloneArray(item) : item)
         })
         return newArray
     },
@@ -324,6 +324,10 @@ module.exports = testUtility = {
     //     })
     //     return cloneArray
     // },
+
+    isArray: function(object){
+        return Object.prototype.toString.apply(object) === '[object Array]'
+    },
     //endregion
 
     //region rand number

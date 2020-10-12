@@ -900,7 +900,7 @@ module.exports = framework = {
         if(originalParams.to != null) params.to = originalParams.to
         if(originalParams.value != null) params.value = originalParams.value
         if(originalParams.fee != null) params.fee = originalParams.fee
-        if(originalParams.memos != null) params.memos = originalParams.memos  //todo memos is an array, may need clone, not assign
+        if(originalParams.memos != null) params.memos = utility.cloneArray(originalParams.memos)
         if(originalParams.type != null) params.type = originalParams.type
         if(originalParams.name != null) params.name = originalParams.name
         if(originalParams.symbol != null) params.symbol = originalParams.symbol
