@@ -147,7 +147,7 @@ module.exports = tcsBugInjection = {
             otherParams.initNodeCount = 5
             otherParams.execNodeCount = 5
             otherParams.execCmdsFunc = tcsBugInjection.delay0_1_5
-            otherParams.timeAfterResetCmds = 60000
+            otherParams.timeAfterResetCmds = 60000  //確保网络延时测试需要60s來恢復
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestCase(testCases, testCase)
 
@@ -156,7 +156,7 @@ module.exports = tcsBugInjection = {
             otherParams.initNodeCount = 5
             otherParams.execNodeCount = 1
             otherParams.execCmdsFunc = tcsBugInjection.delay0_1_5
-            otherParams.timeAfterResetCmds = 60000
+            otherParams.timeAfterResetCmds = 60000  //確保网络延时测试需要60s來恢復
             // otherParams.execNode = jtNodes[0]  //指定执行的node为bd，不然会随机选择
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestCase(testCases, testCase)
@@ -167,12 +167,13 @@ module.exports = tcsBugInjection = {
 
             //region 断网测试
 
+            testCases = []
+
             title = '0010\t共识节点故障测试_01：至少5个共识节点，断开一个共识节点的网络'
             otherParams = {}
             otherParams.initNodeCount = 5
             otherParams.execNodeCount = 1
             testCase = tcsBugInjection.createTestCase(server, title, otherParams)
-            testCase.restrictedLevel = restrictedLevel.L4  //todo 断网测试容易导致区块不再上升。修复问题后再除去这句代码。
             framework.addTestCase(testCases, testCase)
             framework.testTestCases(server, describeTitle + '_断网测试', testCases)  //node operation will conflict.  so one case, one test.
 
@@ -192,7 +193,6 @@ module.exports = tcsBugInjection = {
 
         })
     },
-
 
     //region exec/check p2p
     createTestCase: function(server, title, otherParams){
@@ -281,7 +281,7 @@ module.exports = tcsBugInjection = {
         )
         testCase.otherParams.timeAfterExecCmds = 60000
         testCase.otherParams.resetCmdsFunc = tcsBugInjection.resetTc
-        testCase.otherParams.timeAfterResetCmds = 20000
+        testCase.otherParams.timeAfterResetCmds = 60000
         testCase.otherParams.allNodes = jtNodes
         return testCase
     },
