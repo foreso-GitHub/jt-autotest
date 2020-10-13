@@ -8,7 +8,7 @@ let commonPaths = {
 }
 
 let rpcSettings = {
-    request_timeout: 6000,
+    request_timeout: 6000,  //important: rpc request timeout setting.  if request_timeout <= 0, then request timeout will be ignore.
 }
 
 module.exports = {
