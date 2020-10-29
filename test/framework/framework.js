@@ -840,7 +840,8 @@ module.exports = framework = {
     checkResponseError: function(testCase, message, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(message).to.contains(expectedError)
+            // expect(message).to.contains(expectedError)
+            expect(message.result[0].error).to.contains(expectedError)
         }
     },
     //endregion
