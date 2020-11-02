@@ -24,7 +24,7 @@ function chainDataCreator(){
                 modes = allModes
             }
 
-            if(!chainDatas){
+            if(forceCreate || !chainDatas){
                 chainDatas = []
             }
             let modesNeedCreateChainData = []
