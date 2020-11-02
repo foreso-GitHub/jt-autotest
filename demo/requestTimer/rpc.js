@@ -94,6 +94,9 @@ module.exports = rpc = {
             this.RPC_POST(server.url, methodName, params).then(function(data){
                 if (data != null && JSON.stringify(data.result) !== '{}'){
                     logger.debug('---Result: ', data)  //important logger
+                    if(data.message){
+                        logger.debug('---message.result: ', JSON.stringify(data.message.result))
+                    }
                     resolve(data)
                 }
                 else{
