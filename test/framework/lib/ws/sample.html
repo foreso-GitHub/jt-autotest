@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        #input {
+            width:80%;
+        }
+        #output {
+            max-width: 100% !important;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+    </style>
+    <script>
+        window.addEventListener("load", function (evt) {
+            var output = document.getElementById("output");
+            var input = document.getElementById("input");
+            var ws;
+            var print = function (title, message) {
+                var d = document.createElement("div");
+                if(message != null){
+                    d.innerHTML = "<b>" + title + "</b> " + message;
+                }else{
+                    d.innerHTML = "<b>" + title + "</b>";
+                }
+
+                output.appendChild(d);
+            };
+            document.getElementById("open").onclick = function (evt) {
+                if (ws) {
+                    return false;
+                }
+                ws = new WebSocket("ws://121.89.209.19:9546/v1/subscribe");
+                ws.onopen = function (evt) {
+                    print("OPEN");
+                }
+                ws.onclose = function (evt) {
+                    print("CLOSE");
+                    ws = null;
+                }
+                ws.onmessage = function (evt) {
+                    print("", evt.data);
+                }
+                ws.onerror = function (evt) {
+                    print("ERROR", evt.data);
+                }
+                return false;
+            };
+            document.getElementById("send").onclick = function (evt) {
+                if (!ws) {
+                    return false;
+                }
+                print(">>", input.value);
+                ws.send(input.value);
+                return false;
+            };
+            document.getElementById("close").onclick = function (evt) {
+                if (!ws) {
+                    return false;
+                }
+                ws.close();
+                return false;
+            };
+        });
+    </script>
+</head>
+
+<body>
+<table>
+    <tr>
+        <td valign="top">
+            <p>Click "Open" to create a connection to the server,
+                "Send" to send a message to the server and "Close" to close the connection.
+                You can change the message and send multiple times.
+            <p>
+                <form>
+                    <button id="open">Open</button>
+                    <button id="close">Close</button>
+            <p><input id="input" type="text" value='{"id":0,"method":"jt_subscribe","params":["block"]}' /></p>
+            <p><button id="send">Send</button></p>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">
+            <div id="output"></div>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

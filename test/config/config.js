@@ -1,5 +1,6 @@
 //region require
 let rpc = require('../framework/lib/rpc/rpcInterface.js')
+let ws = require('../framework/lib/ws/websocketInterface.js')
 let swtclib = require('../framework/lib/swtclib/swtclibInterface.js')
 const { status,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const { data, token, txs, blocks } = require("../testData/testData")
@@ -24,6 +25,7 @@ let rpc_yun_baidu = new rpc()
 let rpc_yun_tengxun = new rpc()
 let rpc_yun_huawei = new rpc()
 let rpc_yun_tianyi = new rpc()
+let ws_yun_ali = new ws()
 let lib_main = new swtclib()
 let lib_test = new swtclib()
 let servers = [rpc_7545, rpc_9545, lib_main, lib_test]
@@ -142,6 +144,8 @@ let mode_rpc_box02 = {
 //endregion
 
 //region cloud config
+
+//region rpc
 let mode_rpc_yun_ali = {
     name: "rpc_yun_ali",
     server: rpc_yun_ali,
@@ -231,6 +235,27 @@ let mode_rpc_yun_tianyi = {
     defaultFee: "10",
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
 }
+//endregion
+
+//region ws
+let mode_ws_yun_ali = {  //todo need test ws mode again.
+    name: "ws_yun_ali",
+    server: ws_yun_ali,
+    initParams: {url:'ws://121.89.209.19:9546'},
+    chainDataName: "rpc_yun_chain_data",
+    accountsName: "rpc_yun_chain_accounts",
+    service: serviceType.newChain,
+    interface: interfaceType.websocket,
+    testMode: testMode.batchMode,
+    restrictedLevel: restrictedLevel.L3,
+    defaultBlockTime: 5000,
+    retryPauseTime: 1000,
+    retryMaxCount: 16,
+    defaultValue: "1",
+    defaultFee: "10",
+    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+}
+//endregion
 
 //endregion
 
@@ -239,7 +264,7 @@ let mode_rpc_yun_tianyi = {
 let mode_lib_mainnet = {
     name: "lib_main",
     server: lib_main,
-    initParams: {url:'wss://c05.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
+    initParams: {url:'wss://c02.jingtum.com:5020', issuer:'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'},
     chainDataName: "lib_main",
     accountsName: "lib_main",
     service: serviceType.oldChain,

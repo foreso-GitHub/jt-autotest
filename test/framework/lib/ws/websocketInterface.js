@@ -188,7 +188,7 @@ function websocketInterface() {
 
     //region common methods
 
-    swtclibInterface.prototype.getResponse = function (server, methodName, params) {
+    websocketInterface.prototype.getResponse = function (server, methodName, params) {
         baseInterface.prototype.getResponse(server, methodName, params)
         return new Promise(async (resolve, reject) => {
             if(this.remote.isConnected()){

@@ -851,26 +851,57 @@ module.exports = framework = {
     //region common functions
 
     //region process sequence
+
+    //region getSequence v1
+    // getSequence: function(server, from){
+    //     return new Promise(function (resolve){
+    //         // let key = from + '@' + server.getName()
+    //         let key = from
+    //         if(_SequenceMap.has(key)){
+    //             logger.debug("===get sequence from map:" + _SequenceMap.get(key))
+    //             resolve(_SequenceMap.get(key))
+    //         }
+    //         else{
+    //             Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
+    //                 let sequence = Number(accountInfo.result.Sequence)
+    //                 framework.setSequence(server.getName(), from, sequence)
+    //                 logger.debug("===get sequence from accountInfo:" + JSON.stringify(accountInfo))
+    //                 resolve(sequence)
+    //             }).catch(function (error){
+    //                 logger.debug("Error!!! " + error)
+    //             })
+    //         }
+    //     })
+    // },
+    //endregion
+
+    //region getSequence v2
     getSequence: function(server, from){
         return new Promise(function (resolve){
             // let key = from + '@' + server.getName()
             let key = from
+            let local_sequence = -1
+            let remote_sequence = -1
+            let sequence = -1
+
             if(_SequenceMap.has(key)){
-                logger.debug("===getSequence:" + _SequenceMap.get(key))
-                resolve(_SequenceMap.get(key))
+                local_sequence = _SequenceMap.get(key)
+                logger.debug("===get sequence from map: " + local_sequence)
             }
-            else{
-                Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-                    // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
-                    let sequence = Number(accountInfo.result.Sequence)
-                    framework.setSequence(server.getName(), from, sequence)
-                    resolve(sequence)
-                }).catch(function (error){
-                    logger.debug("Error!!! " + error)
-                })
-            }
+
+            Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
+                remote_sequence = Number(accountInfo.result.Sequence)
+                logger.debug("===get sequence from accountInfo: " + remote_sequence)
+                sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
+                framework.setSequence(server.getName(), from, sequence)
+                logger.debug("===final sequence: " + sequence)
+                resolve(sequence)
+            }).catch(function (error){
+                logger.debug("Error!!! " + error)
+            })
         })
     },
+    //endregion
 
     getSequenceByChain: function(server, from){
         return new Promise(function (resolve){
