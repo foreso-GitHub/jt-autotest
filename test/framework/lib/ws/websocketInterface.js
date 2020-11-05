@@ -11,8 +11,6 @@ let utility = require('../../testUtility')
 
 function websocketInterface() {
 
-    this.id = 1
-
     //region constructor
     //inherits
     if (!(this instanceof websocketInterface)) {

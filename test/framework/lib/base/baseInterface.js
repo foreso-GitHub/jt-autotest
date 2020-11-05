@@ -9,6 +9,8 @@ let enums = require('../../enums')
 
 function baseInterface() {
 
+    this.id = 1
+
     //region constructor
     baseInterface.prototype.className = "baseInterface"
     baseInterface.prototype.mode = null

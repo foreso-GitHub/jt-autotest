@@ -15,8 +15,6 @@ const PARSER_TEXT_URLENCODED = 'application/x-www-form-urlencoded'
 
 function rpcServer() {
 
-    this.id = 1
-
     // region send http request
     this.send_request_get = function (url, callback) {
         this.sendRequest(url, 'GET', PARSER_TEXT_JSON, null, null, null, callback)
@@ -82,7 +80,7 @@ function rpcServer() {
         })
     },
 
-    this.RPC_POST = function (url, method, params) {
+    this.RPC_POST = function (url, data) {
         if(url == null || url.isEmpty){
             return new Promise((resolve, reject) => {
                 let result = {}
@@ -95,11 +93,6 @@ function rpcServer() {
         let username = null
         let password = null
         let parserText = PARSER_TEXT_JSON
-        let data = {}
-        data.jsonrpc = '2.0'
-        data.id = this.id++
-        data.method = method
-        data.params = params
         logger.debug('---Params: ' + JSON.stringify(data))  //important logger
         return this.sendRequest(url, requestMethod, parserText, data, username, password)
     }

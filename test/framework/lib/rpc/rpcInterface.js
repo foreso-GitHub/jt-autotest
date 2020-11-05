@@ -41,7 +41,8 @@ function rpcInterface() {
     rpcInterface.prototype.getResponse = function (server, methodName, params) {
         baseInterface.prototype.getResponse(server, methodName, params)
         return new Promise((resolve, reject) => {
-            this.server.RPC_POST(this.url, methodName, params).then(function(data){
+            let data = baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params)
+            this.server.RPC_POST(this.url, data).then(function(data){
                 if (data != null && JSON.stringify(data.result) !== '{}'){
                     logger.debug('---Result: ', data)  //important logger
                     if(data.message){
