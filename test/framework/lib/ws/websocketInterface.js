@@ -61,7 +61,7 @@ function websocketInterface() {
             const ws = new WebSocket(url)
 
             ws.on('open', function open() {
-                console.log('open')
+                // console.log('open')
                 ws.send(content);
             })
 
@@ -72,7 +72,7 @@ function websocketInterface() {
             })
 
             ws.on('close', function close() {
-                console.log('disconnected')
+                // console.log('disconnected')
             })
         })
 
