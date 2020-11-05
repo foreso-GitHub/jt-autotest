@@ -1347,15 +1347,6 @@ module.exports = framework = {
     //endregion
 
     //region active server
-    initServer: function(mode){
-        if(mode.service ==  serviceType.newChain){
-            mode.server = new rpc()
-        }else if(mode.service ==  serviceType.oldChain){
-            mode.server = new swtclib()
-        }
-        mode.server.init(mode)
-    },
-
     activeServer: function(mode){
         let server = mode.server
         mode.server.init(mode)

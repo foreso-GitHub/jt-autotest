@@ -242,6 +242,15 @@ function baseInterface() {
     baseInterface.prototype.valueToAmount = function (value) {
         return value
     }
+
+    baseInterface.prototype.createJsonRpcRequestContent = function(id, method, params){
+        let data = {}
+        data.jsonrpc = '2.0'
+        data.id = id
+        data.method = method
+        data.params = params
+        return data
+    }
     //endregion
 
 }

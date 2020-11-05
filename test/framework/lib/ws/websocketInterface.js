@@ -1,14 +1,17 @@
 //region require
+let WebSocket = require('ws');
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let util = require('util')
 let baseInterface = require('../base/baseInterface')
-let enums = require('../../enums')
+let utility = require('../../testUtility')
 //endregion
 
 
 function websocketInterface() {
+
+    this.id = 1
 
     //region constructor
     //inherits
@@ -38,26 +41,47 @@ function websocketInterface() {
     //region common methods
     websocketInterface.prototype.getResponse = function (server, methodName, params) {
         baseInterface.prototype.getResponse(server, methodName, params)
-        return new Promise((resolve, reject) => {
-            this.server.RPC_POST(this.url, methodName, params).then(function(data){
-                if (data != null && JSON.stringify(data.result) !== '{}'){
-                    logger.debug('---Result: ', data)  //important logger
-                    if(data.message){
-                        logger.debug('---message.result: ', JSON.stringify(data.message.result))
-                    }
-                    resolve(data)
+        return new Promise(async (resolve, reject) => {
+            let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
+            let data = await websocketInterface.prototype.request(this.url, requestContent)
+            if (data != null && JSON.stringify(data.result) !== '{}'){
+                logger.debug('---Result: ', data)  //important logger
+                if(data.message){
+                    logger.debug('---message.result: ', JSON.stringify(data.message.result))
                 }
-                else{
-                    resolve(baseInterface.prototype.createError(data))
-                }
-            }, function (error) {
-                resolve(baseInterface.prototype.createError(error))
-            })
+                resolve(data)
+            }
+            else{
+                resolve(baseInterface.prototype.createError(data))
+            }
         })
     }
 
+
+    websocketInterface.prototype.request = function(url, content){
+        return new Promise((resolve, reject)=>{
+            const ws = new WebSocket(url)
+
+            ws.on('open', function open() {
+                console.log('open')
+                ws.send(content);
+            })
+
+            ws.on('message', function incoming(data) {
+                let result = JSON.parse(data)
+                resolve(result)
+                ws.close()
+            })
+
+            ws.on('close', function close() {
+                console.log('disconnected')
+            })
+        })
+
+    }
+
     websocketInterface.prototype.valueToAmount = function (value) {
-        return (value * 1000000).toString()
+        return (utility.valueToAmount(value)).toString()
     }
 
     //endregion
