@@ -241,7 +241,7 @@ let mode_rpc_yun_tianyi = {
 let mode_ws_yun_ali = {  //todo need test ws mode again.
     name: "ws_yun_ali",
     server: ws_yun_ali,
-    initParams: {url:'ws://121.89.209.19:9546'},
+    initParams: {url:'ws://121.89.209.19:9546/v1/jsonrpc'},
     chainDataName: "rpc_yun_chain_data",
     accountsName: "rpc_yun_chain_accounts",
     service: serviceType.newChain,
@@ -293,9 +293,10 @@ let mode_lib_mainnet = {
 //region modes
 let modes = [
     // mode_rpc_yun_ali,
+    mode_ws_yun_ali,
     // mode_rpc_yun_baidu,
     // mode_rpc_yun_tengxun,
-    mode_rpc_yun_huawei,
+    // mode_rpc_yun_huawei,
     // mode_rpc_yun_tianyi,
     // mode_rpc_newChain,
     // mode_rpc_box01,

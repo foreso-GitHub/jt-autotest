@@ -9,17 +9,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "",
     "chai": "^4.2.0",
     "chai-json-schema": "^1.5.1",
+    "hashmap": "^2.4.0",
+    "log4js": "^6.1.0",
     "mocha": "^5.2.0",
     "nativescript-websockets": "^1.5.3",
     "querystring": "^0.2.0",
     "request": "^2.79.0",
-    "log4js": "^6.1.0",
+    "ssh2-utils": "^1.0.28",
     "swtc-lib": "^1.6.39",
-    "hashmap": "^2.4.0",
-    "async": "",
-    "ssh2-utils": "^1.0.28"
+    "ws": "latest"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
