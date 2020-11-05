@@ -5,7 +5,7 @@ let logger = log4js.getLogger('default')
 let util = require('util')
 let RpcServer = require('./rpcServer')
 let baseInterface = require('../base/baseInterface')
-let enums = require('../../enums')
+let utility = require('../../testUtility')
 //endregion
 
 
@@ -50,23 +50,16 @@ function rpcInterface() {
                     resolve(data)
                 }
                 else{
-                    resolve(rpcInterface.prototype.createError(data))
+                    resolve(baseInterface.prototype.createError(data))
                 }
             }, function (error) {
-                resolve(rpcInterface.prototype.createError(error))
+                resolve(baseInterface.prototype.createError(error))
             })
         })
     }
 
-    rpcInterface.prototype.createError = function(error){
-        let result = {}
-        result.status = enums.responseStatus.error
-        result.error = error
-        return result
-    }
-
     rpcInterface.prototype.valueToAmount = function (value) {
-        return (value * 1000000).toString()
+        return (utility.valueToAmount(value)).toString()
     }
 
     rpcInterface.prototype.uploadFile = function (url, fileName){

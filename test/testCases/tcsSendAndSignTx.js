@@ -85,10 +85,32 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填"' + testCaseParams.txParams[0].value + '"等'
+        testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填1/SWT等'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "123/swt"
+                testCaseParams.txParams[0].value = "1/SWT"
+            })
+            //only test when send swt
+            if(testCaseParams.txParams[0].symbol == null) {
+                framework.addTestCase(testCases, testCase)
+            }
+        }
+
+        testCaseParams.title = '0021\t发起' + categoryName + '有效交易_02: 交易额填1/swt'
+        {
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
+                testCaseParams.txParams[0].value = "1/swt"
+            })
+            //only test when send swt
+            if(testCaseParams.txParams[0].symbol == null) {
+                framework.addTestCase(testCases, testCase)
+            }
+        }
+
+        testCaseParams.title = '0022\t发起' + categoryName + '有效交易_02: 交易额填1/Swt等'
+        {
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
+                testCaseParams.txParams[0].value = "1/Swt"
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {

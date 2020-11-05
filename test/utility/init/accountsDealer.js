@@ -12,7 +12,7 @@ const utility = require("../../framework/testUtility.js")
 
 const ACCOUNT_COUNT = 100
 const ACCOUNT_MIN_BALANCE = 50*1000000
-const ACCOUNT_CHARGE_AMOUNT = 100
+const ACCOUNT_CHARGE_AMOUNT = 100000
 let charger = new Charger()
 let root = {}
 let server

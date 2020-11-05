@@ -4,6 +4,7 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const consts = require('./consts')
 const utility = require('../../testUtility')
+let enums = require('../../enums')
 //endregion
 
 function baseInterface() {
@@ -227,6 +228,13 @@ function baseInterface() {
     baseInterface.prototype.getResponse = function (server, methodName, params) {
         logger.debug('---Trying to invoke ' + methodName + '!')     //important logger
         // logger.debug('---Params: ' + JSON.stringify(params))   //important logger
+    }
+
+    baseInterface.prototype.createError = function(error){
+        let result = {}
+        result.status = enums.responseStatus.error
+        result.error = error
+        return result
     }
 
     //convert value, because in old chain and new chain, value is different.  in old chain, value decimals is 6. in new chain, value must be integer.

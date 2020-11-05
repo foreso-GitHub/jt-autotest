@@ -458,5 +458,22 @@ module.exports = testUtility = {
         return date.toISOString().replace(/:/g, '-')
     },
     //endregion
+
+    //region get real value
+    getRealValue: function(value){
+        valueString = value.toLowerCase()
+        let index = valueString.indexOf('/swt')
+        if(index != -1){
+            return testUtility.valueToAmount(Number(valueString.substring(0, index)))
+        }
+        else{
+            return Number(value)
+        }
+    },
+
+    valueToAmount: function(value){
+        return value * 1000000
+    },
+    //endregion
 }
 

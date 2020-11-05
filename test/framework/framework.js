@@ -501,12 +501,12 @@ module.exports = framework = {
             let expectedValue
             if(mode.service == serviceType.oldChain){
                 expectedFee = mode.defaultFee
-                expectedValue = Number(txParams.value) * 1000000
+                expectedValue = utility.valueToAmount(Number(txParams.value))
             }
             else
             {
                 expectedFee = (txParams.fee) ? txParams.fee : mode.defaultFee
-                expectedValue = Number(txParams.value)
+                expectedValue = utility.getRealValue(txParams.value)
             }
 
             expect(tx.Fee).to.be.equals(expectedFee.toString())
