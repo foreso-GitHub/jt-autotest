@@ -153,7 +153,7 @@ let mode_rpc_box02 = {
 //region cloud config
 
 //region rpc
-let mode_rpc_yun_ali = {
+let mode_rpc_yun_ali = mode_template = {
     name: "rpc_yun_ali",
     server: rpc_yun_ali,
     initParams: {url:'http://121.89.209.19:9545/v1/jsonrpc'},
@@ -169,171 +169,57 @@ let mode_rpc_yun_ali = {
     defaultValue: "1",
     defaultFee: "10",
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
+    coin: {name:'TestCoin_1', symbol:'TSC_1', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'},
 }
 
-let mode_rpc_yun_baidu = {
-    name: "rpc_yun_baidu",
-    server: rpc_yun_baidu,
-    initParams: {url:'http://180.76.125.22:9545/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_rpc_yun_baidu = mode_template
+mode_rpc_yun_baidu.name = "rpc_yun_baidu"
+mode_rpc_yun_baidu.server = rpc_yun_baidu
+mode_rpc_yun_baidu.initParams = {url:'http://180.76.125.22:9545/v1/jsonrpc'}
 
-let mode_rpc_yun_tengxun = {
-    name: "rpc_yun_tengxun",
-    server: rpc_yun_tengxun,
-    initParams: {url:'http://45.40.240.50:9545/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_rpc_yun_tengxun  = mode_template
+mode_rpc_yun_tengxun.name = "rpc_yun_tengxun"
+mode_rpc_yun_tengxun.server = rpc_yun_tengxun
+mode_rpc_yun_tengxun.initParams = {url:'http://45.40.240.50:9545/v1/jsonrpc'}
 
-let mode_rpc_yun_huawei = {
-    name: "rpc_yun_huawei",
-    server: rpc_yun_huawei,
-    initParams: {url:'http://121.37.216.100:9545/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_rpc_yun_huawei  = mode_template
+mode_rpc_yun_huawei.name = "rpc_yun_huawei"
+mode_rpc_yun_huawei.server = rpc_yun_huawei
+mode_rpc_yun_huawei.initParams = {url:'http://121.37.216.100:9545/v1/jsonrpc'}
 
-let mode_rpc_yun_tianyi = {
-    name: "rpc_yun_tianyi",
-    server: rpc_yun_tianyi,
-    initParams: {url:'http://61.171.12.71:9545/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_rpc_yun_tianyi  = mode_template
+mode_rpc_yun_tianyi.name = "rpc_yun_tianyi"
+mode_rpc_yun_tianyi.server = rpc_yun_tianyi
+mode_rpc_yun_tianyi.initParams = {url:'http://61.171.12.71:9545/v1/jsonrpc'}
+
 //endregion
 
 //region ws
-let mode_ws_yun_ali = {  //todo need test ws mode again.
-    name: "ws_yun_ali",
-    server: ws_yun_ali,
-    initParams: {url:'ws://121.89.209.19:9546/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.websocket,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_ws_yun_ali = mode_template
+mode_ws_yun_ali.name = "ws_yun_ali"
+mode_ws_yun_ali.server = ws_yun_ali
+mode_ws_yun_ali.initParams = {url:'ws://121.89.209.19:9546/v1/jsonrpc'}
 
-let mode_ws_yun_baidu = {
-    name: "ws_yun_baidu",
-    server: ws_yun_baidu,
-    initParams: {url:'ws://180.76.125.22:9546/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_ws_yun_baidu = mode_template
+mode_ws_yun_baidu.name = "ws_yun_baidu"
+mode_ws_yun_baidu.server = ws_yun_baidu
+mode_ws_yun_baidu.initParams =  {url:'ws://180.76.125.22:9546/v1/jsonrpc'}
 
-let mode_ws_yun_tengxun = {
-    name: "ws_yun_tengxun",
-    server: ws_yun_tengxun,
-    initParams: {url:'ws://45.40.240.50:9546/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_ws_yun_tengxun = mode_template
+mode_ws_yun_tengxun.name = "ws_yun_tengxun"
+mode_ws_yun_tengxun.server = ws_yun_tengxun
+mode_ws_yun_tengxun.initParams = {url:'ws://45.40.240.50:9546/v1/jsonrpc'}
 
-let mode_ws_yun_huawei = {
-    name: "ws_yun_huawei",
-    server: ws_yun_huawei,
-    initParams: {url:'ws://121.37.216.100:9546/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_ws_yun_huawei = mode_template
+mode_ws_yun_huawei.name = "ws_yun_huawei"
+mode_ws_yun_huawei.server = ws_yun_huawei
+mode_ws_yun_huawei.initParams = {url:'ws://121.37.216.100:9546/v1/jsonrpc'}
 
-let mode_ws_yun_tianyi = {
-    name: "ws_yun_tianyi",
-    server: ws_yun_tianyi,
-    initParams: {url:'ws://61.171.12.71:9546/v1/jsonrpc'},
-    chainDataName: "rpc_yun_chain_data",
-    accountsName: "rpc_yun_chain_accounts",
-    service: serviceType.newChain,
-    interface: interfaceType.rpc,
-    testMode: testMode.batchMode,
-    restrictedLevel: restrictedLevel.L3,
-    defaultBlockTime: 5000,
-    retryPauseTime: 1000,
-    retryMaxCount: 16,
-    defaultValue: "1",
-    defaultFee: "10",
-    root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-}
+let mode_ws_yun_tianyi = mode_template
+mode_ws_yun_tianyi.name = "ws_yun_tianyi"
+mode_ws_yun_tianyi.server = ws_yun_tianyi
+mode_ws_yun_tianyi.initParams = {url:'ws://61.171.12.71:9546/v1/jsonrpc'}
+
 //endregion
 
 //endregion

@@ -13,6 +13,7 @@ let consts = {
         getAccount: 'jt_getAccount',
         getAccounts: 'jt_accounts',
         getBalance:'jt_getBalance',
+        getCurrency:'jt_getCurrency',
         getTransactionReceipt:'jt_getTransactionReceipt',
         getTransactionByHash:'jt_getTransactionByHash',
         getTransactionByIndex:'jt_getTransactionByIndex',

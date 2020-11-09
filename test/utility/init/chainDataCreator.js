@@ -4,6 +4,7 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const { modes, allModes, } = require("../../config/config")
 const { commonPaths } = require("../../config/basicConfig")
+const consts = require('../../framework/lib/base/consts')
 let { chainDatas } = require("../../testData/chainDatas")
 const utility = require("../../framework/testUtility.js")
 const AccountsDealer = require('./accountsDealer')
@@ -75,30 +76,44 @@ function chainDataCreator(){
         let sender = mode.addresses.sender1
         let sequence3 = mode.addresses.sequence3
         const to = mode.addresses.receiver1.address
+        let coin = mode.coin
+        let coinName = mode.coin.name
+        let symbol = mode.coin.symbol
         let params
         let result
 
-        //todo now only CNYT can be issue, need update here
+        //region issue coin
         let rootResponse = await server.responseGetAccount(server, root.address)
         let rootSequence = rootResponse.result.Sequence
 
-        // params = server.createTxParams(
-        //     root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, '1', null, null,
-        //     null, null, null, null, null, null, null)
-        // params[0].value = value
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address)
+        //check if coin exists
+        let currenyResponse = await server.responseGetCurrency(server, symbol)
+        if(!(currenyResponse.result
+            && currenyResponse.result.TotalSupply
+            && currenyResponse.result.TotalSupply.currency == symbol)){
+            //if not, then issue
+            params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
+                coinName, symbol, '8', '99999999', false, consts.flags.both, '0.00001')
+            result = await server.responseSendTx(server, params)
+            txResults.push(result)
+        }
+
+        //region send coin
+
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, coin)
         txResults.push(result)
-        //batch charge CNYT
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.sender1.address)
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.sender2.address)
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.sender3.address)
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.receiver1.address)
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address)
-        result = await chargeCNYT(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address)
+        //batch charge coin
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender1.address, coin)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender2.address, coin)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender3.address, coin)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver1.address, coin)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address, coin)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address, coin)
 
         //get sequence
         let response = await server.responseGetAccount(server, sender.address)
         let sequence = response.result.Sequence
+        //endregion
 
         //issue token
         //todo need issue 2 tokens, with and without issuer.
@@ -118,6 +133,8 @@ function chainDataCreator(){
         // params[0].value = '1' + showSymbol
         // result = await server.responseSendTx(server, params)
         // txResults.push(result)
+
+        //endregion
 
         //normal swtc tx
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
@@ -143,7 +160,9 @@ function chainDataCreator(){
         }
 
         //make a tx for sequence3 account, to make 0650 case work
-        params = server.createTxParams(sequence3.address, sequence3.secret, 1, to, '1',
+        response = await server.responseGetAccount(server, sequence3.address)
+        sequence = response.result.Sequence
+        params = server.createTxParams(sequence3.address, sequence3.secret, sequence, to, '1',
             null, null,null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
         txResults.push(result)
@@ -173,12 +192,25 @@ function chainDataCreator(){
         return chainData
     }
 
-    async function chargeCNYT(server, from, secret, sequence, to){
+    async function chargeCNYT(server, from, secret, sequence, to, coin){
         let cnytCount = '999999'
         let cnytSymbol = 'CNYT'
         let cnytIssuer = 'jjjjjjjjjjjjjjjjjjjjjhoLvTp'
         // let value = cnytCount + '/' + cnytSymbol + '/' + cnytIssuer
         let value = utility.getShowValue(cnytCount, cnytSymbol, cnytIssuer)
+        let params = server.createTxParams(from, secret, sequence, to, '1', null, null,
+            null, null, null, null, null, null, null)
+        params[0].value = value
+        let result = await server.responseSendTx(server, params)
+        return result
+    }
+
+    async function chargeCoin(server, from, secret, sequence, to, coin){
+        let count = '999999'
+        let symbol = coin.symbol
+        let issuer = coin.issuer
+        // let value = cnytCount + '/' + cnytSymbol + '/' + cnytIssuer
+        let value = utility.getShowValue(count, symbol, issuer)
         let params = server.createTxParams(from, secret, sequence, to, '1', null, null,
             null, null, null, null, null, null, null)
         params[0].value = value

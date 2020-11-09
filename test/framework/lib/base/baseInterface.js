@@ -107,6 +107,14 @@ function baseInterface() {
     }
     //endregion
 
+    //region currency
+    baseInterface.prototype.responseGetCurrency = function (server, currency) {
+        let params = []
+        params.push(currency)
+        return this.getResponse(server, consts.rpcFunctions.getCurrency, params)
+    }
+    //endregion
+
     //region get tx
     baseInterface.prototype.getTx = async function (hash) {
         let response = await this.responseGetTxByHash(hash)

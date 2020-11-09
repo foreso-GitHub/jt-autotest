@@ -13,8 +13,8 @@ let creator = new ChainDataCreator()
 init()
 
 async function init(){
-    await init_new()
-    // await init_based_on_existed_accounts()
+    // await init_new()
+    await init_based_on_existed_accounts()
 }
 
 //no existing data, create new accounts and then create new chain data based on the new accounts.
@@ -28,7 +28,7 @@ async function init_new(){
 //suppose the accounts has been created.  just create chain data based on existed accounts.
 async function init_based_on_existed_accounts(){
     let modeAccounts = require('../../testData/accounts').modeAccounts
-    await creator.create(allModes, modeAccounts, true)
+    await creator.create(allModes, modeAccounts, false)
 }
 
 
