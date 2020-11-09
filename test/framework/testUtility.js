@@ -448,7 +448,13 @@ module.exports = testUtility = {
 
     //region clone json
     cloneJson: function(json) {
-        return JSON.parse(JSON.stringify(json));
+        return JSON.parse(JSON.stringify(json))
+    },
+
+    deepClone: function (obj) {
+        let objToStr = JSON.stringify(obj)
+        //return JSON.parse(objToStr)
+        return eval("(" + objToStr+ ")")
     },
     //endregion
 
