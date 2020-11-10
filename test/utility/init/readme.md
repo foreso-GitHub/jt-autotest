@@ -14,6 +14,8 @@
         
 ### 注意
    * 区块链重置后，必须要把所有的account数据(lib_main除外)删除然后重新生成一遍，不然nickname的测试会失败
+   * nickname只存在于本地节点，不存在于区块链上。也就是说，baidu节点的nickname：“aaa”和腾讯节点的nickname：“aaa”极有可能不是同一个地址。
+   * 一般而言，初始化使用baidu节点的rpc接口，因此初始化时的nickname只存在于baidu节点。因此getBalance检查nickname的case只有在baidu节点才能通过。
    
    
    

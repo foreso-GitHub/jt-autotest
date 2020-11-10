@@ -265,14 +265,14 @@ let mode_lib_mainnet = {
 //region modes
 let modes = [
     // mode_rpc_yun_ali,
-    // mode_rpc_yun_baidu,
+    mode_rpc_yun_baidu,
     // mode_rpc_yun_tengxun,
     // mode_rpc_yun_huawei,
     // mode_rpc_yun_tianyi,
 
     // mode_ws_yun_ali,
     // mode_ws_yun_baidu,
-    mode_ws_yun_tengxun,
+    // mode_ws_yun_tengxun,
     // mode_ws_yun_huawei,
     // mode_ws_yun_tianyi,
 

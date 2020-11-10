@@ -71,7 +71,6 @@ function chainDataCreator(){
         let txResults = []
         let server = mode.server
         server.init(mode)
-        // let root = mode.root
         let root = mode.addresses.rootAccount
         let sender = mode.addresses.sender1
         let sequence3 = mode.addresses.sequence3
@@ -85,23 +84,31 @@ function chainDataCreator(){
         let rootResponse = await server.responseGetAccount(server, root.address)
         let rootSequence = rootResponse.result.Sequence
 
-        //check if coin exists
+        //region check if global coin (without issuer) exists
         let currenyResponse = await server.responseGetCurrency(server, coin.symbol)
         if(!(currenyResponse.result
             && currenyResponse.result.TotalSupply
             && currenyResponse.result.TotalSupply.currency == coin.symbol)){
-            //if not, then issue with issuer
+            //if not, then issue global coin
             params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
                 coin.name, coin.symbol, '8', '99999999', false, consts.flags.both, '0.00001')
             result = await server.responseSendTx(server, params)
             txResults.push(result)
+        }
+        //endregion
 
-            //issue without issuer
+        //region check if local coin (with issuer) exists
+        currenyResponse = await server.responseGetCurrency(server, coin2.symbol, coin2.issuer)
+        if(!(currenyResponse.result
+            && currenyResponse.result.TotalSupply
+            && currenyResponse.result.TotalSupply.currency == coin2.symbol)){
+            //if not, then issue local coin
             params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
                 coin2.name, coin2.symbol, '8', '99999999', true, consts.flags.both, '0.00001')
             result = await server.responseSendTx(server, params)
             txResults.push(result)
         }
+        //endregion
 
         //region send coin
 
@@ -115,31 +122,21 @@ function chainDataCreator(){
         result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address, coin)
         result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address, coin)
 
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, coin2)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender1.address, coin2)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender2.address, coin2)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender3.address, coin2)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver1.address, coin2)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address, coin2)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address, coin2)
+
+        //endregion
+
+        //endregion
+
         //get sequence
         let response = await server.responseGetAccount(server, sender.address)
         let sequence = response.result.Sequence
-        //endregion
-
-        //issue token
-        //todo need issue 2 tokens, with and without issuer.
-        // let tokenName = utility.getDynamicTokenName()
-        // params = server.createIssueTokenParams(sender.address, sender.secret, sequence++,
-        //     tokenName.name, tokenName.symbol, '8', '99999999', false, consts.flags.normal, '0.00001')
-        // result = await server.responseSendTx(server, params)
-        // txResults.push(result)
-
-        //token tx
-        //todo now only CNYT can be issue, need update here
-        // let hash = result.result[0]
-        // await utility.getTxByHash(server, hash, 0) //wait for issue token done
-        // let showSymbol = utility.getShowSymbol(tokenName.symbol, 'jjjjjjjjjjjjjjjjjjjjjhoLvTp')
-        // params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
-        //     null, null, null, null, null, null, null)
-        // params[0].value = '1' + showSymbol
-        // result = await server.responseSendTx(server, params)
-        // txResults.push(result)
-
-        //endregion
 
         //normal swtc tx
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,

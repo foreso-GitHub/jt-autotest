@@ -113,9 +113,10 @@ function baseInterface() {
     //endregion
 
     //region currency
-    baseInterface.prototype.responseGetCurrency = function (server, currency) {
+    baseInterface.prototype.responseGetCurrency = function (server, currency, issuer) {
         let params = []
         params.push(currency)
+        if(issuer) params.push(issuer)
         return this.getResponse(server, consts.rpcFunctions.getCurrency, params)
     }
     //endregion
