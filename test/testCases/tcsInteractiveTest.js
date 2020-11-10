@@ -34,7 +34,7 @@ module.exports = tcsInteractiveTest = {
         let allServers = framework.activeAllRpcServers()
 
         let currency = {symbol:'swt', issuer:''}
-        let coin = server.mode.coin
+        let coin = server.mode.coins[0]
         let txFunction = consts.rpcFunctions.sendTx
         let title
         let testCase

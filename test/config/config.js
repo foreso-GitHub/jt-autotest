@@ -173,7 +173,10 @@ let mode_rpc_yun_ali = mode_template = {
     defaultValue: "1",
     defaultFee: "10",
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
-    coin: {name:'TestCoin_1', symbol:'TSC_1', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'},
+    coins: [
+        {name:'TestCoin_with_issuer_122', symbol:'TSC_122', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'},
+        {name:'TestCoin_without_issuer_123', symbol:'TSC_123', issuer:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'},
+    ],
 }
 
 let mode_rpc_yun_baidu = cloneMode(mode_template)
@@ -225,8 +228,6 @@ mode_ws_yun_tianyi.server = ws_yun_tianyi
 mode_ws_yun_tianyi.initParams = {url:'ws://61.171.12.71:9546/v1/jsonrpc'}
 
 //endregion
-
-
 
 //endregion
 

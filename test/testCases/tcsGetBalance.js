@@ -27,12 +27,9 @@ module.exports = tcsGetBalance = {
             let symbol = null //swtc
             tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
             if(server.mode.service == serviceType.newChain){
-                symbol = 'CNYT'   //token without issuer
+                symbol = server.mode.coins[0].symbol   //token with issuer
                 tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
-                //todo need make symbol dynamic, generated in init prog.
-                symbol = '5e69b0cc'   //token without issuer
-                tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
-                symbol = '5e69b0d4'   //token with issuer
+                symbol = server.mode.coins[1].symbol   //token without issuer
                 tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
             }
         })

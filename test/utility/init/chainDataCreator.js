@@ -76,9 +76,8 @@ function chainDataCreator(){
         let sender = mode.addresses.sender1
         let sequence3 = mode.addresses.sequence3
         const to = mode.addresses.receiver1.address
-        let coin = mode.coin
-        let coinName = mode.coin.name
-        let symbol = mode.coin.symbol
+        let coin = mode.coins[0]
+        let coin2 = mode.coins[1]
         let params
         let result
 
@@ -87,13 +86,19 @@ function chainDataCreator(){
         let rootSequence = rootResponse.result.Sequence
 
         //check if coin exists
-        let currenyResponse = await server.responseGetCurrency(server, symbol)
+        let currenyResponse = await server.responseGetCurrency(server, coin.symbol)
         if(!(currenyResponse.result
             && currenyResponse.result.TotalSupply
-            && currenyResponse.result.TotalSupply.currency == symbol)){
-            //if not, then issue
+            && currenyResponse.result.TotalSupply.currency == coin.symbol)){
+            //if not, then issue with issuer
             params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
-                coinName, symbol, '8', '99999999', false, consts.flags.both, '0.00001')
+                coin.name, coin.symbol, '8', '99999999', false, consts.flags.both, '0.00001')
+            result = await server.responseSendTx(server, params)
+            txResults.push(result)
+
+            //issue without issuer
+            params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
+                coin2.name, coin2.symbol, '8', '99999999', true, consts.flags.both, '0.00001')
             result = await server.responseSendTx(server, params)
             txResults.push(result)
         }

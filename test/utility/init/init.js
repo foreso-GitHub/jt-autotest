@@ -13,8 +13,8 @@ let creator = new ChainDataCreator()
 init()
 
 async function init(){
-    // await init_new()
-    await init_based_on_existed_accounts()
+    await init_new()
+    // await init_based_on_existed_accounts()
 }
 
 //no existing data, create new accounts and then create new chain data based on the new accounts.

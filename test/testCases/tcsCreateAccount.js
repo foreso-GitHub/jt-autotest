@@ -32,7 +32,7 @@ module.exports = tcsCreateAccount = {
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t创建无效的账户:重复的名字'
-        nickName = 'autotest_1'
+        nickName = server.mode.addresses.balanceAccount.nickName
         needPass = false
         expectedError = 'the nickname already exists'
         testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
