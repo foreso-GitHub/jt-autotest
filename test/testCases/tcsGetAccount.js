@@ -22,15 +22,23 @@ module.exports = tcsGetAccount = {
 
     //region get account
     testForGetAccount: function(server, describeTitle){
+        let globalCoin = server.mode.coins[0]
+        let localCoin = server.mode.coins[1]
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle + '， 原生币', null, null)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle + '， global coin', globalCoin.symbol, null)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle + '， local coin', localCoin.symbol, localCoin.issuer)
+    },
+
+    testForGetAccountByTag: function(server, describeTitle, symbol, issuer){
         describe(describeTitle, function () {
-            tcsGetAccount.testForGetAccountByTag(server, describeTitle, null)
-            tcsGetAccount.testForGetAccountByTag(server, describeTitle, 'validated')
-            tcsGetAccount.testForGetAccountByTag(server, describeTitle, 'current')
-            tcsGetAccount.testForGetAccountByTag(server, describeTitle, 'closed')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, null)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer,'validated')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer,'current')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer,'closed')
         })
     },
 
-    testForGetAccountByTag: function(server, describeTitle, tag){
+    testForGetAccountByParams: function(server, describeTitle, symbol, issuer, tag){
         let testCases = []
 
         describeTitle = describeTitle + '， tag为' + tag
@@ -39,13 +47,13 @@ module.exports = tcsGetAccount = {
         let addressOrName = server.mode.addresses.balanceAccount.address
         let needPass = true
         let expectedError = ''
-        let testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        let testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询有效的昵称_01:地址内有底层币和代币'
         addressOrName = server.mode.addresses.balanceAccount.nickName
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
@@ -53,7 +61,7 @@ module.exports = tcsGetAccount = {
         needPass = false
         //expectedError = 'no such account'
         expectedError = 'Account not found.'
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
@@ -61,28 +69,30 @@ module.exports = tcsGetAccount = {
         addressOrName = server.mode.addresses.inactiveAccount1.nickName
         //expectedError = 'Bad account address:'
         expectedError = 'invalid account'
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.address
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, tag, needPass, expectedError)
+        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },
 
-    createSingleTestCaseForGetAccount: function(server, title, addressOrName, tag, needPass, expectedError){
+    createSingleTestCaseForGetAccount: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){
 
         let functionName = consts.rpcFunctions.getAccount
         let txParams = []
         txParams.push(addressOrName)
+        if(symbol != null) txParams.push(symbol)
+        if(issuer != null) txParams.push(issuer)
         if(tag != null) txParams.push(tag)
         let expectedResult = {}
         expectedResult.needPass = needPass
@@ -112,7 +122,8 @@ module.exports = tcsGetAccount = {
         framework.checkResponse(needPass, response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
-            expect(Number(response.result.Balance)).to.be.above(0)
+            let valueString = utility.isJSON(response.result.Balance) ? response.result.Balance.value: response.result.Balance
+            expect(Number(valueString)).to.be.above(0)
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
