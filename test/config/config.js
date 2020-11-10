@@ -174,8 +174,8 @@ let mode_rpc_yun_ali = mode_template = {
     defaultFee: "10",
     root: {address: "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh", secret: "snoPBjXtMeMyMHUVTgbuqAfg1SUTb"},
     coins: [
-        {name:'TestCoin_with_issuer_122', symbol:'TSC_122', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'},
-        {name:'TestCoin_without_issuer_123', symbol:'TSC_123', issuer:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'},
+        {name:'TestCoin_global_2', symbol:'TSC_2', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'},
+        {name:'TestCoin_local_3', symbol:'TSC_3', issuer:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'},
     ],
 }
 
