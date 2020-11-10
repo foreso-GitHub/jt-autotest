@@ -23,15 +23,6 @@ function rpcInterface() {
     this.server = new RpcServer()
     baseInterface.prototype.className = "rpcInterface"
 
-    this.init = function(mode){
-        this.mode = mode
-        this.url = mode.initParams.url
-    }
-
-    this.getName = function(){
-        return "rpc@" + this.url
-    }
-
     this.close = function(){
         logger.debug('All done!')
     }

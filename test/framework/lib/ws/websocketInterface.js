@@ -22,15 +22,6 @@ function websocketInterface() {
     //set new value for prototype, must after inherits
     baseInterface.prototype.className = "websocketInterface"
 
-    this.init = function(mode){
-        this.mode = mode
-        this.url = mode.initParams.url
-    }
-
-    this.getName = function(){
-        return "ws@" + this.url
-    }
-
     this.close = function(){
         logger.debug('All done!')
     }

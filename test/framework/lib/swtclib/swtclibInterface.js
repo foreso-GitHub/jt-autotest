@@ -33,9 +33,9 @@ function swtclibInterface() {
         this.remote = new Remote({server: mode.initParams.url, issuer: mode.initParams.issuer})
     }
 
-    this.getName = function(){
-        return "swtc-lib@" + this.url
-    }
+    // this.getName = function(){
+    //     return "swtc-lib@" + this.url
+    // }
 
     this.connect = function(){
         logger.debug("Connecting ...")

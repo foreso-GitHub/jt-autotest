@@ -1099,7 +1099,6 @@ module.exports = framework = {
                     for(let i = 0; i < count; i++){
                         let index = i % serverCount
                         server = servers[index]
-                        logger.debug('---Sent by server: ' + server.mode.name + '@' + server.mode.initParams.url)  //important logger
                         let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                             accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                         let result = await server.getResponse(server, txFunctionName, params)
@@ -1227,8 +1226,7 @@ module.exports = framework = {
                 for(let i = 0; i < count; i++){
                     let index = i % serverCount
                     server = servers[index]
-                    logger.debug('---[' + (txNumber++).toString() + '/' + totalCount
-                        + ']. sent by server: ' + server.mode.name + '@' + server.mode.initParams.url) //important logger
+                    logger.debug('---[' + (txNumber++).toString() + '/' + totalCount + ']. ') //important logger
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = server.getResponse(server, txFunctionName, params)

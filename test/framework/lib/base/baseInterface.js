@@ -26,9 +26,14 @@ function baseInterface() {
 
     //region init and close
 
-    this.init = function(mode){
+    baseInterface.prototype.init = function(mode){
         this.mode = mode
+        this.name = mode.name
         this.url = mode.initParams.url
+    }
+
+    baseInterface.prototype.getName = function(){
+        return this.name + '@' + this.url
     }
 
     //endregion
@@ -236,7 +241,7 @@ function baseInterface() {
 
     //region common methods
     baseInterface.prototype.getResponse = function (server, methodName, params) {
-        logger.debug('---Trying to invoke ' + methodName + '!')     //important logger
+        logger.debug('---Trying to invoke ' + methodName + ', by ' + server.getName() + '!')     //important logger
         // logger.debug('---Params: ' + JSON.stringify(params))   //important logger
     }
 
