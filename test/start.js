@@ -18,6 +18,7 @@ const tcsCreateAccount = require('./testCases/tcsCreateAccount')
 const tcsGetAccount = require('./testCases/tcsGetAccount')
 const tcsGetAccounts = require('./testCases/tcsGetAccounts')
 const tcsGetBalance = require('./testCases/tcsGetBalance')
+const tcsGetCurrency = require('./testCases/tcsGetCurrency')
 const tcsGetReceipt = require('./testCases/tcsGetReceipt')
 const tcsGetTx = require('./testCases/tcsGetTx')
 const tcsGetTxCount = require('./testCases/tcsGetTxCount')
@@ -67,7 +68,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -85,6 +86,8 @@ describe('Jingtum测试', function() {
                 tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
 
                 tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+
+                tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
 
                 tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
 
@@ -133,7 +136,7 @@ describe('Jingtum测试', function() {
                 // endregion
 
                 //region special
-                // this.timeout(1800000)
+                // this.timeout(3600000)
                 // tcsBugInjection.test(server, '故障注入测试')
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
@@ -151,12 +154,15 @@ describe('Jingtum测试', function() {
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
                 // this.timeout(30000)
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 100, 12000)
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 1, 12000)
 
                 //region performance test
 
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-                //
+
+                // this.timeout(480000*100)
+                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 10)
+
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',allRpcServers, 1)
                 //
@@ -172,8 +178,20 @@ describe('Jingtum测试', function() {
                 // this.timeout(1800000)
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
 
-                // this.timeout(180000)
+                // this.timeout(360000)
                 // tcsBugInjection.test(server, '故障注入测试')
+
+                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
+                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
 
             })
         })
