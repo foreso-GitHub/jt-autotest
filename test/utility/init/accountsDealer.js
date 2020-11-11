@@ -31,8 +31,20 @@ function accountsDealer() {
     async function createAccounts(server, count){
         let accounts = []
         accounts.push(root)
-        for (let i = 1; i < count; i++) {
+
+        //walletAccount, balanceAccount, nickNameSender, nickNameReceiver, 4 accounts need use createAccount, so to test nick name.
+        for (let i = 1; i <= 4; i++) {
             let result = await createAccount(server)
+            if (result.success) {
+                accounts.push(result.account)
+            } else {
+                logger.debug(JSON.stringify((result)))
+            }
+        }
+
+        //other accounts need use createWallet, so no nick name, not exists in jt node.
+        for (let i = 1; i < count; i++) {
+            let result = await createWallet(server)
             if (result.success) {
                 accounts.push(result.account)
                 // logger.debug(JSON.stringify((result)))
@@ -53,21 +65,21 @@ function accountsDealer() {
         })
     }
 
-    function createWallet(server) {
+    function createAccount(server) {
         return new Promise((resolve, reject) => {
-            server.getResponse(server, consts.rpcFunctions.createWallet, []).then(async function (result) {
-                resolve({account: {address: result.result[0].address, secret: result.result[0].secret}, success: true})
+            let name = utility.getDynamicTokenName().name
+            server.getResponse(server, consts.rpcFunctions.createAccount, [name]).then(async function (result) {
+                resolve({account: {address: result.result[0].address, secret: result.result[0].secret, nickName: name,}, success: true})
             }).catch(function (error) {
                 reject({message: error, success: false})
             })
         })
     }
 
-    function createAccount(server) {
+    function createWallet(server) {
         return new Promise((resolve, reject) => {
-            let name = utility.getDynamicTokenName().name
-            server.getResponse(server, consts.rpcFunctions.createAccount, [name]).then(async function (result) {
-                resolve({account: {address: result.result[0].address, secret: result.result[0].secret, nickName: name,}, success: true})
+            server.getResponse(server, consts.rpcFunctions.createWallet, []).then(async function (result) {
+                resolve({account: {address: result.result[0].address, secret: result.result[0].secret,}, success: true})
             }).catch(function (error) {
                 reject({message: error, success: false})
             })
@@ -103,8 +115,19 @@ function accountsDealer() {
             walletAccount:{
                 address:accounts[i].address,
                 secret:accounts[i++].secret,
+                nickName: accounts[i++].nickName,
             },
             balanceAccount:{
+                address:accounts[i].address,
+                secret:accounts[i].secret,
+                nickName: accounts[i++].nickName,
+            },
+            nickNameSender:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+                nickName: accounts[i++].nickName,
+            },
+            nickNameReceiver:{
                 address:accounts[i].address,
                 secret:accounts[i].secret,
                 nickName: accounts[i++].nickName,
