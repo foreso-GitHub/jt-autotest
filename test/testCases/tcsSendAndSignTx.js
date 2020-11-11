@@ -129,7 +129,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
+        testCaseParams.title = '0031\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = '错误的秘钥'
@@ -140,7 +140,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0030\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
+        testCaseParams.title = '0032\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
@@ -210,7 +210,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0080\t发起' + categoryName + '无效交易_06: 交易额为字符串'
+        testCaseParams.title = '0081\t发起' + categoryName + '无效交易_06: 交易额为字符串'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "aawrwfsfs"
