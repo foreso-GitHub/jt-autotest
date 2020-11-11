@@ -107,8 +107,13 @@ let consts = {
             "engine_result_code":-190,
             "engine_result_message":"Missing/inapplicable prior transaction.",
         },
+    },
 
-    }
+    swtConsts:{
+        oneSwt: 1000000,
+        totalSwt: 100000000,
+        totalFee: 100000000000000,
+    },
 
     //endregion
 

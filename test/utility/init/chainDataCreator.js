@@ -9,6 +9,8 @@ let { chainDatas } = require("../../testData/chainDatas")
 const utility = require("../../framework/testUtility.js")
 const AccountsDealer = require('./accountsDealer')
 let accountsDealer = new AccountsDealer()
+const Charger = require('./charger')
+let charger = new Charger()
 //endregion
 
 
@@ -80,9 +82,16 @@ function chainDataCreator(){
         let params
         let result
 
-        //region issue coin
         let rootResponse = await server.responseGetAccount(server, root.address)
         let rootSequence = rootResponse.result.Sequence
+
+        //send more swt to sender accounts
+        let senders = [mode.addresses.sender1, mode.addresses.sender2, mode.addresses.sender3]
+        await charger.chargeAccounts(server, root, senders, 10000)
+
+        rootSequence += 3
+
+        //region issue coin
 
         //region check if global coin (without issuer) exists
         let currenyResponse = await server.responseGetCurrency(server, coin.symbol)

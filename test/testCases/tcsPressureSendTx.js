@@ -62,7 +62,7 @@ module.exports = tcsPressureSendTx = {
         let title
         let value = '0.000001'
         // let fee = '0.00001'
-        let valueInAmount = server.mode.service == serviceType.newChain ? value : value * 1000000
+        let valueInAmount = server.mode.service == serviceType.newChain ? value : value * consts.swtConsts.oneSwt
         let fee = server.mode.defaultFee
 
         title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
@@ -469,7 +469,7 @@ module.exports = tcsPressureSendTx = {
 
                 let value = '0.000001'
                 // let fee = '0.00001'
-                let valueInAmount = testCase.server.mode.service == serviceType.newChain ? value : value * 1000000
+                let valueInAmount = testCase.server.mode.service == serviceType.newChain ? value : value * consts.swtConsts.oneSwt
                 let fee = server.mode.defaultFee
 
                 //record balance before transfer

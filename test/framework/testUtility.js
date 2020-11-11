@@ -5,7 +5,7 @@ let logger = log4js.getLogger('default')
 const fs = require('fs')
 const { commonPaths } = require("../config/basicConfig")
 const {responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel,} = require('./enums')
-
+const consts = require('./lib/base/consts')
 //endregion
 
 let _LastDynamicalTimeSeed = 0
@@ -478,7 +478,7 @@ module.exports = testUtility = {
     },
 
     valueToAmount: function(value){
-        return value * 1000000
+        return value * consts.swtConsts.oneSwt
     },
     //endregion
 }
