@@ -14,6 +14,7 @@ let consts = {
         getAccounts: 'jt_accounts',
         getBalance:'jt_getBalance',
         getCurrency:'jt_getCurrency',
+        getVersion: 'jt_version',
         getTransactionReceipt:'jt_getTransactionReceipt',
         getTransactionByHash:'jt_getTransactionByHash',
         getTransactionByIndex:'jt_getTransactionByIndex',
@@ -113,6 +114,10 @@ let consts = {
         oneSwt: 1000000,
         totalSwt: 100000000,
         totalFee: 100000000000000,
+    },
+
+    versions:{
+        '20201105': 'v0.5.1-dev'
     },
 
     //endregion

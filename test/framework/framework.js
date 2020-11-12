@@ -1124,6 +1124,7 @@ module.exports = framework = {
                             }
 
                         }else{
+                            // logger.debug('---+++ isResponseStatusSuccess faile: ' + JSON.stringify(result))
                             testCase.otherParams.failResults.push(result)
                             accountParam.failCount++
                             totalFailCount++
@@ -1147,11 +1148,17 @@ module.exports = framework = {
     },
 
     checkSubCases: async function(testCase){
+        framework.printTps(testCase)
+
         let totalCount = testCase.otherParams.totalCount
         let totalSuccessCount = testCase.otherParams.totalSuccessCount
         let totalFailCount = testCase.otherParams.totalFailCount
+        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
+        expect(totalSuccessCount).to.be.equal(testCase.otherParams.totalShouldSuccessCount)
+        expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
+    },
 
-        //check tps
+    printTps: async function(testCase){
         let server = testCase.server
         let blockTime = server.mode.defaultBlockTime / 1000
 
@@ -1163,19 +1170,18 @@ module.exports = framework = {
         // logger.info("------endTxHash: " + endTxHash)
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index
-        logger.info("------endTx: " + JSON.stringify(endTx))
+        // logger.info("------endTx: " + JSON.stringify(endTx))
 
         let blocksInfo = await framework.getBlocksInfo(server, startBlockNumber, endBlockNumber)
         let blockCount = blocksInfo.txBlockCount
 
+        let totalCount = testCase.otherParams.totalCount
+        let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        let totalFailCount = testCase.otherParams.totalFailCount
         let tps1 = totalSuccessCount / blockCount / blockTime
         logger.info("totalSuccessCount: " + totalSuccessCount)
         logger.info("totalFailCount: " + totalFailCount)
         logger.info("Success tx tps: " + tps1)
-
-        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
-        expect(totalSuccessCount).to.be.equal(testCase.otherParams.totalShouldSuccessCount)
-        expect(totalFailCount).to.be.equal(testCase.otherParams.totalShouldFailCount)
     },
 
     //endregion

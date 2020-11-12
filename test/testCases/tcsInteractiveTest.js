@@ -41,8 +41,10 @@ module.exports = tcsInteractiveTest = {
         let testCases = []
         let subCaseFunctionParams
 
-
-        //NOTICE:0010到0080case会给receiver充值。如果不执行，0090开始的case可能因为receiver中的余额不足而失败。
+        //NOTICE: 0010到0080case会给receiver充值。如果不执行，0090开始的case可能因为receiver中的余额不足而失败。
+        //NOTICE: 交互测试的testMode必须按照单个case执行，不能使用batch模式，只能使用single模式
+        let realMode = server.mode.testMode
+        server.mode.testMode = testMode.singleMode
 
         describe(describeTitle, async function () {
 
@@ -432,6 +434,8 @@ module.exports = tcsInteractiveTest = {
             framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币同时混合', testCases)
             //endregion
 
+            // 恢复原先的testMode
+            server.mode.testMode = realMode
 
         })
 
@@ -440,12 +444,11 @@ module.exports = tcsInteractiveTest = {
     },
 
     createTestCase: function(server, title, caseRestrictedLevel, subCaseFunctionParams){
+        // return framework.createTestCaseForSubCases(server, title, tcsInteractiveTest.executeTest,
+        //     tcsInteractiveTest.checkSubCases, caseRestrictedLevel, subCaseFunctionParams)
         return framework.createTestCaseForSubCases(server, title, tcsInteractiveTest.executeTest,
             framework.checkSubCases, caseRestrictedLevel, subCaseFunctionParams)
     },
-
-    //1. create sub cases from subCaseFunctionParams
-    //2. execute sub cases by framework.executeSubCases
 
     executeTest: async function(testCase){
         let subCaseFunctionParamsList = testCase.otherParams.subCaseFunctionParamsList
@@ -545,8 +548,27 @@ module.exports = tcsInteractiveTest = {
             value.issuer = currency.issuer
         }
         return value
-    }
+    },
 
+    //endregion
+
+    //region check sub cases
+    checkSubCases: async function(testCase){
+        framework.printTps(testCase)
+
+        let totalCount = testCase.otherParams.totalCount
+        let totalSuccessCount = testCase.otherParams.totalSuccessCount
+        let totalFailCount = testCase.otherParams.totalFailCount
+        let totalShouldSuccessCount = testCase.otherParams.totalShouldSuccessCount ? testCase.otherParams.totalShouldSuccessCount : 0
+        let shouldSuccessCount = testCase.otherParams.shouldSuccessCount ? testCase.otherParams.shouldSuccessCount : 0
+
+        //部分交易可能成功，部分交易可能失败，不会出现双花现象，不会出现其他异常情况
+        expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
+        expect(totalSuccessCount).to.be.most(totalShouldSuccessCount)  //允许部分应该成功的交易失败
+        expect(totalFailCount).to.be.least(shouldSuccessCount)  //应该失败的交易必须失败
+
+        //todo 應該堅持balance。balance前後一致，說明沒有雙花。
+    },
     //endregion
 
     //endregion

@@ -12,6 +12,7 @@ const framework = require('./framework/framework')
 //endregion
 
 //region import test cases
+const tcsGetVersion = require('./testCases/tcsGetVersion')
 const tcsGetBlock = require('./testCases/tcsGetBlock')
 const tcsGetBlockNumber = require('./testCases/tcsGetBlockNumber')
 const tcsCreateAccount = require('./testCases/tcsCreateAccount')
@@ -72,6 +73,8 @@ describe('Jingtum测试', function() {
             describe('用例测试', function () {
 
                 //region basic test
+
+                tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
@@ -183,15 +186,21 @@ describe('Jingtum测试', function() {
 
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+
+
+
 
                 // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-
+                //
+                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+                //
+                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+                //
                 // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
+                //
                 // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
+
 
             })
         })
