@@ -105,7 +105,8 @@ module.exports = tcsGetBalance = {
         let functionName = consts.rpcFunctions.getBalance
         let txParams = []
         txParams.push(addressOrName)
-        txParams.push(symbol != null ? symbol : '')
+        // txParams.push(symbol != null ? symbol : '')
+        if(symbol != null) txParams.push(symbol)
         if(issuer != null) txParams.push(issuer)
         if(tag != null) txParams.push(tag)
         let expectedResult = {}
@@ -136,7 +137,7 @@ module.exports = tcsGetBalance = {
         framework.checkResponse(needPass, response)
         if(needPass){
             let symbol = testCase.txParams[1]
-            if(symbol == ''){  //todo suppose it is swtc, in fact, maybe not.  the better way is formats of balance of swtc and token are the same.
+            if(symbol == null || symbol == ''){  //todo suppose it is swtc, in fact, maybe not.  the better way is formats of balance of swtc and token are the same.
                 expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
                 expect(Number(response.result.balance)).to.be.above(0)
             }
