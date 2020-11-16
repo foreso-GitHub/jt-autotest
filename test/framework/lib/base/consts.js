@@ -117,7 +117,8 @@ let consts = {
     },
 
     versions:{
-        '20201105': 'v0.5.1-dev'
+        '20201105': 'v0.5.1-dev',
+        '20201114': 'v0.5.2-dev'
     },
 
     //endregion

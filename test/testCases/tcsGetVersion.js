@@ -14,6 +14,7 @@ const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/lib/base/consts')
+const jtVersion = require('../config/basicConfig').jtVersion
 let utility = require('../framework/testUtility')
 //endregion
 //endregion
@@ -55,7 +56,7 @@ module.exports = tcsGetVersion = {
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
             let version = response.result
-            expect(version).to.be.equal(consts.versions["20201105"])
+            expect(version).to.be.equal(consts.versions[jtVersion])
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
