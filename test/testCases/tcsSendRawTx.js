@@ -28,7 +28,7 @@ let _FailRawTx_LessFund = {tx: '120000228000000024000f24cb61400009184e729fff6840
 let _FailRawTx_EmptyRawTx = {tx: '',
     code: -278, message: 'empty raw transaction'}
 let _FailRawTx_WrongFormat_1 = {tx: '120000228000000024000f24cb61400009184e729fff68400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201617e755869b46252cdcaf0d1647b05029b55a67abe80ef877b796b765527da102205acf91905badfe2163a8ce7b64a360b69327399b04d1f21aafe863f684bd22fd8114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1a',
-    code: -189, message: 'runtime error: invalid memory address or nil pointer dereference'}
+    code: -278, message: 'runtime error: invalid memory address or nil pointer dereference'}
 let _FailRawTx_WrongFormat_2 = {tx: '120000228000000024000f24cb61400009184e729fff68400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201617e755869b46252cdcaf0d1647b05029b55a67abe80ef877b796b765527da102205acf91905badfe2163a8ce7b64a360b69327399b04d1f21aafe863f684bd22fd8114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1fa',
     code: 0, message: ''}
 let _FailRawTx_WrongFormat_3 = {tx: 123123,
@@ -84,7 +84,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t无效的单个交易数据：未激活的发送帐号'
+        title = '0021\t无效的单个交易数据：未激活的发送帐号'
         {
             successCount = 0
             failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_InactiveAccount, 1)
@@ -95,7 +95,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t无效的单个交易数据：余额不足'
+        title = '0022\t无效的单个交易数据：余额不足'
         {
             successCount = 0
             failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_LessFund, 1)
@@ -106,7 +106,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t无效的单个交易数据：空交易'
+        title = '0023\t无效的单个交易数据：空交易'
         {
             successCount = 0
             failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_EmptyRawTx, 1)
@@ -117,7 +117,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t无效的单个交易数据：参数为空数组'
+        title = '0024\t无效的单个交易数据：参数为空数组'
         {
             successCount = 0
             failRawTxs = []
@@ -128,7 +128,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t无效的单个交易数据：错误的rawTx格式1'
+        title = '0025\t无效的单个交易数据：错误的rawTx格式1'
         {
             successCount = 0
             failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_1, 1)
@@ -139,7 +139,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // title = '0020\t无效的单个交易数据：错误的rawTx格式2'  //todo need add
+        // title = '0026\t无效的单个交易数据：错误的rawTx格式2'  //todo need add
         // {
         //     successCount = 0
         //     failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_2, 1)
@@ -150,7 +150,7 @@ module.exports = tcsSendRawTx = {
         //     framework.addTestCase(testCases, testCase)
         // }
 
-        title = '0020\t无效的单个交易数据：错误的rawTx格式3'
+        title = '0027\t无效的单个交易数据：错误的rawTx格式3'
         {
             successCount = 0
             failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_3, 1)
@@ -161,7 +161,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t无效的单个交易数据：错误的rawTx格式4'
+        title = '0028\t无效的单个交易数据：错误的rawTx格式4'
         {
             successCount = 0
             failRawTxs = tcsSendRawTx.createFailRawTxs(_FailRawTx_WrongFormat_4, 1)
