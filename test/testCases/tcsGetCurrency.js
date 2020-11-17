@@ -16,6 +16,7 @@ const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLeve
 const consts = require('../framework/consts')
 let utility = require('../framework/testUtility')
 //endregion
+const chainDatas = require('../testData/chainDatas').chainDatas
 //endregion
 
 module.exports = tcsGetCurrency = {
@@ -25,7 +26,14 @@ module.exports = tcsGetCurrency = {
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, null)
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'validated')
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'current')
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'closed')
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'earliest')
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'latest')
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'pending')
+        let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
+            return chainData.chainDataName
+        })
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockNumber)  //block number
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockHash)  //block hash
     },
 
     testForGetCurrencyByTag: function(server, describeTitle, tag){
@@ -43,7 +51,7 @@ module.exports = tcsGetCurrency = {
                 globalCoin.symbol, null, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
-            title = '0011\t查询有效的本地代币'
+            title = '0011\t查询有效的全局代币，带issuer'
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 globalCoin.symbol, globalCoin.issuer, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
@@ -102,7 +110,15 @@ module.exports = tcsGetCurrency = {
         let txParams = []
         txParams.push(symbol)
         if(issuer != null) txParams.push(issuer)
-        if(tag != null) txParams.push(tag)
+        if(tag != null) {
+            if(symbol == null){
+                txParams.push(consts.defaultNativeCoin)  //使用tag，必须要有token
+            }
+            if(issuer == null){
+                txParams.push(consts.defaultIssuer)  //使用tag，必须要有issuer
+            }
+            txParams.push(tag)
+        }
         let expectedResult = {}
         expectedResult.needPass = needPass
         expectedResult.isErrorInResult = true

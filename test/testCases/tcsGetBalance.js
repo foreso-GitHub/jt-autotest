@@ -43,7 +43,9 @@ module.exports = tcsGetBalance = {
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, null)
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'current')
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'validated')
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'closed')
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'earliest')
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'latest')
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'pending')
         let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
             return chainData.chainDataName
         })
@@ -105,10 +107,17 @@ module.exports = tcsGetBalance = {
         let functionName = consts.rpcFunctions.getBalance
         let txParams = []
         txParams.push(addressOrName)
-        // txParams.push(symbol != null ? symbol : '')
         if(symbol != null) txParams.push(symbol)
         if(issuer != null) txParams.push(issuer)
-        if(tag != null) txParams.push(tag)
+        if(tag != null) {
+            if(symbol == null){
+                txParams.push(consts.defaultNativeCoin)  //使用tag，必须要有token
+            }
+            if(issuer == null){
+                txParams.push(consts.defaultIssuer)  //使用tag，必须要有issuer
+            }
+            txParams.push(tag)
+        }
         let expectedResult = {}
         expectedResult.needPass = needPass
         expectedResult.isErrorInResult = true
@@ -137,7 +146,7 @@ module.exports = tcsGetBalance = {
         framework.checkResponse(needPass, response)
         if(needPass){
             let symbol = testCase.txParams[1]
-            if(symbol == null || symbol == ''){  //todo suppose it is swtc, in fact, maybe not.  the better way is formats of balance of swtc and token are the same.
+            if(symbol == null || symbol == '' || symbol == consts.defaultNativeCoin){
                 expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
                 expect(Number(response.result.balance)).to.be.above(0)
             }

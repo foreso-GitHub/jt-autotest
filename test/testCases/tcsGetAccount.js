@@ -14,8 +14,9 @@ const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/consts')
-let utility = require('../framework/testUtility')
+let testUtility = require('../framework/testUtility')
 //endregion
+const chainDatas = require('../testData/chainDatas').chainDatas
 //endregion
 
 module.exports = tcsGetAccount = {
@@ -32,9 +33,16 @@ module.exports = tcsGetAccount = {
     testForGetAccountByTag: function(server, describeTitle, symbol, issuer){
         describe(describeTitle, function () {
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, null)
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer,'validated')
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer,'current')
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer,'closed')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'validated')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'current')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'latest')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'pending')
+            let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
+                return chainData.chainDataName
+            })
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockNumber)  //block number
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockHash)  //block hash
         })
     },
 
@@ -93,7 +101,15 @@ module.exports = tcsGetAccount = {
         txParams.push(addressOrName)
         if(symbol != null) txParams.push(symbol)
         if(issuer != null) txParams.push(issuer)
-        if(tag != null) txParams.push(tag)
+        if(tag != null) {
+            if(symbol == null){
+                txParams.push(consts.defaultNativeCoin)  //使用tag，必须要有token
+            }
+            if(issuer == null){
+                txParams.push(consts.defaultIssuer)  //使用tag，必须要有issuer
+            }
+            txParams.push(tag)
+        }
         let expectedResult = {}
         expectedResult.needPass = needPass
         expectedResult.isErrorInResult = true
@@ -122,7 +138,7 @@ module.exports = tcsGetAccount = {
         framework.checkResponse(needPass, response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
-            let valueString = utility.isJSON(response.result.Balance) ? response.result.Balance.value: response.result.Balance
+            let valueString = testUtility.isJSON(response.result.Balance) ? response.result.Balance.value: response.result.Balance
             expect(Number(valueString)).to.be.above(0)
         }
         else{

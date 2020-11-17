@@ -127,6 +127,9 @@ module.exports =  consts = {
         Ed25519: "Ed25519",
         SM2: "SM2",
         default: "",
-    }
+    },
+
+    defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+    defaultNativeCoin: 'SWT',
 }
 
