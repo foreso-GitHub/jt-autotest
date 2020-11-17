@@ -455,6 +455,9 @@ const WALLET_SCHEMA = {
         "type": {
             "type": "string"
         },
+        "nickname": {
+            "type": "string"
+        },
     },
     required: [
         "address",

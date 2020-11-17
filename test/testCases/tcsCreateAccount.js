@@ -85,10 +85,10 @@ module.exports = tcsCreateAccount = {
         if(needPass){
             let account = response.result[0]
             let nickName = testCase.txParams[0]
-            // expect(value.result).to.be.jsonSchema(schema.WALLET_SCHEMA)
+            expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
             expect(account.address).to.match(/^j/)
             expect(account.secret).to.match(/^s/)
-            expect(account.nickname).to.equal(nickName)  //todo: bug, nickname should be nickName
+            expect(account.nickname).to.equal(nickName)
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
