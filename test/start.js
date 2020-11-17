@@ -15,6 +15,7 @@ const framework = require('./framework/framework')
 const tcsGetVersion = require('./testCases/tcsGetVersion')
 const tcsGetBlock = require('./testCases/tcsGetBlock')
 const tcsGetBlockNumber = require('./testCases/tcsGetBlockNumber')
+const tcsCreateWallet = require('./testCases/tcsCreateWallet')
 const tcsCreateAccount = require('./testCases/tcsCreateAccount')
 const tcsGetAccount = require('./testCases/tcsGetAccount')
 const tcsGetAccounts = require('./testCases/tcsGetAccounts')
@@ -81,6 +82,8 @@ describe('Jingtum测试', function() {
                 tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
 
                 tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
 
                 tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
 
@@ -186,21 +189,11 @@ describe('Jingtum测试', function() {
 
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
+                // tcsBugInjection.test(server, '故障注入测试')
 
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-
-
-
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
-                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
-                //
-                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-                //
-                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-                //
-                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
-
+                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
 
             })
         })

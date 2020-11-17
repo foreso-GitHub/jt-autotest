@@ -1,4 +1,4 @@
-let consts = {
+module.exports =  consts = {
 
     //region rpc
     rpcFunctions: {
@@ -109,6 +109,7 @@ let consts = {
             "engine_result_message":"Missing/inapplicable prior transaction.",
         },
     },
+    //endregion
 
     swtConsts:{
         oneSwt: 1000000,
@@ -121,8 +122,11 @@ let consts = {
         '20201114': 'v0.5.2-dev'
     },
 
-    //endregion
-
+    walletTypes:{
+        ECDSA: "ECDSA",
+        Ed25519: "Ed25519",
+        SM2: "SM2",
+        default: "",
+    }
 }
 
-module.exports = consts

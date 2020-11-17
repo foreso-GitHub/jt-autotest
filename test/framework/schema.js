@@ -451,11 +451,15 @@ const WALLET_SCHEMA = {
         },
         "secret": {
             "type": "string"
-        }
+        },
+        "type": {
+            "type": "string"
+        },
     },
     required: [
         "address",
-        "secret"
+        "secret",
+        "type",
     ]
 }
 
