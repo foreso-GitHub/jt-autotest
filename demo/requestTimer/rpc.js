@@ -4,7 +4,7 @@ let request = require('request')
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-const consts = require('../../test/framework/lib/base/consts')
+const consts = require('../../test/framework/consts')
 let enums = require('../../test/framework/enums')
 //endregion
 

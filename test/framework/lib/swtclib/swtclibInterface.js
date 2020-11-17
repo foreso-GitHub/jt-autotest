@@ -3,7 +3,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let util = require('util')
-const consts = require("../base/consts")
+const consts = require("../../consts")
 const enums = require("../../enums")
 const Remote = require('swtc-lib').Remote
 let baseInterface = require('../base/baseInterface')

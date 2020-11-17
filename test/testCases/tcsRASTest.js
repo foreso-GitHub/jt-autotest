@@ -13,7 +13,7 @@ let logger = log4js.getLogger('default')
 const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
-const consts = require('../framework/lib/base/consts')
+const consts = require('../framework/consts')
 let utility = require('../framework/testUtility')
 //endregion
 const nodeMonitor = require('../utility/monitor/monitor')

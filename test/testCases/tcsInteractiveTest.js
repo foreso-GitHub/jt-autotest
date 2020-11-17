@@ -12,7 +12,7 @@ let logger = log4js.getLogger('default')
 //region test framework
 const framework = require('../framework/framework')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
-const consts = require('../framework/lib/base/consts')
+const consts = require('../framework/consts')
 //endregion
 //endregion
 

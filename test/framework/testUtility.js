@@ -5,7 +5,7 @@ let logger = log4js.getLogger('default')
 const fs = require('fs')
 const { commonPaths } = require("../config/basicConfig")
 const {responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel,} = require('./enums')
-const consts = require('./lib/base/consts')
+const consts = require('./consts')
 //endregion
 
 let _LastDynamicalTimeSeed = 0
