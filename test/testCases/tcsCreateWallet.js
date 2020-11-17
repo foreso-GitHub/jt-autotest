@@ -24,6 +24,7 @@ module.exports = tcsCreateWallet = {
     testForCreateWallet: function(server, describeTitle){
         let testCases = []
 
+        //region 参数为空
         let title = '0010\t创建账户-参数为空'
         let needPass = true
         let expectedError = ''
@@ -35,6 +36,7 @@ module.exports = tcsCreateWallet = {
         type = ''
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
+        //endregion
 
         //region ECDSA
         title = '0020\t创建账户-参数为ECDSA'
@@ -87,6 +89,7 @@ module.exports = tcsCreateWallet = {
         framework.addTestCase(testCases, testCase)
         //endregion
 
+        //region 无效的参数
         title = '0050\t创建账户-无效的参数: 数字'
         type = 123123
         needPass = false
@@ -114,6 +117,7 @@ module.exports = tcsCreateWallet = {
         expectedError = 'key type is not string'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
+        //endregion
 
         framework.testTestCases(server, describeTitle, testCases)
     },
