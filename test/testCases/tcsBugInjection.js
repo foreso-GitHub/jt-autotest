@@ -184,7 +184,7 @@ module.exports = tcsBugInjection = {
                 otherParams.initNodeCount = 5
                 otherParams.execNodeCount = 1
                 testCase = tcsBugInjection.createTestCase(server, title, otherParams)
-                testCase.restrictedLevel = restrictedLevel.L4  //todo 断网测试容易导致区块不再上升。修复问题后再除去这句代码。
+                testCase.restrictedLevel = restrictedLevel.L3
                 framework.addTestCase(testCases, testCase)
                 framework.testTestCases(server, describeTitle + '_断网测试_' + title, testCases)  //node operation will conflict.  so one case, one test.
             }
