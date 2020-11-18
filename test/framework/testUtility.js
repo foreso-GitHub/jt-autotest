@@ -156,6 +156,7 @@ module.exports = testUtility = {
     //endregion
 
     //region send tx
+
     sendTx: async function (server, params, waitSpan){
         return new Promise((resolve, reject) => {
             server.responseSendTx(server, params).then(async function (result) {
@@ -167,6 +168,30 @@ module.exports = testUtility = {
             })
         })
     },
+
+    createTxParams: async function (server, from, secret, to, value, fee, memos){
+        let account = await server.responseGetAccount(server, from, )
+        let sequence = account.result.Sequence
+        let params = server.createTxParams(from, secret, sequence, to, value, fee, memos,
+            null, null, null, null, null, null, null)
+        return params
+    },
+
+    sendTxs: async function (server, params, txCount){
+        return new Promise(async (resolve, reject) => {
+            let param = params[0]
+            let sequence = params[0].sequence
+
+            for(let i = 1; i < txCount; i++){
+                let newParam = testUtility.deepClone(param)
+                newParam.sequence = sequence + i
+                params.push(newParam)
+            }
+            let response = await server.responseSendTx(server, params)
+            resolve(response.result)
+        })
+    },
+
     //endregion
 
     //region get tx

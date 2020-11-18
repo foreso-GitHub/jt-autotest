@@ -75,6 +75,62 @@ function websocketInterface() {
 
     //endregion
 
+    //region subscribe methods
+
+    websocketInterface.prototype.getSubscribeData = function (server, methodName, params) {
+        baseInterface.prototype.getResponse(server, methodName, params)
+        return new Promise(async (resolve, reject) => {
+            let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
+            const ws = new WebSocket(this.url)
+            let data = await websocketInterface.prototype.subscribe(ws, requestContent, 20000)
+            if (data != null && JSON.stringify(data.result) !== '{}'){
+                logger.debug('---Result: ', data)  //important logger
+                if(data.message){
+                    logger.debug('---message.result: ', JSON.stringify(data.message.result))
+                }
+                resolve(data)
+            }
+            else{
+                resolve(baseInterface.prototype.createError(data))
+            }
+        })
+    }
+
+
+    websocketInterface.prototype.subscribe = function(ws, content, stopTime){
+        return new Promise((resolve, reject)=>{
+
+            let output = []
+
+            ws.on('open', function open() {
+                ws.send(content)
+                if(stopTime > 0){
+                    setTimeout(
+                        () => {
+                            resolve(output)
+                            ws.close()
+                        }, stopTime)
+                }
+                else{
+                    resolve(output)
+                    ws.close()
+                }
+            })
+
+            ws.on('message', function incoming(data) {
+                output.push(JSON.parse(data))
+                // logger.debug(data)
+            })
+
+            ws.on('close', function close() {
+                // logger.debug('disconnected')
+            })
+        })
+
+    }
+
+    //endregion
+
 }
 
 module.exports = websocketInterface

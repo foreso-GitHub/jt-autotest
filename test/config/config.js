@@ -206,23 +206,24 @@ let mode_ws_yun_ali = cloneMode(mode_template)
 mode_ws_yun_ali.name = "ws_yun_ali"
 mode_ws_yun_ali.server = ws_yun_ali
 mode_ws_yun_ali.initParams = {url:'ws://121.89.209.19:9546/v1/jsonrpc'}
+mode_ws_yun_ali.interface = interfaceType.websocket
 
-let mode_ws_yun_baidu = cloneMode(mode_template)
+let mode_ws_yun_baidu = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_baidu.name = "ws_yun_baidu"
 mode_ws_yun_baidu.server = ws_yun_baidu
 mode_ws_yun_baidu.initParams =  {url:'ws://180.76.125.22:9546/v1/jsonrpc'}
 
-let mode_ws_yun_tengxun = cloneMode(mode_template)
+let mode_ws_yun_tengxun = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_tengxun.name = "ws_yun_tengxun"
 mode_ws_yun_tengxun.server = ws_yun_tengxun
 mode_ws_yun_tengxun.initParams = {url:'ws://45.40.240.50:9546/v1/jsonrpc'}
 
-let mode_ws_yun_huawei = cloneMode(mode_template)
+let mode_ws_yun_huawei = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_huawei.name = "ws_yun_huawei"
 mode_ws_yun_huawei.server = ws_yun_huawei
 mode_ws_yun_huawei.initParams = {url:'ws://121.37.216.100:9546/v1/jsonrpc'}
 
-let mode_ws_yun_tianyi = cloneMode(mode_template)
+let mode_ws_yun_tianyi = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_tianyi.name = "ws_yun_tianyi"
 mode_ws_yun_tianyi.server = ws_yun_tianyi
 mode_ws_yun_tianyi.initParams = {url:'ws://61.171.12.71:9546/v1/jsonrpc'}
@@ -265,13 +266,13 @@ let mode_lib_mainnet = {
 //region modes
 let modes = [
     // mode_rpc_yun_ali,
-    mode_rpc_yun_baidu,
+    // mode_rpc_yun_baidu,
     // mode_rpc_yun_tengxun,
     // mode_rpc_yun_huawei,
     // mode_rpc_yun_tianyi,
 
     // mode_ws_yun_ali,
-    // mode_ws_yun_baidu,
+    mode_ws_yun_baidu,
     // mode_ws_yun_tengxun,
     // mode_ws_yun_huawei,
     // mode_ws_yun_tianyi,

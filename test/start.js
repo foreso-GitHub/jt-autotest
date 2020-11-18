@@ -31,6 +31,7 @@ const tcsIpfs = require('./testCases/tcsIpfs')
 const tcsRASTest = require('./testCases/tcsRASTest')
 const tcsInteractiveTest = require('./testCases/tcsInteractiveTest')
 const tcsBugInjection = require('./testCases/tcsBugInjection')
+const tcsSubscribe = require('./testCases/tcsSubscribe')
 //endregion
 
 //region global fields
@@ -141,6 +142,12 @@ describe('Jingtum测试', function() {
 
                 // endregion
 
+                //region websocket subscribe
+
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe和jt_unsubscribe')
+
+                //endregion
+
                 //region special
                 // this.timeout(3600000)
                 // tcsBugInjection.test(server, '故障注入测试')
@@ -181,19 +188,9 @@ describe('Jingtum测试', function() {
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
-                // this.timeout(1800000)
-                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
-
-                // this.timeout(360000)
-                // tcsBugInjection.test(server, '故障注入测试')
-
-                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-
-                // tcsBugInjection.test(server, '故障注入测试')
-
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
-                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+                //
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe和jt_unsubscribe')
 
             })
         })
