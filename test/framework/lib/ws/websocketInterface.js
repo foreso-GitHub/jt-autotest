@@ -82,7 +82,8 @@ function websocketInterface() {
         return new Promise(async (resolve, reject) => {
             let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
             const ws = new WebSocket(this.url)
-            let data = await websocketInterface.prototype.subscribe(ws, requestContent, 20000)
+            const stopTime = 15000
+            let data = await websocketInterface.prototype.subscribe(ws, requestContent, stopTime)
             if (data != null && JSON.stringify(data.result) !== '{}'){
                 logger.debug('---Result: ', data)  //important logger
                 if(data.message){

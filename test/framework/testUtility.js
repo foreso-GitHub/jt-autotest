@@ -187,6 +187,7 @@ module.exports = testUtility = {
                 newParam.sequence = sequence + i
                 params.push(newParam)
             }
+            logger.debug('testUtility sendTxs: ' + JSON.stringify(params))
             let response = await server.responseSendTx(server, params)
             resolve(response.result)
         })
@@ -237,7 +238,10 @@ module.exports = testUtility = {
     },
 
     getShowSymbol: function(symbol, issuer){
-        return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
+        // return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
+        // return (!symbol || symbol == null) ? '' : ('/' + symbol + '/' + issuer)
+        return (!symbol || symbol == null || symbol == ''
+        || ((symbol == 'swt' || symbol == 'SWT') && (!issuer || issuer == null || issuer == ''))) ? '' : ('/' + symbol + '/' + issuer)
     },
 
     getShowValue: function(value, symbol, issuer){
