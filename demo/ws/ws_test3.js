@@ -94,8 +94,8 @@ async function run(){
     for(let i = 1; i <= 1; i++){
         let address = 'ws://121.89.209.19:9546/v1/jsonrpc'
         let content = '{"jsonrpc":"2.0","method":"jt_blockNumber","params":[],"id":1}'
-        let response = await request(address, content)
-        console.log(i++ + ". response1: " + JSON.stringify(response))
+        // let response = await request(address, content)
+        // console.log(i++ + ". response1: " + JSON.stringify(response))
 
         // content = '{"id":0,"method":"jt_subscribe","params":["block"]}'
         // content = '{"id":0,"method":"jt_subscribe","params":["tx"]}'
@@ -109,10 +109,25 @@ async function run(){
 
         const ws = new WebSocket(address)
         // content = '{"id":0,"method":"jt_subscribe","params":["block"]}'
-        content = '{"id":0,"method":"jt_subscribe","params":["account", "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh"]}'
+        // response = request3(ws, content)
+
+        // content = '{"id":0,"method":"jt_subscribe","params":["tx"]}'
+        // response = request3(ws, content)
+        //
+        // content = '{"id":1,"method":"jt_subscribe","params":["tx"]}'
+        // response = request3(ws, content)
+
+        content = '{"id":0,"method":"jt_subscribe","params":["block"]}'
         response = request3(ws, content)
-        // content = '{"id":1,"method":"jt_unsubscribe","params":["block", 0]}'
-        // response = await request3(ws, content)
+
+        content = '{"id":1,"method":"jt_subscribe","params":["block"]}'
+        response = request3(ws, content)
+
+        content = '{"id":2,"method":"jt_unsubscribe","params":["block", 1]}'
+        response = request3(ws, content)
+
+        // content = '{"id":2,"method":"jt_unsubscribe","params":["block", 3]}'
+        // response = request3(ws, content)
 
         // count++
         // console.log(". count: " + count)
@@ -176,10 +191,10 @@ function request3(ws, content){
         ws.on('message', function incoming(data) {
             let result = JSON.parse(data)
             console.log(no++ + '. message:' + data)
-            if(result.result != 'done'){
-                ws.send('{"id":1,"method":"jt_unsubscribe","params":["block", 0]}')
-            }
-            resolve(result)
+            // if(result.result != 'done'){
+            //     ws.send('{"id":1,"method":"jt_unsubscribe","params":["block", 0]}')
+            // }
+            // resolve(result)
 
             // ws.close()
         })
