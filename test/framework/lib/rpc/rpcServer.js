@@ -50,7 +50,7 @@ function rpcServer() {
             let requestTimer
             if(rpcSettings.request_timeout > 0){
                 requestTimer = setTimeout(function () {
-                    req.abort();
+                    req.abort()
                     let result = {}
                     result.status = enums.responseStatus.error
                     result.error = 'Error: Request Timeout'

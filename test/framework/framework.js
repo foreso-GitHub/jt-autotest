@@ -1063,8 +1063,10 @@ module.exports = framework = {
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {
             let servers = testCase.otherParams.servers
-            let server = servers[0]
             let serverCount = servers.length
+            let server = servers[0]
+            // let index = utility.getRand(0, serverCount - 1)
+            // let server = servers[index]
             let subCases = testCase.otherParams.subCases
             let totalCount = testCase.otherParams.totalCount
             let executeCount = 0

@@ -71,7 +71,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -172,25 +172,40 @@ describe('Jingtum测试', function() {
                 //region performance test
 
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-
+                //
                 // this.timeout(480000*100)
                 // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 10)
-
+                //
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',allRpcServers, 1)
                 //
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
-
+                //
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
 
                 // endregion
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
-                //
                 // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe和jt_unsubscribe')
+
+                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+
+
+                this.timeout(3600000)
+                for (let i = 0; i < 10; i++){
+                    tcsBugInjection.test(server, '故障注入测试')
+                }
+
+
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
+                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+
+                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
 
             })
         })

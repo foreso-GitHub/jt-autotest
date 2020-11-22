@@ -210,7 +210,7 @@ module.exports = tcsBugInjection = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
         testCase.otherParams.timeAfterExecCmds = 60000
-        testCase.otherParams.timeAfterResetCmds = 90000
+        testCase.otherParams.timeAfterResetCmds = 120000
         return testCase
     },
 
