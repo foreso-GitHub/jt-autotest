@@ -196,7 +196,7 @@ describe('Jingtum测试', function() {
 
 
                 this.timeout(3600000)
-                for (let i = 0; i < 10; i++){
+                for (let i = 0; i < 50; i++){
                     tcsBugInjection.test(server, '故障注入测试')
                 }
 
@@ -206,6 +206,12 @@ describe('Jingtum测试', function() {
                 // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
 
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+
+                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+                //
+                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe和jt_unsubscribe')
 
             })
         })

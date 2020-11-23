@@ -31,6 +31,7 @@ module.exports = tcsSubscribe = {
         let expectedError = ''
 
         let from = server.mode.addresses.sender3.address
+        let to = server.mode.addresses.receiver3.address
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
 
@@ -58,7 +59,7 @@ module.exports = tcsSubscribe = {
             testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
             testCase.hasFake = true
             testCase.realValue = '0.0001'
-            testCase.fakeValue = {amount:'0.0001', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+            testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
             framework.addTestCase(testCases, testCase)
         }
 
@@ -95,9 +96,18 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0040\t订阅帐号'
+        title = '0040\t订阅帐号: from'
         {
             let params = ['account', from]
+            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+            testCase.hasFake = true
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0041\t订阅帐号: to'
+        {
+            let params = ['account', to]
             testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
             testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
             testCase.hasFake = true
