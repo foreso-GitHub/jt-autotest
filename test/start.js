@@ -27,6 +27,7 @@ const tcsGetTxCount = require('./testCases/tcsGetTxCount')
 const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
 const tcsSendRawTx = require('./testCases/tcsSendRawTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
+const tcsSendTxInOneRequest = require('./testCases/tcsSendTxInOneRequest')
 const tcsIpfs = require('./testCases/tcsIpfs')
 const tcsRASTest = require('./testCases/tcsRASTest')
 const tcsInteractiveTest = require('./testCases/tcsInteractiveTest')
@@ -71,7 +72,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -118,6 +119,8 @@ describe('Jingtum测试', function() {
 
                 tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 100)
+
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
@@ -139,6 +142,8 @@ describe('Jingtum测试', function() {
                     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
 
                 tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
+
+                tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易，快速执行', 100)
 
                 // endregion
 
@@ -162,12 +167,17 @@ describe('Jingtum测试', function() {
 
             describe('debug testing', async function () {
 
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                //region send and sign
 
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+                //
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+                //
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                //
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
-                // this.timeout(30000)
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 1, 12000)
+                //endregion
 
                 //region performance test
 
@@ -195,10 +205,10 @@ describe('Jingtum测试', function() {
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
 
 
-                this.timeout(3600000)
-                for (let i = 0; i < 50; i++){
-                    tcsBugInjection.test(server, '故障注入测试')
-                }
+                // this.timeout(3600000)
+                // for (let i = 0; i < 5; i++){
+                //     tcsBugInjection.test(server, '故障注入测试')
+                // }
 
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
@@ -212,6 +222,22 @@ describe('Jingtum测试', function() {
                 // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
 
                 // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe和jt_unsubscribe')
+
+                // this.timeout(120000)
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server,
+                //     '用sendRaw进行性能测试', 1, 1)
+
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 5)
+                // tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易', 5)
+
+                // for(let i = 0; i < 10; i++){
+                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 200)
+                //     tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易', 50)
+                // }
+
+                // this.timeout(480000*100)
+                // tcsPressureSendTx.testForFastPerformance(server,
+                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
 
             })
         })

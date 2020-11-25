@@ -43,7 +43,7 @@ module.exports = framework = {
         testCaseParams.txFunctionName = txFunctionName
         testCaseParams.title = ''
         testCaseParams.originalTxParams = txParams
-        testCaseParams.txParams = framework.cloneParamsAarry(txParams)
+        testCaseParams.txParams = utility.deepClone(txParams)
         testCaseParams.otherParams = {}
         testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
         testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
@@ -156,7 +156,7 @@ module.exports = framework = {
     //region 当jt_sendTransaction和jt_signTransaction都通过测试时
 
     createTestCaseWhenSignPassAndSendRawTxPass: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = framework.cloneParamsAarry(testCaseParams.originalTxParams)
+        testCaseParams.txParams = utility.deepClone(testCaseParams.originalTxParams)
         updateTxParamsFunction()
         // testCaseParams.expectedResult = framework.createExpecteResult(true)
         let testCase = framework.createTestCaseByParams(testCaseParams)
@@ -180,7 +180,7 @@ module.exports = framework = {
     //region 当jt_sendTransaction和jt_signTransaction都通不过测试时
 
     createTestCaseWhenSignFail: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = framework.cloneParamsAarry(testCaseParams.originalTxParams)
+        testCaseParams.txParams = utility.deepClone(testCaseParams.originalTxParams)
         updateTxParamsFunction()
         let testCase = framework.createTestCaseByParams(testCaseParams)
         return testCase
@@ -199,7 +199,7 @@ module.exports = framework = {
     //region 当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
 
     createTestCaseWhenSignPassButSendRawTxFail: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = framework.cloneParamsAarry(testCaseParams.originalTxParams)
+        testCaseParams.txParams = utility.deepClone(testCaseParams.originalTxParams)
         updateTxParamsFunction()
         let testCase = framework.createTestCaseByParams(testCaseParams)
         if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
@@ -239,22 +239,42 @@ module.exports = framework = {
 
     //region for send
     executeTestCaseOfCommon: function(testCase, specialExecuteFunction){
-        return new Promise(function(resolve){
+        return new Promise(async function(resolve){
             let server = testCase.server
-            let data = testCase.txParams[0]
-            let from = data.from
-            framework.getSequence(server, from).then(function(sequence){
-                if(data.sequence == null){
+            let count = 0
+            let totalCount = testCase.txParams.length
+            testCase.balanceBeforeExecutionList = []
+
+            let sequence
+            for(let i = 0; i < totalCount; i++){
+                let data = testCase.txParams[i]
+                let from = data.from
+
+                if(testCase.sendType &&
+                    (testCase.sendType == consts.sendTxType.InOneRequestQuickly || testCase.sendType == consts.sendTxType.InOneRequest)
+                    && i != 0){
+                    sequence++
+                }else{
+                    sequence = await framework.getSequence(server, from)
+                }
+
+                if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
                     data.sequence = isNaN(sequence) ? 1 : sequence
                 }
-                server.getBalance(server, data.from, data.symbol).then(function(balanceBeforeExecution){
-                    testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0
-                    logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
-                    framework.executeTxByTestCase(testCase).then(function(response){
-                        specialExecuteFunction(testCase, response, resolve)
-                    })
-                })
-            })
+
+                if(testCase.sendType != consts.sendTxType.InOneRequestQuickly){
+                    let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
+                    testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0  //todo 只是暂时为了保持兼容而保留，应该使用下面的balanceBeforeExecutionList
+                    testCase.balanceBeforeExecutionList.push(balanceBeforeExecution ? balanceBeforeExecution : 0)
+                }
+
+                count ++
+                if(count == testCase.txParams.length){
+                    // logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
+                    let response = await framework.executeTxByTestCase(testCase)
+                    specialExecuteFunction(testCase, response, resolve)
+                }
+            }
         })
     },
 
@@ -271,7 +291,6 @@ module.exports = framework = {
     executeTestCaseOfSignTxAndSendRawTx: function(testCase){
         testCase.hasExecuted = true
         return framework.executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
-            // testCase.hasExecuted = true
             testCase.actualResult.push(responseOfSign)
             if(utility.isResponseStatusSuccess(responseOfSign)){
                 if(testCase.expectedResult.needPass){
@@ -288,7 +307,6 @@ module.exports = framework = {
                             testCaseOfSendRawTx.txParams = data
                             testCaseOfSendRawTx.hasExecuted = true
                             framework.executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
-                                // testCaseOfSendRawTx.hasExecuted = true
                                 testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
                                 framework.addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase)
                                 resolve(responseOfSendRawTx)
@@ -390,18 +408,25 @@ module.exports = framework = {
         if(testCase.server.mode.service == serviceType.newChain){
             if(testCase.expectedResult.needPass){
                 expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
-                let hash = responseOfSendTx.result[0]
-                // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-                // let hash = responseOfSendTx.result[0]
-                // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-                await utility.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-                    framework.checkResponse(true, responseOfGetTx)
-                    // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-                    expect(responseOfGetTx.result.hash).to.be.equal(hash)
-                    await checkFunction(testCase, txParams, responseOfGetTx.result)
-                }, function (err) {
-                    expect(err).to.be.ok
-                })
+                let hashCount = 0
+                for(let i =0; i < responseOfSendTx.result.length; i++){
+                    let result = responseOfSendTx.result[i]
+                    if(result && utility.isHex(result)){
+                        let hash = result
+                        hashCount ++
+                        // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+                        // let hash = responseOfSendTx.result[0]
+                        // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
+                        let responseOfGetTx = await utility.getTxByHash(testCase.server, hash, 0)
+                        framework.checkResponse(true, responseOfGetTx)
+                        expect(responseOfGetTx.result.hash).to.be.equal(hash)
+                        await checkFunction(testCase, txParams, responseOfGetTx.result)
+                    }
+                    else{
+                        expect('Not a hash!').to.be.ok
+                    }
+                }
+                expect(hashCount).to.be.equal(testCase.txParams.length)
             }
             else{
                 framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
@@ -436,7 +461,8 @@ module.exports = framework = {
 
     checkResponseOfTransfer: async function(testCase, txParams){
         await framework.checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
-            let params = txParams[0]
+            let params = framework.findTxByFromAndSequence(txParams, tx.Account, tx.Sequence)
+            // logger.debug('checkResponseOfTransfer: ' + tx.Sequence)
             await framework.compareActualTxWithTxParams(params, tx, testCase.server.mode)
 
             if(testCase.server.mode.restrictedLevel >= restrictedLevel.L5){
@@ -449,6 +475,16 @@ module.exports = framework = {
                 }
             }
         })
+    },
+
+    findTxByFromAndSequence: function(txs, from, sequence){
+        for(let i = 0; i < txs.length; i++){
+            let tx = txs[i]
+            if(tx.from == from && tx.sequence == sequence){
+                return tx
+            }
+        }
+        return null
     },
 
     getBalanceValue: function(balanceObject){
@@ -546,18 +582,6 @@ module.exports = framework = {
             }
             // expect(false).to.be.ok
             resolve("done!")
-        })
-    },
-
-    getTxByHash: function(server, hash, retryCount){
-        return new Promise(async function(resolve, reject){
-            utility.getTxByHash(server, hash, retryCount)
-                .then(async function (value) {
-                    resolve(value)
-                })
-                .catch(function(error){
-                    expect(error).to.not.be.ok
-                })
         })
     },
 
@@ -898,7 +922,6 @@ module.exports = framework = {
             })
         })
     },
-    //endregion
 
     getSequenceByChain: function(server, from){
         return new Promise(function (resolve){
@@ -921,30 +944,6 @@ module.exports = framework = {
     },
     //endregion
 
-    //region clone params
-    cloneParams: function(originalParams){
-        let params = {}
-        if(originalParams.from != null) params.from = originalParams.from
-        if(originalParams.secret != null) params.secret = originalParams.secret
-        if(originalParams.to != null) params.to = originalParams.to
-        if(originalParams.value != null) params.value = originalParams.value
-        if(originalParams.fee != null) params.fee = originalParams.fee
-        if(originalParams.memos != null) params.memos = utility.cloneArray(originalParams.memos)
-        if(originalParams.type != null) params.type = originalParams.type
-        if(originalParams.name != null) params.name = originalParams.name
-        if(originalParams.symbol != null) params.symbol = originalParams.symbol
-        if(originalParams.decimals != null) params.decimals = originalParams.decimals
-        if(originalParams.total_supply != null) params.total_supply = originalParams.total_supply
-        if(originalParams.local != null) params.local = originalParams.local
-        if(originalParams.flags != null) params.flags = originalParams.flags
-        return params
-    },
-
-    cloneParamsAarry: function(originalParamsAarry){
-        let paramsAarry = []
-        paramsAarry.push(framework.cloneParams(originalParamsAarry[0]))
-        return paramsAarry
-    },
     //endregion
 
     //endregion

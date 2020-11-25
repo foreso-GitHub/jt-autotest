@@ -24,6 +24,7 @@ module.exports =  consts = {
         getBlockTransactionCountByNumber:'jt_getBlockTransactionCountByNumber',
         subscribe: 'jt_subscribe',
         unsubscribe: 'jt_unsubscribe',
+        listSubscribe: 'jt_listSubscribe',
     },
 
     rpcParamConsts:{
@@ -124,6 +125,7 @@ module.exports =  consts = {
         '20201114': 'v0.5.2-dev',
         '20201120': 'v0.5.3-dev',
         '20201123': 'v0.5.3-dev',
+        '20201124': 'v0.5.3-dev',
     },
 
     walletTypes:{
@@ -131,6 +133,13 @@ module.exports =  consts = {
         Ed25519: "Ed25519",
         SM2: "SM2",
         default: "",
+    },
+
+    sendTxType:{
+        Normal: 'Noraml',
+        InOneRequest: 'InOneRequest',
+        InOneRequestQuickly: 'InOneRequestQuickly',
+        default: '',
     },
 
     defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
