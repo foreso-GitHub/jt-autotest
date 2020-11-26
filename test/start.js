@@ -51,18 +51,20 @@ describe('Jingtum测试', function() {
 
         let server = framework.activeServer(mode)
 
+        let timeout = 10000
         if(mode.service == serviceType.oldChain){
-            this.timeout(120000)
+            timeout = 120000
         }
         else if(mode.service == serviceType.newChain){
-            this.timeout(180000)
+            timeout = 180000
         }
         else if(mode.service == serviceType.ipfs){
-            this.timeout(35000)
+            timeout = 35000
         }
         else{
-            this.timeout(10000)
+            timeout = 10000
         }
+        this.timeout(timeout)
 
         describe('【测试模式: ' + server.getName() + '】', function () {
 
@@ -149,7 +151,11 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe和jt_unsubscribe')
+                this.timeout(360000)
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 
@@ -230,14 +236,20 @@ describe('Jingtum测试', function() {
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 5)
                 // tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易', 5)
 
-                // for(let i = 0; i < 10; i++){
+                // for(let i = 0; i < 1000; i++){
                 //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 200)
-                //     tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易', 50)
+                //     // tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易', 50)
                 // }
 
                 // this.timeout(480000*100)
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
+
+                // this.timeout(360000)
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // this.timeout(timeout)
 
             })
         })
