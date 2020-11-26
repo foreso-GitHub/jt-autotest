@@ -16,7 +16,6 @@ const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLeve
 const consts = require('../framework/consts')
 let utility = require('../framework/testUtility')
 //endregion
-const chainDatas = require('../testData/chainDatas').chainDatas
 //endregion
 
 
@@ -35,6 +34,7 @@ module.exports = tcsSubscribe = {
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
 
+        //region 订阅
         title = '0010\t订阅区块'
         {
             let params = ['block']
@@ -113,6 +113,22 @@ module.exports = tcsSubscribe = {
             testCase.hasFake = true
             framework.addTestCase(testCases, testCase)
         }
+        //endregion
+
+        //region 退订
+
+        //endregion
+
+        //region 列表
+        title = '0050\t订阅列表'
+        {
+            let params = []
+            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+            testCase.executeFunction = tcsSubscribe.executeForListSubscribe
+            testCase.checkFunction = tcsSubscribe.checkForListSubscribe
+            framework.addTestCase(testCases, testCase)
+        }
+        //endregion
 
         framework.testTestCases(server, describeTitle, testCases)
     },
@@ -148,17 +164,15 @@ module.exports = tcsSubscribe = {
         return testCase
     },
 
+    //region subscribe
     executeForSubscribe: async function(testCase){
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {
             logger.debug(testCase.title)
-            testCase.server.getSubscribeData(testCase.server, testCase.txFunctionName, testCase.txParams).then(function(response){
-                testCase.actualResult.push(response)
-                resolve(testCase)
-            }, function (error) {
-                logger.debug(error)
-                expect(false).to.be.ok
-            })
+            
+            //new ws
+            let ws = testCase.server.newWebSocket(testCase.server)
+            testCase.server.subscribe(ws, testCase.txFunctionName, testCase.txParams)
 
             //send txs
             let server = testCase.server
@@ -179,6 +193,12 @@ module.exports = tcsSubscribe = {
                 let fakeParams = await utility.createTxParams(server, fakeFrom, fakeSecret, fakeTo, fakeValue)
                 testCase.fakeHashes = await utility.sendTxs(server, fakeParams, txCount)
             }
+
+            //close ws
+            await utility.timeout(12000)
+            let output = await testCase.server.closeWebSocket(ws)
+            testCase.actualResult.push(output)
+            resolve(testCase)
         })
     },
 
@@ -190,7 +210,8 @@ module.exports = tcsSubscribe = {
     },
 
     checkForSubscribeBlock: async function(testCase){
-        let blocks = testCase.actualResult[0]
+        let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
+        let blocks = messages.blocks
         expect(blocks.length).to.be.least(2)    //15s, should have 3 blocks
         expect(blocks.length).to.be.most(4)
 
@@ -201,8 +222,20 @@ module.exports = tcsSubscribe = {
     },
 
     checkForSubscribeTx: async function(testCase){
-        let txs = testCase.actualResult[0]
+        let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
+        let txs
         let receivedHashes = []
+
+        if(testCase.txParams[0] == 'tx'){
+            txs = messages.txs
+        }
+        else if (testCase.txParams[0] == 'token' || testCase.txParams[0] == 'account'){
+            txs = messages.results
+        }
+        else{
+            expect('No proper type to check!').to.be.ok
+        }
+
         txs.forEach(tx => {
             if(tx.result){
                 receivedHashes.push(tx.result)
@@ -222,6 +255,117 @@ module.exports = tcsSubscribe = {
             })
         }
     },
+    //endregion
+
+    //region list
+
+    executeForListSubscribe: async function(testCase){
+        testCase.hasExecuted = true
+        return new Promise(async (resolve, reject) => {
+            logger.debug(testCase.title)
+
+            let ws = testCase.server.newWebSocket(testCase.server)
+            testCase.server.subscribe(ws, consts.rpcFunctions.listSubscribe, [])
+            await utility.timeout(1000)
+
+            testCase.server.subscribe(ws, consts.rpcFunctions.subscribe, ['block'])
+            await utility.timeout(6000)
+            testCase.server.subscribe(ws, consts.rpcFunctions.listSubscribe, [])
+            await utility.timeout(1000)
+
+            testCase.server.subscribe(ws, consts.rpcFunctions.subscribe, ['tx'])
+            await utility.timeout(2000)
+            testCase.server.subscribe(ws, consts.rpcFunctions.listSubscribe, [])
+            await utility.timeout(1000)
+
+            testCase.server.subscribe(ws, consts.rpcFunctions.unsubscribe, ['block'])
+            await utility.timeout(2000)
+            testCase.server.subscribe(ws, consts.rpcFunctions.listSubscribe, [])
+            await utility.timeout(1000)
+
+            // testCase.server.subscribe(ws, consts.rpcFunctions.subscribe, ['block'])
+            // await utility.timeout(2000)
+            // testCase.server.subscribe(ws, consts.rpcFunctions.listSubscribe, [])
+            // await utility.timeout(1000)
+
+            testCase.server.subscribe(ws, consts.rpcFunctions.unsubscribe, ['tx'])
+            await utility.timeout(2000)
+            testCase.server.subscribe(ws, consts.rpcFunctions.listSubscribe, [])
+            await utility.timeout(1000)
+
+            let output = await testCase.server.closeWebSocket(ws)
+            testCase.actualResult.push(output)
+            resolve(output)
+        })
+    },
+
+    checkForListSubscribe: async function(testCase){
+        // logger.debug('checkForListSubscribe: ' + JSON.stringify(testCase.actualResult[0]))
+        let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
+        logger.debug('resuls: ' + JSON.stringify(messages.results))
+        logger.debug('others: ' + JSON.stringify(messages.others))
+        logger.debug('blocks: ' + messages.blocks.length)
+        logger.debug('txs: ' + messages.txs.length)
+
+        //{"id":1,"jsonrpc":"2.0","result":[]}
+        expect(messages.results[0].result.length).to.be.equals(0)
+
+        //{"id":3,"jsonrpc":"2.0","result":["block"]}
+        expect(messages.results[1].result.length).to.be.equals(1)
+        expect(messages.results[1].result[0]).to.be.equals('block')
+
+        // {"id":5,"jsonrpc":"2.0","result":["block","tx"]}
+        expect(messages.results[2].result.length).to.be.equals(2)
+        expect(messages.results[2].result[0]).to.be.equals('block')
+        expect(messages.results[2].result[1]).to.be.equals('tx')
+
+        //{"id":6,"jsonrpc":"2.0","result":"block unsubscribed"}
+        expect(messages.results[3].result).to.be.equals('block unsubscribed')
+
+        //{"id":3,"jsonrpc":"2.0","result":["tx"]}
+        expect(messages.results[4].result.length).to.be.equals(1)
+        expect(messages.results[4].result[0]).to.be.equals('tx')
+
+        // // {"id":5,"jsonrpc":"2.0","result":["tx","block"]}
+        // expect(messages.results[5].result.length).to.be.equals(2)
+        // expect(messages.results[5].result[1]).to.be.equals('tx')
+        // expect(messages.results[5].result[0]).to.be.equals('block')
+
+        //{"id":6,"jsonrpc":"2.0","result":"tx unsubscribed"}
+        expect(messages.results[5].result).to.be.equals('tx unsubscribed')
+
+        //{"id":1,"jsonrpc":"2.0","result":[]}
+        expect(messages.results[6].result.length).to.be.equals(0)
+    },
+
+    filterSubscribeMessages: function(messages){
+        let filterMessages = {}
+        filterMessages.txs = []
+        filterMessages.blocks = []
+        filterMessages.results = []
+        filterMessages.others = []
+
+        for(let i = 0; i < messages.length; i++){
+            let message = messages[i]
+            if(message.fee_base){
+                filterMessages.blocks.push(message)
+            }
+            else if(message.engine_result){
+                filterMessages.txs.push(message)
+            }
+            else if(message.result){
+                filterMessages.results.push(message)
+            }
+            else{
+                filterMessages.others.push(message)
+            }
+        }
+
+        return filterMessages
+    }
+
+    //endregion
+
     //endregion
 
 
