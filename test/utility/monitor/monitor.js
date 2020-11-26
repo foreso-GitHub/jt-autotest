@@ -34,7 +34,7 @@ function nodeMonitor(){
         logger.debug('status: ' + netSync.status)
         logger.debug('syncCount: ' + netSync.syncCount)
         logger.debug('blockNumber: ' + netSync.blockNumber)
-        let index = 1;
+        let index = 1
         netSync.syncNodes.forEach(node=>{
             logger.debug('node_' + index++ + ': ' + node)
         })
@@ -103,23 +103,23 @@ function nodeMonitor(){
     }
 
     function findBlockStatus(blockStatusList, node){
-        let blockStatus;
+        let blockStatus
         for(let i = 0; i < blockStatusList.length; i++){
             if(node.blockNumber == blockStatusList[i].blockNumber){
-                blockStatus = blockStatusList[i];
-                break;
+                blockStatus = blockStatusList[i]
+                break
             }
         }
-        return blockStatus;
+        return blockStatus
     }
 
     function findMainBlock(blockStatusList){
-        let index = -1;
-        let maxCount = -1;
+        let index = -1
+        let maxCount = -1
         for(let i = 0; i < blockStatusList.length; i++){
             let blockStatus = blockStatusList[i]
             if(blockStatus.nodes.length > maxCount && blockStatus.blockNumber >= 0){
-                index = i;
+                index = i
                 maxCount = blockStatus.nodes.length
             }
         }

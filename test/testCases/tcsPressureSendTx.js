@@ -989,7 +989,7 @@ module.exports = tcsPressureSendTx = {
         let addresses = server.mode.addresses
         let value = '0.000001'
         let fee = '0.00001'
-        let memosLength = memos ? memos[0].length : 0;
+        let memosLength = memos ? memos[0].length : 0
 
         //region 0010	同一账户向同一节点连续发送交易（不带memo）测试性能上限
         testCases = []

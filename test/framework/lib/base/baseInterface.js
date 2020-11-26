@@ -20,7 +20,7 @@ function baseInterface() {
     }
 
     baseInterface.prototype.printClassName = function(){
-        console.log(this.className);
+        logger.debug(this.className)
     }
     //endregion
 
