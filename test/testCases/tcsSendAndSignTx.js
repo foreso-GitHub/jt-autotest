@@ -16,6 +16,7 @@ const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLeve
 const consts = require('../framework/consts')
 let utility = require('../framework/testUtility')
 const { token, } = require("../testData/testData")
+const { chainDatas } = require("../testData/chainDatas")
 //endregion
 //endregion
 
@@ -28,7 +29,6 @@ module.exports = tcsSendAndSignTx = {
             let categoryName = ''
             let txFunctionName = ''
             let txParams = {}
-            let testCases = []
 
             //region basic test
 
@@ -49,8 +49,7 @@ module.exports = tcsSendAndSignTx = {
 
             //region token test
 
-            if(server.mode.service == serviceType.newChain
-                && server.mode.restrictedLevel >= restrictedLevel.L3 //todo need reset to L3 when create token function restore
+            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3
             ){
                 txFunctionName = consts.rpcFunctions.sendTx
                 describe('代币测试：' + txFunctionName, async function () {
@@ -445,6 +444,8 @@ module.exports = tcsSendAndSignTx = {
         let testCases = []
         let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
         testCaseParams.restrictedLevel = restrictedLevel.L3
+        // let chainData = utility.findChainData(chainDatas, server.mode.chainDataName)
+        // let existedSymbol = chainData.tx_token.Amount.currency
 
         //region test cases
 
@@ -494,6 +495,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].name = token.existToken.name
+                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //         //     'failed to submit transaction')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
@@ -653,14 +655,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-                    if(testCaseParams.txParams[0].flags == consts.flags.burnable){
-                        testCaseParams.txParams[0].total_supply = '-9876543191'
-                    }
-                    else if(testCaseParams.txParams[0].flags == consts.flags.both){  //it minted 9 more in above test case, so need add it.
-                        // testCaseParams.txParams[0].total_supply =  '-9876543219'
-                        testCaseParams.txParams[0].total_supply =  '-19753086410'
-                    }
-                    // testCaseParams.txParams[0].total_supply =  '-9876543191'
+                    testCaseParams.txParams[0].total_supply =  '-9876543191'
 
                     // let data = testCaseParams.txParams[0]
                     // let server = testCaseParams.server
@@ -857,6 +852,5 @@ module.exports = tcsSendAndSignTx = {
     },
 
     //endregion
-
 
 }
