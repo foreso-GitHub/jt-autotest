@@ -530,19 +530,10 @@ module.exports = framework = {
             expect(tx.Account).to.be.equals(txParams.from)
             expect(tx.Destination).to.be.equals(txParams.to)
 
-            let expectedFee
-            let expectedValue
-            if(mode.service == serviceType.oldChain){
-                expectedFee = mode.defaultFee
-                expectedValue = utility.valueToAmount(Number(txParams.value))
-            }
-            else
-            {
-                expectedFee = (txParams.fee) ? txParams.fee : mode.defaultFee
-                expectedValue = utility.getRealValue(txParams.value)
-            }
-
+            let expectedFee = (mode.service == serviceType.oldChain) ?
+                mode.defaultFee : ((txParams.fee) ? txParams.fee : mode.defaultFee)
             expect(tx.Fee).to.be.equals(expectedFee.toString())
+
             //check value
             if(txParams.type == consts.rpcParamConsts.issueCoin){
                 expect(tx.Name).to.be.equals(txParams.name)
@@ -558,6 +549,8 @@ module.exports = framework = {
                     expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
                 }
                 else{
+                    let expectedValue = (mode.service == serviceType.oldChain) ?
+                        utility.valueToAmount(Number(txParams.value)) : utility.getRealValue(txParams.value)
                     // expect(Number(tx.Amount)).to.be.equals(Number(txParams.value))
                     expect(Number(tx.Amount)).to.be.equals(expectedValue)
                 }

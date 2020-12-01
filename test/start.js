@@ -74,7 +74,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -143,7 +143,7 @@ describe('Jingtum测试', function() {
                 tcsPressureSendTx.testForFastPerformance(server,
                     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
 
-                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
+                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
 
                 tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易，快速执行', 100)
 
@@ -198,7 +198,7 @@ describe('Jingtum测试', function() {
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
                 //
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试', 10, 2)
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
 
                 // endregion
 
@@ -231,7 +231,7 @@ describe('Jingtum测试', function() {
 
                 // this.timeout(120000)
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server,
-                //     '用sendRaw进行性能测试', 1, 1)
+                //     '用sendRaw进行性能测试，多节点轮流', 1, 1)
 
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 5)
                 // tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易', 5)
@@ -245,11 +245,16 @@ describe('Jingtum测试', function() {
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
 
-                // this.timeout(360000)
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+
+
+                this.timeout(360000)
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
+
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
             })
         })

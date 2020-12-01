@@ -50,9 +50,8 @@ module.exports = tcsSendAndSignTx = {
             //region token test
 
             if(server.mode.service == serviceType.newChain
-                && server.mode.restrictedLevel >= restrictedLevel.L4 //todo need reset to L3 when create token function restore
+                && server.mode.restrictedLevel >= restrictedLevel.L3 //todo need reset to L3 when create token function restore
             ){
-
                 txFunctionName = consts.rpcFunctions.sendTx
                 describe('代币测试：' + txFunctionName, async function () {
                     tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
@@ -62,7 +61,6 @@ module.exports = tcsSendAndSignTx = {
                 describe('代币测试：' + txFunctionName, async function () {
                     tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
                 })
-
             }
 
             //endregion
@@ -824,11 +822,11 @@ module.exports = tcsSendAndSignTx = {
             tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
         })
 
-        configToken = token.CNYT
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
-                server.mode.addresses.sender1, configToken)
-        })
+        // configToken = token.CNYT  //todo CNYT不存在了，确定后删除
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
+        //         server.mode.addresses.sender1, configToken)
+        // })
 
     },
     //endregion
