@@ -28,14 +28,10 @@ module.exports = tcsCreateWallet = {
         let title = '0010\t创建账户-参数为空'
         let needPass = true
         let expectedError = ''
-        let type = null
+        let type
         let testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
-        title = '0011\t创建账户-参数为""'
-        type = ''
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
         //endregion
 
         //region ECDSA
@@ -90,6 +86,7 @@ module.exports = tcsCreateWallet = {
         //endregion
 
         //region 无效的参数
+
         title = '0050\t创建账户-无效的参数: 数字'
         type = 123123
         needPass = false
@@ -117,6 +114,13 @@ module.exports = tcsCreateWallet = {
         expectedError = 'key type is not string'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
+
+        title = '0054\t创建账户-参数为""'
+        type = ''
+        needPass = false
+        expectedError = 'unknown key type'
+        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
+        framework.addTestCase(testCases, testCase)
         //endregion
 
         framework.testTestCases(server, describeTitle, testCases)
@@ -126,7 +130,7 @@ module.exports = tcsCreateWallet = {
 
         let functionName = consts.rpcFunctions.createWallet
         let txParams = []
-        txParams.push(type)
+        if(type != undefined) txParams.push(type)
         let expectedResult = {}
         expectedResult.needPass = needPass
         expectedResult.isErrorInResult = true
