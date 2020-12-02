@@ -25,6 +25,7 @@ module.exports =  consts = {
         subscribe: 'jt_subscribe',
         unsubscribe: 'jt_unsubscribe',
         listSubscribe: 'jt_listSubscribe',
+        sign: 'jt_sign',
     },
 
     rpcParamConsts:{

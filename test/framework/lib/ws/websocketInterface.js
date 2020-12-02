@@ -80,7 +80,7 @@ function websocketInterface() {
     websocketInterface.prototype.newWebSocket = function(server) {
         let ws = new WebSocket(server.url)
         all_output = []
-        let openLogger = false
+        let openLogger = true
 
         ws.on('open', async function open() {
             if(openLogger) logger.debug('ws open!')  //important logger
