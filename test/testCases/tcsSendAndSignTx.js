@@ -446,6 +446,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.restrictedLevel = restrictedLevel.L3
         // let chainData = utility.findChainData(chainDatas, server.mode.chainDataName)
         // let existedSymbol = chainData.tx_token.Amount.currency
+        let existToken = server.mode.coins[0]
 
         //region test cases
 
@@ -494,7 +495,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_无效的name参数:被已有代币使用过的name'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].name = token.existToken.name
+                testCaseParams.txParams[0].name = existToken.name
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //         //     'failed to submit transaction')
@@ -518,7 +519,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].symbol = token.existToken.symbol
+                testCaseParams.txParams[0].symbol = existToken.symbol
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'tefNO_PERMISSION_ISSUE No permission issue')
             })
