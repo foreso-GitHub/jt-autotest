@@ -18,102 +18,282 @@ let utility = require('../framework/testUtility')
 //endregion
 //endregion
 
+const actionTypes = {
+    tx:'sendTxs',
+    subscribe:consts.rpcFunctions.subscribe,
+    unsubscribe:consts.rpcFunctions.unsubscribe,
+    list:consts.rpcFunctions.listSubscribe,
+}
 
 module.exports = tcsSubscribe = {
 
     //region subscribe, unsubscribe, list subscribe
-    testForSubscribe: function(server, describeTitle){
+    testForSubscribe_2: function(server, describeTitle){
+        let titlePrefix = consts.rpcFunctions.subscribe + '_'
         let title
         let testCase
         let testCases = []
         let needPass = true
         let expectedError = ''
+        let actions = []
 
-        let from = server.mode.addresses.sender3.address
-        let to = server.mode.addresses.receiver3.address
-        let globalCoin = server.mode.coins[0]
-        let localCoin = server.mode.coins[1]
+        //region new
 
-        //region 订阅
+        //region block
 
-        title = '0010\t订阅区块'
+        title = titlePrefix + '0010\t订阅区块'
         {
-            let params = ['block']
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 1000})
+            actions.push(tcsSubscribe.createRealTx(server))
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
             testCase.checkFunction = tcsSubscribe.checkForSubscribeBlock
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0020\t订阅交易'
+        //endregion
+
+        //endregion
+
+        framework.testTestCases(server, describeTitle, testCases)
+    },
+
+    testForSubscribe: function(server, describeTitle){
+        let titlePrefix = consts.rpcFunctions.subscribe + '_'
+        let title
+        let testCase
+        let testCases = []
+        let needPass = true
+        let expectedError = ''
+        let subscribeFunction = consts.rpcFunctions.subscribe
+        let rpcFunctions
+
+        //region 订阅
+
+        // title = '0010\t订阅区块'
+        // {
+        //     let params = ['block']
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeBlock
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0020\t订阅交易'
+        // {
+        //     let params = ['tx']
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = false
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0030\t订阅代币: swt'
+        // {
+        //     let params = ['token', consts.defaultNativeCoin]
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = true
+        //     testCase.realValue = '0.0001'
+        //     testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0031\t订阅代币: swt，完整写法'
+        // {
+        //     let params = ['token', consts.defaultNativeCoin]
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = true
+        //     testCase.realValue = {amount:'0.0001', symbol:consts.defaultNativeCoin, issuer:consts.defaultIssuer}
+        //     testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0032\t订阅代币: global token'
+        // {
+        //     let params = ['token', globalCoin.symbol]
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = true
+        //     testCase.realValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+        //     testCase.fakeValue = '0.0001'
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0033\t订阅代币: local token'
+        // {
+        //     let params = ['token', localCoin.symbol]
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = true
+        //     testCase.realValue = {amount:'1', symbol:localCoin.symbol, issuer:localCoin.issuer}
+        //     testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0040\t订阅帐号: from'
+        // {
+        //     let params = ['account', from]
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = true
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0041\t订阅帐号: to'
+        // {
+        //     let params = ['account', to]
+        //     testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase.hasFake = true
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        //endregion
+
+        //region new
+
+        //region block
+
+        title = titlePrefix + '0010\t订阅区块'
         {
-            let params = ['tx']
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['block']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.checkFunction = tcsSubscribe.checkForSubscribeBlock
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0011\t订阅区块，带无效的订阅参数'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['block', 'abcd']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.expectedResult.needPass = false
+            testCase.checkFunction = tcsSubscribe.checkForSubscribeBlock
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0012\t重复订阅区块'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['block']},
+                {txFunctionName: subscribeFunction, txParams: ['block']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.checkFunction = tcsSubscribe.checkForSubscribeBlock
+            framework.addTestCase(testCases, testCase)
+        }
+
+        //endregion
+
+        //region tx
+
+        title = titlePrefix + '0020\t订阅交易'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['tx']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
             testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0021\t订阅交易，带无效的订阅参数'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['tx', 'abcd']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.expectedResult.needPass = false
+            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0022\t重复订阅交易'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['tx']},
+                {txFunctionName: subscribeFunction, txParams: ['tx']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+            framework.addTestCase(testCases, testCase)
+        }
+
+        //endregion
+
+        //region not work
+
+        title = titlePrefix + '0030\t订阅-无效的内容：参数为\'abcd\''
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['abcd']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.expectedResult.needPass = false
+            testCase.checkFunction = async function(testCase){
+                await tcsSubscribe.checkForSubscribeBlock(testCase)
+                await tcsSubscribe.checkForSubscribeTx(testCase)
+            }
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0031\t订阅-无效的内容：参数为\'\''
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.expectedResult.needPass = false
+            testCase.checkFunction = async function(testCase){
+                await tcsSubscribe.checkForSubscribeBlock(testCase)
+                await tcsSubscribe.checkForSubscribeTx(testCase)
+            }
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0032\t订阅-无效的内容：参数为超长字符串'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['12312312313212312312313131adfasdfaskdfajsfoieurowarolkdjasfldjf !@#&$#$^%#@!']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.expectedResult.needPass = false
+            testCase.checkFunction = async function(testCase){
+                await tcsSubscribe.checkForSubscribeBlock(testCase)
+                await tcsSubscribe.checkForSubscribeTx(testCase)
+            }
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0040\t订阅-内容为空'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: []}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.expectedResult.needPass = false
+            testCase.checkFunction = async function(testCase){
+                await tcsSubscribe.checkForSubscribeBlock(testCase)
+                await tcsSubscribe.checkForSubscribeTx(testCase)
+            }
+            framework.addTestCase(testCases, testCase)
+        }
+
+
+        //endregion
+
+        //region block + tx
+
+        title = titlePrefix + '0050\t已订阅区块时再订阅交易'
+        {
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['block']},
+                {txFunctionName: subscribeFunction, txParams: ['tx']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
             testCase.hasFake = false
+            testCase.checkFunction = async function (testCase) {
+                await tcsSubscribe.checkForSubscribeBlock(testCase)
+                await tcsSubscribe.checkForSubscribeTx(testCase)
+            }
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0030\t订阅代币: swt'
+        title = titlePrefix + '0060\t已订阅交易时再订阅区块'
         {
-            let params = ['token', consts.defaultNativeCoin]
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
-            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
-            testCase.hasFake = true
-            testCase.realValue = '0.0001'
-            testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+            rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['tx']},
+                {txFunctionName: subscribeFunction, txParams: ['block']}]
+            testCase = tcsSubscribe.createSingleTestCase(server, title, rpcFunctions, needPass, expectedError)
+            testCase.hasFake = false
+            testCase.checkFunction = async function (testCase) {
+                await tcsSubscribe.checkForSubscribeBlock(testCase)
+                await tcsSubscribe.checkForSubscribeTx(testCase)
+            }
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0031\t订阅代币: swt，完整写法'
-        {
-            let params = ['token', consts.defaultNativeCoin]
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
-            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
-            testCase.hasFake = true
-            testCase.realValue = {amount:'0.0001', symbol:consts.defaultNativeCoin, issuer:consts.defaultIssuer}
-            testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
-            framework.addTestCase(testCases, testCase)
-        }
-
-        title = '0032\t订阅代币: global token'
-        {
-            let params = ['token', globalCoin.symbol]
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
-            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
-            testCase.hasFake = true
-            testCase.realValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
-            testCase.fakeValue = '0.0001'
-            framework.addTestCase(testCases, testCase)
-        }
-
-        title = '0033\t订阅代币: local token'
-        {
-            let params = ['token', localCoin.symbol]
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
-            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
-            testCase.hasFake = true
-            testCase.realValue = {amount:'1', symbol:localCoin.symbol, issuer:localCoin.issuer}
-            testCase.fakeValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
-            framework.addTestCase(testCases, testCase)
-        }
-
-        title = '0040\t订阅帐号: from'
-        {
-            let params = ['account', from]
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
-            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
-            testCase.hasFake = true
-            framework.addTestCase(testCases, testCase)
-        }
-
-        title = '0041\t订阅帐号: to'
-        {
-            let params = ['account', to]
-            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
-            testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
-            testCase.hasFake = true
-            framework.addTestCase(testCases, testCase)
-        }
+        //endregion
 
         //endregion
 
@@ -126,6 +306,7 @@ module.exports = tcsSubscribe = {
         let testCases = []
         let needPass = true
         let expectedError = ''
+        let subscribeFunction = consts.rpcFunctions.subscribe
 
         let from = server.mode.addresses.sender3.address
         let to = server.mode.addresses.receiver3.address
@@ -137,6 +318,10 @@ module.exports = tcsSubscribe = {
         title = '0110\t退订区块'
         {
             let params = ['block']
+
+            let rpcFunctions = [{txFunctionName: subscribeFunction, txParams: ['block']},
+                {txFunctionName: subscribeFunction, txParams: ['tx']}]
+
             testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
             testCase.executeFunction = tcsSubscribe.executeForUnsubscribe
             testCase.checkFunction = tcsSubscribe.checkForUnsubscribeBlock
@@ -189,9 +374,21 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0133\t退订代币: local token'
+        title = '0133\t退订代币: global token + issuer'
         {
-            let params = ['token', localCoin.symbol]
+            let params = ['token', tcsSubscribe.getCoinFullName(globalCoin)]
+            testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
+            testCase.executeFunction = tcsSubscribe.executeForUnsubscribe
+            testCase.checkFunction = tcsSubscribe.checkForUnsubscribeTx
+            testCase.hasFake = true
+            testCase.realValue = {amount:'1', symbol:globalCoin.symbol, issuer:globalCoin.issuer}
+            testCase.fakeValue = '0.0001'
+            // framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0134\t退订代币: local token'
+        {
+            let params = ['token', tcsSubscribe.getCoinFullName(localCoin)]
             testCase = tcsSubscribe.createSingleTestCaseForSubscribe(server, title, params, needPass, expectedError)
             testCase.executeFunction = tcsSubscribe.executeForUnsubscribe
             testCase.checkFunction = tcsSubscribe.checkForUnsubscribeTx
@@ -248,6 +445,75 @@ module.exports = tcsSubscribe = {
     },
 
     //region common
+    getCoinFullName: function(coin){
+        return tcsSubscribe.createCoinFullName(coin.symbol, coin.issuer)
+    },
+
+    createCoinFullName: function(symbol, issuer){
+        return symbol + '/' + issuer
+    },
+
+    createRealTx: function(server){
+        return tcsSubscribe.createTx(server.mode.addresses.sender3, server.mode.addresses.receiver3)
+    },
+
+    createFakeTx: function(server){
+        return tcsSubscribe.createTx(server.mode.addresses.sender2, server.mode.addresses.receiver2)
+    },
+
+    createTx: function(sender, receiver){
+        return {type: actionTypes.tx,
+            from: sender.address,
+            secret: sender.secret,
+            to: receiver.address,
+            value: '1',
+            txCount: 5,
+            timeout: 7000}
+    },
+
+    createSingleTestCase: function(server, title, actions, needPass, expectedError){
+        let testCase = framework.createTestCase(
+            title,
+            server,
+            null,
+            null,
+            null,
+            tcsSubscribe.executeForSubscribe,
+            tcsSubscribe.checkForSubscribe,
+            {needPass: needPass, isErrorInResult: true, expectedError: expectedError},
+            restrictedLevel.L2,
+            [serviceType.newChain],
+            [interfaceType.websocket],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+
+        testCase.actions = actions
+
+        return testCase
+    },
+
+    createSingleTestCase_1: function(server, title, rpcFunctions, needPass, expectedError){
+        let testCase = framework.createTestCase(
+            title,
+            server,
+            null,
+            null,
+            null,
+            tcsSubscribe.executeForSubscribe,
+            tcsSubscribe.checkForSubscribe,
+            {needPass: needPass, isErrorInResult: true, expectedError: expectedError},
+            restrictedLevel.L2,
+            [serviceType.newChain],
+            [interfaceType.websocket],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+
+        testCase.realValue = '1'
+        testCase.fakeValue = '1'
+        testCase.txCount = 5
+        testCase.hasFake = false
+        testCase.rpcFunctions = rpcFunctions
+
+        return testCase
+    },
 
     createSingleTestCaseForSubscribe: function(server, title, params, needPass, expectedError){
 
@@ -327,10 +593,41 @@ module.exports = tcsSubscribe = {
         testCase.hasExecuted = true
         return new Promise(async (resolve, reject) => {
             logger.debug(testCase.title)
+
+            //new ws
+            let ws = testCase.server.newWebSocket(testCase.server)
+
+            //execute actions
+            for(let i = 0; i < testCase.actions.length; i++){
+                let action = testCase.actions[i]
+                if(action.type == actionTypes.tx){  // send txs
+                    let server = testCase.server
+                    let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, action.value)
+                    testCase.realHashes = await utility.sendTxs(server, txParams, action.txCount)
+                }else {  // execute subscribe/unsubscribe/listsubscribe
+                    testCase.server.subscribe(ws, action.type, action.txParams)
+                }
+                await utility.timeout(action.timeout)
+            }
+
+            //close ws
+            let output = await testCase.server.closeWebSocket(ws)
+            testCase.actualResult.push(output)
+            resolve(testCase)
+        })
+    },
+
+    executeForSubscribe_1: async function(testCase){
+        testCase.hasExecuted = true
+        return new Promise(async (resolve, reject) => {
+            logger.debug(testCase.title)
             
             //new ws
             let ws = testCase.server.newWebSocket(testCase.server)
-            testCase.server.subscribe(ws, testCase.txFunctionName, testCase.txParams)
+            for(let i = 0; i < testCase.rpcFunctions.length; i++){
+                let rpcFunction = testCase.rpcFunctions[i]
+                testCase.server.subscribe(ws, rpcFunction.txFunctionName, rpcFunction.txParams)
+            }
 
             //send txs
             let server = testCase.server
@@ -360,58 +657,76 @@ module.exports = tcsSubscribe = {
         })
     },
 
-    checkForSubscribe: async function(testCase){
+    checkForSubscribe: function(testCase){
         logger.debug('actualResult count: ' + testCase.actualResult[0].length)
         testCase.actualResult.forEach(result => {
             logger.debug(JSON.stringify(result))
         })
     },
 
-    checkForSubscribeBlock: async function(testCase){
+    checkForSubscribeBlock: function(testCase){
         let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
         let blocks = messages.blocks
-        expect(blocks.length).to.be.least(1)    //7s, should have 2 blocks
-        expect(blocks.length).to.be.most(2)
+        if(testCase.expectedResult.needPass){
+            expect(blocks.length).to.be.least(1)    //7s, should have 2 blocks
+            expect(blocks.length).to.be.most(2)
 
-        let start = blocks[0].ledger_index
-        blocks.forEach(block => {
-            expect(block.ledger_index).to.be.equals(start++)
-        })
-    },
-
-    checkForSubscribeTx: async function(testCase){
-        let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
-        let txs
-        let receivedHashes = []
-
-        if(testCase.txParams[0] == 'tx'){
-            txs = messages.txs
-        }
-        else if (testCase.txParams[0] == 'token' || testCase.txParams[0] == 'account'){
-            txs = messages.hashes
-        }
-        else{
-            expect('No proper type to check!').to.be.ok
-        }
-
-        txs.forEach(tx => {
-            if(tx.result){
-                receivedHashes.push(tx.result)
-            }
-            else if (tx.transaction && tx.transaction.hash){
-                receivedHashes.push(tx.transaction.hash)
-            }
-        })
-        let realHashes = testCase.realHashes
-        let fakeHashes = testCase.fakeHashes
-        realHashes.forEach(realHash => {
-            expect(receivedHashes).to.be.contains(realHash)
-        })
-        if(testCase.hasFake && testCase.hasFake == true){
-            fakeHashes.forEach(fakeHash => {
-                expect(receivedHashes).to.not.be.contains(fakeHash)
+            let start = blocks[0].ledger_index
+            blocks.forEach(block => {
+                expect(block.ledger_index).to.be.equals(start++)
             })
         }
+        else{
+            expect(blocks.length).to.be.equals(0)
+        }
+    },
+
+    checkForSubscribeTx: function(testCase){
+        let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
+        let txs = []
+        let receivedHashes = []
+
+        // if(testCase.rpcFunctions[0].txParams[0] == 'tx'){
+        //     txs = messages.txs
+        // }
+        // else if (testCase.rpcFunctions[0].txParams[0] == 'token' || testCase.rpcFunctions[0].txParams[0] == 'account'){
+        //     txs = messages.hashes
+        // }
+        // else{
+        //     expect('No proper type to check!').to.be.ok
+        // }
+
+        txs = txs.concat(messages.txs)
+        txs = txs.concat(messages.hashes)
+
+        if(txs){
+            txs.forEach(tx => {
+                if(tx.result){
+                    receivedHashes.push(tx.result)
+                }
+                else if (tx.transaction && tx.transaction.hash){
+                    receivedHashes.push(tx.transaction.hash)
+                }
+            })
+        }
+        let realHashes = testCase.realHashes
+        let fakeHashes = testCase.fakeHashes
+
+        if(testCase.expectedResult.needPass){
+            expect(receivedHashes.length).to.be.least(5)
+            realHashes.forEach(realHash => {
+                expect(receivedHashes).to.be.contains(realHash)
+            })
+            if(testCase.hasFake && testCase.hasFake == true){
+                fakeHashes.forEach(fakeHash => {
+                    expect(receivedHashes).to.not.be.contains(fakeHash)
+                })
+            }
+        }
+        else{
+            expect(receivedHashes.length).to.be.equals(0)
+        }
+
     },
     //endregion
 
@@ -454,14 +769,17 @@ module.exports = tcsSubscribe = {
         })
     },
 
-    checkForUnsubscribeBlock: async function(testCase){
+    checkForUnsubscribeBlock: function(testCase){
         tcsSubscribe.checkForSubscribeBlock(testCase)
         let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
         let results = messages.results
         expect(results[0].result).to.be.equals(testCase.txParams[0] + ' unsubscribed')
     },
 
-    checkForUnsubscribeTx: async function(testCase){
+    //{"id":1,"jsonrpc":"2.0","result":[]}
+    //{"id":3,"jsonrpc":"2.0","result":["block"]}
+    // {"id":5,"jsonrpc":"2.0","result":["block","tx"]}
+    checkForUnsubscribeTx: function(testCase){
         tcsSubscribe.checkForSubscribeTx(testCase)
         let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
         let results = messages.results
@@ -515,7 +833,7 @@ module.exports = tcsSubscribe = {
         })
     },
 
-    checkForListSubscribe: async function(testCase){
+    checkForListSubscribe: function(testCase){
         // logger.debug('checkForListSubscribe: ' + JSON.stringify(testCase.actualResult[0]))
         let messages = tcsSubscribe.filterSubscribeMessages(testCase.actualResult[0])
 
@@ -549,8 +867,6 @@ module.exports = tcsSubscribe = {
         //{"id":1,"jsonrpc":"2.0","result":[]}
         expect(messages.results[6].result.length).to.be.equals(0)
     },
-
-
 
     //endregion
 
