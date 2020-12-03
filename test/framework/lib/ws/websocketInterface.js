@@ -76,18 +76,24 @@ function websocketInterface() {
 
     //region subscribe methods
     let all_output
+    let sub_output
+    let openLogger = true
 
     websocketInterface.prototype.newWebSocket = function(server) {
         let ws = new WebSocket(server.url)
         all_output = []
-        let openLogger = true
+        sub_output = []
+        let index = 0
 
         ws.on('open', async function open() {
             if(openLogger) logger.debug('ws open!')  //important logger
         })
 
         ws.on('message', function incoming(data) {
-            all_output.push(JSON.parse(data))
+            let message = JSON.parse(data)
+            message.outputIndex = index ++
+            all_output.push(message)
+            sub_output.push(message)
             if(openLogger) logger.debug('ws message: ' + data)  //important logger
         })
 
@@ -98,20 +104,31 @@ function websocketInterface() {
     }
 
     websocketInterface.prototype.closeWebSocket = function(ws) {
-        logger.debug('all_output: ' + JSON.stringify(all_output))
+        if(openLogger) {
+            logger.debug('sub_output: ')
+            websocketInterface.prototype.printOutputs(sub_output)
+            logger.debug('all_output: ')
+            websocketInterface.prototype.printOutputs(all_output)
+        }
         ws.close()
         return new Promise((resolve, reject)=>{
-            resolve(all_output)
+            resolve({sub: sub_output, all: all_output})
         })
     }
 
     websocketInterface.prototype.subscribe = function (ws, methodName, params) {
         let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
-        logger.debug('ws.send: ' + requestContent) //important logger
+        if(openLogger) logger.debug('ws.send: ' + requestContent) //important logger
         return websocketInterface.prototype.subscribeResponse(ws, requestContent)
     }
 
     websocketInterface.prototype.subscribeResponse = function(ws, content){
+        let last_sub_output = sub_output
+        if(openLogger) {
+            logger.debug('sub_output: ')
+            websocketInterface.prototype.printOutputs(last_sub_output)
+        }
+        sub_output = []
         return new Promise((resolve, reject)=>{
             /*
             Constant	Value	Description
@@ -131,10 +148,16 @@ function websocketInterface() {
             else{
                 logger.debug('ws.readyState: ' + ws.readyState)
             }
-            resolve(ws.readyState)
+            resolve({sub: last_sub_output, all: all_output})
         })
     }
 
+    websocketInterface.prototype.printOutputs = function(outputs){
+        for(let i = 0; i < outputs.length; i++){
+            let output = outputs[i]
+            logger.debug(output.outputIndex + '. ' + JSON.stringify(output))
+        }
+    }
 
     //endregion
 
