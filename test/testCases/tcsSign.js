@@ -23,7 +23,7 @@ module.exports = tcsSign = {
     //region create account
     testForSign: function(server, describeTitle){
         let testCases = []
-        let sender = server.mode.addresses.sender1
+        let sender = server.mode.addresses.rootAccount
         let message = '0x1234567890abcde0'
 
         let title = '0010\t有效的地址参数'
@@ -31,7 +31,7 @@ module.exports = tcsSign = {
             let needPass = true
             let expectedError = ''
             let txParam = {from: sender.address, secret: sender.secret, message: message}
-            let expectedSignedTxs = ['0x3044022021A965D2E9AB744A054A90A1A4CF7C9EAB148349D51B1A346A72DA0AF891EEBC02205A7172D77E7C0782B60C9D4CED0429B2961DA38ADF154F4B78D4FA76A2DA904F']
+            let expectedSignedTxs = ['0x30450221009C5F37C5E5DE954C90D3A7FD74CB598A8E212E3A44214DC9844F2A619B156734022018363E760D2561DC15AFB746CFA07B62DF6EBC2F96C8F5F3CA0DB66CE157CF67']
             let testCase = tcsSign.createSingleTestCase(server, title, [txParam], expectedSignedTxs, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -40,7 +40,7 @@ module.exports = tcsSign = {
         {
             needPass = false
             expectedError = 'null from key'
-            txParam = {from: sender.address, message: message}
+            txParam = {from: server.mode.addresses.sender1.address, message: message}
             expectedSignedTxs = []
             testCase = tcsSign.createSingleTestCase(server, title, [txParam], expectedSignedTxs, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
@@ -83,7 +83,7 @@ module.exports = tcsSign = {
             expectedError = ''
             message = '0x' + utility.createMemosWithSpecialLength(32768)[0]  //32k hex
             txParam = {from: sender.address, secret: sender.secret, message: message}
-            expectedSignedTxs = ['0x304402204EDF7F9B3039663A89B50F1254EE8F3094BED8F23DA733DBDB166DA63C7B363C02203D220EB6B80BC629142462740B0990816749191C6B664AA4F3C80736DB27A740']
+            expectedSignedTxs = ['0x3045022100AA1BFE79EAFCBB86F3C978A797B53749F8F5EC904EE3DAAB937998B90E3747F002201B3DF017B51509134765CC50A4E54D773466C2A4A4DB463DCD1E6E352E4536AD']
             testCase = tcsSign.createSingleTestCase(server, title, [txParam], expectedSignedTxs, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
