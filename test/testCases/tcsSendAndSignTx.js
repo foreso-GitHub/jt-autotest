@@ -93,10 +93,12 @@ module.exports = tcsSendAndSignTx = {
             }
         }
 
-        testCaseParams.title = '0021\t发起' + categoryName + '有效交易_02: 交易额填1/swt'
+        testCaseParams.title = '0021\t发起' + categoryName + '无效交易_02: 交易额填1/swt'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/swt"
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    'failed to submit transaction')
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -104,10 +106,12 @@ module.exports = tcsSendAndSignTx = {
             }
         }
 
-        testCaseParams.title = '0022\t发起' + categoryName + '有效交易_02: 交易额填1/Swt等'
+        testCaseParams.title = '0022\t发起' + categoryName + '无效交易_02: 交易额填1/Swt等'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/Swt"
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    'failed to submit transaction')
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -270,7 +274,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]'
+        testCaseParams.title = '0121\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["12345"]
@@ -278,7 +282,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]'
+        testCaseParams.title = '0122\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["123456"]
@@ -286,7 +290,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
+        testCaseParams.title = '0123\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["E5A4A7E5AEB6E5A5BDff"]
@@ -347,7 +351,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为null'
+        testCaseParams.title = '0161\t发起带有效fee的交易_01: fee为null'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
             })
@@ -478,11 +482,23 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_无效的name参数:很长的字符串'
+        testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_有效的name参数:很长的字符串，正好256字节'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].name = "tokenName.name12345678901234567890tokenName.name12345678901234567890tokenName.name12345678901234567890" +
-                    "tokenName.name12345678901234567890tokenName.name12345678901234567890tokenName.name12345678901234567890"
+                testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(256)[0]
+                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
+                // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
+                //     'failed to submit transaction')
+                testCaseParams.expectedResult = framework.createExpecteResult(true, true,
+                    '')
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0311\t发行' + testCaseParams.categoryName + '_无效的name参数:很长的字符串，超过256字节'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(257)[0]
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //     'failed to submit transaction')
@@ -492,15 +508,14 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_无效的name参数:被已有代币使用过的name'
+        testCaseParams.title = '0312\t发行' + testCaseParams.categoryName + '_有效的name参数:被已有代币使用过的name'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].name = existToken.name
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //         //     'failed to submit transaction')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'failed to submit transaction')
+                testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -516,7 +531,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         //todo it will cause no response, looks like no response from server.request
-        testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
+        testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].symbol = existToken.symbol
@@ -536,7 +551,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
+        testCaseParams.title = '0331\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].decimals = -8
@@ -546,7 +561,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
+        testCaseParams.title = '0332\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].decimals = 11.64
@@ -566,7 +581,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数'
+        testCaseParams.title = '0341\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].total_supply = -10000000
@@ -576,7 +591,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
+        testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].total_supply = 10000.12345678
@@ -652,7 +667,7 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0380\t销毁所有' + testCaseParams.categoryName
+        testCaseParams.title = '0381\t销毁所有' + testCaseParams.categoryName
         {
             let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
