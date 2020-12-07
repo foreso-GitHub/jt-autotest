@@ -127,4 +127,172 @@ module.exports = tcsGetTxCount = {
 
     //endregion
 
+    //region jt_getTransactionCount
+
+    testForGetTransactionCount: function(server, describeTitle){
+        let testCases = []
+        let from = server.mode.addresses.nickNameSender
+        let to = server.mode.addresses.nickNameReceiver
+        let tag = null
+
+        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, tag)
+        // tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_区块参数:100', from, to, 100)
+
+        framework.testTestCases(server, describeTitle, testCases)
+    },
+
+    testGroupForGetTransactionCount: function(server, describeTitle, from, to, tag){
+        let testCases = []
+        let addressOrName = from.address
+
+        let title = '0010\t查询有效地址'
+        {
+            addressOrName = from.address
+            let needSendTx = true
+            let needPass = true
+            let expectedError = ''
+            let testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCase.from = addressOrName
+            testCase.secret = from.secret
+            testCase.to = to.address
+            testCase.subCheck = function(testCase){
+                expect(testCase.actualResult[0].result).to.least(1)
+                expect(testCase.countAfterSend).to.equal(testCase.countBeforeSend + 1)
+            }
+            testCases.push(testCase)
+        }
+
+        title = '0011\t查询有效地址: 未激活的地址'
+        {
+            addressOrName = server.mode.addresses.inactiveAccount1.address
+            needSendTx = false
+            needPass = true
+            expectedError = ''
+            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCases.push(testCase)
+            testCase.subCheck = function(testCase){
+                expect(testCase.actualResult[0].result).to.equal(1)
+            }
+        }
+
+        title = '0020\t查询有效昵称'
+        {
+            addressOrName = from.nickName
+            needSendTx = true
+            needPass = true
+            expectedError = ''
+            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCase.from = addressOrName
+            testCase.secret = from.secret
+            testCase.to = to.address
+            testCase.needSendTx = true
+            testCase.subCheck = function(testCase){
+                expect(testCase.actualResult[0].result).to.least(1)
+                expect(testCase.countAfterSend).to.equal(testCase.countBeforeSend + 1)
+            }
+            testCases.push(testCase)
+        }
+
+        title = '0030\t查询无效地址: 过短的地址'
+        {
+            addressOrName = 'jnZ7CDuqmj6Pe1KGMdiacfh4aeuXSDj'
+            needSendTx = false
+            needPass = false
+            expectedError = 'Bad account address'
+            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCases.push(testCase)
+        }
+
+        title = '0031\t查询无效地址: 过长的地址'
+        {
+            addressOrName = from.address + 'a'
+            needPass = false
+            expectedError = 'Bad account address'
+            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCases.push(testCase)
+        }
+
+        title = '0032\t查询无效地址: 格式错误的地址'
+        {
+            addressOrName = server.mode.addresses.wrongFormatAccount1.address
+            needPass = false
+            expectedError = 'Bad account address'
+            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCases.push(testCase)
+        }
+
+        title = '0040\t查询无效昵称: 不存在的昵称'
+        {
+            addressOrName = server.mode.addresses.inactiveAccount1.nickName
+            needPass = false
+            expectedError = 'Bad account address'
+            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
+            testCases.push(testCase)
+        }
+
+        framework.testTestCases(server, describeTitle, testCases)
+    },
+
+    createSingleTestCaseForGetTransactionCount: function(server, title, addressOrName, tag, needSendTx, needPass, expectedError){
+
+        let txParams = []
+        txParams.push(addressOrName)
+        if(tag) txParams.push(tag)
+
+        let expectedResult = {}
+        expectedResult.needPass = needPass
+        expectedResult.isErrorInResult = true
+        expectedResult.expectedError = expectedError
+
+        let testCase = framework.createTestCase(
+            title,
+            server,
+            consts.rpcFunctions.getTransactionCount,
+            txParams,
+            null,
+            (needSendTx) ? tcsGetTxCount.executeGetTransactionCount : framework.executeTestCaseForGet,
+            tcsGetTxCount.checkGetTransactionCount,
+            expectedResult,
+            restrictedLevel.L2,
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+
+        return testCase
+    },
+
+    executeGetTransactionCount: function(testCase){
+        testCase.hasExecuted = true
+        return new Promise(async (resolve, reject) => {
+            let server = testCase.server
+            let response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, testCase.txParams)
+            testCase.countBeforeSend = response.result
+
+            let txParams = await utility.createTxParams(server, testCase.from, testCase.secret, testCase.to, '1')
+            await utility.sendTxs(server, txParams, 1)
+            await utility.timeout(6000)
+
+            response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, testCase.txParams)
+            testCase.countAfterSend = response.result
+            testCase.actualResult.push(response)
+            resolve('done')
+        })
+    },
+
+    checkGetTransactionCount: function(testCase){
+        let response = testCase.actualResult[0]
+        let needPass = testCase.expectedResult.needPass
+        framework.checkResponse(needPass, response)
+        if(needPass){
+            // let txCount = 1
+            // expect(response.result).to.equal(txCount)
+            // expect(testCase.countAfterSend).to.equal(testCase.countBeforeSend + 1)
+            testCase.subCheck(testCase)
+        }
+        else{
+            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+        }
+    },
+    //endregion
+
 }

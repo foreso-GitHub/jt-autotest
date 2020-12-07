@@ -22,6 +22,7 @@ module.exports =  consts = {
         getTransactionByBlockNumberAndIndex: 'jt_getTransactionByBlockNumberAndIndex',
         getBlockTransactionCountByHash:'jt_getBlockTransactionCountByHash',
         getBlockTransactionCountByNumber:'jt_getBlockTransactionCountByNumber',
+        getTransactionCount: 'jt_getTransactionCount',
         subscribe: 'jt_subscribe',
         unsubscribe: 'jt_unsubscribe',
         listSubscribe: 'jt_listSubscribe',

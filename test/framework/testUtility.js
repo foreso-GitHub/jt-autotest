@@ -161,7 +161,7 @@ module.exports = testUtility = {
         return new Promise((resolve, reject) => {
             server.responseSendTx(server, params).then(async function (result) {
                 logger.debug(JSON.stringify((result)))
-                await utility.timeout(waitSpan)
+                await testUtility.timeout(waitSpan)
                 resolve(result)
             }).catch(function(error){
                 reject(error)

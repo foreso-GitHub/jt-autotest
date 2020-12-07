@@ -110,11 +110,12 @@ function accountsDealer() {
         let addresses = {
             rootAccount:{
                 address:accounts[i].address,
-                secret:accounts[i++].secret,
+                secret:accounts[i].secret,
+                nickName: accounts[i++].nickName,
             },
             walletAccount:{
                 address:accounts[i].address,
-                secret:accounts[i++].secret,
+                secret:accounts[i].secret,
                 nickName: accounts[i++].nickName,
             },
             balanceAccount:{
@@ -124,7 +125,7 @@ function accountsDealer() {
             },
             nickNameSender:{
                 address:accounts[i].address,
-                secret:accounts[i++].secret,
+                secret:accounts[i].secret,
                 nickName: accounts[i++].nickName,
             },
             nickNameReceiver:{
