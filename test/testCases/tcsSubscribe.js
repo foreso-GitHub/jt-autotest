@@ -217,30 +217,96 @@ module.exports = tcsSubscribe = {
 
         testCases = []
 
-        title = '0010\t取消订阅区块block_01'
+        // title = '0010\t取消订阅区块block_01'
+        // {
+        //     actions = []
+        //     actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})  //subscribe没有check，因为output在下一个action（sendTxs）里
+        //     actions.push(tcsSubscribe.createRealTx(server))
+        //     actions.push({type: actionTypes.unsubscribe,
+        //         txParams: ['block'],
+        //         timeout: 6000,
+        //         checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
+        //         expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+        //     })
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0011\t取消订阅区块block_02：无订阅区块'
+        // {
+        //     actions = []
+        //     actions.push({type: actionTypes.unsubscribe,
+        //         txParams: ['block'],
+        //         timeout: 6000,
+        //         checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
+        //         expectedResult: {needPass: true, isErrorInResult: true, expectedError: expectedError},
+        //     })
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+
+
+        // title = '0010\t参数为空_01: client订阅了block、tx、多个token（全局和带issuer的都有）、多个account'
+        // {
+        //     actions = []
+        //     actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+        //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+        //     actions.push(tcsSubscribe.createRealTx(server))
+        //     actions.push({type: actionTypes.list,
+        //         txParams: [],
+        //         checkParams: ['block', 'tx'],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe_2,
+        //         expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+        //     })
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+        //
+        // title = '0020\t参数为空_02: tclient没有订阅任何信息'
+        // {
+        //     actions = []
+        //     actions.push({type: actionTypes.list,
+        //         txParams: [],
+        //         checkParams: [],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe_2,
+        //         expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+        //     })
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        // title = '0030\t参数为block_01: client订阅了block,参数列表为["block"]'
+        // {
+        //     actions = []
+        //     actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 6000})
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['block'],
+        //         checkParams: ['block'],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe_2,
+        //         expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+        //     })
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        title = '0040\t参数为block_02: client没有订阅block,参数列表为["block"]'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})  //subscribe没有check，因为output在下一个action（sendTxs）里
-            actions.push(tcsSubscribe.createRealTx(server))
-            actions.push({type: actionTypes.unsubscribe,
+            actions.push({type: actionTypes.list,
                 txParams: ['block'],
-                timeout: 6000,
-                checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
+                checkParams: [],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForListSubscribe_2,
                 expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
-            })
-
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
-        }
-
-        title = '0011\t取消订阅区块block_02：无订阅区块'
-        {
-            actions = []
-            actions.push({type: actionTypes.unsubscribe,
-                txParams: ['block'],
-                timeout: 6000,
-                checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
-                expectedResult: {needPass: true, isErrorInResult: true, expectedError: expectedError},
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -858,6 +924,24 @@ module.exports = tcsSubscribe = {
 
         //{"id":1,"jsonrpc":"2.0","result":[]}
         expect(messages.results[6].result.length).to.be.equals(0)
+    },
+
+    checkForListSubscribe_2: function(action){
+        // logger.debug('checkForListSubscribe: ' + JSON.stringify(testCase.actualResult[0]))
+        let messages = tcsSubscribe.filterSubscribeMessages(action.output)
+        let results = messages.results
+
+        if(action.expectedResult.needPass){
+            expect(results[0].result.length).to.be.equals(action.checkParams.length)
+
+            for(let i = 0;  i < action.checkParams.length; i++){
+                expect(results[0].result[i]).to.be.equals(action.checkParams[i])
+            }
+        }
+        else{
+            // expect(results[0].result).to.be.equals(testCase.actions[2].txParams[0] + ' unsubscribed')
+            // expect(blocks.length).to.be.equals(0)
+        }
     },
 
     //endregion
