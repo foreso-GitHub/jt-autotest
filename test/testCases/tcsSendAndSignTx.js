@@ -484,7 +484,7 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_有效的name参数:很长的字符串，正好256字节'
         {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(256)[0]
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
