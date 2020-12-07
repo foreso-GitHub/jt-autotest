@@ -36,7 +36,7 @@ module.exports = tcsGetTx = {
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t查询有效交易哈希-token'
-        hash = txs.tx_token_CNYT.hash
+        hash = txs.tx_token.hash
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -147,7 +147,7 @@ module.exports = tcsGetTx = {
 
         title = '0010\t查询有效交易哈希-token'
         {
-            tx = txs.tx_token_CNYT
+            tx = txs.tx_token
             hash = tx.hash
             from = tx.Account
             index = tx.Sequence

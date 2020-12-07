@@ -186,11 +186,14 @@ function chainDataCreator(){
             txs.push(tx.result)
         }
 
-        chainData.tx_token_CNYT = txs[0]
+        // chainData.tx_token_CNYT = txs[0]
         // chainData.tx_issue_token = txs[1]
-        chainData.tx_token = txs[0]  //todo need be replaced by real issued token
-        chainData.tx1 = txs[1]
-        chainData.tx_memo = txs[2]
+        chainData.tx_token = txs[0]
+        chainData.tx_global_coin = txs[0]
+        chainData.tx_local_coin = txs[1]
+        chainData.charge_coin_tx = txs[2]
+        chainData.tx1 = txs[3]
+        chainData.tx_memo = txs[4]
 
         let blockNumber = chainData.tx1.ledger_index
         let blockResult = await server.responseGetBlockByNumber(server, blockNumber.toString(), false)
