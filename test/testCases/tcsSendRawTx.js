@@ -19,7 +19,8 @@ const { token, } = require("../testData/testData")
 //endregion
 //endregion
 
-let _FailRawTx_UsedSequence = {tx: '1200002280000000240000099761400000000000000168400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201b28ce06c536141010a0b3819cff70f0687bc8d8087506eef4405cb7b86ee2510220319930cc252a1cc42550ea854b1bec81f0a22ac45dfd22b4c85f8e4387ca84488114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1',
+//this is root account send to 'jBykxUHVDccTYtquCSCsFVgem1zt3FFe71' in sequence = 1
+let _FailRawTx_UsedSequence = {tx: '1200002280000000240000000161400000000000000168400000000000000a73210330e7fc9d56bb25d6893ba3f317ae5bcf33b3291bd63db32654a313222f7fd02074473045022100cee4e73d4cf94ae60603bef1a5cdd3c9338c5a594d01435c211bde4da48001f0022067d2a508f40a74e1fbafec6af8e1a5a4bf3f0eacf02a145bfbc0daf40b85eb478114b5f762798a53d543a014caf8b297cff8f2f937e88314786d3d9ca227fda827d80519ecbb959323cb54df',
     code: -278, message: 'temBAD_SEQUENCE Malformed: Sequence is not in the past.'}
 let _FailRawTx_InactiveAccount = {tx: '1200002280000000240000000161400000000000000168400000000000000a732102e082405d139f369b49c17c248981f09aad269bc9ca6e9a163870e24fd80cd42174473045022100cba484fb47b3f87f3c0bd78839c61c7ea89df0626be455b4f55e44a09525b6b4022050254bd30ec8d0384b3305760ad8cb518128ad91e360d4b5d1872b5d8a27ed518114ce5c4f04da35752b9323442fc8c731a3672ff3e483144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1f1',
     code: -278, message: 'terNO_ACCOUNT The source account does not exist.'}
@@ -267,7 +268,8 @@ module.exports = tcsSendRawTx = {
             let subCaseFunctionParams = subCaseFunctionParamsList[i]
             let createSubCasesFunction = subCaseFunctionParams.createSubCasesFunction
             let subCases = await createSubCasesFunction(subCaseFunctionParams.server, subCaseFunctionParams.account1,
-                subCaseFunctionParams.account2, subCaseFunctionParams.currency, subCaseFunctionParams.txFunction, subCaseFunctionParams.successCount)
+                subCaseFunctionParams.account2, subCaseFunctionParams.currency,
+                subCaseFunctionParams.txFunction, subCaseFunctionParams.successCount)
             for (let subCase of subCases){
                 totalCount += subCase.count
             }
@@ -286,6 +288,7 @@ module.exports = tcsSendRawTx = {
                 signedTxs.push(testCase.otherParams.subCases[i].results[j].result[0])
             }
         }
+
         //create fail raw tx
         let failRawTxs = testCase.otherParams.subCaseFunctionParamsList[0].failRawTxs
         if(failRawTxs && failRawTxs.length > 0){
