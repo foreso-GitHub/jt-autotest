@@ -27,6 +27,7 @@ function websocketInterface() {
     //endregion
 
     //region common methods
+
     websocketInterface.prototype.getResponse = function (server, methodName, params) {
         baseInterface.prototype.getResponse(server, methodName, params)
         return new Promise(async (resolve, reject) => {
@@ -44,7 +45,6 @@ function websocketInterface() {
             }
         })
     }
-
 
     websocketInterface.prototype.request = function(url, content){
         return new Promise((resolve, reject)=>{
@@ -75,14 +75,14 @@ function websocketInterface() {
     //endregion
 
     //region subscribe methods
-    let all_output
-    let sub_output
+    let all_outputs
+    let sub_outputs
     let openLogger = true
 
     websocketInterface.prototype.newWebSocket = function(server) {
         let ws = new WebSocket(server.url)
-        all_output = []
-        sub_output = []
+        all_outputs = []
+        sub_outputs = []
         let index = 0
 
         ws.on('open', async function open() {
@@ -92,8 +92,8 @@ function websocketInterface() {
         ws.on('message', function incoming(data) {
             let message = JSON.parse(data)
             message.outputIndex = index ++
-            all_output.push(message)
-            sub_output.push(message)
+            all_outputs.push(message)
+            sub_outputs.push(message)
             if(openLogger) logger.debug('ws message: ' + data)  //important logger
         })
 
@@ -105,14 +105,14 @@ function websocketInterface() {
 
     websocketInterface.prototype.closeWebSocket = function(ws) {
         if(openLogger) {
-            logger.debug('sub_output: ')
-            websocketInterface.prototype.printOutputs(sub_output)
-            logger.debug('all_output: ')
-            websocketInterface.prototype.printOutputs(all_output)
+            logger.debug('sub_outputs: ')
+            websocketInterface.prototype.printOutputs(sub_outputs)
+            logger.debug('all_outputs: ')
+            websocketInterface.prototype.printOutputs(all_outputs)
         }
         ws.close()
         return new Promise((resolve, reject)=>{
-            resolve({sub: sub_output, all: all_output})
+            resolve(websocketInterface.prototype.createOutputs(sub_outputs, all_outputs))
         })
     }
 
@@ -123,12 +123,12 @@ function websocketInterface() {
     }
 
     websocketInterface.prototype.subscribeResponse = function(ws, content){
-        let last_sub_output = sub_output
+        let last_sub_outputs = sub_outputs
         if(openLogger) {
-            logger.debug('sub_output: ')
-            websocketInterface.prototype.printOutputs(last_sub_output)
+            logger.debug('sub_outputs: ')
+            websocketInterface.prototype.printOutputs(last_sub_outputs)
         }
-        sub_output = []
+        sub_outputs = []
         return new Promise((resolve, reject)=>{
             /*
             Constant	Value	Description
@@ -148,8 +148,18 @@ function websocketInterface() {
             else{
                 logger.debug('ws.readyState: ' + ws.readyState)
             }
-            resolve({sub: last_sub_output, all: all_output})
+            resolve(websocketInterface.prototype.createOutputs(last_sub_outputs, all_outputs))
         })
+    }
+
+    //region outputs
+
+    websocketInterface.prototype.getOutputs = function(){
+        return websocketInterface.prototype.createOutputs(sub_outputs, all_outputs)
+    }
+
+    websocketInterface.prototype.createOutputs = function(sub_outputs, all_outputs){
+        return {sub: sub_outputs, all: all_outputs}
     }
 
     websocketInterface.prototype.printOutputs = function(outputs){
@@ -158,6 +168,8 @@ function websocketInterface() {
             logger.debug(output.outputIndex + '. ' + JSON.stringify(output))
         }
     }
+
+    //endregion
 
     //endregion
 
