@@ -24,6 +24,7 @@ const actionTypes = {
     unsubscribe:consts.rpcFunctions.unsubscribe,
     list:consts.rpcFunctions.listSubscribe,
 }
+const Subscribe_Timeout = 100
 
 module.exports = tcsSubscribe = {
 
@@ -72,15 +73,12 @@ module.exports = tcsSubscribe = {
 
             //execute actions
             for(let i = 0; i < testCase.actions.length; i++){
-                //先保存上个action的执行结果
-                let outputs = testCase.server.getOutputs()
-                if(i > 0){
-                    testCase.actions[i - 1].output = outputs.sub
-                }
 
                 // 执行本次action
                 let action = testCase.actions[i]
                 if(action.type == actionTypes.sendTx){  // send txs
+                    testCase.server.clearSub() //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
+                    // logger.debug('testCase.server.getOutputs().sub: ' + testCase.server.getOutputs().sub.length)
                     let server = testCase.server
                     let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, action.value)
                     action.hashes = await utility.sendTxs(server, txParams, action.txCount)
@@ -94,21 +92,20 @@ module.exports = tcsSubscribe = {
                     await testCase.server.subscribe(ws, action.type, action.txParams)
                 }
 
-                // 如果当前action需要check tx，则把当前的期望收到和不希望收到的hash给这个action
-                // if(action.needCheckTx){
-                //     action.realHashes = testCase.realHashes
-                //     action.fakeHashes = testCase.fakeHashes
-                // }
-
                 // 执行timeout
                 await utility.timeout(action.timeout)
+
+                //保存这个action的执行结果
+                logger.debug('----------------timeout done!')
+                logger.debug(JSON.stringify(testCase.server.getOutputs()))
+                action.output = utility.deepClone(testCase.server.getOutputs().sub)  //必须现在调用getOutputs()获取最新的output，不能用变量
             }
 
             //close ws
             let outputs = await testCase.server.closeWebSocket(ws)
-            if(testCase.actions.length > 0){
-                testCase.actions[testCase.actions.length - 1].output = outputs.sub
-            }
+            // if(testCase.actions.length > 0){
+            //     testCase.actions[testCase.actions.length - 1].output = outputs.sub
+            // }
             testCase.actualResult.push(outputs.all)
             resolve(testCase)
         })
@@ -158,7 +155,7 @@ module.exports = tcsSubscribe = {
             to: receiver.address,
             value: '1',
             txCount: 5,
-            timeout: 6000,
+            timeout: 7000,
             // checkFunction: tcsSubscribe.checkForSubscribeBlock,
             checkFunction: function(action){
                 tcsSubscribe.checkForSubscribeBlock(action)
@@ -253,7 +250,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0010\t订阅区块'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.timeout = 11000
             action.receiveBlock = true
@@ -267,7 +264,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0011\t订阅区块，带无效的订阅参数'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['block', 'abcd'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['block', 'abcd'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             action.receiveTx = false
@@ -281,8 +278,8 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0012\t重复订阅区块'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.timeout = 11000
             action.receiveBlock = true
@@ -304,7 +301,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0020\t订阅交易'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             actions.push(action)
@@ -316,7 +313,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0021\t订阅交易，带无效的订阅参数'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['tx', 'abcd'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx', 'abcd'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             action.receiveTx = false
@@ -329,8 +326,8 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0022\t重复订阅交易'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             actions.push(action)
@@ -350,7 +347,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0030\t订阅-无效的内容：参数为\'abcd\''
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['abcd'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['abcd'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             action.receiveTx = false
@@ -363,7 +360,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0031\t订阅-无效的内容：参数为\'\''
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: [''], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: [''], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             action.receiveTx = false
@@ -376,7 +373,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0032\t订阅-无效的内容：参数为超长字符串'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['12312312313212312312313131adfasdfaskdfajsfoieurowarolkdjasfldjf'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['12312312313212312312313131adfasdfaskdfajsfoieurowarolkdjasfldjf'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             action.receiveTx = false
@@ -389,7 +386,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0040\t订阅-内容为空'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: [], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: [], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
             action.receiveTx = false
@@ -410,8 +407,8 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0050\t已订阅区块时再订阅交易'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
-            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = true
             action.receiveTx = true
@@ -424,8 +421,8 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0060\t已订阅交易时再订阅区块'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = true
             action.receiveTx = true
@@ -446,7 +443,7 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0070\t订阅token，不带参数'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['token'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['token'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.value = tcsSubscribe.createCoinValue(1, globalCoin)
             action.receiveBlock = false
@@ -457,35 +454,192 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // title = titlePrefix + '0021\t订阅交易，带无效的订阅参数'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['tx', 'abcd'], timeout: 0})
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = false
-        //     action.receiveTx = false
-        //     actions.push(action)
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = titlePrefix + '0022\t重复订阅交易'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-        //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = false
-        //     actions.push(action)
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-        //     framework.addTestCase(testCases, testCase)
-        // }
+        title = titlePrefix + '0080\t订阅token，带有效参数（全局token），参数不带issuer'
+        {
+            actions = []
 
-        framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
+            actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0081\t订阅token，带有效参数（全局token），参数带issuer'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(globalCoin)], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0090\t订阅token，带有效参数（本地token）'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0100\t订阅token，带无效参数: 不存在的token名字'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', 'notExisted'], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0101\t订阅token，带无效参数: token名字正确但issuer地址无效'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', localCoin.symbol + '/jU4iU135deFRwUEG5guBSkpRKe6H8YZanR'], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0110\t订阅token，参数为空: 订阅内容为token，订阅参数为空'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', ''], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0120\t重复订阅相同的token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0130\t订阅不同的token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+
+
+        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
         //endregion
+
+        testCases = []
+
+        // title = titlePrefix + '0140\t订阅多个同名的token，issuer不同，包括全局的'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+        //     actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
+        //
+        //     action = tcsSubscribe.createRealTxAction(server)
+        //     action.value = tcsSubscribe.createCoinValue(1, localCoin)
+        //     action.receiveBlock = false
+        //     action.receiveTx = true
+        //     actions.push(action)
+        //
+        //     action = tcsSubscribe.createRealTxAction(server)
+        //     action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+        //     action.receiveBlock = false
+        //     action.receiveTx = true
+        //     actions.push(action)
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+        //     framework.addTestCase(testCases, testCase)
+        // }
+
+        framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
     },
 
@@ -580,7 +734,7 @@ module.exports = tcsSubscribe = {
 
             actions.push({type: actionTypes.subscribe,
                 txParams: ['block'],
-                timeout: 0
+                timeout: Subscribe_Timeout
             })
 
             action = tcsSubscribe.createRealTxAction(server)
@@ -665,9 +819,9 @@ module.exports = tcsSubscribe = {
         {
             actions = []
 
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
 
-            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = true

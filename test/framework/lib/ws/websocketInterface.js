@@ -123,12 +123,11 @@ function websocketInterface() {
     }
 
     websocketInterface.prototype.subscribeResponse = function(ws, content){
-        let last_sub_outputs = sub_outputs
         if(openLogger) {
             logger.debug('sub_outputs: ')
-            websocketInterface.prototype.printOutputs(last_sub_outputs)
+            websocketInterface.prototype.printOutputs(sub_outputs)
         }
-        sub_outputs = []
+        websocketInterface.prototype.clearSub()
         return new Promise((resolve, reject)=>{
             /*
             Constant	Value	Description
@@ -148,11 +147,15 @@ function websocketInterface() {
             else{
                 logger.debug('ws.readyState: ' + ws.readyState)
             }
-            resolve(websocketInterface.prototype.createOutputs(last_sub_outputs, all_outputs))
+            resolve(websocketInterface.prototype.createOutputs(sub_outputs, all_outputs))
         })
     }
 
     //region outputs
+
+    websocketInterface.prototype.clearSub = function(){
+        sub_outputs = []
+    }
 
     websocketInterface.prototype.getOutputs = function(){
         return websocketInterface.prototype.createOutputs(sub_outputs, all_outputs)
