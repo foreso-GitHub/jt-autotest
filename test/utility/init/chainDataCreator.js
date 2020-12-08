@@ -145,6 +145,7 @@ function chainDataCreator(){
         //endregion
 
         //region send coin
+        logger.info('Wait for 6 seconds, issuing coins ...')
         await utility.timeout(6000)
 
         result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, globalCoin)
@@ -155,13 +156,13 @@ function chainDataCreator(){
         rootSequence = await batchChargeCoin(server, root, rootSequence, localCoin)
         rootSequence = await batchChargeCoin(server, root, rootSequence, globalSameCoin)
         rootSequence = await batchChargeCoin(server, root, rootSequence, localSameCoin1)
-        senderSequence = await batchChargeCoin(server, sender, senderSequence, localSameCoin2)
+        let sequence = await batchChargeCoin(server, sender, senderSequence, localSameCoin2)
         //endregion
 
         //get sequence
-        await utility.timeout(6000)
-        let response = await server.responseGetAccount(server, sender.address)
-        let sequence = response.result.Sequence
+        // await utility.timeout(6000)
+        // let response = await server.responseGetAccount(server, sender.address)
+        // let sequence = response.result.Sequence
 
         //normal swtc tx
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
