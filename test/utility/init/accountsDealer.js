@@ -30,7 +30,32 @@ function accountsDealer() {
 
     async function createAccounts(server, count){
         let accounts = []
+        //add fixed accounts
         accounts.push(root)
+        accounts.push({
+            "address": "jBAxWtNKqTRaL2hN6Gv48Zd4tPd7VUW3tZ",
+            "secret": "ssdECu8uDPh4Pzb3P4LCSQoRmXMkM"
+        })
+        accounts.push({
+            "address": "jHMf2pQVxVUH2hzLFWNDusSwPRavJhr9eY",
+            "secret": "snAiaEDyeZgMyF4ouk4qzZC6PeV67"
+        })
+        accounts.push({
+            "address": "jjan287EN3QLdvQYQHfB95jQwQJmLHXcWf",
+            "secret": "snewKnpnywQgRWcfpbVdqBLMZarkN"
+        })
+        accounts.push({
+            "address": "jfTd19eyWiXk7PVGmL1WXQwRptFRJAaZdH",
+            "secret": "sh47QjJ1UDCJgTABP38qDoHEcgh6c"
+        },)
+        accounts.push({
+            "address": "jhVgC7xhD3mHx63bb39ugRUDPfFzRzAsFJ",
+            "secret": "shotUv2QzHXCaWtnsDJX1qRai4TRT"
+        },)
+        accounts.push({
+            "address": "jPXRwGEVCrhQjUq4jJ4Ceedku6W9chRYB3",
+            "secret": "sn2LxJUiJJ2YS2kQwgMESFevwTkmh"
+        })
 
         //walletAccount, balanceAccount, nickNameSender, nickNameReceiver, 4 accounts need use createAccount, so to test nick name.
         for (let i = 1; i <= 4; i++) {
@@ -112,6 +137,30 @@ function accountsDealer() {
                 address:accounts[i].address,
                 secret:accounts[i].secret,
                 nickName: accounts[i++].nickName,
+            },
+            fixedSender1:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            fixedReceiver1:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            fixedSender2:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            fixedReceiver2:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            fixedSender3:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            fixedReceiver3:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
             },
             walletAccount:{
                 address:accounts[i].address,

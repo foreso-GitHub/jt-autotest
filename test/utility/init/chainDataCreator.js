@@ -127,6 +127,7 @@ function chainDataCreator(){
         let senderResponse = await server.responseGetAccount(server, sender.address)
         let senderSequence = senderResponse.result.Sequence
         let localSameCoin2 = utility.deepClone(localSameCoin1)
+        localSameCoin2.name = 'TestCoin_same_local_2'
         localSameCoin2.issuer = sender.address
         result = await issueCoin(server, sender, senderSequence++, localSameCoin2, true, consts.flags.both)
         if(result){
@@ -222,18 +223,6 @@ function chainDataCreator(){
     }
 
     async function issueCoin(server, sender, sequence, coin, local, flag){
-        // let currenyResponse = await server.responseGetCurrency(server, coin.symbol, coin.issuer)
-        // if(!(currenyResponse.result
-        //     && currenyResponse.result.TotalSupply
-        //     && currenyResponse.result.TotalSupply.currency == coin.symbol)){
-        //     //if not, then issue global coin
-        //     params = server.createIssueTokenParams(sender.address, sender.secret, sequence,
-        //         coin.name, coin.symbol, '8', '99999999', local, flag, '0.00001')
-        //     result = await server.responseSendTx(server, params)
-        //     return result
-        // }
-        // return null
-
         let params = server.createIssueTokenParams(sender.address, sender.secret, sequence,
             coin.name, coin.symbol, '8', '99999999', local, flag, '0.00001')
         let result = await server.responseSendTx(server, params)
