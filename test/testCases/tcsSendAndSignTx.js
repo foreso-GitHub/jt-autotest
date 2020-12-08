@@ -520,12 +520,21 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:很长的字符串'
+        testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:长度超过12字节'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].symbol = "tokenName.symbolymboltokenN"
+                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(5)
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'symbol must be the characters with alphas[a-zA-Z], numbers[0-9], chinese characters[一-龥] and underscores[_]')
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_有效的symbol参数:长度正好12字节'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function() {
+                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(4)
+                testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
             })
             framework.addTestCase(testCases, testCase)
         }
