@@ -52,6 +52,7 @@ describe('Jingtum测试', function() {
 
         let server = framework.activeServer(mode)
 
+        //region set timeout
         let timeout = 10000
         if(mode.service == serviceType.oldChain){
             timeout = 120000
@@ -66,6 +67,7 @@ describe('Jingtum测试', function() {
             timeout = 10000
         }
         this.timeout(timeout)
+        //endregion
 
         describe('【测试模式: ' + server.getName() + '】', function () {
 
@@ -75,7 +77,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -180,15 +182,11 @@ describe('Jingtum测试', function() {
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
 
-                // this.timeout(360000)
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                this.timeout(360000)
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
                 // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
-
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
-                tcsSign.testForSign(server, '测试jt_sign')
+                this.timeout(timeout)
 
             })
         })

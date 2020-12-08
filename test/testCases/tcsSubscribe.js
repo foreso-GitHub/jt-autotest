@@ -27,6 +27,17 @@ const actionTypes = {
 
 module.exports = tcsSubscribe = {
 
+    //region 说明
+    // 1. subscribe测试是把一个测试script拆分成不同的子动作（action），分别执行和检查
+    // 2. action主要有如下4种，参考actionTypes
+    // 1) subscribe
+    // 2) unsubscribe
+    // 3) list
+    // 4) send txs
+    // 3. 一般执行一个action之前，把当前的ws的subscribe输出信息保存为上一个action的执行结果
+    // 4. 一般情况下，发送交易action会同时检查block和action，通过receiveBlock和receiveTx来判断是否应该收到
+    //endregion
+
     //region common
 
     //region main
@@ -67,17 +78,29 @@ module.exports = tcsSubscribe = {
                     testCase.actions[i - 1].output = outputs.sub
                 }
 
+                // 执行本次action
                 let action = testCase.actions[i]
                 if(action.type == actionTypes.sendTx){  // send txs
-                    // todo sendTx走的不是subcribe的路子，因此不能直接通过promise获取上一个action的执行结果output。
-                    // todo 但是可以考虑将server的all_output和sub_output公开，在执行sendTx前获取一下给上一个action。这样就比较完整。
                     let server = testCase.server
                     let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, action.value)
                     action.hashes = await utility.sendTxs(server, txParams, action.txCount)
+                    if(action.receiveTx){
+                        testCase.realHashes = action.hashes
+                    }
+                    else{
+                        testCase.fakeHashes = action.hashes
+                    }
                 }else {  // execute subscribe/unsubscribe/listsubscribe
                     await testCase.server.subscribe(ws, action.type, action.txParams)
                 }
 
+                // 如果当前action需要check tx，则把当前的期望收到和不希望收到的hash给这个action
+                // if(action.needCheckTx){
+                //     action.realHashes = testCase.realHashes
+                //     action.fakeHashes = testCase.fakeHashes
+                // }
+
+                // 执行timeout
                 await utility.timeout(action.timeout)
             }
 
@@ -104,6 +127,11 @@ module.exports = tcsSubscribe = {
 
     //region utility
 
+    //region coin name
+    createCoinValue: function(amount, coin){
+        return utility.createCoinValue(amount, coin.symbol, coin.issuer)
+    },
+
     getCoinFullName: function(coin){
         return tcsSubscribe.createCoinFullName(coin.symbol, coin.issuer)
     },
@@ -111,16 +139,19 @@ module.exports = tcsSubscribe = {
     createCoinFullName: function(symbol, issuer){
         return symbol + '/' + issuer
     },
+    //endregion
 
-    createRealTx: function(server){
-        return tcsSubscribe.createTx(server.mode.addresses.sender3, server.mode.addresses.receiver3)
+    //region create tx action
+
+    createRealTxAction: function(server){
+        return tcsSubscribe.createTxAction(server.mode.addresses.sender3, server.mode.addresses.receiver3, true)
     },
 
     createFakeTx: function(server){
-        return tcsSubscribe.createTx(server.mode.addresses.sender2, server.mode.addresses.receiver2)
+        return tcsSubscribe.createTxAction(server.mode.addresses.sender2, server.mode.addresses.receiver2, false)
     },
 
-    createTx: function(sender, receiver){
+    createTxAction: function(sender, receiver, receiveTx){
         return {type: actionTypes.sendTx,
             from: sender.address,
             secret: sender.secret,
@@ -128,11 +159,20 @@ module.exports = tcsSubscribe = {
             value: '1',
             txCount: 5,
             timeout: 6000,
-            checkFunction: tcsSubscribe.checkForSubscribeBlock,
+            // checkFunction: tcsSubscribe.checkForSubscribeBlock,
+            checkFunction: function(action){
+                tcsSubscribe.checkForSubscribeBlock(action)
+                tcsSubscribe.checkForSubscribeTx(action)
+            },
             expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+            receiveBlock: false,
+            receiveTx: receiveTx,
         }
     },
 
+    //endregion
+
+    //region messages
     filterSubscribeMessages: function(messages){
         let filterMessages = {}
         filterMessages.blocks = []
@@ -193,6 +233,8 @@ module.exports = tcsSubscribe = {
 
     //endregion
 
+    //endregion
+
     //region subscribe
 
     testForSubscribe: function(server, describeTitle){
@@ -203,14 +245,19 @@ module.exports = tcsSubscribe = {
         let action
         let actions = []
 
+        let globalCoin = server.mode.coins[0]
+        let localCoin = server.mode.coins[1]
+
         //region block
 
         title = titlePrefix + '0010\t订阅区块'
         {
             actions = []
             actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
-            action = tcsSubscribe.createRealTx(server)
+            action = tcsSubscribe.createRealTxAction(server)
             action.timeout = 11000
+            action.receiveBlock = true
+            action.receiveTx = false
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
@@ -221,8 +268,10 @@ module.exports = tcsSubscribe = {
         {
             actions = []
             actions.push({type: actionTypes.subscribe, txParams: ['block', 'abcd'], timeout: 0})
-            action = tcsSubscribe.createRealTx(server)
-            action.expectedResult = {needPass: false, isErrorInResult: true, expectedError: ''}
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            // action.expectedResult = {needPass: false, isErrorInResult: true, expectedError: ''}
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
@@ -234,38 +283,190 @@ module.exports = tcsSubscribe = {
             actions = []
             actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
             actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
-            action = tcsSubscribe.createRealTx(server)
+            action = tcsSubscribe.createRealTxAction(server)
             action.timeout = 11000
+            action.receiveBlock = true
+            action.receiveTx = false
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
             framework.addTestCase(testCases, testCase)
         }
 
+        // framework.testTestCases(server, describeTitle + '_订阅block', testCases)
+
         //endregion
 
         //region tx
 
-        // title = titlePrefix + '0020\t订阅交易'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-        //     action = tcsSubscribe.createRealTx(server)
-        //     action.checkFunction = tcsSubscribe.checkForSubscribeTx
-        //     actions.push(action)
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-        //     framework.addTestCase(testCases, testCase)
-        // }
+        testCases = []
+
+        title = titlePrefix + '0020\t订阅交易'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0021\t订阅交易，带无效的订阅参数'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['tx', 'abcd'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0022\t重复订阅交易'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        // framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
+
+        //endregion
+
+        //region not work
+
+        testCases = []
+
+        title = titlePrefix + '0030\t订阅-无效的内容：参数为\'abcd\''
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['abcd'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0031\t订阅-无效的内容：参数为\'\''
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: [''], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0032\t订阅-无效的内容：参数为超长字符串'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['12312312313212312312313131adfasdfaskdfajsfoieurowarolkdjasfldjf'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0040\t订阅-内容为空'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: [], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        // framework.testTestCases(server, describeTitle + '_无效订阅', testCases)
+
+        //endregion
+
+        //region block + tx
+
+        testCases = []
+
+        title = titlePrefix + '0050\t已订阅区块时再订阅交易'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0060\t已订阅交易时再订阅区块'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        // framework.testTestCases(server, describeTitle + '_多个订阅', testCases)
+
+        //endregion
+
+        //region token
+
+        testCases = []
+
+        title = titlePrefix + '0070\t订阅token，不带参数'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['token'], timeout: 0})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
 
         // title = titlePrefix + '0021\t订阅交易，带无效的订阅参数'
         // {
         //     actions = []
         //     actions.push({type: actionTypes.subscribe, txParams: ['tx', 'abcd'], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.expectedResult.needPass = false
-        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     action = tcsSubscribe.createRealTxAction(server)
+        //     action.receiveBlock = false
+        //     action.receiveTx = false
+        //     actions.push(action)
+        //
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
         //     framework.addTestCase(testCases, testCase)
         // }
         //
@@ -274,120 +475,24 @@ module.exports = tcsSubscribe = {
         //     actions = []
         //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
         //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
+        //     action = tcsSubscribe.createRealTxAction(server)
+        //     action.receiveBlock = false
+        //     actions.push(action)
         //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.checkFunction = tcsSubscribe.checkForSubscribeTx
+        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
         //     framework.addTestCase(testCases, testCase)
         // }
+
+        framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
 
         //endregion
 
-        // //region not work
-        //
-        // title = titlePrefix + '0030\t订阅-无效的内容：参数为\'abcd\''
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['abcd'], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.expectedResult.needPass = false
-        //     testCase.checkFunction = async function(testCase){
-        //         await tcsSubscribe.checkForSubscribeBlock(testCase)
-        //         await tcsSubscribe.checkForSubscribeTx(testCase)
-        //     }
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = titlePrefix + '0031\t订阅-无效的内容：参数为\'\''
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: [''], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.expectedResult.needPass = false
-        //     testCase.checkFunction = async function(testCase){
-        //         await tcsSubscribe.checkForSubscribeBlock(testCase)
-        //         await tcsSubscribe.checkForSubscribeTx(testCase)
-        //     }
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = titlePrefix + '0032\t订阅-无效的内容：参数为超长字符串'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['12312312313212312312313131adfasdfaskdfajsfoieurowarolkdjasfldjf'], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.expectedResult.needPass = false
-        //     testCase.checkFunction = async function(testCase){
-        //         await tcsSubscribe.checkForSubscribeBlock(testCase)
-        //         await tcsSubscribe.checkForSubscribeTx(testCase)
-        //     }
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = titlePrefix + '0040\t订阅-内容为空'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: [], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.expectedResult.needPass = false
-        //     testCase.checkFunction = async function(testCase){
-        //         await tcsSubscribe.checkForSubscribeBlock(testCase)
-        //         await tcsSubscribe.checkForSubscribeTx(testCase)
-        //     }
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // //endregion
-        //
-        // //region block + tx
-        //
-        // title = titlePrefix + '0050\t已订阅区块时再订阅交易'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
-        //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.checkFunction = async function (testCase) {
-        //         await tcsSubscribe.checkForSubscribeBlock(testCase)
-        //         await tcsSubscribe.checkForSubscribeTx(testCase)
-        //     }
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // title = titlePrefix + '0060\t已订阅交易时再订阅区块'
-        // {
-        //     actions = []
-        //     actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-        //     actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
-        //     actions.push(tcsSubscribe.createRealTx(server))
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-        //     testCase.checkFunction = async function (testCase) {
-        //         await tcsSubscribe.checkForSubscribeBlock(testCase)
-        //         await tcsSubscribe.checkForSubscribeTx(testCase)
-        //     }
-        //     framework.addTestCase(testCases, testCase)
-        // }
-        //
-        // //endregion
-
-        framework.testTestCases(server, describeTitle, testCases)
     },
 
     checkForSubscribeBlock: function(action){
         let messages = tcsSubscribe.filterSubscribeMessages(action.output)
         let blocks = messages.blocks
-        if(action.expectedResult.needPass){
+        if(action.receiveBlock){
             let min = 1
             let max = 2
             if(action.timeout > 5000 && action.timeout <= 10000){
@@ -418,10 +523,8 @@ module.exports = tcsSubscribe = {
         let messages = tcsSubscribe.filterSubscribeMessages(action.output)
         let txs = []
         let receivedHashes = []
-
         txs = txs.concat(messages.txs)
         txs = txs.concat(messages.hashes)
-
         if(txs){
             txs.forEach(tx => {
                 if(tx.result){
@@ -432,24 +535,25 @@ module.exports = tcsSubscribe = {
                 }
             })
         }
-        let realHashes = action.realHashes
-        let fakeHashes = action.fakeHashes
 
-        if(action.expectedResult.needPass){
-            expect(receivedHashes.length).to.be.least(5)
-            realHashes.forEach(realHash => {
-                expect(receivedHashes).to.be.contains(realHash)
-            })
-            if(action.hasFake && action.hasFake == true){
+        if(action.receiveTx){
+            let realHashes = action.hashes
+            expect(receivedHashes.length).to.be.equals(realHashes.length)
+            if(realHashes){
+                realHashes.forEach(realHash => {
+                    expect(receivedHashes).to.be.contains(realHash)
+                })
+            }
+        }
+        else{
+            let fakeHashes = action.fakeHashes
+            expect(receivedHashes.length).to.be.equals(0)
+            if(fakeHashes){
                 fakeHashes.forEach(fakeHash => {
                     expect(receivedHashes).to.not.be.contains(fakeHash)
                 })
             }
         }
-        else{
-            expect(receivedHashes.length).to.be.equals(0)
-        }
-
     },
 
     //endregion
@@ -473,13 +577,22 @@ module.exports = tcsSubscribe = {
         title = '0010\t取消订阅区块block_01: 已订阅区块，取消订阅区块，订阅内容为block，无订阅参数'
         {
             actions = []
-            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})  //subscribe没有check，因为output在下一个action（sendTxs）里
-            actions.push(tcsSubscribe.createRealTx(server))
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: 0
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
             actions.push({type: actionTypes.unsubscribe,
                 txParams: ['block'],
                 timeout: 6000,
                 checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
-                expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+                receiveBlock: false,
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -493,7 +606,7 @@ module.exports = tcsSubscribe = {
                 txParams: ['block'],
                 timeout: 6000,
                 checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
-                expectedResult: {needPass: true, isErrorInResult: true, expectedError: expectedError},
+                receiveBlock: false,
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -510,7 +623,7 @@ module.exports = tcsSubscribe = {
         let results = messages.results
         let blocks = messages.blocks
 
-        if(action.expectedResult.needPass){
+        if(action.receiveBlock){
             expect(results[0].result).to.be.equals(action.txParams[0] + ' unsubscribed')
             // expect(blocks.length).to.be.equals(0)
         }
@@ -551,9 +664,16 @@ module.exports = tcsSubscribe = {
         title = titlePrefix + '0010\t参数为空_01: client订阅了block、tx、多个token（全局和带issuer的都有）、多个account'
         {
             actions = []
+
             actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 0})
+
             actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 0})
-            actions.push(tcsSubscribe.createRealTx(server))
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
             actions.push({type: actionTypes.list,
                 txParams: [],
                 checkParams: ['block', 'tx'],
@@ -566,7 +686,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '0020\t参数为空_02: tclient没有订阅任何信息'
+        title = titlePrefix + '0020\t参数为空_02: client没有订阅任何信息'
         {
             actions = []
             actions.push({type: actionTypes.list,
@@ -635,7 +755,5 @@ module.exports = tcsSubscribe = {
     },
 
     //endregion
-
-
 
 }

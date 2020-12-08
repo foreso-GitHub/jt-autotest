@@ -247,6 +247,14 @@ module.exports = testUtility = {
     getShowValue: function(value, symbol, issuer){
         return value + this.getShowSymbol(symbol, issuer)
     },
+
+    createCoinValue: function(amount, symbol, issuer){
+        return {
+            amount: amount,
+            symbol: symbol,
+            issuer: issuer,
+        }
+    },
     //endregion
 
     //region hex relative
