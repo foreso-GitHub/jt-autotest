@@ -79,6 +79,8 @@ function chainDataCreator(){
         const to = mode.addresses.receiver1.address
         let globalCoin = mode.coins[0]
         let localCoin = mode.coins[1]
+        let globalSameCoin = mode.coins[2]
+        let localSameCoin1 = mode.coins[3]
         let params
         let result
 
@@ -93,57 +95,70 @@ function chainDataCreator(){
 
         //region issue coin
 
-        //region check if global coin (without issuer) exists
-        let currenyResponse = await server.responseGetCurrency(server, globalCoin.symbol)
-        if(!(currenyResponse.result
-            && currenyResponse.result.TotalSupply
-            && currenyResponse.result.TotalSupply.currency == globalCoin.symbol)){
-            //if not, then issue global coin
-            params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
-                globalCoin.name, globalCoin.symbol, '8', '99999999', false, consts.flags.both, '0.00001')
-            result = await server.responseSendTx(server, params)
+        //region global coin (without issuer)
+        result = await issueCoin(server, root, rootSequence++, globalCoin, false, consts.flags.both)
+        if(result){
             txResults.push(result)
+            // logger.debug('-------------create: globalCoin')
         }
         //endregion
 
-        //region check if local coin (with issuer) exists
-        currenyResponse = await server.responseGetCurrency(server, localCoin.symbol, localCoin.issuer)
-        if(!(currenyResponse.result
-            && currenyResponse.result.TotalSupply
-            && currenyResponse.result.TotalSupply.currency == localCoin.symbol)){
-            //if not, then issue local coin
-            params = server.createIssueTokenParams(root.address, root.secret, rootSequence++,
-                localCoin.name, localCoin.symbol, '8', '99999999', true, consts.flags.both, '0.00001')
-            result = await server.responseSendTx(server, params)
+        //region local coin (with issuer)
+        result = await issueCoin(server, root, rootSequence++, localCoin, true, consts.flags.both)
+        if(result){
             txResults.push(result)
+            // logger.debug('-------------create: localCoin')
         }
+        //endregion
+
+        //region coins with same symbol
+        result = await issueCoin(server, root, rootSequence++, globalSameCoin, false, consts.flags.both)
+        if(result){
+            txResults.push(result)
+            // logger.debug('-------------create: globalSameCoin')
+        }
+
+        result = await issueCoin(server, root, rootSequence++, localSameCoin1, true, consts.flags.both)
+        if(result){
+            txResults.push(result)
+            // logger.debug('-------------create: localSameCoin1')
+        }
+
+        let senderResponse = await server.responseGetAccount(server, sender.address)
+        let senderSequence = senderResponse.result.Sequence
+        let localSameCoin2 = utility.deepClone(localSameCoin1)
+        localSameCoin2.issuer = sender.address
+        result = await issueCoin(server, sender, senderSequence++, localSameCoin2, true, consts.flags.both)
+        if(result){
+            txResults.push(result)
+            // logger.debug('-------------create: localSameCoin2')
+        }
+
+        chainData.sameSymbolCoins = {
+            glabol: globalSameCoin,
+            local1: localSameCoin1,
+            local2: localSameCoin2,
+        }
+        //endregion
+
         //endregion
 
         //region send coin
+        await utility.timeout(6000)
 
         result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, globalCoin)
         txResults.push(result)
+
         //batch charge coin
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender1.address, globalCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender2.address, globalCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender3.address, globalCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver1.address, globalCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address, globalCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address, globalCoin)
-
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, localCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender1.address, localCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender2.address, localCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.sender3.address, localCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver1.address, localCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver2.address, localCoin)
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.receiver3.address, localCoin)
-
-        //endregion
-
+        rootSequence = await batchChargeCoin(server, root, rootSequence, globalCoin)
+        rootSequence = await batchChargeCoin(server, root, rootSequence, localCoin)
+        rootSequence = await batchChargeCoin(server, root, rootSequence, globalSameCoin)
+        rootSequence = await batchChargeCoin(server, root, rootSequence, localSameCoin1)
+        senderSequence = await batchChargeCoin(server, sender, senderSequence, localSameCoin2)
         //endregion
 
         //get sequence
+        await utility.timeout(6000)
         let response = await server.responseGetAccount(server, sender.address)
         let sequence = response.result.Sequence
 
@@ -206,8 +221,38 @@ function chainDataCreator(){
         return chainData
     }
 
+    async function issueCoin(server, sender, sequence, coin, local, flag){
+        // let currenyResponse = await server.responseGetCurrency(server, coin.symbol, coin.issuer)
+        // if(!(currenyResponse.result
+        //     && currenyResponse.result.TotalSupply
+        //     && currenyResponse.result.TotalSupply.currency == coin.symbol)){
+        //     //if not, then issue global coin
+        //     params = server.createIssueTokenParams(sender.address, sender.secret, sequence,
+        //         coin.name, coin.symbol, '8', '99999999', local, flag, '0.00001')
+        //     result = await server.responseSendTx(server, params)
+        //     return result
+        // }
+        // return null
+
+        let params = server.createIssueTokenParams(sender.address, sender.secret, sequence,
+            coin.name, coin.symbol, '8', '99999999', local, flag, '0.00001')
+        let result = await server.responseSendTx(server, params)
+        return result
+    }
+
+    async function batchChargeCoin(server, sender, sequence, coin){
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.balanceAccount.address, coin)
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.sender1.address, coin)
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.sender2.address, coin)
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.sender3.address, coin)
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.receiver1.address, coin)
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.receiver2.address, coin)
+        result = await chargeCoin(server, sender.address, sender.secret, sequence++, server.mode.addresses.receiver3.address, coin)
+        return sequence
+    }
+
     async function chargeCoin(server, from, secret, sequence, to, coin){
-        let count = '999999'
+        let count = '999998'
         let symbol = coin.symbol
         let issuer = coin.issuer
         // let value = cnytCount + '/' + cnytSymbol + '/' + cnytIssuer
