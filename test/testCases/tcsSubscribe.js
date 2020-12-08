@@ -145,7 +145,7 @@ module.exports = tcsSubscribe = {
         return tcsSubscribe.createTxAction(server.mode.addresses.sender3, server.mode.addresses.receiver3, true)
     },
 
-    createFakeTx: function(server){
+    createFakeTxAction: function(server){
         return tcsSubscribe.createTxAction(server.mode.addresses.sender2, server.mode.addresses.receiver2, false)
     },
 
@@ -609,14 +609,6 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-
-
-        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
-
-        //endregion
-
-        testCases = []
-
         let chainData = utility.findChainData(chainDatas.chainDatas, server.mode.chainDataName)
         let glabolSameCoin = chainData.sameSymbolCoins.glabol
         let localSameCoin1 = chainData.sameSymbolCoins.local1
@@ -658,7 +650,159 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
+        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+
+        //endregion
+
+        //region account
+
+        testCases = []
+
+        let from = server.mode.addresses.sender3
+        let to = server.mode.addresses.receiver3
+
+        title = titlePrefix + '0150\t订阅account，不带参数'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['account'], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0160\t订阅account，带有效参数_01： 发送方地址'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['account', from.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0170\t订阅account，带有效参数_02： 接收方地址'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['account', to.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0180\t订阅account，带无效参数: 未激活地址'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['account', server.mode.addresses.inactiveAccount1.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0181\t订阅account，带无效参数: 地址格式错误'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['account', from.address + '1'], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0190\t订阅account，参数为空'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['account', ''], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0200\t重复订阅相同的account'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0210\t订阅不同的account'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout})
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', to.address],
+                timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.from = to.address
+            action.secret = to.secret
+            action.to = from.address
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createFakeTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
         framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+
+        //endregion
+
+        //region test
+
+        testCases = []
+
+
+
+        framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+
+        //endregion
 
     },
 
@@ -740,8 +884,8 @@ module.exports = tcsSubscribe = {
         let needPass = true
         let expectedError = ''
 
-        let from = server.mode.addresses.sender3.address
-        let to = server.mode.addresses.receiver3.address
+        let from = server.mode.addresses.sender3
+        let to = server.mode.addresses.receiver3
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
 
