@@ -14,8 +14,9 @@ const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/consts')
-let utility = require('../framework/testUtility')
+const utility = require('../framework/testUtility')
 //endregion
+const chainDatas = require('../testData/chainDatas')
 //endregion
 
 const actionTypes = {
@@ -616,28 +617,46 @@ module.exports = tcsSubscribe = {
 
         testCases = []
 
-        // title = titlePrefix + '0140\t订阅多个同名的token，issuer不同，包括全局的'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
-        //     actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.value = tcsSubscribe.createCoinValue(1, localCoin)
-        //     action.receiveBlock = false
-        //     action.receiveTx = true
-        //     actions.push(action)
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.value = tcsSubscribe.createCoinValue(1, globalCoin)
-        //     action.receiveBlock = false
-        //     action.receiveTx = true
-        //     actions.push(action)
-        //
-        //     testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-        //     framework.addTestCase(testCases, testCase)
-        // }
+        let chainData = utility.findChainData(chainDatas.chainDatas, server.mode.chainDataName)
+        let glabolSameCoin = chainData.sameSymbolCoins.glabol
+        let localSameCoin1 = chainData.sameSymbolCoins.local1
+        let localSameCoin2 = chainData.sameSymbolCoins.local2
+
+        title = titlePrefix + '0140\t订阅多个同名的token，issuer不同，包括全局的'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', glabolSameCoin.symbol], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin1)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin2)], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, glabolSameCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localSameCoin1)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localSameCoin2)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
 
         framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
