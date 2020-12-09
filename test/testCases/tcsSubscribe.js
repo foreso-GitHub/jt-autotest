@@ -1272,6 +1272,7 @@ module.exports = tcsSubscribe = {
                 txParams: ['block'],
                 timeout: 6000,
                 checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
+                expectedResult: {needPass: true, expectedError: ''},
                 receiveBlock: false,
             })
 
@@ -1279,14 +1280,41 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0011\t取消订阅区块block_02：无订阅区块'
+        title = '0011\t取消订阅区块block_02: 无订阅区块'
         {
             actions = []
             actions.push({type: actionTypes.unsubscribe,
                 txParams: ['block'],
                 timeout: 6000,
                 checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
+                expectedResult: {needPass: false, expectedError: ''},
                 receiveBlock: false,
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0012\t取消订阅区块block_03: 已订阅区块，取消订阅区块，订阅内容为block，订阅参数为任意值'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['block', 'abcd'],
+                timeout: 6000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeBlock,
+                expectedResult: {needPass: false, expectedError: ''},
+                receiveBlock: true,
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -1303,15 +1331,14 @@ module.exports = tcsSubscribe = {
         let results = messages.results
         let blocks = messages.blocks
 
-        if(action.receiveBlock){
+        if(action.expectedResult.needPass){
             expect(results[0].result).to.be.equals(action.txParams[0] + ' unsubscribed')
-            // expect(blocks.length).to.be.equals(0)
         }
         else{
-            // expect(results[0].result).to.be.equals(testCase.actions[2].txParams[0] + ' unsubscribed')
-            // expect(blocks.length).to.be.equals(0)
+            expect(results[0].result).to.contains(action.expectedResult.expectedError)
         }
-        expect(blocks.length).to.be.equals(0)
+
+        tcsSubscribe.checkForSubscribeBlock(action)
     },
 
     //{"id":1,"jsonrpc":"2.0","result":[]}
