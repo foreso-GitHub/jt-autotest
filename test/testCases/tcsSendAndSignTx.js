@@ -474,6 +474,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].type = "issuecoin"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
@@ -484,6 +485,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0300\t发行' + testCaseParams.categoryName + '_无效的from参数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].from = "from.address"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'Bad account address: from.address: Bad Base58 string: from.address')
@@ -551,7 +553,7 @@ module.exports = tcsSendAndSignTx = {
         //todo it will cause no response, looks like no response from server.request
         testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 let root = server.mode.addresses.rootAccount
                 testCaseParams.txParams[0].from = root.address
                 testCaseParams.txParams[0].secret = root.secret
@@ -567,6 +569,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:字符串'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = "config.decimals"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'decimals must be integer type(string) and in range [0, 18]')
@@ -577,6 +580,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0331\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = -8
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'decimals must be integer type(string) and in range [0, 18]')
@@ -584,9 +588,21 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0332\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
+        testCaseParams.title = '0332\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数字符串'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
+                testCaseParams.txParams[0].decimals = '-8'
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    'decimals must be integer type(string) and in range [0, 18]')
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0333\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = 11.64
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'decimals must be integer type(string) and in range [0, 18]')
@@ -594,9 +610,21 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:字符串'
+        testCaseParams.title = '0334\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数字符串'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
+                testCaseParams.txParams[0].decimals = '11.64'
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    'decimals must be integer type(string) and in range [0, 18]')
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:非数字字符串'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = "config.total_supply"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'total_supply must be integer type')
@@ -607,6 +635,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0341\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = -10000000
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'invalid syntax')
@@ -614,12 +643,34 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
+        testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数字符串'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
+                testCaseParams.txParams[0].total_supply = '-10000000'
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    'invalid syntax')
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0343\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = 10000.12345678
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'strconv.ParseInt: parsing')
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0344\t发行' + testCaseParams.categoryName + '_有效的total_supply参数:小数字符串'
+        {
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
+                testCaseParams.txParams[0].total_supply = '10000.12345678'
+                testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
             })
             framework.addTestCase(testCases, testCase)
         }

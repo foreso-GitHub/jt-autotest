@@ -68,6 +68,12 @@ module.exports = framework = {
         return testCaseParams
     },
 
+    updateTokenInTestCaseParams: function(testCaseParams){
+        let token = utility.getDynamicTokenName()
+        testCaseParams.txParams[0].symbol = token.symbol
+        testCaseParams.txParams[0].name = token.name
+    },
+
     createTestCase: function(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expectedResult,
                             restrictedLv, supportedServices, supportedInterfaces){
         let testCase = {}
