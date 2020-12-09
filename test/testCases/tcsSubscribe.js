@@ -25,6 +25,13 @@ const actionTypes = {
     unsubscribe:consts.rpcFunctions.unsubscribe,
     list:consts.rpcFunctions.listSubscribe,
 }
+const outputType = {
+    unknown: 0,
+    result: 1,
+    block: 2,
+    hash: 3,
+    tx: 4,
+}
 const Subscribe_Timeout = 100
 
 module.exports = tcsSubscribe = {
@@ -77,6 +84,7 @@ module.exports = tcsSubscribe = {
 
                 // 执行本次action
                 let action = testCase.actions[i]
+                logger.debug('=== Executing action ' + i + '. ' + action.type)
                 if(action.type == actionTypes.sendTx){  // send txs
                     testCase.server.clearSub() //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
                     // logger.debug('testCase.server.getOutputs().sub: ' + testCase.server.getOutputs().sub.length)
@@ -94,10 +102,10 @@ module.exports = tcsSubscribe = {
                 }
 
                 // 执行timeout
+                logger.debug('=== Waiting for ' + action.timeout + '!')
                 await utility.timeout(action.timeout)
 
                 //保存这个action的执行结果
-                logger.debug('----------------timeout done!')
                 logger.debug(JSON.stringify(testCase.server.getOutputs()))
                 action.output = utility.deepClone(testCase.server.getOutputs().sub)  //必须现在调用getOutputs()获取最新的output，不能用变量
             }
@@ -115,6 +123,7 @@ module.exports = tcsSubscribe = {
     checkForSubscribe: function(testCase){
         for(let i = 0; i < testCase.actions.length; i++){
             let action = testCase.actions[i]
+            logger.debug('=== Checking action ' + i + '. ' + action.type)
             if(action.checkFunction){
                 action.checkFunction(action)
             }
@@ -183,20 +192,25 @@ module.exports = tcsSubscribe = {
             let message = messages[i]
             if(message.fee_base){
                 filterMessages.blocks.push(message)
+                message.outputType = outputType.block
             }
             else if(message.engine_result){
                 filterMessages.txs.push(message)
+                message.outputType = outputType.tx
             }
             else if(message.result){
                 if(!utility.isArray(message.result) && utility.isHex(message.result)){
                     filterMessages.hashes.push(message)
+                    message.outputType = outputType.hash
                 }
                 else{
                     filterMessages.results.push(message)
+                    message.outputType = outputType.result
                 }
             }
             else{
                 filterMessages.others.push(message)
+                message.outputType = outputType.unknown
             }
         }
 
@@ -790,15 +804,154 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
         //endregion
 
-        //region test
+        //region mixed
 
         testCases = []
 
+        title = titlePrefix + '0220\t订阅不同的内容，包括tx'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
 
+            actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', glabolSameCoin.symbol], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin1)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin2)], timeout: Subscribe_Timeout})
+
+            actions.push({type: actionTypes.subscribe, txParams: ['account', from.address], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['account', to.address], timeout: Subscribe_Timeout})
+
+            //region block, tx
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+            //endregion
+
+            //region token
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, glabolSameCoin)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localSameCoin1)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localSameCoin2)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+            //endregion
+
+            //region account
+            action = tcsSubscribe.createFakeTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+            //endregion
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0221\t订阅不同的内容，不包括tx'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: Subscribe_Timeout})
+            // actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
+            // actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', glabolSameCoin.symbol], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin1)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin2)], timeout: Subscribe_Timeout})
+
+            // actions.push({type: actionTypes.subscribe, txParams: ['account', from.address], timeout: Subscribe_Timeout})
+            // actions.push({type: actionTypes.subscribe, txParams: ['account', to.address], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['account', server.mode.addresses.receiver2.address], timeout: Subscribe_Timeout})
+
+            //region block, tx
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+            //endregion
+
+            //region token
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, glabolSameCoin)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localSameCoin1)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localSameCoin2)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+            //endregion
+
+            //region account
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            action = tcsSubscribe.createFakeTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+            //endregion
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
 
         framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
@@ -855,7 +1008,7 @@ module.exports = tcsSubscribe = {
 
         if(action.receiveTx){
             let realHashes = action.hashes
-            expect(receivedHashes.length).to.be.equals(realHashes.length)
+            expect(receivedHashes.length).to.be.least(realHashes.length)  //有可能链上同时有其他交易在跑
             if(realHashes){
                 realHashes.forEach(realHash => {
                     expect(receivedHashes).to.be.contains(realHash)
