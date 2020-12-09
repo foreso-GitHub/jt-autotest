@@ -459,7 +459,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.restrictedLevel = restrictedLevel.L3
         // let chainData = utility.findChainData(chainDatas, server.mode.chainDataName)
         // let existedSymbol = chainData.tx_token.Amount.currency
-        let existToken = server.mode.coins[0]
+        let existToken = server.mode.coins[4]
 
         //region test cases
 
@@ -556,6 +556,8 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].from = root.address
                 testCaseParams.txParams[0].secret = root.secret
                 testCaseParams.txParams[0].symbol = existToken.symbol
+                testCaseParams.txParams[0].local = true
+                testCaseParams.txParams[0].flag = consts.flags.normal
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'tefNO_PERMISSION_ISSUE No permission issue')
             })
