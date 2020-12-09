@@ -80,6 +80,7 @@ function chainDataCreator(){
         let localCoin = mode.coins[1]
         let globalSameCoin = mode.coins[2]
         let localSameCoin1 = mode.coins[3]
+        let existedCoin = mode.coins[4]
         let params
         let result
 
@@ -108,6 +109,16 @@ function chainDataCreator(){
         result = await issueCoin(server, root, rootSequence++, localCoin, true, consts.flags.both)
         if(result){
             chainData.tx_local_coin_hash = result.result[0]
+        }
+        else{
+            logger.debug('=== Issue local coin failed!')
+        }
+        //endregion
+
+        //region create existed coin for case 0322
+        result = await issueCoin(server, root, rootSequence++, existedCoin, true, consts.flags.normal)
+        if(result){
+            chainData.tx_existed_coin_hash = result.result[0]
         }
         else{
             logger.debug('=== Issue local coin failed!')
@@ -204,6 +215,7 @@ function chainDataCreator(){
         chainData.tx_token = await getTxByHash(server, chainData.tx_global_coin_hash)
         chainData.tx_global_coin = chainData.tx_token
         chainData.tx_local_coin = await getTxByHash(server, chainData.tx_local_coin_hash)
+        chainData.tx_existed_coin = await getTxByHash(server, chainData.tx_existed_coin_hash)
         chainData.charge_coin_tx = await getTxByHash(server, chainData.charge_coin_tx_hash)
         chainData.tx1 = await getTxByHash(server, chainData.tx1_hash)
         chainData.tx_memo = await getTxByHash(server, chainData.tx_memo_hash)

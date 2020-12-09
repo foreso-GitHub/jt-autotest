@@ -178,6 +178,7 @@ let mode_rpc_yun_ali = mode_template = {
         {name:'TestCoin_local_3', symbol:'TSC_3', issuer:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'},
         {name:'TestCoin_same_global_1', symbol:'TSC_SAME_1', issuer:'jjjjjjjjjjjjjjjjjjjjjhoLvTp'},
         {name:'TestCoin_same_local_1', symbol:'TSC_SAME_1', issuer:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'},
+        {name:'TestCoin_existed_4', symbol:'TSC_4', issuer:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'},
     ],
 }
 

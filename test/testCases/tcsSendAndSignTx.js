@@ -552,6 +552,9 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                let root = server.mode.addresses.rootAccount
+                testCaseParams.txParams[0].from = root.address
+                testCaseParams.txParams[0].secret = root.secret
                 testCaseParams.txParams[0].symbol = existToken.symbol
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'tefNO_PERMISSION_ISSUE No permission issue')

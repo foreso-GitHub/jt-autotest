@@ -102,7 +102,7 @@ module.exports = framework = {
     },
 
     createTxParamsForIssueToken: function(server, account, token){
-        // 参考”发起底层币无效交易“的测试用例
+        // 参考“发起底层币无效交易”的测试用例
         // "flags":        float64(data.TxCoinMintable | data.TxCoinBurnable)
         // TxCoinMintable  TransactionFlag = 0x00010000 (65536)
         // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
