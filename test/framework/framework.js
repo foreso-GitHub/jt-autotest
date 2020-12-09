@@ -49,8 +49,8 @@ module.exports = framework = {
         testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
         testCaseParams.expectedResult = framework.createExpecteResult(true)
         testCaseParams.testCase = {}
-        testCaseParams.symbol = testCaseParams.txParams[0].symbol
-        testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
+        // testCaseParams.symbol = testCaseParams.txParams[0].symbol
+        // testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
         if(txFunctionName === consts.rpcFunctions.sendTx) {
             testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
             testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
@@ -118,10 +118,9 @@ module.exports = framework = {
     createTxParamsForTokenTransfer: function(server, account, symbol, issuer){
         let tokenParams = server.createTransferParams(account.address, account.secret, null,
             server.mode.addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
-        tokenParams[0].symbol = symbol
-        tokenParams[0].issuer = issuer
-        tokenParams[0].showSymbol = utility.getShowSymbol(symbol, issuer)
-        tokenParams[0].value = '1' + tokenParams[0].showSymbol
+        // tokenParams[0].symbol = symbol
+        // tokenParams[0].issuer = issuer
+        tokenParams[0].value = '1' + utility.getShowSymbol(symbol, issuer)
         return tokenParams
     },
 
@@ -544,14 +543,13 @@ module.exports = framework = {
                 if(mode.restrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
             }
             else{
-                if(txParams.symbol){
-                    expect(tx.Amount.currency).to.be.equals(txParams.symbol)
+                let realValue = utility.parseShowValue(txParams.value)
+                if(realValue){
+                    expect(tx.Amount.currency).to.be.equals(realValue.symbol)
                     expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
-                }
-                else{
+                }else{
                     let expectedValue = (mode.service == serviceType.oldChain) ?
                         utility.valueToAmount(Number(txParams.value)) : utility.getRealValue(txParams.value)
-                    // expect(Number(tx.Amount)).to.be.equals(Number(txParams.value))
                     expect(Number(tx.Amount)).to.be.equals(expectedValue)
                 }
             }

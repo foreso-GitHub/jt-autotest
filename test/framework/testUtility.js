@@ -248,6 +248,17 @@ module.exports = testUtility = {
         return value + this.getShowSymbol(symbol, issuer)
     },
 
+    parseShowValue: function(showValue){
+        let parts = showValue.toString().split('/')
+        return (parts.length == 3)
+            ? {
+                amount: parts[0],
+                symbol: parts[1],
+                issuer: parts[2],
+            }
+            : null
+    },
+
     createCoinValue: function(amount, symbol, issuer){
         return {
             amount: amount,

@@ -49,8 +49,7 @@ module.exports = tcsSendAndSignTx = {
 
             //region token test
 
-            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3
-            ){
+            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
                 txFunctionName = consts.rpcFunctions.sendTx
                 describe('代币测试：' + txFunctionName, async function () {
                     tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
