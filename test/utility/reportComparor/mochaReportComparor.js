@@ -215,10 +215,10 @@ module.exports = mochaReportComparor = {
         mochaReportComparor.createClassForPassed(result.differences.passed)
         result.differences.notPassed = {}
         mochaReportComparor.createClassForNotPassed(result.differences.notPassed)
-        result.differences.beRemoved = {}
-        mochaReportComparor.createClassByState(result.differences.beRemoved)
-        result.differences.beAdded = {}
-        mochaReportComparor.createClassByState(result.differences.beAdded)
+        result.differences.existed = {}
+        mochaReportComparor.createClassByState(result.differences.existed)
+        result.differences.notExisted = {}
+        mochaReportComparor.createClassByState(result.differences.notExisted)
 
         let cloneTestList1 = utility.cloneArray(testList1)
         let cloneTestList2 = utility.cloneArray(testList2)
@@ -250,20 +250,20 @@ module.exports = mochaReportComparor = {
         //classify removed tests
         for(let i = 0; i < cloneTestList1.length; i++){
             mochaReportComparor.createCompareResult(cloneTestList1[i], null,
-                result.differences.beRemoved, ifAttachRawTest)
+                result.differences.existed, ifAttachRawTest)
         }
 
         //classify new tests
         for(let i = 0; i < cloneTestList2.length; i++){
             mochaReportComparor.createCompareResult(null, cloneTestList2[i],
-                result.differences.beAdded, ifAttachRawTest)
+                result.differences.notExisted, ifAttachRawTest)
         }
 
         mochaReportComparor.countByState(result.same)
         mochaReportComparor.countByState(result.differences.passed)
         mochaReportComparor.countByState(result.differences.notPassed)
-        mochaReportComparor.countByState(result.differences.beRemoved)
-        mochaReportComparor.countByState(result.differences.beAdded)
+        mochaReportComparor.countByState(result.differences.existed)
+        mochaReportComparor.countByState(result.differences.notExisted)
 
         return result
     },
