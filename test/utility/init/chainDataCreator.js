@@ -96,9 +96,10 @@ function chainDataCreator(){
         //region issue coin
 
         //region global coin (without issuer)
-        result = await issueCoin(server, root, rootSequence++, globalCoin, false, consts.flags.both)
+        result = await issueCoin(server, root, rootSequence, globalCoin, false, consts.flags.both)
         if(result){
             chainData.tx_global_coin_hash = result.result[0]
+            rootSequence++
         }
         else{
             logger.debug('=== Issue global coin failed!')
@@ -106,9 +107,10 @@ function chainDataCreator(){
         //endregion
 
         //region local coin (with issuer)
-        result = await issueCoin(server, root, rootSequence++, localCoin, true, consts.flags.both)
+        result = await issueCoin(server, root, rootSequence, localCoin, true, consts.flags.both)
         if(result){
             chainData.tx_local_coin_hash = result.result[0]
+            rootSequence++
         }
         else{
             logger.debug('=== Issue local coin failed!')
@@ -116,12 +118,23 @@ function chainDataCreator(){
         //endregion
 
         //region create existed coin for case 0322
-        result = await issueCoin(server, root, rootSequence++, existedCoin, true, consts.flags.normal)
-        if(result){
-            chainData.tx_existed_coin_hash = result.result[0]
+        let currenyResponse = await server.responseGetCurrency(server, existedCoin.symbol, existedCoin.issuer)  // 这个代币有可能已经存在。如不存在，再发行。
+        if(!(currenyResponse.result
+            && currenyResponse.result.TotalSupply
+            && currenyResponse.result.TotalSupply.currency == existedCoin.symbol)){
+
+            result = await issueCoin(server, root, rootSequence, existedCoin, true, consts.flags.normal)
+            if(result && result[0] && utility.isHex(result[0])){  // 判断是否交易成功，然后sequence再++
+                chainData.tx_existed_coin_hash = result.result[0]
+                chainData.tx_existed_coin = existedCoin
+                rootSequence++
+            }
+            else{
+                logger.debug('=== Issue local coin failed!')
+            }
         }
         else{
-            logger.debug('=== Issue local coin failed!')
+            chainData.tx_existed_coin = existedCoin
         }
         //endregion
 
@@ -149,9 +162,10 @@ function chainDataCreator(){
         logger.info('Wait for 6 seconds, issuing coins ...')
         await utility.timeout(6000)
 
-        result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, globalCoin)
+        result = await chargeCoin(server, root.address, root.secret, rootSequence, mode.addresses.balanceAccount.address, globalCoin)
         if(result){
             chainData.charge_coin_tx_hash = result.result[0]
+            rootSequence++
         }
         else{
             logger.debug('=== Charge coin failed!')
@@ -215,7 +229,6 @@ function chainDataCreator(){
         chainData.tx_token = await getTxByHash(server, chainData.tx_global_coin_hash)
         chainData.tx_global_coin = chainData.tx_token
         chainData.tx_local_coin = await getTxByHash(server, chainData.tx_local_coin_hash)
-        chainData.tx_existed_coin = await getTxByHash(server, chainData.tx_existed_coin_hash)
         chainData.charge_coin_tx = await getTxByHash(server, chainData.charge_coin_tx_hash)
         chainData.tx1 = await getTxByHash(server, chainData.tx1_hash)
         chainData.tx_memo = await getTxByHash(server, chainData.tx_memo_hash)
