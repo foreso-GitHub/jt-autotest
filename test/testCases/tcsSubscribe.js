@@ -21,6 +21,8 @@ const chainDatas = require('../testData/chainDatas')
 
 const actionTypes = {
     sendTx:consts.rpcFunctions.sendTx,
+    signTx:consts.rpcFunctions.signTx,
+    sendRawTx:consts.rpcFunctions.sendRawTx,
     subscribe:consts.rpcFunctions.subscribe,
     unsubscribe:consts.rpcFunctions.unsubscribe,
     list:consts.rpcFunctions.listSubscribe,
@@ -85,12 +87,31 @@ module.exports = tcsSubscribe = {
                 // 执行本次action
                 let action = testCase.actions[i]
                 logger.debug('=== Executing action ' + i + '. ' + action.type)
-                if(action.type == actionTypes.sendTx){  // send txs
+                if(action.type == actionTypes.sendTx
+                    || action.type == actionTypes.signTx
+                    || action.type == actionTypes.sendRawTx){  // send txs
                     testCase.server.clearSub() //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
                     // logger.debug('testCase.server.getOutputs().sub: ' + testCase.server.getOutputs().sub.length)
                     let server = testCase.server
+
                     let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, action.value)
-                    action.hashes = await utility.sendTxs(server, txParams, action.txCount)
+                    if(action.type == actionTypes.sendTx){
+                        action.hashes = await utility.sendTxs(server, txParams, action.txCount)
+                    }
+                    else if (action.type == actionTypes.signTx || action.type == actionTypes.sendRawTx){
+                        let rawTxResponse = await server.getResponse(server, consts.rpcFunctions.signTx, txParams)
+                        let rawTx = rawTxResponse.result[0]
+                        if (action.type == actionTypes.signTx){
+                            action.result = rawTx
+                        }
+                        else if (action.type == actionTypes.sendRawTx){
+                            let rawParams = []
+                            rawParams.push(rawTx)
+                            let response = await server.getResponse(server, consts.rpcFunctions.sendRawTx, rawParams)
+                            action.hashes = response.result
+                        }
+                    }
+
                     if(action.receiveTx){
                         testCase.realHashes = action.hashes
                     }
@@ -345,6 +366,45 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0030\t订阅交易，signTx'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.type = actionTypes.signTx
+            action.txCount = 1
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0031\t订阅交易，signTx并且sendRawTx'
+        {
+            actions = []
+            actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.type = actionTypes.signTx
+            action.txCount = 1
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)  // 注意：不能用clone，function无法clone
+            action.type = actionTypes.sendRawTx
+            action.txCount = 1
+            action.receiveBlock = false
+            action.receiveTx = true
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
@@ -664,7 +724,32 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+        testCases = []
+
+        title = titlePrefix + '0130\t订阅不同的token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
+            actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
         //endregion
 
@@ -953,7 +1038,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
 
         //endregion
 
@@ -1008,7 +1093,7 @@ module.exports = tcsSubscribe = {
 
         if(action.receiveTx){
             let realHashes = action.hashes
-            expect(receivedHashes.length).to.be.least(realHashes.length)  //有可能链上同时有其他交易在跑
+            expect(receivedHashes.length).to.be.least(action.txCount)  //有可能链上同时有其他交易在跑
             if(realHashes){
                 realHashes.forEach(realHash => {
                     expect(receivedHashes).to.be.contains(realHash)
