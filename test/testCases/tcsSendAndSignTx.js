@@ -549,7 +549,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         //todo it will cause no response, looks like no response from server.request
-        testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
+        testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].symbol = existToken.symbol
