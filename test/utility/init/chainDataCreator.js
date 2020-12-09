@@ -70,7 +70,6 @@ function chainDataCreator(){
     async function createChainData(mode){
         let chainData = {}
         chainData.chainDataName = mode.chainDataName
-        let txResults = []
         let server = mode.server
         server.init(mode)
         let root = mode.addresses.rootAccount
@@ -98,31 +97,26 @@ function chainDataCreator(){
         //region global coin (without issuer)
         result = await issueCoin(server, root, rootSequence++, globalCoin, false, consts.flags.both)
         if(result){
-            txResults.push(result)
-            // logger.debug('-------------create: globalCoin')
+            chainData.tx_global_coin_hash = result.result[0]
+        }
+        else{
+            logger.debug('=== Issue global coin failed!')
         }
         //endregion
 
         //region local coin (with issuer)
         result = await issueCoin(server, root, rootSequence++, localCoin, true, consts.flags.both)
         if(result){
-            txResults.push(result)
-            // logger.debug('-------------create: localCoin')
+            chainData.tx_local_coin_hash = result.result[0]
+        }
+        else{
+            logger.debug('=== Issue local coin failed!')
         }
         //endregion
 
         //region coins with same symbol
         result = await issueCoin(server, root, rootSequence++, globalSameCoin, false, consts.flags.both)
-        if(result){
-            txResults.push(result)
-            // logger.debug('-------------create: globalSameCoin')
-        }
-
         result = await issueCoin(server, root, rootSequence++, localSameCoin1, true, consts.flags.both)
-        if(result){
-            txResults.push(result)
-            // logger.debug('-------------create: localSameCoin1')
-        }
 
         let senderResponse = await server.responseGetAccount(server, sender.address)
         let senderSequence = senderResponse.result.Sequence
@@ -130,10 +124,6 @@ function chainDataCreator(){
         localSameCoin2.name = 'TestCoin_same_local_2'
         localSameCoin2.issuer = sender.address
         result = await issueCoin(server, sender, senderSequence++, localSameCoin2, true, consts.flags.both)
-        if(result){
-            txResults.push(result)
-            // logger.debug('-------------create: localSameCoin2')
-        }
 
         chainData.sameSymbolCoins = {
             glabol: globalSameCoin,
@@ -149,7 +139,12 @@ function chainDataCreator(){
         await utility.timeout(6000)
 
         result = await chargeCoin(server, root.address, root.secret, rootSequence++, mode.addresses.balanceAccount.address, globalCoin)
-        txResults.push(result)
+        if(result){
+            chainData.charge_coin_tx_hash = result.result[0]
+        }
+        else{
+            logger.debug('=== Charge coin failed!')
+        }
 
         //batch charge coin
         rootSequence = await batchChargeCoin(server, root, rootSequence, globalCoin)
@@ -168,14 +163,24 @@ function chainDataCreator(){
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
             null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
-        txResults.push(result)
+        if(result){
+            chainData.tx1_hash = result.result[0]
+        }
+        else{
+            logger.debug('=== Send tx1 failed!')
+        }
 
         //memo swtc tx
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null,
             ['create test chain data for ' + mode.name + ' at ' + (new Date()).toISOString()],
             null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
-        txResults.push(result)
+        if(result){
+            chainData.tx_memo_hash = result.result[0]
+        }
+        else{
+            logger.debug('=== Send memo tx failed!')
+        }
 
         //batch txs
         for(let i = 0; i < 20; i++){
@@ -184,7 +189,6 @@ function chainDataCreator(){
                 ['create test chain data for ' + mode.name + ' at ' + (new Date()).toISOString()],
                 null, null, null, null, null, null, null)
             result = await server.responseSendTx(server, params)
-            txResults.push(result)
         }
 
         //make a tx for sequence3 account, to make 0650 case work
@@ -193,24 +197,16 @@ function chainDataCreator(){
         params = server.createTxParams(sequence3.address, sequence3.secret, sequence, to, '1',
             null, null,null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
-        txResults.push(result)
 
-        //wait 10s and then get tx and block
-        let txs = []
-        for(let result of txResults){
-            let hash = result.result[0]
-            let tx = await utility.getTxByHash(server, hash, 0)
-            txs.push(tx.result)
-        }
+        logger.info('Wait for 6 seconds, sending txs ...')
+        await utility.timeout(6000)
 
-        // chainData.tx_token_CNYT = txs[0]
-        // chainData.tx_issue_token = txs[1]
-        chainData.tx_token = txs[0]
-        chainData.tx_global_coin = txs[0]
-        chainData.tx_local_coin = txs[1]
-        chainData.charge_coin_tx = txs[2]
-        chainData.tx1 = txs[3]
-        chainData.tx_memo = txs[4]
+        chainData.tx_token = await getTxByHash(server, chainData.tx_global_coin_hash)
+        chainData.tx_global_coin = chainData.tx_token
+        chainData.tx_local_coin = await getTxByHash(server, chainData.tx_local_coin_hash)
+        chainData.charge_coin_tx = await getTxByHash(server, chainData.charge_coin_tx_hash)
+        chainData.tx1 = await getTxByHash(server, chainData.tx1_hash)
+        chainData.tx_memo = await getTxByHash(server, chainData.tx_memo_hash)
 
         let blockNumber = chainData.tx1.ledger_index
         let blockResult = await server.responseGetBlockByNumber(server, blockNumber.toString(), false)
@@ -221,6 +217,11 @@ function chainDataCreator(){
         chainData.block.txCountInBlock = block.transactions.length
 
         return chainData
+    }
+
+    async function getTxByHash(server, hash){
+        let tx = await utility.getTxByHash(server, hash)
+        return tx.result
     }
 
     async function issueCoin(server, sender, sequence, coin, local, flag){
