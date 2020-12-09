@@ -94,7 +94,7 @@ module.exports = tcsSubscribe = {
                     // logger.debug('testCase.server.getOutputs().sub: ' + testCase.server.getOutputs().sub.length)
                     let server = testCase.server
 
-                    let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, action.value)
+                    let txParams = await utility.updateSequenceInTxParams(server, action.txParams, )
                     if(action.type == actionTypes.sendTx){
                         action.hashes = await utility.sendTxs(server, txParams, action.txCount)
                     }
@@ -156,9 +156,9 @@ module.exports = tcsSubscribe = {
     //region utility
 
     //region coin name
-    createCoinValue: function(amount, coin){
-        return utility.createCoinValue(amount, coin.symbol, coin.issuer)
-    },
+    // createCoinValue: function(amount, coin){
+    //     return utility.createCoinValue(amount, coin.symbol, coin.issuer)
+    // },
 
     getCoinFullName: function(coin){
         return tcsSubscribe.createCoinFullName(coin.symbol, coin.issuer)
@@ -181,10 +181,12 @@ module.exports = tcsSubscribe = {
 
     createTxAction: function(sender, receiver, receiveTx){
         return {type: actionTypes.sendTx,
-            from: sender.address,
-            secret: sender.secret,
-            to: receiver.address,
-            value: '1',
+            txParams:[{
+                from: sender.address,
+                secret: sender.secret,
+                to: receiver.address,
+                value: '1',
+            }],
             txCount: 5,
             timeout: 7000,
             // checkFunction: tcsSubscribe.checkForSubscribeBlock,
@@ -195,6 +197,32 @@ module.exports = tcsSubscribe = {
             expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
             receiveBlock: false,
             receiveTx: receiveTx,
+        }
+    },
+
+    createTokenAction: function(sender, token){
+        return {type: actionTypes.sendTx,
+            txParams:[{
+                from: sender.address,
+                secret: sender.secret,
+                type: 'IssueCoin',
+                name: token.name,
+                symbol: token.symbol,
+                decimals: "8",
+                total_supply: "99999901",
+                local: true,
+                flags: consts.flags.both,
+            }],
+            txCount: 1,
+            timeout: 7000,
+            // checkFunction: tcsSubscribe.checkForSubscribeBlock,
+            checkFunction: function(action){
+                tcsSubscribe.checkForSubscribeBlock(action)
+                tcsSubscribe.checkForSubscribeTx(action)
+            },
+            expectedResult: {needPass: true, isErrorInResult: true, expectedError: ''},
+            receiveBlock: false,
+            receiveTx: true,
         }
     },
 
@@ -326,7 +354,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_订阅block', testCases)
+        framework.testTestCases(server, describeTitle + '_订阅block', testCases)
 
         //endregion
 
@@ -411,7 +439,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
+        framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
 
         //endregion
 
@@ -471,7 +499,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_无效订阅', testCases)
+        framework.testTestCases(server, describeTitle + '_无效订阅', testCases)
 
         //endregion
 
@@ -507,7 +535,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_多个订阅', testCases)
+        framework.testTestCases(server, describeTitle + '_多个订阅', testCases)
 
         //endregion
 
@@ -520,7 +548,7 @@ module.exports = tcsSubscribe = {
             actions = []
             actions.push({type: actionTypes.subscribe, txParams: ['token'], timeout: Subscribe_Timeout})
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -536,13 +564,13 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -558,13 +586,13 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(globalCoin)], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -580,13 +608,13 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -602,7 +630,7 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', 'notExisted'], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -618,7 +646,7 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', localCoin.symbol + '/jU4iU135deFRwUEG5guBSkpRKe6H8YZanR'], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -634,7 +662,7 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', ''], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = false
             actions.push(action)
@@ -651,7 +679,7 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
@@ -668,13 +696,13 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
@@ -697,52 +725,27 @@ module.exports = tcsSubscribe = {
             actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localSameCoin2)], timeout: Subscribe_Timeout})
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, glabolSameCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, glabolSameCoin)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localSameCoin1)
+            action.txParams[0].value = utility.getTokenShowValue(1, localSameCoin1)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localSameCoin2)
+            action.txParams[0].value = utility.getTokenShowValue(1, localSameCoin2)
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = false
             action.receiveTx = false
-            actions.push(action)
-
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
-        }
-
-        testCases = []
-
-        title = titlePrefix + '0130\t订阅不同的token'
-        {
-            actions = []
-
-            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)], timeout: Subscribe_Timeout})
-            actions.push({type: actionTypes.subscribe, txParams: ['token', globalCoin.symbol], timeout: Subscribe_Timeout})
-
-            action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
-            action.receiveBlock = false
-            action.receiveTx = true
-            actions.push(action)
-
-            action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
-            action.receiveBlock = false
-            action.receiveTx = true
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
@@ -873,9 +876,9 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.from = to.address
-            action.secret = to.secret
-            action.to = from.address
+            action.txParams[0].from = to.address
+            action.txParams[0].secret = to.secret
+            action.txParams[0].to = from.address
             action.receiveBlock = false
             action.receiveTx = true
             actions.push(action)
@@ -889,7 +892,128 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+        framework.testTestCases(server, describeTitle + '_订阅account', testCases)
+
+        //endregion
+
+        //region special
+
+        testCases = []
+        let sender = server.mode.addresses.sender1
+        let receiver = server.mode.addresses.receiver1
+        let token = utility.getDynamicTokenName()
+        token.issuer = sender.address
+
+        //region token
+        title = titlePrefix + '1010\t订阅token，发行token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(token)], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTokenAction(sender, token)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '1011\t订阅token，发送token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(token)], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)  //这里不能用tcsSubscribe.createCoinValue
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '1012\t订阅token，增发token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(token)], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTokenAction(sender, token)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '1013\t订阅token，销毁token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['token', tcsSubscribe.getCoinFullName(token)], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTokenAction(sender, token)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+        //endregion
+
+        //region account
+        token = utility.getDynamicTokenName()
+        token.issuer = sender.address
+
+        title = titlePrefix + '1020\t订阅account，发行token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['account', sender.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTokenAction(sender, token)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '1021\t订阅account，发送token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['account', sender.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)  //这里不能用tcsSubscribe.createCoinValue
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '1022\t订阅account，增发token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['account', sender.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTokenAction(sender, token)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '1023\t订阅account，销毁token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe, txParams: ['account', sender.address], timeout: Subscribe_Timeout})
+            action = tcsSubscribe.createTokenAction(sender, token)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+        //endregion
+
+        framework.testTestCases(server, describeTitle + '_订阅发币', testCases)
 
         //endregion
 
@@ -921,31 +1045,31 @@ module.exports = tcsSubscribe = {
 
             //region token
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, glabolSameCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, glabolSameCoin)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localSameCoin1)
+            action.txParams[0].value = utility.getTokenShowValue(1, localSameCoin1)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localSameCoin2)
+            action.txParams[0].value = utility.getTokenShowValue(1, localSameCoin2)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
@@ -992,31 +1116,31 @@ module.exports = tcsSubscribe = {
 
             //region token
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, globalCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
             action.receiveBlock = true
             action.receiveTx = false
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, glabolSameCoin)
+            action.txParams[0].value = utility.getTokenShowValue(1, glabolSameCoin)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localSameCoin1)
+            action.txParams[0].value = utility.getTokenShowValue(1, localSameCoin1)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
 
             action = tcsSubscribe.createRealTxAction(server)
-            action.value = tcsSubscribe.createCoinValue(1, localSameCoin2)
+            action.txParams[0].value = utility.getTokenShowValue(1, localSameCoin2)
             action.receiveBlock = true
             action.receiveTx = true
             actions.push(action)
@@ -1038,9 +1162,10 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        // framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+        framework.testTestCases(server, describeTitle + '_混合订阅', testCases)
 
         //endregion
+
 
     },
 

@@ -177,6 +177,12 @@ module.exports = testUtility = {
         return params
     },
 
+    updateSequenceInTxParams: async function (server, txParams){
+        let account = await server.responseGetAccount(server, txParams[0].from, )
+        txParams[0].sequence = account.result.Sequence
+        return txParams
+    },
+
     sendTxs: async function (server, params, txCount){
         return new Promise(async (resolve, reject) => {
             let param = params[0]
@@ -246,6 +252,10 @@ module.exports = testUtility = {
 
     getShowValue: function(value, symbol, issuer){
         return value + this.getShowSymbol(symbol, issuer)
+    },
+
+    getTokenShowValue: function(value, token){
+        return this.getShowValue(value, token.symbol, token.issuer)
     },
 
     parseShowValue: function(showValue){
