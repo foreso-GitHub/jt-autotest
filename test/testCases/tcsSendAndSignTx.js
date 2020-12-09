@@ -176,7 +176,9 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0060\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "999999999999999" + testCaseParams.showSymbol
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = "999999999999999" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'telINSUF_FEE_P Fee insufficient')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
@@ -188,7 +190,9 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0070\t发起' + categoryName + '无效交易_05: 交易额为负数'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "-100" + testCaseParams.showSymbol
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = "-100" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //     'temBAD_AMOUNT Can only send positive amounts')
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true,
@@ -224,7 +228,9 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于0.000001(最小数额)的正小数'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "0.0000001" + testCaseParams.showSymbol
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = "0.0000001" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
@@ -235,7 +241,9 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于0.000001(最小数额)的小数'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "0.0000011" + testCaseParams.showSymbol
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = "0.0000011" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
@@ -246,7 +254,9 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0110\t发起' + categoryName + '无效交易_09: 交易额为负小数：-0.1、-1.23等'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "-0.1" + testCaseParams.showSymbol
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = "-0.1" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
@@ -531,7 +541,7 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_有效的symbol参数:长度正好12字节'
         {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function() {
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function() {
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(4)
                 testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
             })
