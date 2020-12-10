@@ -81,7 +81,7 @@ module.exports = tcsGetBlockNumber = {
         let response = testCase.actualResult[0]
         framework.checkResponse(true, response)
         expect(response.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
-        expect(response.result).to.be.above(100)
+        expect(response.result).to.be.above(10)
     },
 
     get2BlockNumber: async function(server) {
