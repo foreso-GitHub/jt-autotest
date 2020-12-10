@@ -84,7 +84,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填1/SWT等'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "1/SWT"
+                testCaseParams.txParams[0].value = "1/" + consts.defaultNativeCoin
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -95,7 +95,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0021\t发起' + categoryName + '无效交易_02: 交易额填1/swt'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "1/swt"
+                testCaseParams.txParams[0].value = "1/" + consts.defaultNativeCoin
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'failed to submit transaction')
             })
@@ -645,7 +645,7 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数字符串'
         {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = '-10000000'
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,

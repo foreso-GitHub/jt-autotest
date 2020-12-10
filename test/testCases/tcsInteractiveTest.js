@@ -33,7 +33,7 @@ module.exports = tcsInteractiveTest = {
         let account4= addresses.receiver2
         let allServers = framework.activeAllRpcServers()
 
-        let currency = {symbol:'SWT', issuer:''}
+        let currency = {symbol:consts.defaultNativeCoin, issuer:''}
         let coin = server.mode.coins[0]
         let txFunction = consts.rpcFunctions.sendTx
         let title
@@ -53,7 +53,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0010\t同时发起多个底层币发送交易_余额足够（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
@@ -63,7 +63,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0020\t同时发起多个底层币发送交易_余额足够（通过jt_signTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
@@ -73,7 +73,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0030\t同时发起多个底层币发送交易_余额不够（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -83,7 +83,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0031\t同时向不同节点发起多个底层币发送交易_余额不够（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -94,7 +94,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0040\t同时发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -104,7 +104,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0041\t同时向不同节点发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）\n'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -192,7 +192,7 @@ module.exports = tcsInteractiveTest = {
             title = '0090\t同时发起多个底层币、代币发送交易_余额足够（通过jt_sendTransaction测试）'
             {
                 //SWT first
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
@@ -209,7 +209,7 @@ module.exports = tcsInteractiveTest = {
             title = '0091\t同时发起多个底层币、代币发送交易_余额足够（通过jt_signTransaction测试）'
             {
                 //SWT first
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
@@ -226,7 +226,7 @@ module.exports = tcsInteractiveTest = {
             title = '0100\t同时发起多个底层币、代币发送交易_余额不够（通过jt_sendTransaction测试）'
             {
                 //SWT first
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -243,7 +243,7 @@ module.exports = tcsInteractiveTest = {
             title = '0101\t同时发起多个底层币、代币发送交易_余额不够（通过jt_signTransaction测试）'
             {
                 //SWT first
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -260,7 +260,7 @@ module.exports = tcsInteractiveTest = {
             title = '0102\t同时向不同节点发起多个底层币、代币发送交易_余额不够（通过jt_sendTransaction测试）'
             {
                 //SWT first
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -278,7 +278,7 @@ module.exports = tcsInteractiveTest = {
             title = '0103\t同时向不同节点发起多个底层币、代币发送交易_余额不够（通过jt_signTransaction测试）'
             {
                 //SWT first
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
@@ -299,7 +299,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0110\t同时发送、接收底层币测试（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
@@ -309,7 +309,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0111\t同时向不同节点发送、接收底层币测试（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
@@ -320,7 +320,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0120\t同时发送、接收底层币测试（通过jt_signTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
@@ -330,7 +330,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0121\t同时向不同节点发送、接收底层币测试（通过jt_signTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
@@ -391,7 +391,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0150\t同时发送底层币、代币测试（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
@@ -401,7 +401,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0151\t同时向不同节点发送底层币、代币测试（通过jt_sendTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.sendTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
@@ -412,7 +412,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0160\t同时发送底层币、代币测试（通过jt_signTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
@@ -422,7 +422,7 @@ module.exports = tcsInteractiveTest = {
 
             title = '0161\t同时向不同节点发送底层币、代币测试（通过jt_signTransaction测试）'
             {
-                currency = {symbol:'SWT', issuer:''}
+                currency = {symbol:consts.defaultNativeCoin, issuer:''}
                 txFunction = consts.rpcFunctions.signTx
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)

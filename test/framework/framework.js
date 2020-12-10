@@ -268,9 +268,9 @@ module.exports = framework = {
                 }
 
                 if(testCase.sendType != consts.sendTxType.InOneRequestQuickly){
-                    let balanceBeforeExecution = (await server.getBalance(server, data.from, data.symbol)).value
-                    testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0  //todo 只是暂时为了保持兼容而保留，应该使用下面的balanceBeforeExecutionList
-                    testCase.balanceBeforeExecutionList.push(balanceBeforeExecution ? balanceBeforeExecution : 0)
+                    let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
+                    testCase.balanceBeforeExecution = (balanceBeforeExecution && balanceBeforeExecution.value) ? balanceBeforeExecution.value : 0  //todo 只是暂时为了保持兼容而保留，应该使用下面的balanceBeforeExecutionList
+                    testCase.balanceBeforeExecutionList.push(testCase.balanceBeforeExecution)
                 }
 
                 count ++
@@ -549,7 +549,7 @@ module.exports = framework = {
             }
             else{
                 let realValue = utility.parseShowValue(txParams.value)
-                if(realValue){
+                if(realValue.symbol != consts.defaultNativeCoin){
                     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
                     expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
                 }else{

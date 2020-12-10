@@ -266,7 +266,11 @@ module.exports = testUtility = {
                 symbol: parts[1],
                 issuer: parts[2],
             }
-            : null
+            : {
+                amount: showValue,
+                symbol: consts.defaultNativeCoin,
+                issuer: '',
+            }
     },
 
     createCoinValue: function(amount, symbol, issuer){
@@ -526,7 +530,7 @@ module.exports = testUtility = {
     //region get real value
     getRealValue: function(value){
         valueString = value.toLowerCase()
-        let index = valueString.indexOf('/swt')
+        let index = valueString.indexOf('/' + consts.defaultNativeCoin)
         if(index != -1){
             return testUtility.valueToAmount(Number(valueString.substring(0, index)))
         }
