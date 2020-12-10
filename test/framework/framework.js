@@ -268,7 +268,7 @@ module.exports = framework = {
                 }
 
                 if(testCase.sendType != consts.sendTxType.InOneRequestQuickly){
-                    let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
+                    let balanceBeforeExecution = (await server.getBalance(server, data.from, data.symbol)).value
                     testCase.balanceBeforeExecution = balanceBeforeExecution ? balanceBeforeExecution : 0  //todo 只是暂时为了保持兼容而保留，应该使用下面的balanceBeforeExecutionList
                     testCase.balanceBeforeExecutionList.push(balanceBeforeExecution ? balanceBeforeExecution : 0)
                 }
@@ -509,23 +509,22 @@ module.exports = framework = {
     checkTestCaseOfMintOrBurn: async function(testCase){
         await framework.checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
             let params = txParams[0]
-            await testCase.server.getBalance(testCase.server, params.from, params.symbol).then(function(balanceAfterExecution){
-                testCase.balanceAfterExecution = balanceAfterExecution
-                oldBalance = framework.getBalanceValue(testCase.balanceBeforeExecution)
-                newBalance = framework.getBalanceValue(testCase.balanceAfterExecution)
-                if(params.type === consts.rpcParamConsts.issueCoin){
-                    expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
-                }
-                else{
-                    expect(newBalance).to.be.equals(newBalance + Number(params.value))
-                }
+            let balanceAfterExecution = (await testCase.server.getBalance(testCase.server, params.from, params.symbol)).value
+            testCase.balanceAfterExecution = balanceAfterExecution
+            let oldBalance = framework.getBalanceValue(testCase.balanceBeforeExecution)
+            let newBalance = balanceAfterExecution
+            if(params.type === consts.rpcParamConsts.issueCoin){
+                expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
+            }
+            else{
+                expect(newBalance).to.be.equals(newBalance + Number(params.value))
+            }
 
-                logger.debug("balanceAfterExecution:" + JSON.stringify(testCase))
-                logger.debug("balanceAfterExecution, symbol:" + params.symbol)
-                logger.debug("balanceAfterExecution:" + JSON.stringify(balanceAfterExecution))
+            logger.debug("balanceAfterExecution:" + JSON.stringify(testCase))
+            logger.debug("balanceAfterExecution, symbol:" + params.symbol)
+            logger.debug("balanceAfterExecution:" + JSON.stringify(balanceAfterExecution))
 
-                expect(false).to.be.ok
-            })
+            expect(false).to.be.ok
             // expect(true).to.be.ok
         })
     },
@@ -823,12 +822,12 @@ module.exports = framework = {
     //token example:
     checkBalanceChange: async function(server, from, symbol, expectedBalance){
         if(symbol){ //token
-            let balance = await server.getBalance(server, from, symbol)
+            let balance = (await server.getBalance(server, from, symbol)).value
             expect(Number(balance.value)).to.be.equal(Number(expectedBalance))
             return balance
         }
         else{ //swt
-            let balance = await server.getBalance(server, from)
+            let balance = (await server.getBalance(server, from)).value
             expect(Number(balance)).to.be.equal(Number(expectedBalance))
             return balance
         }
@@ -988,22 +987,8 @@ module.exports = framework = {
     //normally, should send from bigger balance to smaller balance
     createSubCases: async function(server, account1, account2, currency, txFunction, txCount, moreActionsFunction){
         let subCases = []
-        let symbol
-        let balance1
-        let balance2
-
-        let isSwt = currency.symbol == 'swt'
-        if(isSwt){
-            symbol = null
-            balance1 = parseInt(await server.getBalance(server, account1.address, symbol))
-            balance2 = parseInt(await server.getBalance(server, account2.address, symbol))
-        }else{
-            symbol = currency.symbol
-            let balanceResult = await server.getBalance(server, account1.address, symbol)
-            balance1 = parseInt(balanceResult.value)
-            balanceResult = await server.getBalance(server, account2.address, symbol)
-            balance2 = parseInt(balanceResult.value)
-        }
+        let balance1 = parseInt((await server.getBalance(server, account1.address, currency.symbol)).value)
+        let balance2 = parseInt((await server.getBalance(server, account2.address, currency.symbol)).value)
 
         if(balance1 < 100 && balance2 < 100){
             expect('Accounts balance is not enough!').to.be.not.ok
@@ -1018,16 +1003,12 @@ module.exports = framework = {
             let amount = 3
             let fee = 0.00001
             let restBalance
-            if(isSwt){
-                value = amount
-                restBalance = balance - (amount + fee) * txCount
-            }else{
-                value = {}
-                value.amount = amount
-                value.symbol = currency.symbol
-                value.issuer = currency.issuer
-                restBalance = balance - amount * txCount
-            }
+
+            value = {}
+            value.amount = amount
+            value.symbol = currency.symbol
+            value.issuer = currency.issuer
+            restBalance = balance - amount * txCount
 
             //todo need split every sub case out!!!  one sub case, one position, with special sequence.
             subCases.push(framework.createSubCase(sender.address, sender.secret, receiver.address,
