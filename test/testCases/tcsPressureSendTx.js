@@ -77,8 +77,8 @@ module.exports = tcsPressureSendTx = {
                     let from = data.from
 
                     //record balance before transfer
-                    let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
-                    let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
+                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
 
                     //get sequence
                     let currentSequence = await framework.getSequence(server, from)
@@ -93,7 +93,7 @@ module.exports = tcsPressureSendTx = {
                     // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
                     // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult.result[0]
+                        let hash = testCase.actualResult[0].result[0]
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -103,7 +103,7 @@ module.exports = tcsPressureSendTx = {
                     }
 
                     //record balance after transfer
-                    let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                     let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
                     tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
                     // logger.debug('===from_balance_1: ' + from_balance_1)
@@ -111,7 +111,7 @@ module.exports = tcsPressureSendTx = {
                     // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
                     // logger.debug('===check_2: ' + JSON.stringify(check_2))
 
-                    let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                     let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
                     tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
 
@@ -134,8 +134,8 @@ module.exports = tcsPressureSendTx = {
                     let from = data.from
 
                     //record balance before transfer
-                    let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
-                    let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
+                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
 
                     //get sequence
                     let currentSequence = await framework.getSequence(server, from)
@@ -150,10 +150,10 @@ module.exports = tcsPressureSendTx = {
                     await utility.timeout(server.mode.defaultBlockTime + 2000)
 
                     //balance should not change
-                    let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                     let from_balance_expected = Number(from_balance_1)
                     tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, no change', from_balance_expected, from_balance_2)
-                    let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                     let to_balance_expected = Number(to_balance_1)
                     tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, no change', to_balance_expected, to_balance_2)
 
@@ -165,7 +165,7 @@ module.exports = tcsPressureSendTx = {
                     await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
                     // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult.result[0]
+                        let hash = testCase.actualResult[0].result[0]
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -175,10 +175,10 @@ module.exports = tcsPressureSendTx = {
                     }
 
                     // balance should change now
-                    from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                    from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                     from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 3
                     tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-                    to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                    to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                     to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 3
                     tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, need change', to_balance_expected, to_balance_2)
 
@@ -269,8 +269,8 @@ module.exports = tcsPressureSendTx = {
                     let from = data.from
 
                     //record balance before transfer
-                    let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
-                    let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
+                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
 
                     //transfer
                     let currentSequence = await framework.getSequence(server, from)
@@ -289,7 +289,7 @@ module.exports = tcsPressureSendTx = {
 
                     //wait transfer result written in block
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult.result[0]
+                        let hash = testCase.actualResult[0].result[0]
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -299,12 +299,12 @@ module.exports = tcsPressureSendTx = {
                     }
 
                     //record balance after transfer
-                    let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                     let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 5
                     tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
 
 
-                    let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                     let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 5
                     tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
 
@@ -330,8 +330,8 @@ module.exports = tcsPressureSendTx = {
                     let check = {}
 
                     //record balance before transfer
-                    let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
-                    let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
+                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
 
                     //transfer n+2 tx
                     let currentSequence = await framework.getSequence(server, from)
@@ -350,10 +350,10 @@ module.exports = tcsPressureSendTx = {
                     await utility.timeout(server.mode.defaultBlockTime + 2000)
 
                     //balance should not change
-                    let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                     let from_balance_expected = Number(from_balance_1)
                     tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
-                    let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                     let to_balance_expected = Number(to_balance_1)
                     tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
 
@@ -370,7 +370,7 @@ module.exports = tcsPressureSendTx = {
                     await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)   //NOTICE:  the last transfer must be right sequence, cannot be future sequnce!
                     // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult.result[0]
+                        let hash = testCase.actualResult[4].result[0]
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -380,10 +380,10 @@ module.exports = tcsPressureSendTx = {
                     }
 
                     // balance should change now
-                    from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                    from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                     from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 9
                     tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-                    to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                    to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                     to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 9
                     tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
 
@@ -473,8 +473,8 @@ module.exports = tcsPressureSendTx = {
                 let fee = server.mode.defaultFee
 
                 //record balance before transfer
-                let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
-                let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
+                let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+                let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
 
                 //get sequence
                 let currentSequence = await framework.getSequence(server, from)
@@ -492,7 +492,7 @@ module.exports = tcsPressureSendTx = {
                 // let hash = testCase.server.mode.service == serviceType.newChain ? result.result[0] : result.result.hash
                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                 if(server.mode.service == serviceType.newChain){
-                    let hash = testCase.actualResult.result[0]
+                    let hash = testCase.actualResult[0].result[0]
                     let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                 }
                 else{
@@ -502,7 +502,7 @@ module.exports = tcsPressureSendTx = {
                 }
 
                 //record balance after transfer
-                let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+                let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
                 let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * count
                 tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance check', from_balance_expected, from_balance_2)
                 // logger.debug('===from_balance_1: ' + from_balance_1)
@@ -510,7 +510,7 @@ module.exports = tcsPressureSendTx = {
                 // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
                 // logger.debug('===check_2: ' + JSON.stringify(check_2))
 
-                let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+                let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
                 let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * count
                 tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check', to_balance_expected, to_balance_2)
 
@@ -1207,8 +1207,8 @@ module.exports = tcsPressureSendTx = {
             setSequenceFunction(data, currentSequence)
 
             //record balance before transfer
-            let from_balance_1 = await server.getBalance(server, data.from, data.symbol)
-            let to_balance_1 = await server.getBalance(server, data.to, data.symbol)
+            let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+            let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
 
             //transfer
             await tcsPressureSendTx.executeTransfer(testCase, sendTxExpectedResult, signTxExpectedResult)
@@ -1218,10 +1218,10 @@ module.exports = tcsPressureSendTx = {
             await utility.timeout(server.mode.defaultBlockTime + 2000)
 
             //record balance after transfer
-            let from_balance_2 = await server.getBalance(server, data.from, data.symbol)
+            let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
             let from_balance_expected = Number(from_balance_1)
             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
-            let to_balance_2 = await server.getBalance(server, data.to, data.symbol)
+            let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
             let to_balance_expected = Number(to_balance_1)
             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
 
@@ -1263,7 +1263,7 @@ module.exports = tcsPressureSendTx = {
                 }
                 if(testCase.server.mode.service == serviceType.newChain) testCase.checks.push(check_1)  //todo need remove condition, new chain and old chain should be the same
             }
-            testCase.actualResult = result
+            testCase.actualResult.push(result)
             resolve(testCase)
         })
     },
@@ -1281,6 +1281,11 @@ module.exports = tcsPressureSendTx = {
     //endregion
 
     //region check
+
+    getBalanceValue: async function(server, from, symbol){
+        let balance = await server.getBalance(server, from, symbol)
+        return balance.value
+    },
 
     checkBalance: function(testCase, check){
         let expectedBalance = Number(check.expectedBalance)
