@@ -77,7 +77,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -111,6 +111,8 @@ describe('Jingtum测试', function() {
                 tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
 
                 tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+
+                tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCountByHash')
 
                 tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
 
@@ -182,11 +184,16 @@ describe('Jingtum测试', function() {
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
 
-                this.timeout(360000)
-                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // this.timeout(360000)
+                // // tcsSubscribe.testForSubscribe_2(server, '测试jt_subscribe')
+                // // tcsSubscribe.testForUnsubscribe_2(server, '测试jt_unsubscribe')
+                //
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
                 // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                this.timeout(timeout)
+                // this.timeout(timeout)
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
             })
         })
