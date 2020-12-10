@@ -401,18 +401,18 @@ const BLOCKNUMBER_SCHEMA = {
 }
 
 //{"balance":"10000100003"}
-const BALANCE_SCHEMA = {
-    title: "test response of jt_getBalance",
-    type: "object",
-    required: [
-        "balance"
-    ],
-    properties: {
-        balance: {
-            "type": "string"
-        }
-    },
-}
+// const BALANCE_SCHEMA = {
+//     title: "test response of jt_getBalance",
+//     type: "object",
+//     required: [
+//         "balance"
+//     ],
+//     properties: {
+//         balance: {
+//             "type": "string"
+//         }
+//     },
+// }
 
 // {
 //     "balance": {
@@ -421,7 +421,7 @@ const BALANCE_SCHEMA = {
 //     "value": "1000000"
 // }
 // }
-const BALANCE_TOKEN_SCHEMA = {
+const BALANCE_SCHEMA = {
     title: "test response of jt_getBalance, for token",
     type: "object",
     required: [
@@ -775,7 +775,7 @@ module.exports = {
     PAYMENT_SCHEMA,
     BLOCKNUMBER_SCHEMA,
     BALANCE_SCHEMA,
-    BALANCE_TOKEN_SCHEMA,
+    // BALANCE_TOKEN_SCHEMA,
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
     SENDTX_SCHEMA,

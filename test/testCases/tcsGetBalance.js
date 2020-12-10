@@ -145,16 +145,8 @@ module.exports = tcsGetBalance = {
         let needPass = testCase.expectedResult.needPass
         framework.checkResponse(needPass, response)
         if(needPass){
-            let symbol = testCase.txParams[1]
-            if(symbol == null || symbol == '' || symbol == consts.defaultNativeCoin){
-                expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
-                expect(Number(response.result.balance)).to.be.above(0)
-            }
-            else{ //suppose it is token
-                expect(response.result).to.be.jsonSchema(schema.BALANCE_TOKEN_SCHEMA)
-                expect(Number(response.result.balance.value)).to.be.above(0)
-            }
-
+            expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
+            expect(Number(response.result.balance.value)).to.be.above(0)
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
