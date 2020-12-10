@@ -81,10 +81,10 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填1/SWT等'
+        testCaseParams.title = '0020\t发起' + categoryName + '有效交易_02: 交易额填1/SWT'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "1/" + consts.defaultNativeCoin
+                testCaseParams.txParams[0].value = "1/SWT"
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -95,7 +95,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0021\t发起' + categoryName + '无效交易_02: 交易额填1/swt'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].value = "1/" + consts.defaultNativeCoin
+                testCaseParams.txParams[0].value = "1/swt"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'failed to submit transaction')
             })

@@ -529,10 +529,9 @@ module.exports = testUtility = {
 
     //region get real value
     getRealValue: function(value){
-        valueString = value.toLowerCase()
-        let index = valueString.indexOf('/' + consts.defaultNativeCoin)
+        let index = value.indexOf('/' + consts.defaultNativeCoin)
         if(index != -1){
-            return testUtility.valueToAmount(Number(valueString.substring(0, index)))
+            return testUtility.valueToAmount(Number(value.substring(0, index)))
         }
         else{
             return Number(value)
