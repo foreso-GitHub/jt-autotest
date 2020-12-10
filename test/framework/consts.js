@@ -132,6 +132,7 @@ module.exports =  consts = {
         '20201130': 'v0.5.3-dev',
         '20201205': 'v0.5.3-dev',
         '20201208': 'v0.5.3-dev',
+        '20201209': 'v0.5.3-dev',
     },
 
     walletTypes:{

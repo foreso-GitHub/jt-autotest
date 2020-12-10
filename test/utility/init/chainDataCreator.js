@@ -124,13 +124,13 @@ function chainDataCreator(){
             && currenyResponse.result.TotalSupply.currency == existedCoin.symbol)){
 
             result = await issueCoin(server, root, rootSequence, existedCoin, true, consts.flags.normal)
-            if(result && result[0] && utility.isHex(result[0])){  // 判断是否交易成功，然后sequence再++
+            if(result && result.result && result.result[0] && utility.isHex(result.result[0])){  // 判断是否交易成功，然后sequence再++
                 chainData.tx_existed_coin_hash = result.result[0]
                 chainData.tx_existed_coin = existedCoin
                 rootSequence++
             }
             else{
-                logger.debug('=== Issue local coin failed!')
+                logger.debug('=== Issue existed coin failed!')
             }
         }
         else{
