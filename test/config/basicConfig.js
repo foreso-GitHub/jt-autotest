@@ -11,7 +11,7 @@ let rpcSettings = {
     request_timeout: 13000,  //important: rpc request timeout setting (default: 6000).  if request_timeout <= 0, then request timeout will be ignore.
 }
 
-let jtVersion = '20201210b'
+let jtVersion = '20201214'
 
 module.exports = {
     commonPaths,
