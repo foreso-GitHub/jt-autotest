@@ -474,7 +474,7 @@ module.exports = tcsGetTx = {
         framework.checkResponse(needPass, response)
         if(needPass){
             let tx1 = testCase.server.mode.txs.tx1
-            framework.compareTx(tx1, response.result)
+            framework.compareTx(response.result, tx1)
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
