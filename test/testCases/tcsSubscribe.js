@@ -35,6 +35,8 @@ const outputType = {
     tx: 4,
     error: 5,
 }
+const Not_Used_Address = 'j9t5tjAawNoAxgn7FudkaKTo7GjD3HqvtH'
+const Wrong_Format_Address = Not_Used_Address + '_1'
 const Subscribe_Timeout = 1000
 const If_Check_Error = true
 
@@ -295,8 +297,6 @@ module.exports = tcsSubscribe = {
 
     //endregion
 
-    //endregion
-
     //region common check
 
     checkForResult: function(action, successTx){
@@ -304,7 +304,7 @@ module.exports = tcsSubscribe = {
 
         if(action.expectedResult.needPass){
             let results = messages.results
-            expect(results[0].result).to.be.equals(action.txParams[0] + ' ' + successTx)
+            expect(results[0].result).to.be.contains(action.txParams[0] + ' ' + successTx)
         }
         else{
             //{"id":4,"jsonrpc":"2.0","message":"invalid parameters","result":"","status":-278,"outputIndex":0}
@@ -390,11 +390,6 @@ module.exports = tcsSubscribe = {
     //endregion
 
     //region subscribe
-
-    testForSubscribe_2: function(server, describeTitle){
-
-
-    },
 
     testForSubscribe: function(server, describeTitle){
 
@@ -896,7 +891,7 @@ module.exports = tcsSubscribe = {
             actions = []
 
             actions.push({type: actionTypes.subscribe,
-                txParams: ['token', localCoin.symbol + '/jU4iU135deFRwUEG5guBSkpRKe6H8YZanR_1'],
+                txParams: ['token', localCoin.symbol + '/' + Wrong_Format_Address],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
                 expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
@@ -1985,6 +1980,9 @@ module.exports = tcsSubscribe = {
     //region unsubscribe
 
     testForUnsubscribe: function(server, describeTitle){
+
+        //region fields
+        let titlePrefix = consts.rpcFunctions.subscribe + '_'
         let title
         let testCase
         let testCases = []
@@ -1995,12 +1993,13 @@ module.exports = tcsSubscribe = {
         let to = server.mode.addresses.receiver1
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
+        //endregion
 
         //region block
 
         testCases = []
 
-        title = '0010\t取消订阅区块block_01: 已订阅区块，取消订阅区块，订阅内容为block，无订阅参数'
+        title = titlePrefix + '0010\t取消订阅区块block_01: 已订阅区块，取消订阅区块，订阅内容为block，无订阅参数'
         {
             actions = []
 
@@ -2028,7 +2027,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0011\t取消订阅区块block_02: 无订阅区块'
+        title = titlePrefix + '0011\t取消订阅区块block_02: 无订阅区块'
         {
             actions = []
 
@@ -2044,7 +2043,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0012\t取消订阅区块block_03: 已订阅区块，取消订阅区块，订阅内容为block，订阅参数为任意值'
+        title = titlePrefix + '0012\t取消订阅区块block_03: 已订阅区块，取消订阅区块，订阅内容为block，订阅参数为任意值'
         {
             actions = []
 
@@ -2080,7 +2079,7 @@ module.exports = tcsSubscribe = {
 
         testCases = []
 
-        title = '0020\t取消订阅交易tx_01: 已订阅交易，取消订阅交易，订阅内容为tx，无订阅参数'
+        title = titlePrefix + '0020\t取消订阅交易tx_01: 已订阅交易，取消订阅交易，订阅内容为tx，无订阅参数'
         {
             actions = []
 
@@ -2112,7 +2111,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0021\t取消订阅交易tx_02: 无订阅交易，client没有订阅交易，但是发送取消订阅交易tx请求'
+        title = titlePrefix + '0021\t取消订阅交易tx_02: 无订阅交易，client没有订阅交易，但是发送取消订阅交易tx请求'
         {
             actions = []
 
@@ -2132,7 +2131,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = '0022\t取消订阅交易tx_03: 已订阅区块，取消订阅交易，订阅内容为tx，订阅参数为任意值'
+        title = titlePrefix + '0022\t取消订阅交易tx_03: 已订阅区块，取消订阅交易，订阅内容为tx，订阅参数为任意值'
         {
             actions = []
 
@@ -2164,19 +2163,571 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
+        title = titlePrefix + '0030\t已订阅区块block，取消订阅交易tx:已订阅区块，取消订阅交易，订阅内容为tx，无订阅参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['tx'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
         framework.testTestCases(server, describeTitle + '_退订tx', testCases)
 
         //endregion
-        
+
+        //region not work
+
+        testCases = []
+
+        title = titlePrefix + '0030_0001\t已订阅区块block，取消订阅交易tx:已订阅区块，取消订阅交易，订阅内容为tx，无订阅参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['tx'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0040_0001\t已订阅交易tx，取消订阅区块block:已订阅交易，取消订阅区块，订阅内容为block，无订阅参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['block'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0060_0001\t取消订阅-订阅内容为空:已订阅区块或交易，取消订阅时订阅内容为空'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: [''],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0060_0002\t取消订阅-订阅内容为空:已订阅区块或交易，取消订阅时订阅内容为空'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: [''],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        framework.testTestCases(server, describeTitle + '_退订失败', testCases)
+
+        //endregion
+
         //region token
+
+        testCases = []
+
+        title = titlePrefix + '0070\t取消订阅token，不带参数:取消订阅内容为token，但不带参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['token'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"no parameters",result:"",status:-269}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0080\t取消订阅token，参数为空:取消订阅内容为token，但参数为空'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['token',''],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0090\t取消订阅不存在的token:取消订阅内容为token，但参数是不存在的token名字'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['token','badToken1111'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"no parameters",result:"",status:-269}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0100\t取消订阅全局token:有订阅的全局token，取消订阅内容为token，参数是某全局token名字'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', globalCoin.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['token', globalCoin.symbol],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.txParams[0].value = utility.getTokenShowValue(1, globalCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0110\t取消订阅带issuer的token_01:有订阅的带issuer的token，取消订阅内容为token，参数是token名字/正确的issuer地址'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0120\t取消订阅带issuer的token_02:有订阅的带issuer的token，取消订阅内容为token，参数是token名字/错误的issuer地址'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['token', localCoin.symbol + '/issuer_not_existed' ],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.txParams[0].value = utility.getTokenShowValue(1, localCoin)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        framework.testTestCases(server, describeTitle + '_退订token', testCases)
 
         //endregion
 
         //region account
 
+        testCases = []
+
+        title = titlePrefix + '0130\t取消订阅account，不带参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['account'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0140\t取消订阅account，参数为空'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['account',''],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0150\t取消订阅非法的account地址'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['account', Wrong_Format_Address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0151\t取消订阅无效的account地址'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['account', Not_Used_Address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0160\t取消订阅有效的account地址:client有订阅的account'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        framework.testTestCases(server, describeTitle + '_退订account', testCases)
+
         //endregion
 
-        //region mixed
+        //region all
+
+        testCases = []
+
+        title = titlePrefix + '0170\t取消所有订阅_01:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account，取消订阅内容为all，不带参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', globalCoin.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', to.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['all'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0180\t取消所有订阅_02:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account，取消订阅内容为all，带参数，参数内容为任意值'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', globalCoin.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', to.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['all', 'abcd'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0190\t取消所有订阅_03:client没有订阅任何信息，取消订阅内容为all，不带参数'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['all'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+            })
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        framework.testTestCases(server, describeTitle + '_退订all', testCases)
 
         //endregion
 
