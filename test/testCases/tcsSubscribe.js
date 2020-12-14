@@ -157,11 +157,6 @@ module.exports = tcsSubscribe = {
 
     //region utility
 
-    //region coin name
-    // createCoinValue: function(amount, coin){
-    //     return utility.createCoinValue(amount, coin.symbol, coin.issuer)
-    // },
-
     getCoinFullName: function(coin){
         return tcsSubscribe.createCoinFullName(coin.symbol, coin.issuer)
     },
@@ -169,12 +164,13 @@ module.exports = tcsSubscribe = {
     createCoinFullName: function(symbol, issuer){
         return symbol + '/' + issuer
     },
+
     //endregion
 
     //region create tx action
 
     createRealTxAction: function(server){
-        return tcsSubscribe.createTxAction(server.mode.addresses.sender3, server.mode.addresses.receiver3, true)
+        return tcsSubscribe.createTxAction(server.mode.addresses.sender1, server.mode.addresses.receiver1, true)
     },
 
     createFakeTxAction: function(server){
@@ -202,7 +198,7 @@ module.exports = tcsSubscribe = {
         }
     },
 
-    createTokenAction: function(sender, token){
+    createTokenAction: function(sender, token, local){
         return {type: actionTypes.sendTx,
             txParams:[{
                 from: sender.address,
@@ -212,7 +208,7 @@ module.exports = tcsSubscribe = {
                 symbol: token.symbol,
                 decimals: "8",
                 total_supply: "99999901",
-                local: true,
+                local: local,
                 flags: consts.flags.both,
             }],
             txCount: 1,
@@ -395,7 +391,14 @@ module.exports = tcsSubscribe = {
 
     //region subscribe
 
+    testForSubscribe_2: function(server, describeTitle){
+
+
+    },
+
     testForSubscribe: function(server, describeTitle){
+
+        //region fields
         let titlePrefix = consts.rpcFunctions.subscribe + '_'
         let title
         let testCase
@@ -411,13 +414,14 @@ module.exports = tcsSubscribe = {
         let localSameCoin1 = chainData.sameSymbolCoins.local1
         let localSameCoin2 = chainData.sameSymbolCoins.local2
 
-        let from = server.mode.addresses.sender3
-        let to = server.mode.addresses.receiver3
+        let from = server.mode.addresses.sender1
+        let to = server.mode.addresses.receiver1
 
         let sender = server.mode.addresses.sender1
         let receiver = server.mode.addresses.receiver1
         let token = utility.getDynamicTokenName()
         token.issuer = sender.address
+        //endregion
 
         //region block
 
@@ -557,7 +561,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '0030\t订阅交易，signTx'
+        title = titlePrefix + '0024_001\t订阅交易，signTx'
         {
             actions = []
             actions.push({type: actionTypes.subscribe,
@@ -578,7 +582,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '0031\t订阅交易，signTx并且sendRawTx'
+        title = titlePrefix + '0024_002\t订阅交易，signTx并且sendRawTx'
         {
             actions = []
             actions.push({type: actionTypes.subscribe,
@@ -812,7 +816,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '0081\t订阅token，带有效参数（全局token），参数带issuer'
+        title = titlePrefix + '0080_001\t订阅token，带有效参数（全局token），参数带issuer'
         {
             actions = []
 
@@ -1092,7 +1096,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '0170\t订阅account，带有效参数_02： 接收方地址'
+        title = titlePrefix + '0161\t订阅account，带有效参数_02： 接收方地址'
         {
             actions = []
 
@@ -1247,8 +1251,241 @@ module.exports = tcsSubscribe = {
 
         testCases = []
 
+        //region tx
+        token = utility.getDynamicTokenName()
+        token.issuer = sender.address
+
+        title = titlePrefix + '0023_0011\t订阅tx，发行token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0012\t订阅tx，发送token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.defaultIssuer)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0013\t订阅tx，增发token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0014\t订阅tx，销毁token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0021\t订阅tx，发行token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0022\t订阅tx，发送token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0023\t订阅tx，增发token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0023_0024\t订阅tx，销毁token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+        //endregion
+
         //region token
-        title = titlePrefix + '1010\t订阅token，发行token'
+        token = utility.getDynamicTokenName()
+        token.issuer = sender.address
+
+        title = titlePrefix + '0081_0001\t订阅token，发行token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0081_0002\t订阅token，发送token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.defaultIssuer)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0081_0003\t订阅token，增发token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0081_0004\t订阅token，销毁token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0091_0001\t订阅token，发行token，本地token'
         {
             actions = []
 
@@ -1259,14 +1496,14 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            action = tcsSubscribe.createTokenAction(sender, token)
+            action = tcsSubscribe.createTokenAction(sender, token, true)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '1011\t订阅token，发送token'
+        title = titlePrefix + '0091_0002\t订阅token，发送token，本地token'
         {
             actions = []
 
@@ -1278,14 +1515,14 @@ module.exports = tcsSubscribe = {
             })
 
             action = tcsSubscribe.createTxAction(sender, receiver, true)
-            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)  //这里不能用tcsSubscribe.createCoinValue
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '1012\t订阅token，增发token'
+        title = titlePrefix + '0091_0003\t订阅token，增发token，本地token'
         {
             actions = []
 
@@ -1296,7 +1533,7 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            action = tcsSubscribe.createTokenAction(sender, token)
+            action = tcsSubscribe.createTokenAction(sender, token, true)
             action.txParams[0].total_supply = '10'
             actions.push(action)
 
@@ -1304,7 +1541,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '1013\t订阅token，销毁token'
+        title = titlePrefix + '0091_0004\t订阅token，销毁token，本地token'
         {
             actions = []
 
@@ -1315,7 +1552,7 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            action = tcsSubscribe.createTokenAction(sender, token)
+            action = tcsSubscribe.createTokenAction(sender, token, true)
             action.txParams[0].total_supply = '-10'
             actions.push(action)
 
@@ -1328,7 +1565,7 @@ module.exports = tcsSubscribe = {
         token = utility.getDynamicTokenName()
         token.issuer = sender.address
 
-        title = titlePrefix + '1020\t订阅account，发行token'
+        title = titlePrefix + '0162_0001\t订阅account，发行token，全局token'
         {
             actions = []
 
@@ -1339,14 +1576,14 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            action = tcsSubscribe.createTokenAction(sender, token)
+            action = tcsSubscribe.createTokenAction(sender, token, false)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '1021\t订阅account，发送token'
+        title = titlePrefix + '0160_0001\t订阅account，发送token，全局token'
         {
             actions = []
 
@@ -1358,14 +1595,14 @@ module.exports = tcsSubscribe = {
             })
 
             action = tcsSubscribe.createTxAction(sender, receiver, true)
-            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)  //这里不能用tcsSubscribe.createCoinValue
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.defaultIssuer)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '1022\t订阅account，增发token'
+        title = titlePrefix + '0163_0001\t订阅account，增发token，全局token'
         {
             actions = []
 
@@ -1376,7 +1613,7 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            action = tcsSubscribe.createTokenAction(sender, token)
+            action = tcsSubscribe.createTokenAction(sender, token, false)
             action.txParams[0].total_supply = '10'
             actions.push(action)
 
@@ -1384,7 +1621,7 @@ module.exports = tcsSubscribe = {
             framework.addTestCase(testCases, testCase)
         }
 
-        title = titlePrefix + '1023\t订阅account，销毁token'
+        title = titlePrefix + '0164_0001\t订阅account，销毁token，全局token'
         {
             actions = []
 
@@ -1395,7 +1632,82 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            action = tcsSubscribe.createTokenAction(sender, token)
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0162_0002\t订阅account，发行token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0160_0002\t订阅account，发送token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0163_0002\t订阅account，增发token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = titlePrefix + '0164_0002\t订阅account，销毁token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
             action.txParams[0].total_supply = '-10'
             actions.push(action)
 
@@ -1679,8 +1991,8 @@ module.exports = tcsSubscribe = {
         let needPass = true
         let expectedError = ''
 
-        let from = server.mode.addresses.sender3
-        let to = server.mode.addresses.receiver3
+        let from = server.mode.addresses.sender1
+        let to = server.mode.addresses.receiver1
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
 
@@ -1853,6 +2165,18 @@ module.exports = tcsSubscribe = {
         }
 
         framework.testTestCases(server, describeTitle + '_退订tx', testCases)
+
+        //endregion
+        
+        //region token
+
+        //endregion
+
+        //region account
+
+        //endregion
+
+        //region mixed
 
         //endregion
 
