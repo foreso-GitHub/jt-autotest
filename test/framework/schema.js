@@ -400,6 +400,27 @@ const BLOCKNUMBER_SCHEMA = {
     type: "integer",
 }
 
+const VERSION_SCHEMA = {
+    title: "test response of jt_version",
+    type: "object",
+    required: [
+        "checksum",
+        "time",
+        "version",
+    ],
+    properties: {
+        checksum: {
+            "type": "string"
+        },
+        time: {
+            "type": "string"
+        },
+        version: {
+            "type": "string"
+        },
+    },
+}
+
 //{"balance":"10000100003"}
 // const BALANCE_SCHEMA = {
 //     title: "test response of jt_getBalance",
@@ -774,6 +795,7 @@ module.exports = {
     ORDER_SCHEMA,
     PAYMENT_SCHEMA,
     BLOCKNUMBER_SCHEMA,
+    VERSION_SCHEMA,
     BALANCE_SCHEMA,
     // BALANCE_TOKEN_SCHEMA,
     WALLET_SCHEMA,

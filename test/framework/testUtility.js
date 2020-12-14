@@ -542,5 +542,42 @@ module.exports = testUtility = {
         return value * consts.swtConsts.oneSwt
     },
     //endregion
+
+    //region version
+
+    // versionObject:
+    // {
+    //             "checksum": "13609a6bc8b38d85f0f2e2824dae6714819b5233",
+    //             "time": "20201210",
+    //             "version": "v0.5.3-dev"
+    //         }
+    // versionString:
+    // v0.5.3 dev-20201210-194c2505539ab9c905afaa72f622eb947e1c7aa3
+
+    combineVersionInfo: function(versionObject){
+        return versionObject.version + '-' + versionObject.time + '-' + versionObject.checksum
+    },
+
+    parseVersionInfo: function(versionString){
+        let versionObject = {}
+
+        let parts = versionString.toString().split('-')
+        if(parts.length == 4){
+            versionObject.version = parts[0] + '-' + parts[1]
+            versionObject.time = parts[2]
+            versionObject.checksum = parts[3]
+        }
+        else if(parts.length == 3){
+            versionObject.version = parts[0]
+            versionObject.time = parts[1]
+            versionObject.checksum = parts[2]
+        }
+        else{
+            return null
+        }
+
+        return versionObject
+    },
+    //endregion
 }
 

@@ -25,26 +25,47 @@ module.exports = tcsGetVersion = {
     testForGetVersion: function(server, describeTitle){
         let testCases = []
 
-        let title = '0010\tjt_version'
         let functionName = consts.rpcFunctions.getVersion
         let txParams = []
         let expectedResult = {}
         expectedResult.needPass = true
 
-        let testCase = framework.createTestCase(
-            title,
-            server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestCaseForGet,
-            tcsGetVersion.checkGetVersion,
-            expectedResult,
-            restrictedLevel.L2,
-            [serviceType.newChain, ],
-            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-        )
-        framework.addTestCase(testCases, testCase)
+        let title = '0010\tjt_version，不带参数'
+        {
+            let testCase = framework.createTestCase(
+                title,
+                server,
+                functionName,
+                txParams,
+                null,
+                framework.executeTestCaseForGet,
+                tcsGetVersion.checkGetVersion,
+                expectedResult,
+                restrictedLevel.L2,
+                [serviceType.newChain, ],
+                [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            )
+            framework.addTestCase(testCases, testCase)
+        }
+
+        title = '0020\tjt_version，带json参数'
+        {
+            let testCase = framework.createTestCase(
+                title,
+                server,
+                functionName,
+                txParams,
+                null,
+                framework.executeTestCaseForGet,
+                tcsGetVersion.checkGetVersion,
+                expectedResult,
+                restrictedLevel.L2,
+                [serviceType.newChain, ],
+                [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            )
+            testCase.txParams = ['json']
+            framework.addTestCase(testCases, testCase)
+        }
 
         framework.testTestCases(server, describeTitle, testCases)
     },
@@ -54,9 +75,15 @@ module.exports = tcsGetVersion = {
         let needPass = testCase.expectedResult.needPass
         framework.checkResponse(needPass, response)
         if(needPass){
-            // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
             let version = response.result
-            expect(version).to.be.equal(consts.versions[jtVersion])
+            if(utility.isJSON(version)){
+                expect(version).to.be.jsonSchema(schema.VERSION_SCHEMA)
+            }
+            else{
+                // expect(version).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+                version = utility.parseVersionInfo(version)
+            }
+            expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
         }
         else{
             framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)

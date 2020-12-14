@@ -134,7 +134,11 @@ module.exports =  consts = {
         '20201208': 'v0.5.3-dev',
         '20201209': 'v0.5.3-dev',
         '20201210': 'v0.5.3 dev-20201210-194c2505539ab9c905afaa72f622eb947e1c7aa3',
-        '20201210b': 'v0.5.3 dev-20201210-13609a6bc8b38d85f0f2e2824dae6714819b5233',
+        '20201210b': {
+            "checksum": "13609a6bc8b38d85f0f2e2824dae6714819b5233",
+            "time": "20201210",
+            "version": "v0.5.3-dev"
+        },
     },
 
     walletTypes:{
