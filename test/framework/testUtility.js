@@ -260,17 +260,27 @@ module.exports = testUtility = {
 
     parseShowValue: function(showValue){
         let parts = showValue.toString().split('/')
-        return (parts.length == 3)
-            ? {
+        if(parts.length == 3){  // 1/SWT/jjjjjjjjjjjjjjjjjjjjjhoLvTp => { value: '1000000', currency: 'SWT', issuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp' }
+            return {
                 amount: parts[0],
                 symbol: parts[1],
                 issuer: parts[2],
             }
-            : {
+        }
+        else if (parts.length == 2){  // 1/SWT/ => { value: '1000000', currency: 'SWT', issuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp' }
+            return {
+                amount: parts[0],
+                symbol: parts[1],
+                issuer: '',
+            }
+        }
+        else{
+            return {
                 amount: showValue,
                 symbol: consts.defaultNativeCoin,
                 issuer: '',
             }
+        }
     },
 
     createCoinValue: function(amount, symbol, issuer){

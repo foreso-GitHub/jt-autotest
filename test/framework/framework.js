@@ -549,13 +549,33 @@ module.exports = framework = {
             }
             else{
                 let realValue = utility.parseShowValue(txParams.value)
-                if(realValue.symbol != consts.defaultNativeCoin){
+                // if(realValue.symbol != consts.defaultNativeCoin){
+                //     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
+                //     expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
+                // }else{
+                //     let expectedValue = (mode.service == serviceType.oldChain) ?
+                //         utility.valueToAmount(Number(txParams.value)) : utility.getRealValue(txParams.value)
+                //     expect(Number(tx.Amount)).to.be.equals(expectedValue)
+                // }
+
+                if(mode.service == serviceType.oldChain){
+                    expect(Number(tx.Amount)).to.be.equals(utility.valueToAmount(Number(txParams.value)))
+                }
+                else{
                     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
-                    expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
-                }else{
-                    let expectedValue = (mode.service == serviceType.oldChain) ?
-                        utility.valueToAmount(Number(txParams.value)) : utility.getRealValue(txParams.value)
-                    expect(Number(tx.Amount)).to.be.equals(expectedValue)
+                    if(realValue.symbol == consts.defaultNativeCoin){
+
+                        if(txParams.value.indexOf(consts.defaultNativeCoin) != -1){//expected '1000000' to equal '1/SWT'
+                            expect(tx.Amount.value).to.be.equals((realValue.amount * consts.swtConsts.oneSwt).toString())
+                        }
+                        else{
+                            expect(tx.Amount.value).to.be.equals(txParams.value)
+                        }
+                    }
+                    else{
+                        expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
+                    }
+
                 }
             }
             //check memos, only in new chain
