@@ -395,6 +395,60 @@ const RESPONSE_SCHEMA = {
     },
 }
 
+// const RESPONSE_SCHEMA = {
+//     title: "test response schema",
+//     type: "object",
+//     required: [
+//         "id",
+//         "jsonrpc",
+//         "result",
+//         "type",
+//         "status",
+//     ],
+//     properties: {
+//         id: {
+//             type: "integer"
+//         },
+//         jsonrpc: {
+//             type: "string"
+//         },
+//         result: {
+//             type: "string"
+//         },
+//         type: {
+//             type: "string"
+//         },
+//         status: {
+//             type: "integer"
+//         },
+//     },
+// }
+
+const ERROR_SCHEMA = {
+    title: "test response error schema",
+    type: "object",
+    required: [
+        "error",
+        "message",
+        "type",
+        "status",
+    ],
+    properties: {
+        error: {
+            type: "integer"
+        },
+        message: {
+            type: "string"
+        },
+        type: {
+            type: "string"
+        },
+        status: {
+            type: "integer"
+        },
+    },
+}
+
 const BLOCKNUMBER_SCHEMA = {
     title: "test response of jt_blockNumber",
     type: "integer",

@@ -38,7 +38,7 @@ const outputType = {
 const Not_Used_Address = 'j9t5tjAawNoAxgn7FudkaKTo7GjD3HqvtH'
 const Wrong_Format_Address = Not_Used_Address + '_1'
 const Subscribe_Timeout = 1000
-const If_Check_Error = true
+const If_Check_Error = false
 
 module.exports = tcsSubscribe = {
 

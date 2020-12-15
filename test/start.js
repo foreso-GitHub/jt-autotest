@@ -132,7 +132,7 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 //endregion
 
@@ -194,6 +194,12 @@ describe('Jingtum测试', function() {
                 // this.timeout(timeout)
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
+
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
+                // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
 
             })
         })

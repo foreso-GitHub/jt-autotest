@@ -25,7 +25,7 @@ let _FullTestCaseList = []
 let accountsDealer = new AccountsDealer()
 let START
 let END
-let NEED_CHECK_ExpectedResult = false
+let NEED_CHECK_ExpectedResult = true
 //endregion
 
 module.exports = framework = {
@@ -880,6 +880,15 @@ module.exports = framework = {
     checkResponseError: function(testCase, message, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
+            expect(message).to.contains(expectedError)
+            // expect(message.result[0].error).to.contains(expectedError)
+        }
+    },
+
+    checkResponseError_2: function(testCase, actualError, expectedError){
+        if(NEED_CHECK_ExpectedResult
+            && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
+            expect(actualError).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
             expect(message).to.contains(expectedError)
             // expect(message.result[0].error).to.contains(expectedError)
         }
