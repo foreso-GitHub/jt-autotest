@@ -589,5 +589,25 @@ module.exports = testUtility = {
         return versionObject
     },
     //endregion
+
+    //region format number
+    toDecimal2: function(value) {
+        let floatValue = parseFloat(value)
+        if (isNaN(floatValue)) {
+            return null
+        }
+        let formatFloat = Math.round(floatValue * 100)/100
+        var s = formatFloat.toString()
+        var rs = s.indexOf('.')
+        if (rs < 0) {
+            rs = s.length;
+            s += '.'
+        }
+        while (s.length <= rs + 2) {
+            s += '0'
+        }
+        return s
+    },
+//endregion
 }
 
