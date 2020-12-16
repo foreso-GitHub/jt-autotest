@@ -28,8 +28,11 @@ function charger() {
             let totalCount = accounts.length
             let count = 0
             accounts.forEach(async (account) => {
-                let balance = await server.getBalance(server, account.address)
-                if(balance == null || balance < checkBalance){
+                let balanceObject = await server.getBalance(server, account.address)
+
+                if(!balanceObject
+                    || !balanceObject.value
+                    || balanceObject && balanceObject.value && balanceObject.value < checkBalance){
                     accountsNeedBeCharged.push(account)
                 }
                 count++
