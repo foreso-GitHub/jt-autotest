@@ -3424,7 +3424,15 @@ module.exports = tcsSubscribe = {
         if(action.expectedResult.needPass){
             expect(results[0].result.length).to.be.equals(action.checkParams.length)
             for(let i = 0;  i < action.checkParams.length; i++){
-                expect(results[0].result[i]).to.be.equals(action.checkParams[i])
+                let expectedArray = tcsSubscribe.parseArray(action.checkParams[i])
+                if(expectedArray != null){
+                    let actualArray = tcsSubscribe.parseArray(results[0].result[i])
+                    let compareResult = tcsSubscribe.compareArray(actualArray, expectedArray)
+                    expect(compareResult).to.be.ok
+                }
+                else{
+                    expect(results[0].result[i]).to.be.equals(action.checkParams[i])
+                }
             }
         }
         else{
@@ -3437,6 +3445,42 @@ module.exports = tcsSubscribe = {
                 expect(errors[0].result).to.be.equals(action.expectedResult.expectedError.result)
             }
         }
+    },
+
+    // Expected :token TSC_2,TSC_3/jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh
+    // Actual   :token TSC_3/jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh,TSC_2
+    // "account jsoV2BMd1X93izMbPmj6HtJS9sHuDPQTyD,jwiAnXkrfB8wmrocKefcxhTCBopjxtdfr1"
+    parseArray: function(arrayString){
+        const tokenPrefix = 'token '
+        const accountPrefix = 'account '
+        let pureArrayString
+
+        if(arrayString.indexOf(tokenPrefix) == 0){
+            pureArrayString = arrayString.substr(tokenPrefix.length, arrayString.length - tokenPrefix.length)
+        }
+        else if(arrayString.indexOf(accountPrefix) == 0){
+            pureArrayString = arrayString.substr(accountPrefix.length, arrayString.length - accountPrefix.length)
+        }
+        else{
+            return null
+        }
+
+        let array = pureArrayString.split(',')
+        return array
+    },
+
+    compareArray: function(tokens1, tokens2){
+        if(tokens1.length != tokens2.length){
+            return false
+        }
+
+        for(let i = 0; i < tokens1.length; i++){
+            if(!utility.ifArrayHas2(tokens2, tokens1[i])){
+                return false
+            }
+        }
+
+        return true
     },
 
     //endregion
