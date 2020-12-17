@@ -11,8 +11,8 @@ getAllTxBlock()
 
 async function getAllTxBlock(){
     let server = framework.activeServer(modes[0])
-    let startBlock = 89700
-    let endBlock = 89710
+    let startBlock = 108500
+    let endBlock = 108600
     let blocksInfo = await framework.getBlocksInfo(server, startBlock, endBlock)
     printTps(blocksInfo)
 }
