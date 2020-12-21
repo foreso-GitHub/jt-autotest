@@ -1,0 +1,1 @@
+node "./node_modules/mocha/bin/_mocha" --ui bdd "./test/start.js"
