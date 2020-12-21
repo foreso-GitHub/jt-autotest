@@ -4,7 +4,8 @@
   "description": "Auto test for Jingtum new chain.",
   "main": "./test/start.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+    "test": "./node_modules/.bin/mocha",
+    "preinstall": "npx npm-force-resolutions"
   },
   "author": "",
   "license": "ISC",
@@ -30,5 +31,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "mochawesome": "^6.1.1"
+  },
+  "resolutions": {
+    "graceful-fs": "4.2.3"
   }
 }
