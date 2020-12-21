@@ -31,8 +31,8 @@ module.exports = tcsGetBlock = {
 
     testForGetBlockByHash: function(server, describeTitle){
         let functionName = consts.rpcFunctions.getBlockByHash
-        let blockNumber = server.mode.txs.block.blockHash
-        let testCases = tcsGetBlock.createTestCasesForGetBlock(server, functionName, blockNumber)
+        let blockHash = server.mode.txs.block.blockHash
+        let testCases = tcsGetBlock.createTestCasesForGetBlock(server, functionName, blockHash)
         framework.testTestCases(server, describeTitle, testCases)
     },
 
@@ -42,7 +42,7 @@ module.exports = tcsGetBlock = {
         let testNumber = '0010'
         let showFullTx = false
         let needPass = true
-        let expectedError = ''
+        let expectedError = {"error":"full is not boolean","status":-269,"type":"temBAD_PARAMETER"}
         let testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -58,102 +58,119 @@ module.exports = tcsGetBlock = {
             numberOrHash = 'earliest'
             showFullTx = true
             testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase.restrictedLevel = restrictedLevel.L4
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0040'
             numberOrHash = 'earliest'
             showFullTx = false
             testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase.restrictedLevel = restrictedLevel.L4
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0050'
             numberOrHash = 'latest'
             showFullTx = true
             testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-            // testCases[testCases.length - 1].supportedServices = [serviceType.newChain, serviceType.ipfs,]
+            testCase.restrictedLevel = restrictedLevel.L4
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0060'
             numberOrHash = 'latest'
             showFullTx = false
             testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase.restrictedLevel = restrictedLevel.L4
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0090'
             numberOrHash = 'pending'
             showFullTx = true
             testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase.restrictedLevel = restrictedLevel.L4
             framework.addTestCase(testCases, testCase)
 
             testNumber = '0100'
             numberOrHash = 'pending'
             showFullTx = false
             testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase.restrictedLevel = restrictedLevel.L4
             framework.addTestCase(testCases, testCase)
         }
 
-        testNumber = '0110'
+        testNumber = '0110_0001'
         numberOrHash = validNumberOrHash
         showFullTx = 'wrwerwre'
         needPass = false
-        expectedError = 'interface conversion: interface {} is string, not bool'
+        expectedError = {"error":"full is not boolean", "status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是字符串'
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
-        testNumber = '0110'
+        testNumber = '0110_0002'
         numberOrHash = validNumberOrHash
         showFullTx = 123123
         needPass = false
-        expectedError = 'interface conversion: interface {} is float64, not bool'
+        expectedError = {"error":"full is not boolean", "status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是数字'
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
-        testNumber = '0110'
+        testNumber = '0110_0003'
         numberOrHash = validNumberOrHash
         showFullTx = null
         needPass = false
-        expectedError = 'interface conversion: interface {} is nil, not bool'
+        expectedError = {"error":"full is null","status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = '0110\t有效区块编号，无效Boolean参数：showFullTx是空值'
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
-        testNumber = '0120'
+        testNumber = '0120_0001'
         numberOrHash = '9990000000'
         showFullTx = false
         needPass = false
-        expectedError = 'value out of range'
+        expectedError = {"error":"strconv.ParseUint: parsing","status":140,"type":"tecNO_ENTRY"}
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? {"error":"strconv.ParseUint: parsing","status":140,"type":"tecNO_ENTRY"}
+            : {"error":"NewHash256: Wrong length","status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         // testCase.supportedServices.push(serviceType.oldChain)  //old chain not support huge block number, it will cause test hook more than 20s
         framework.addTestCase(testCases, testCase)
 
-        testNumber = '0120'
+        testNumber = '0120_0002'
         numberOrHash = '99900000'
         showFullTx = false
         needPass = false
-        expectedError = 'ledgerNotFound'
+        expectedError = {"error":"can't find block","status":140,"type":"tecNO_ENTRY"}
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? {"error":"can't find block","status":140,"type":"tecNO_ENTRY"}
+            : {"error":"NewHash256: Wrong length","status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
-        testNumber = '0120'
+        testNumber = '0120_0003'
         numberOrHash = '-1000'
         showFullTx = false
         needPass = false
-        expectedError = 'invalid ledger_index'
+        expectedError = {"error":"strconv.ParseUint: parsing","status":140,"type":"tecNO_ENTRY"}
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? {"error":"strconv.ParseUint: parsing","status":140,"type":"tecNO_ENTRY"}
+            : {"error":"encoding/hex: invalid byte:","status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
-        testNumber = '0120'
+        testNumber = '0120_0004'
         numberOrHash = 'abcdefg'
         showFullTx = false
         needPass = false
-        expectedError = 'invalid ledger_index'
+        expectedError = {"error":"strconv.ParseUint: parsing","status":140,"type":"tecNO_ENTRY"}
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? {"error":"strconv.ParseUint: parsing","status":140,"type":"tecNO_ENTRY"}
+            : {"error":"encoding/hex: invalid byte","status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -170,7 +187,6 @@ module.exports = tcsGetBlock = {
 
         let expectedResult = {}
         expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
         expectedResult.expectedError = expectedError
 
         let title = testNumber + '\t'+ (needPass ? '有' : '无') + '效区块编号，' + (showFullTx ? '' : '不') + '需要返回所有交易详情'
@@ -211,7 +227,7 @@ module.exports = tcsGetBlock = {
             }
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response, testCase.expectedResult.expectedError)
         }
     },
 

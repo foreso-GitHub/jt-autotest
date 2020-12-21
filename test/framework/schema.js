@@ -377,6 +377,7 @@ const RESPONSE_SCHEMA = {
         "id",
         "jsonrpc",
         "result",
+        // "type",
         // "status",
     ],
     properties: {
@@ -386,64 +387,60 @@ const RESPONSE_SCHEMA = {
         jsonrpc: {
             type: "string"
         },
-        // status: {
-        //     type: "string"
+        // result: {
+        //     type: "array",
+        //     minItems: 0,
         // },
+        type: {
+            type: "string"
+        },
         status: {
             type: "integer"
         },
     },
 }
 
-// const RESPONSE_SCHEMA = {
-//     title: "test response schema",
-//     type: "object",
-//     required: [
-//         "id",
-//         "jsonrpc",
-//         "result",
-//         "type",
-//         "status",
-//     ],
-//     properties: {
-//         id: {
-//             type: "integer"
-//         },
-//         jsonrpc: {
-//             type: "string"
-//         },
-//         result: {
-//             type: "string"
-//         },
-//         type: {
-//             type: "string"
-//         },
-//         status: {
-//             type: "integer"
-//         },
-//     },
-// }
-
 const ERROR_SCHEMA = {
-    title: "test response error schema",
+    title: "test response error item schema",
     type: "object",
     required: [
         "error",
-        "message",
+        // "message",
         "type",
         "status",
     ],
     properties: {
         error: {
-            type: "integer"
+            type: "string"
         },
         message: {
-            type: "string"
+            type: "object"
         },
         type: {
             type: "string"
         },
         status: {
+            type: "integer"
+        },
+    },
+}
+
+const ERROR_MESSAGE_SCHEMA = {
+    title: "test response error message schema",
+    type: "object",
+    required: [
+        "engine_result_message",
+        "engine_result",
+        "engine_result_code",
+    ],
+    properties: {
+        engine_result_message: {
+            type: "string"
+        },
+        engine_result: {
+            type: "string"
+        },
+        engine_result_code: {
             type: "integer"
         },
     },
@@ -854,6 +851,8 @@ module.exports = {
     // BALANCE_TOKEN_SCHEMA,
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
+    ERROR_SCHEMA,
+    ERROR_MESSAGE_SCHEMA,
     SENDTX_SCHEMA,
     SIGNTX_SCHEMA,
     OLD_SENDTX_SCHEMA,

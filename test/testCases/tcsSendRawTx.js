@@ -308,7 +308,7 @@ module.exports = tcsSendRawTx = {
         let failCount = failRawTxs.length
         let response = testCase.otherParams.sendRawTxResult
 
-        if(failCount > 0){
+        if(framework.NEED_CHECK_ExpectedResult && failCount > 0){
             let expectedStatus = failRawTxs[0].code
             let expectedMessage = failRawTxs[0].message
             expect(response.status).to.be.equal(expectedStatus)

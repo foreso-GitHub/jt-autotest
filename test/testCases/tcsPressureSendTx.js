@@ -772,6 +772,7 @@ module.exports = tcsPressureSendTx = {
             subCases = subCases.concat(tcsPressureSendTx.createAccountParamsWithDifferentAccount(addresses, value, fee, memos, txFunction, testCount, true))
         }
         let testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
+        testCase.resetSequence = true
         if(mode && mode == 'WithoutResponse'){
             testCase.executeFunction = framework.executeSubCasesWithoutResponse
             testCase.checkFunction = framework.checkSubCasesWithoutResponse

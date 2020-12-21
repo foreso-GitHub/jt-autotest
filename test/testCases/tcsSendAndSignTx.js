@@ -50,6 +50,7 @@ module.exports = tcsSendAndSignTx = {
             //region token test
 
             if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
+
                 txFunctionName = consts.rpcFunctions.sendTx
                 describe('代币测试：' + txFunctionName, async function () {
                     tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
@@ -59,6 +60,7 @@ module.exports = tcsSendAndSignTx = {
                 describe('代币测试：' + txFunctionName, async function () {
                     tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
                 })
+
             }
 
             //endregion
@@ -96,8 +98,10 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/swt"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'failed to submit transaction')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, {
+                    "engine_result": "terNO_CURRENCY",
+                    "engine_result_code": -87,
+                    "engine_result_message": "The currency does not exist."})
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -471,6 +475,19 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
+        testCaseParams.title = '0271\t发行' + testCaseParams.categoryName + '_发行量是负数'
+        {
+            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                framework.updateTokenInTestCaseParams(testCaseParams)
+                testCaseParams.txParams[0].total_supply = "-10000"
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    {"engine_result": "tefNO_PERMISSION_ISSUE",
+                        "engine_result_code": -175,
+                        "engine_result_message": "No permission issue."})
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
         testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
@@ -703,6 +720,75 @@ module.exports = tcsSendAndSignTx = {
                 })
             framework.addTestCase(testCases, testCase)
         }
+
+        testCaseParams.title = '0371_0001\t增发可增发的代币' + testCaseParams.categoryName + '_decimal不一致'
+        {
+            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '9'
+                    testCaseParams.txParams[0].decimals = '9'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID_FLAG",
+                            "engine_result_code": -277,
+                            "engine_result_message": "The transaction has an invalid flag."})
+                })
+                :
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '9'
+                    testCaseParams.txParams[0].decimals = '9'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "tefNO_PERMISSION_ISSUE",
+                            "engine_result_code": -175,
+                            "engine_result_message": "No permission issue."})
+                })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0371_0002\t增发可增发的代币' + testCaseParams.categoryName + '_name不一致'
+        {
+            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '9'
+                    testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID_FLAG",
+                            "engine_result_code": -277,
+                            "engine_result_message": "The transaction has an invalid flag."})
+                })
+                :
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '9'
+                    testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "tefNO_PERMISSION_ISSUE",
+                            "engine_result_code": -175,
+                            "engine_result_message": "No permission issue."})
+                })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0371_0003\t增发可增发的代币' + testCaseParams.categoryName + '_flag不一致'
+        {
+            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+                framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '9'
+                    testCaseParams.txParams[0].flag = 1
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID",
+                            "engine_result_code": -278,
+                            "engine_result_message": "invalid transaction flags"})
+                })
+                :
+                framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '9'
+                    testCaseParams.txParams[0].flag = 1
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID",
+                            "engine_result_code": -278,
+                            "engine_result_message": "invalid transaction flags"})
+                })
+            framework.addTestCase(testCases, testCase)
+        }
         //endregion
 
         return testCases
@@ -725,6 +811,75 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                         'tefNO_PERMISSION_ISSUE No permission issue')
+                })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0381_0001\t增发可增发的代币' + testCaseParams.categoryName + '_decimal不一致'
+        {
+            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '-9'
+                    testCaseParams.txParams[0].decimals = '9'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID_FLAG",
+                            "engine_result_code": -277,
+                            "engine_result_message": "The transaction has an invalid flag."})
+                })
+                :
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '-9'
+                    testCaseParams.txParams[0].decimals = '9'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "tefNO_PERMISSION_ISSUE",
+                            "engine_result_code": -175,
+                            "engine_result_message": "No permission issue."})
+                })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0381_0002\t增发可增发的代币' + testCaseParams.categoryName + '_name不一致'
+        {
+            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '-9'
+                    testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID_FLAG",
+                            "engine_result_code": -277,
+                            "engine_result_message": "The transaction has an invalid flag."})
+                })
+                :
+                framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '-9'
+                    testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "tefNO_PERMISSION_ISSUE",
+                            "engine_result_code": -175,
+                            "engine_result_message": "No permission issue."})
+                })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0381_0003\t增发可增发的代币' + testCaseParams.categoryName + '_flag不一致'
+        {
+            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+                framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '-9'
+                    testCaseParams.txParams[0].flag = 1
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID",
+                            "engine_result_code": -278,
+                            "engine_result_message": "invalid transaction flags"})
+                })
+                :
+                framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+                    testCaseParams.txParams[0].total_supply = '-9'
+                    testCaseParams.txParams[0].flag = 1
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        {"engine_result": "temINVALID",
+                            "engine_result_code": -278,
+                            "engine_result_message": "invalid transaction flags"})
                 })
             framework.addTestCase(testCases, testCase)
         }

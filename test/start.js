@@ -77,7 +77,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -185,9 +185,12 @@ describe('Jingtum测试', function() {
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
 
                 // this.timeout(360000)
-                // // tcsSubscribe.testForSubscribe_2(server, '测试jt_subscribe')
-                // // tcsSubscribe.testForUnsubscribe_2(server, '测试jt_unsubscribe')
-                //
+                // tcsSubscribe.testForSubscribe_2(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe_2(server, '测试jt_unsubscribe')
+                // let tokens1 = tcsSubscribe.parseToken('token TSC_2,TSC_3/jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh')
+                // let tokens2 = tcsSubscribe.parseToken('token TSC_3/jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh,TSC_22')
+                // let result = tcsSubscribe.compareTokens(tokens1, tokens2)
+
                 // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
                 // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
@@ -200,6 +203,33 @@ describe('Jingtum测试', function() {
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
+
+                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                //
+                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+                //
+                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+                //
+                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
+                this.timeout(24000)
+                for(let i = 0; i < 5000; i++){
+                    tcsPressureSendTx.testForFastPerformance(server,
+                        '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 4, 'WithoutResponse')
+                }
+                this.timeout(timeout)
+
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 500, 500)
+
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
+
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
+                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
 
             })
         })

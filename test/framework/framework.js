@@ -25,7 +25,7 @@ let _FullTestCaseList = []
 let accountsDealer = new AccountsDealer()
 let START
 let END
-let NEED_CHECK_ExpectedResult = true
+let NEED_CHECK_ExpectedResult = false
 //endregion
 
 module.exports = framework = {
@@ -138,10 +138,17 @@ module.exports = framework = {
             tokenName, tokenSymbol, token.decimals, token.total_supply, token.local, token.flags)
     },
 
-    createExpecteResult: function(needPass, isErrorInResult, expectedError){
+    createExpecteResult_1: function(needPass, isErrorInResult, expectedError){
         let expectedResult = {}
         expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = isErrorInResult != null ? isErrorInResult : true;
+        // expectedResult.isErrorInResult = isErrorInResult != null ? isErrorInResult : true;
+        expectedResult.expectedError = expectedError
+        return expectedResult
+    },
+
+    createExpecteResult: function(needPass, expectedError){
+        let expectedResult = {}
+        expectedResult.needPass = needPass
         expectedResult.expectedError = expectedError
         return expectedResult
     },
@@ -411,6 +418,33 @@ module.exports = framework = {
 
         //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
         if(testCase.server.mode.service == serviceType.newChain){
+
+            // if(testCase.expectedResult.needPass){
+            //     expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
+            //     let hashCount = 0
+            //     for(let i =0; i < responseOfSendTx.result.length; i++){
+            //         let result = responseOfSendTx.result[i]
+            //         if(result && utility.isHex(result)){
+            //             let hash = result
+            //             hashCount ++
+            //             // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
+            //             // let hash = responseOfSendTx.result[0]
+            //             // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
+            //             let responseOfGetTx = await utility.getTxByHash(testCase.server, hash, 0)
+            //             framework.checkResponse(true, responseOfGetTx)
+            //             expect(responseOfGetTx.result.hash).to.be.equal(hash)
+            //             await checkFunction(testCase, txParams, responseOfGetTx.result)
+            //         }
+            //         else{
+            //             expect('Not a hash!').to.be.ok
+            //         }
+            //     }
+            //     expect(hashCount).to.be.equal(testCase.txParams.length)
+            // }
+            // else{
+            //     framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
+            // }
+
             if(testCase.expectedResult.needPass){
                 expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
                 let hashCount = 0
@@ -434,7 +468,13 @@ module.exports = framework = {
                 expect(hashCount).to.be.equal(testCase.txParams.length)
             }
             else{
-                framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
+                expect(responseOfSendTx).to.be.jsonSchema(schema.ERROR_SCHEMA)
+                let results = responseOfSendTx.result
+                for(let i = 0; i < results.length; i++){
+                    let result = results[i]
+                    // framework.checkErrorMessage(testCase, result.message, testCase.expectedResult[i].expectedError)
+                    framework.checkErrorMessage(testCase, result.message, testCase.expectedResult.expectedError)
+                }
             }
         }
         else{
@@ -877,7 +917,7 @@ module.exports = framework = {
     },
 
     //region check response error
-    checkResponseError: function(testCase, message, expectedError){
+    checkResponseError_1: function(testCase, message, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
             expect(message).to.contains(expectedError)
@@ -885,11 +925,24 @@ module.exports = framework = {
         }
     },
 
-    checkResponseError_2: function(testCase, actualError, expectedError){
+    checkResponseError: function(testCase, actualError, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(actualError).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-            expect(message).to.contains(expectedError)
+            expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
+            expect(actualError.status).to.equals(expectedError.status)
+            expect(actualError.type).to.equals(expectedError.type)
+            expect(actualError.error).to.contains(expectedError.error)
+            // expect(message.result[0].error).to.contains(expectedError)
+        }
+    },
+
+    checkErrorMessage: function(testCase, message, expectedError){
+        if(NEED_CHECK_ExpectedResult
+            && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
+            expect(message).to.be.jsonSchema(schema.ERROR_MESSAGE_SCHEMA)
+            expect(message.engine_result_code).to.equals(expectedError.engine_result_code)
+            expect(message.engine_result).to.equals(expectedError.engine_result)
+            expect(message.engine_result_message).to.contains(expectedError.engine_result_message)
             // expect(message.result[0].error).to.contains(expectedError)
         }
     },
@@ -1077,6 +1130,14 @@ module.exports = framework = {
             // let index = utility.getRand(0, serverCount - 1)
             // let server = servers[index]
             let subCases = testCase.otherParams.subCases
+
+            if(testCase.resetSequence){
+                await utility.timeout(6000)
+                for(let i = 0; i < subCases.length; i++){
+                    framework.setSequence(server, subCases[i].from, -1)
+                }
+            }
+
             let totalCount = testCase.otherParams.totalCount
             let executeCount = 0
             let totalShouldSuccessCount = 0
@@ -1207,6 +1268,14 @@ module.exports = framework = {
             let server = servers[0]
             let serverCount = servers.length
             let subCases = testCase.otherParams.subCases
+
+            if(testCase.resetSequence){
+                await utility.timeout(6000)
+                for(let i = 0; i < subCases.length; i++){
+                    framework.setSequence(server, subCases[i].from, -1)
+                }
+            }
+
             let totalCount = testCase.otherParams.totalCount
             let executedCount = 0
             let totalShouldSuccessCount = 0
@@ -1268,30 +1337,31 @@ module.exports = framework = {
         let totalCount = testCase.otherParams.totalCount
         let totalSuccessCount = testCase.otherParams.totalSuccessCount
         let totalFailCount = testCase.otherParams.totalFailCount
-
-        //check tps
-        let server = testCase.server
-        let blockTime = server.mode.defaultBlockTime / 1000
-        let supportedTps = 15
-        let startBlockNumber = testCase.otherParams.startBlockNumber
-        let endBlockNumber = startBlockNumber + Math.floor(totalCount / supportedTps / blockTime)
-        // let endBlockNumber = startBlockNumber + 20
-        let waitTime = (endBlockNumber - startBlockNumber + 1) * blockTime * 1000
-        logger.info("startBlockNumber: " + startBlockNumber)
-        logger.info("endBlockNumber: " + endBlockNumber)
-        logger.info("waitTime: " + waitTime)
-        await utility.timeout(waitTime)
-
-        let blocksInfo = await framework.getBlocksInfo(server, startBlockNumber, endBlockNumber)
-        let blockCount = blocksInfo.txBlockCount
-
-        let tps1 = totalSuccessCount / blockCount / blockTime
-        logger.info("totalCount: " + totalCount)
-        logger.info("totalSuccessCount: " + totalSuccessCount)
-        logger.info("totalFailCount: " + totalFailCount)
-        logger.info("Success tx tps: " + tps1)
-
         expect(totalSuccessCount + totalFailCount).to.be.equal(totalCount)
+
+        if(!testCase.resetSequence){
+            //check tps
+            let server = testCase.server
+            let blockTime = server.mode.defaultBlockTime / 1000
+            let supportedTps = 15
+            let startBlockNumber = testCase.otherParams.startBlockNumber
+            let endBlockNumber = startBlockNumber + Math.floor(totalCount / supportedTps / blockTime)
+            // let endBlockNumber = startBlockNumber + 20
+            let waitTime = (endBlockNumber - startBlockNumber + 1) * blockTime * 1000
+            logger.info("startBlockNumber: " + startBlockNumber)
+            logger.info("endBlockNumber: " + endBlockNumber)
+            logger.info("waitTime: " + waitTime)
+            await utility.timeout(waitTime)
+
+            let blocksInfo = await framework.getBlocksInfo(server, startBlockNumber, endBlockNumber)
+            let blockCount = blocksInfo.txBlockCount
+
+            let tps1 = totalSuccessCount / blockCount / blockTime
+            logger.info("totalCount: " + totalCount)
+            logger.info("totalSuccessCount: " + totalSuccessCount)
+            logger.info("totalFailCount: " + totalFailCount)
+            logger.info("Success tx tps: " + tps1)
+        }
     },
 
     //endregion
@@ -1313,6 +1383,7 @@ module.exports = framework = {
                 if(blockTpsInfo.txCount > 0){
                     blockWhichHasTxList.push(blockTpsInfo)
                 }
+                logger.debug("=== block " + i + " done!")
             }
 
             let txCountInBlocks = 0
@@ -1352,7 +1423,6 @@ module.exports = framework = {
             blocksInfo.txBlockCount = blockCount
             resolve(blocksInfo)
         })
-
     },
     //endregion
 

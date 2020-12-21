@@ -27,7 +27,7 @@ module.exports = tcsCreateWallet = {
         //region 参数为空
         let title = '0010\t创建账户-参数为空'
         let needPass = true
-        let expectedError = ''
+        let expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
         let type
         let testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
@@ -90,35 +90,35 @@ module.exports = tcsCreateWallet = {
         title = '0050\t创建账户-无效的参数: 数字'
         type = 123123
         needPass = false
-        expectedError = 'key type is not string'
+        expectedError = {"error":"key type is not string","status":-269,"type":"temBAD_PARAMETER"}
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0051\t创建账户-无效的参数: 非ECDSA/Ed25519/SM2'
         type = "123123"
         needPass = false
-        expectedError = 'key type is not string'
+        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0052\t创建账户-无效的参数: 空格'
         type = "   "
         needPass = false
-        expectedError = 'key type is not string'
+        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0053\t创建账户-无效的参数: 空格SM2'
         type = "  SM2"
         needPass = false
-        expectedError = 'key type is not string'
+        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0054\t创建账户-参数为""'
         type = ''
         needPass = false
-        expectedError = 'unknown key type'
+        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
         //endregion
@@ -133,7 +133,6 @@ module.exports = tcsCreateWallet = {
         if(type != undefined) txParams.push(type)
         let expectedResult = {}
         expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
         expectedResult.expectedError = expectedError
 
         let testCase = framework.createTestCase(
@@ -169,10 +168,9 @@ module.exports = tcsCreateWallet = {
             else{
                 expect(account.type.toUpperCase()).to.equal(type.toUpperCase())
             }
-
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response, testCase.expectedResult.expectedError)
         }
     },
     //endregion
