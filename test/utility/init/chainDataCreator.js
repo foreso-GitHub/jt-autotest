@@ -56,7 +56,8 @@ function chainDataCreator(){
                             chainDatas.push(newChainData)
                             createCount++
                             if(createCount == modesNeedCreateChainData.length) {
-                                await utility.saveJsFile("chainDatas", chainDatas, commonPaths.chain_data_js_file_path)
+                                await utility.saveJsFile("chainDatas", chainDatas,
+                                    utility.updatePath(commonPaths.chain_data_js_file_path))
                                 resolve(chainDatas)
                             }
                         }

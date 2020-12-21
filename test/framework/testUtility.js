@@ -3,6 +3,7 @@ let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const fs = require('fs')
+const path = require('path')
 const { commonPaths } = require("../config/basicConfig")
 const {responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel,} = require('./enums')
 const consts = require('./consts')
@@ -92,7 +93,7 @@ module.exports = testUtility = {
     //region save js file
     saveJsFile: function(moduleName, jsonObject, filePath){
         return new Promise(async (resolve, reject) =>{
-            let destFilePath = commonPaths.test_data_backup_path
+            let destFilePath = testUtility.updatePath(commonPaths.test_data_backup_path)
                 + moduleName + '_backup_' + testUtility.getNowDateTimeString() + '.js'
             await testUtility.copyFile(filePath, destFilePath)  //backup
             let fileString = 'let ' + moduleName + ' = '
@@ -153,6 +154,20 @@ module.exports = testUtility = {
             })
         })
     },
+    //endregion
+
+    //region windows/linux path
+    updatePath: function(rawPath, ){
+        // let pathString = ''
+        // for(let i = 0; i < pathParts.length; i++){
+        //     pathString = pathString + path.sep + pathParts[i]
+        // }
+        // return '.' + pathString
+
+        console.log(rawPath.toString())
+        return rawPath.split('\\').join(path.sep)
+    },
+
     //endregion
 
     //region send tx
