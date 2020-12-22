@@ -92,10 +92,11 @@ module.exports = testUtility = {
 
     //region save js file
     saveJsFile: function(moduleName, jsonObject, filePath){
+        filePath = testUtility.updatePath(filePath)
         return new Promise(async (resolve, reject) =>{
-            let destFilePath = testUtility.updatePath(commonPaths.test_data_backup_path)
+            let destFile = testUtility.updatePath(commonPaths.test_data_backup_path)
                 + moduleName + '_backup_' + testUtility.getNowDateTimeString() + '.js'
-            await testUtility.copyFile(filePath, destFilePath)  //backup
+            await testUtility.copyFile(filePath, destFile)  //backup
             let fileString = 'let ' + moduleName + ' = '
                 + JSON.stringify(jsonObject)
                 + '\r\nmodule.exports = { ' + moduleName +' }'
@@ -112,6 +113,8 @@ module.exports = testUtility = {
     },
 
     copyFile: function(srcFilePath, destFilePath){
+        srcFilePath = testUtility.updatePath(srcFilePath)
+        destFilePath = testUtility.updatePath(destFilePath)
         return new Promise((resolve, reject) =>{
             fs.copyFile(srcFilePath, destFilePath,function(err){
                 if(err) {
@@ -129,8 +132,9 @@ module.exports = testUtility = {
 
     //region load/save json file
     loadJsonFile: function(file, ){
+        file = testUtility.updatePath(file)
         return new Promise((resolve, reject) => {
-            fs.readFile( file, 'utf8', function (err, data) {
+            fs.readFile(file, 'utf8', function (err, data) {
                 if (err) {
                     throw err
                 }
@@ -141,15 +145,40 @@ module.exports = testUtility = {
     },
 
     saveJsonFile: function(filePath, fileName, jsonObject){
+        filePath = testUtility.updatePath(filePath)
         return new Promise(async (resolve, reject) =>{
-            let destFilePath = filePath + fileName + '_' + testUtility.getNowDateTimeString() + '.json'
-            let fileString = JSON.stringify(jsonObject)
-            fs.writeFile(destFilePath, fileString, function (err) {
-                if (err) {
-                    throw err
-                } else {
-                    logger.info('Json saved: ' + destFilePath)
-                    resolve(fileString)
+            let dir = await testUtility.mkdir(filePath)
+            if(dir == filePath){
+                let destFilePath = filePath + fileName + '_' + testUtility.getNowDateTimeString() + '.json'
+                let fileString = JSON.stringify(jsonObject)
+                fs.writeFile(destFilePath, fileString, function (err) {
+                    if (err) {
+                        throw err
+                    } else {
+                        logger.info('Json saved: ' + destFilePath)
+                        resolve(fileString)
+                    }
+                })
+            }
+        })
+    },
+
+    mkdir: function(filePath){
+        return new Promise(async (resolve, reject) =>{
+            let execPath = testUtility.updatePath(filePath)
+            fs.exists(execPath, function(exists){
+                if(!exists){
+                    fs.mkdir(execPath,function(err){
+                        if (err) {
+                            reject(console.error(err))
+                        }
+                        else{
+                            resolve(filePath)
+                        }
+                    })
+                }
+                else{
+                    resolve(filePath)
                 }
             })
         })
@@ -158,7 +187,7 @@ module.exports = testUtility = {
 
     //region windows/linux path
     updatePath: function(rawPath, ){
-        console.log(rawPath.toString())
+        // console.log(rawPath.toString())
         return rawPath.split('\\').join(path.sep)
     },
 
