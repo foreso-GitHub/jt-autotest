@@ -26,14 +26,16 @@ module.exports = tcsGetCurrency = {
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, null)
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'validated')
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'current')
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'earliest')
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'latest')
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'pending')
-        let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
-            return chainData.chainDataName
-        })
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockNumber)  //block number
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockHash)  //block hash
+
+        //todo need restore when these tags are supported.
+        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'earliest')
+        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'latest')
+        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'pending')
+        // let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
+        //     return chainData.chainDataName
+        // })
+        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockNumber)  //block number
+        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockHash)  //block hash
     },
 
     testForGetCurrencyByTag: function(server, describeTitle, tag){

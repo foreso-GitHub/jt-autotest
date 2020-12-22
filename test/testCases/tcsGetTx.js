@@ -382,23 +382,24 @@ module.exports = tcsGetTx = {
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
 
-        title = '0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引'
-        blockNumber = "earliest"
-        testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
-
-        title = '0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引'
-        blockNumber = "latest"
-        testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
-
-        title = '0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引'
-        blockNumber = "pending"
-        testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        //todo need restore when these tags are supported.
+        // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引'
+        // blockNumber = "earliest"
+        // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+        // testCase.supportedServices = [serviceType.newChain,]
+        // framework.addTestCase(testCases, testCase)
+        //
+        // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引'
+        // blockNumber = "latest"
+        // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+        // testCase.supportedServices = [serviceType.newChain,]
+        // framework.addTestCase(testCases, testCase)
+        //
+        // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引'
+        // blockNumber = "pending"
+        // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
+        // testCase.supportedServices = [serviceType.newChain,]
+        // framework.addTestCase(testCases, testCase)
 
         title = '0020\t有效区块编号，无效交易索引无效交易索引:100'
         blockNumber = tx1.ledger_index.toString()

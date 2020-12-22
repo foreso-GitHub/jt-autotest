@@ -43,14 +43,16 @@ module.exports = tcsGetBalance = {
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, null)
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'current')
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'validated')
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'earliest')
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'latest')
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'pending')
-        let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
-            return chainData.chainDataName
-        })
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, chainData.block.blockNumber)  //block number
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, chainData.block.blockHash)  //block hash
+
+        //todo need restore when these tags are supported.
+        // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'earliest')
+        // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'latest')
+        // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'pending')
+        // let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
+        //     return chainData.chainDataName
+        // })
+        // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, chainData.block.blockNumber)  //block number
+        // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, chainData.block.blockHash)  //block hash
     },
 
     testForGetBalanceBySymbolAndTag: function(server, symbol, issuer, tag){

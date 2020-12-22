@@ -35,14 +35,16 @@ module.exports = tcsGetAccount = {
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, null)
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'validated')
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'current')
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'latest')
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'pending')
-            let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
-                return chainData.chainDataName
-            })
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockNumber)  //block number
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockHash)  //block hash
+
+            //todo need restore when these tags are supported.
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'latest')
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'pending')
+            // let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
+            //     return chainData.chainDataName
+            // })
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockNumber)  //block number
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockHash)  //block hash
         })
     },
 
@@ -114,6 +116,7 @@ module.exports = tcsGetAccount = {
         expectedResult.needPass = needPass
         expectedResult.isErrorInResult = true
         expectedResult.expectedError = expectedError
+        // let rLevel = (tag == null || tag == 'validated' || tag == 'current') ? restrictedLevel.L2 : restrictedLevel.L4
 
         let testCase = framework.createTestCase(
             title,
