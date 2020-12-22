@@ -158,12 +158,6 @@ module.exports = testUtility = {
 
     //region windows/linux path
     updatePath: function(rawPath, ){
-        // let pathString = ''
-        // for(let i = 0; i < pathParts.length; i++){
-        //     pathString = pathString + path.sep + pathParts[i]
-        // }
-        // return '.' + pathString
-
         console.log(rawPath.toString())
         return rawPath.split('\\').join(path.sep)
     },

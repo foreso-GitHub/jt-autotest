@@ -4,8 +4,7 @@
   "description": "Auto test for Jingtum new chain.",
   "main": "./test/start.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha",
-    "preinstall": "npx npm-force-resolutions"
+    "test": "./node_modules/.bin/mocha"
   },
   "author": "",
   "license": "ISC",
@@ -21,7 +20,8 @@
     "request": "^2.79.0",
     "ssh2-utils": "^1.0.28",
     "swtc-lib": "^1.6.39",
-    "ws": "latest"
+    "ws": "latest",
+    "commonmark": ""
   },
   "devDependencies": {
     "eslint": "^6.7.2",
