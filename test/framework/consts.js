@@ -1,4 +1,4 @@
-module.exports =  consts = {
+module.exports = consts = {
 
     //region rpc
     rpcFunctions: {
@@ -116,12 +116,16 @@ module.exports =  consts = {
     },
     //endregion
 
-    swtConsts:{
-        oneSwt: 1000000,
-        totalSwt: 100000000,
-        totalFee: 100000000000000,
+    //region wallet type
+    walletTypes:{
+        ECDSA: "ECDSA",
+        Ed25519: "Ed25519",
+        SM2: "SM2",
+        default: "",
     },
+    //endregion
 
+    //region versions
     versions:{
         '20201105': 'v0.5.1-dev',
         '20201114': 'v0.5.2-dev',
@@ -170,12 +174,13 @@ module.exports =  consts = {
             "version": "v0.5.3-dev"
         }
     },
+    //endregion
 
-    walletTypes:{
-        ECDSA: "ECDSA",
-        Ed25519: "Ed25519",
-        SM2: "SM2",
-        default: "",
+    //region swt
+    swtConsts:{
+        oneSwt: 1000000,
+        totalSwt: 100000000,
+        totalFee: 100000000000000,
     },
 
     sendTxType:{
@@ -187,5 +192,31 @@ module.exports =  consts = {
 
     defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
     defaultNativeCoin: 'SWT',
+    //endregion
+
+    //region markdown
+    markdownTypes: {
+        text: "text",
+        softbreak: "softbreak",
+        linebreak: "linebreak",
+        emph: "emph",
+        strong: "strong",
+        html_inline: "html_inline",
+        link: "link",
+        image: "image",
+        text: "text",
+        code: "code",
+        text: "text",
+        document: "document",
+        paragraph: "paragraph",
+        block_quote: "block_quote",
+        item: "item",
+        list: "list",
+        heading: "heading",
+        code_block: "code_block",
+        html_block: "html_block",
+        thematic_break: "thematic_break",
+    }
+    //endregion
 }
 
