@@ -1,10 +1,9 @@
-const commonmark = require('commonmark')
 const utility = require("../../framework/testUtility")
 const tool = require('./markdownTool')
 
 let file = '.\\test\\utility\\markdown\\sample\\chainErrors.md'
-run()
-// loadDoc()
+// run()
+loadDoc()
 // convert()
 
 
@@ -32,6 +31,9 @@ async function convert(){
     // printDoc(doc)
 
     let map = tool.errorDoc2map(doc)
+    let resultsPath = '.\\test\\utility\\markdown\\results\\'
+    utility.saveJsonFile(resultsPath, 'errors_map', map)
+
     let keys = map.keys()
     for(let i = 0; i < keys.length; i++){
         tool.printError((i+1).toString() + '. ' + JSON.stringify(map.get(keys[i])))
