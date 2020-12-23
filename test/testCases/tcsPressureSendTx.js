@@ -40,6 +40,7 @@ module.exports = tcsPressureSendTx = {
     },
 
     //region sequence test
+
     testForSequenceTest: function(server, describeTitle){
         tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
         tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
@@ -67,7 +68,7 @@ module.exports = tcsPressureSendTx = {
 
         title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence1, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence1, server.mode.addresses.pressureAccount11, value)
             testCase.executeFunction = function(testCase){
                 return new Promise(async function(resolve){
                     testCase.hasExecuted = true
@@ -124,7 +125,7 @@ module.exports = tcsPressureSendTx = {
         title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
             '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence2, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence2, server.mode.addresses.pressureAccount11, value)
             testCase.executeFunction = function(testCase){
                 return new Promise(async function(resolve){
                     testCase.hasExecuted = true
@@ -192,7 +193,7 @@ module.exports = tcsPressureSendTx = {
 
         title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.pressureAccount11, value)
             let signTxExpectedResult = framework.createExpecteResult(true)
             let sendTxExpectedResult = framework.createExpecteResult(false, true,
                 testCase.server.mode.service == serviceType.newChain
@@ -209,7 +210,7 @@ module.exports = tcsPressureSendTx = {
 
         title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.pressureAccount11, value)
             let signTxExpectedResult = framework.createExpecteResult(false, true,
                 server.mode.service == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
             let sendTxExpectedResult = signTxExpectedResult
@@ -226,7 +227,7 @@ module.exports = tcsPressureSendTx = {
 
         title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.pressureAccount11, value)
             let signTxExpectedResult = framework.createExpecteResult(false, true,
                 server.mode.service == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
             let sendTxExpectedResult = signTxExpectedResult
@@ -241,7 +242,7 @@ module.exports = tcsPressureSendTx = {
 
         title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence3, server.mode.addresses.pressureAccount11, value)
             let signTxExpectedResult = framework.createExpecteResult(false, true,
                 server.mode.service == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
             let sendTxExpectedResult = signTxExpectedResult
@@ -259,7 +260,7 @@ module.exports = tcsPressureSendTx = {
         title = '0670	同时发起多个交易时指定sequence_01:假设发起钱包的sequence已经到了n，同时发起m个交易，' +
             '指定每个交易的sequence分别为n+1、n+2、…、n+m'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence4, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence4, server.mode.addresses.pressureAccount11, value)
             testCase.executeFunction = function(testCase){
                 return new Promise(async function(resolve){
                     testCase.hasExecuted = true
@@ -319,7 +320,7 @@ module.exports = tcsPressureSendTx = {
         title = '0680\t同时发起多个交易时指定sequence_02:假设发起钱包的sequence已经到了n，' +
             '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence5, server.mode.addresses.receiver2, value)
+            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName, server.mode.addresses.sequence5, server.mode.addresses.pressureAccount11, value)
             testCase.executeFunction = function(testCase){
                 return new Promise(async function(resolve){
                     testCase.hasExecuted = true
