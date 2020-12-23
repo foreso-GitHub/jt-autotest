@@ -209,7 +209,7 @@ module.exports = tcsSubscribe = {
                 name: token.name,
                 symbol: token.symbol,
                 decimals: "8",
-                total_supply: "99999901",
+                total_supply: "99999901/" + token.symbol,
                 local: local,
                 flags: consts.flags.both,
             }],

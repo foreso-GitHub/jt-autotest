@@ -271,17 +271,14 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0100_0001\t发起' + categoryName + '无效交易_08: 不带currency，交易额为大于1(最小数额)的小数'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                // let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-                // let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = "1.0000011"
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
             })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0100_0002\t发起' + categoryName + '有效交易_08: 带currency，交易额为大于1(最小数额)的小数'
+        testCaseParams.title = '0100_0002\t发起' + categoryName + '有效交易_08: 带currency，交易额为大于1的小数'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
@@ -289,7 +286,22 @@ module.exports = tcsSendAndSignTx = {
                     ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
                 let decimals = (rawValue.symbol == consts.default.nativeCoin)
                     ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
-                let showValue = 1 + Math.pow(0.1, decimals).toFixed(decimals)
+                let showValue = (1 + Math.pow(0.1, decimals)).toFixed(decimals)
+                testCaseParams.txParams[0].value = showValue.toString() + showSymbol
+                testCaseParams.expectedResult = framework.createExpecteResult(true, )
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0100_0003\t发起' + categoryName + '有效交易_08: 带currency，交易额为10.00000001'
+        {
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                    ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+                let decimals = (rawValue.symbol == consts.default.nativeCoin)
+                    ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
+                let showValue = (10 + Math.pow(0.1, decimals)).toFixed(decimals)
                 testCaseParams.txParams[0].value = showValue.toString() + showSymbol
                 testCaseParams.expectedResult = framework.createExpecteResult(true, )
             })
@@ -929,7 +941,7 @@ module.exports = tcsSendAndSignTx = {
         {
             testCaseParams.otherParams.oldBalance = '49382716041'
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].total_supply = '-98765432100000000'
+                testCaseParams.txParams[0].total_supply = '-997654319900000000'
                 let burnable = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags)
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     burnable ? 'telINSUF_FUND Fund insufficient' : 'tefNO_PERMISSION_ISSUE No permission issue')
@@ -941,9 +953,9 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-                    // testCaseParams.txParams[0].total_supply =  '-9876543191'
-                    testCaseParams.txParams[0].total_supply =
-                        testCaseParams.txParams[0].flags == consts.flags.burnable ? '-8876543200' : '-8876543209'
+                    testCaseParams.txParams[0].total_supply =  '-987654319900000000'
+                    // testCaseParams.txParams[0].total_supply =
+                    //     testCaseParams.txParams[0].flags == consts.flags.burnable ? '-987654319900000000' : '-987654319900000000'
                     testCaseParams.expectedResult = framework.createExpecteResult(true)
                     testCaseParams.expectedResult.expectedBalance = 0
                 })
