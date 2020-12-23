@@ -1280,7 +1280,7 @@ module.exports = tcsSubscribe = {
             })
 
             action = tcsSubscribe.createTxAction(sender, receiver, true)
-            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.defaultIssuer)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
@@ -1435,7 +1435,7 @@ module.exports = tcsSubscribe = {
             })
 
             action = tcsSubscribe.createTxAction(sender, receiver, true)
-            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.defaultIssuer)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
@@ -1590,7 +1590,7 @@ module.exports = tcsSubscribe = {
             })
 
             action = tcsSubscribe.createTxAction(sender, receiver, true)
-            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.defaultIssuer)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)

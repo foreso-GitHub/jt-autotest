@@ -56,7 +56,7 @@ module.exports = tcsSendRawTx = {
         let account2= addresses.receiver3
         let account3= addresses.sender2
         let account4= addresses.receiver2
-        let currency = {symbol: consts.defaultNativeCoin, issuer:''}
+        let currency = {symbol: consts.default.nativeCoin, issuer:''}
         let txFunction = consts.rpcFunctions.signTx
         let successCount = 1
         let failRawTxs = []
@@ -347,7 +347,7 @@ module.exports = tcsSendRawTx = {
         let addresses = server.mode.addresses
         let account1= addresses.sender3
         let account2= addresses.receiver3
-        let currency = {symbol:consts.defaultNativeCoin, issuer:''}
+        let currency = {symbol:consts.default.nativeCoin, issuer:''}
         let txFunction = consts.rpcFunctions.signTx
         let successCount = testCountOfPerRound
         let failRawTxs = []

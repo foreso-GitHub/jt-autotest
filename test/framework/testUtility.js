@@ -315,7 +315,7 @@ module.exports = testUtility = {
         else{
             return {
                 amount: showValue,
-                symbol: consts.defaultNativeCoin,
+                symbol: consts.default.nativeCoin,
                 issuer: '',
             }
         }
@@ -577,7 +577,7 @@ module.exports = testUtility = {
 
     //region get real value
     getRealValue: function(value){
-        let index = value.indexOf('/' + consts.defaultNativeCoin)
+        let index = value.indexOf('/' + consts.default.nativeCoin)
         if(index != -1){
             return testUtility.valueToAmount(Number(value.substring(0, index)))
         }

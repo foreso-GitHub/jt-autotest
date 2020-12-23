@@ -113,10 +113,10 @@ module.exports = tcsGetBalance = {
         if(issuer != null) txParams.push(issuer)
         if(tag != null) {
             if(symbol == null){
-                txParams.push(consts.defaultNativeCoin)  //使用tag，必须要有token
+                txParams.push(consts.default.nativeCoin)  //使用tag，必须要有token
             }
             if(issuer == null){
-                txParams.push(consts.defaultIssuer)  //使用tag，必须要有issuer
+                txParams.push(consts.default.issuer)  //使用tag，必须要有issuer
             }
             txParams.push(tag)
         }

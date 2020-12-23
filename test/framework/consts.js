@@ -190,8 +190,15 @@ module.exports = consts = {
         default: '',
     },
 
-    defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
-    defaultNativeCoin: 'SWT',
+    // defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+    // defaultNativeCoin: 'SWT',
+    default:{
+        issuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+        nativeCoin: 'SWT',
+        nativeCoinDecimals: 6,
+        tokenDecimals: 8,
+        maxAmount: 90000000000,
+    },
     //endregion
 
     //region markdown

@@ -96,7 +96,7 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseParams.title = '0021\t发起' + categoryName + '无效交易_02: 交易额填1/swt'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/swt"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, {
                     "engine_result": "terNO_CURRENCY",
@@ -111,7 +111,7 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseParams.title = '0022\t发起' + categoryName + '无效交易_02: 交易额填1/Swt等'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/Swt"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'failed to submit transaction')
@@ -182,9 +182,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
-                testCaseParams.txParams[0].value = "999999999999999" + showSymbol
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, false, 'telINSUF_FEE_P Fee insufficient')
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'telINSUF_FEE_P Fee insufficient')
+                testCaseParams.txParams[0].value = consts.default.maxAmount.toString() + showSymbol
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     server.mode.service == serviceType.newChain ? 'telINSUF_FEE_P Fee insufficient' : consts.engineResults.temBAD_AMOUNT)
             })
@@ -229,12 +227,53 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0090\t发起' + categoryName + '无效交易_07: 交易额为小于0.000001(最小数额)的正小数'
+        testCaseParams.title = '0090_0001\t发起' + categoryName + '无效交易_07: 不带currency，交易额为小于1(最小数额)的正小数'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
+                testCaseParams.txParams[0].value = "0.0000001"
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0090_0002\t发起' + categoryName + '有效交易_07: 带currency，交易额为小于1的正小数'
+        {
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
+                let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                    ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+                let decimals = (rawValue.symbol == consts.default.nativeCoin)
+                    ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
+                let showValue = Math.pow(0.1, decimals).toFixed(decimals)
+                testCaseParams.txParams[0].value = showValue.toString() + showSymbol
+                testCaseParams.expectedResult = framework.createExpecteResult(true, )
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0090_0003\t发起' + categoryName + '无效交易_07: 带currency，交易额为小于最小数额的正小数'
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
-                testCaseParams.txParams[0].value = "0.0000001" + showSymbol
+                let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                    ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+                let decimals = ((rawValue.symbol == consts.default.nativeCoin)
+                    ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals) + 1
+                let showValue = Math.pow(0.1, decimals).toFixed(decimals)
+                testCaseParams.txParams[0].value = showValue.toString() + showSymbol
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+            })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0100_0001\t发起' + categoryName + '无效交易_08: 不带currency，交易额为大于1(最小数额)的小数'
+        {
+            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
+                // let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+                // let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = "1.0000011"
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
@@ -242,15 +281,17 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0100\t发起' + categoryName + '无效交易_08: 交易额为大于0.000001(最小数额)的小数'
+        testCaseParams.title = '0100_0002\t发起' + categoryName + '有效交易_08: 带currency，交易额为大于1(最小数额)的小数'
         {
-            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
-                testCaseParams.txParams[0].value = "0.0000011" + showSymbol
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+                let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                    ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+                let decimals = (rawValue.symbol == consts.default.nativeCoin)
+                    ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
+                let showValue = 1 + Math.pow(0.1, decimals).toFixed(decimals)
+                testCaseParams.txParams[0].value = showValue.toString() + showSymbol
+                testCaseParams.expectedResult = framework.createExpecteResult(true, )
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -420,7 +461,7 @@ module.exports = tcsSendAndSignTx = {
         testCaseParams.title = '0220\t发起带无效fee的交易_04: fee为大于发起钱包' + categoryName + '余额的整数'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "999999999999999"
+                testCaseParams.txParams[0].fee = consts.default.maxAmount.toString()
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                     'telINSUF_FEE_P Fee insufficient')
             })
@@ -684,10 +725,10 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseParams.title = '0344\t发行' + testCaseParams.categoryName + '_有效的total_supply参数:小数字符串'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = '10000.12345678'
-                testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, true, '')
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -896,20 +937,13 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0381\t销毁所有' + testCaseParams.categoryName
+        testCaseParams.title = '0381_0004\t销毁所有' + testCaseParams.categoryName
         {
             let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-                    testCaseParams.txParams[0].total_supply =  '-9876543191'
-
-                    // let data = testCaseParams.txParams[0]
-                    // let server = testCaseParams.server
-                    // // logger.debug('++++' + JSON.stringify(data))
-                    // server.getBalance(data.from, data.symbol).then(function(balance){
-                    //   logger.debug('++++' + JSON.stringify(balance))
-                    //   testCaseParams.txParams[0].total_supply = '-' + balance.value
-                    // })
-
+                    // testCaseParams.txParams[0].total_supply =  '-9876543191'
+                    testCaseParams.txParams[0].total_supply =
+                        testCaseParams.txParams[0].flags == consts.flags.burnable ? '-8876543200' : '-8876543209'
                     testCaseParams.expectedResult = framework.createExpecteResult(true)
                     testCaseParams.expectedResult.expectedBalance = 0
                 })
@@ -982,12 +1016,12 @@ module.exports = tcsSendAndSignTx = {
 
         //mint token
         let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
         testCases = tcsSendAndSignTx.createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestCases(server, describeTitle, testCases)
 
         //burn token
-        describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
         testCases = tcsSendAndSignTx.createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestCases(server, describeTitle, testCases)
     },
@@ -1009,12 +1043,12 @@ module.exports = tcsSendAndSignTx = {
 
         //mint token
         let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
         testCases = tcsSendAndSignTx.createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestCases(server, describeTitle, testCases)
 
         //burn token
-        describeTitle = '测试销毁-[币种:' + mintTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
         testCases = tcsSendAndSignTx.createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestCases(server, describeTitle, testCases)
     },

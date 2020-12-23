@@ -589,7 +589,7 @@ module.exports = framework = {
             }
             else{
                 let realValue = utility.parseShowValue(txParams.value)
-                // if(realValue.symbol != consts.defaultNativeCoin){
+                // if(realValue.symbol != consts.default.nativeCoin){
                 //     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
                 //     expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
                 // }else{
@@ -603,9 +603,8 @@ module.exports = framework = {
                 }
                 else{
                     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
-                    if(realValue.symbol == consts.defaultNativeCoin){
-
-                        if(txParams.value.indexOf(consts.defaultNativeCoin) != -1){//expected '1000000' to equal '1/SWT'
+                    if(realValue.symbol == consts.default.nativeCoin){
+                        if(txParams.value.indexOf(consts.default.nativeCoin) != -1){//expected '1000000' to equal '1/SWT'
                             expect(tx.Amount.value).to.be.equals((realValue.amount * consts.swtConsts.oneSwt).toString())
                         }
                         else{
@@ -613,9 +612,8 @@ module.exports = framework = {
                         }
                     }
                     else{
-                        expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
+                        expect(tx.Amount.value).to.be.equals((realValue.amount * Math.pow(10, consts.default.tokenDecimals)).toString())
                     }
-
                 }
             }
             //check memos, only in new chain
