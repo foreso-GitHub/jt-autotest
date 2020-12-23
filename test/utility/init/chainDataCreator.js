@@ -252,7 +252,7 @@ function chainDataCreator(){
 
     async function issueCoin(server, sender, sequence, coin, local, flag){
         let params = server.createIssueTokenParams(sender.address, sender.secret, sequence,
-            coin.name, coin.symbol, '8', '99999999', local, flag, '0.00001')
+            coin.name, coin.symbol, '8', '99999999' + '/' + coin.symbol, local, flag, '0.00001')
         let result = await server.responseSendTx(server, params)
         return result
     }

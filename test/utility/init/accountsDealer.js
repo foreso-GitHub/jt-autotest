@@ -226,6 +226,26 @@ function accountsDealer() {
                 address:accounts[i].address,
                 secret:accounts[i++].secret,
             },
+            sequence_r_1:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            sequence_r_2:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            sequence_r_3:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            sequence_r_4:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
+            sequence_r_5:{
+                address:accounts[i].address,
+                secret:accounts[i++].secret,
+            },
             pressureAccount:{
                 address:accounts[i].address,
                 secret:accounts[i++].secret,
