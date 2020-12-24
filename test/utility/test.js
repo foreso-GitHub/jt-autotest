@@ -4,35 +4,55 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 let utility = require('../framework/testUtility')
 const fs = require('fs')
+const offline = require('../framework/offlineTool')
+const consts = require('../framework/consts')
 //endregion
 
 
 //region can be removed
 
-//rands
-// let rands = utility.getRandList(0, 4, 5, false)
-// logger.debug('rands: ' + JSON.stringify(rands))
+// testCreateAccount()
+// testSignTx()
+testSignToken()
 
-//clone array
-// let array = [[1,2],3]
-// // let array2 = array
-// let array2 = utility.cloneArray(array)
-// array[0][0] = 100
-// logger.debug('array: ' + JSON.stringify(array))
-// logger.debug('array2: ' + JSON.stringify(array2))
-// logger.debug('typeof array2: ' + typeof array2)
-// logger.debug('length array2: ' + array2.length)
-// logger.debug(Object.prototype.toString.apply(array2))
-// logger.debug(utility.isArray(1))
 
-// let path = 'D:\\new_tdx\\T0002\\hq_cache\\'
-// let file = path + 'gbbq'
-// fs.readFile( file, 'utf8', function (err, data) {
-//     if (err) {
-//         throw err
-//     }
-//     logger.debug('data: ' + JSON.stringify(data))
-//     resolve(data)
-// })
+function testCreateAccount(){
+    let account = offline.createWallet(consts.walletTypes.Ed25519)
+    console.log(JSON.stringify(account))
+}
+
+async function testSignTx(){
+    let txParams = []
+    txParams.push({
+        from:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh',
+        secret:'snoPBjXtMeMyMHUVTgbuqAfg1SUTb',
+        to:'jBAFWRUGRuWdT5R2tAZA49oytnQ3KXeQYH',
+        value:'1',
+        sequence:'970',
+        memos:['hello'],
+    })
+
+    let blobs = await offline.signTransaction(txParams)
+    console.log(JSON.stringify(blobs))
+}
+
+async function testSignToken(){
+    let txParams = []
+    txParams.push({
+        from:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh',
+        secret:'snoPBjXtMeMyMHUVTgbuqAfg1SUTb',
+        to:'jBAFWRUGRuWdT5R2tAZA49oytnQ3KXeQYH',
+        value:'0.004/TSC_3/jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh',
+        // value:'0.003/TSC_2/jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+        // value:'0.002/SWT',
+        sequence:'973',
+        // flags: 0,
+        memos:['hello'],
+    })
+
+    let blobs = await offline.signTransaction(txParams)
+    console.log(JSON.stringify(blobs))
+}
+
 
 //endregion

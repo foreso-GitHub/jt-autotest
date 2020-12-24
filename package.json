@@ -21,7 +21,10 @@
     "ssh2-utils": "^1.0.28",
     "swtc-lib": "^1.6.39",
     "ws": "latest",
-    "commonmark": ""
+    "commonmark": "",
+    "swtc-serializer-ext": "^2.1.8",
+    "swtc-transaction-ext": "^1.2.19",
+    "swtc-wallet": "^1.1.15"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
