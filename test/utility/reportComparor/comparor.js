@@ -20,8 +20,8 @@ async function test(){
     // let file1 = path + '\\normal\\mochawesome-report-20201116a-no_exp-rpc\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
-    let file1 = path + '\\baselines\\base-mochawesome-report-20201210a-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201220a-no_exp-ws\\' + 'mochawesome.json'
+    let file1 = path + '\\baselines\\base-mochawesome-report-20201223c-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201223c-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
