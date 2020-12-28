@@ -322,7 +322,7 @@ module.exports = tcsSendRawTx = {
             let to = testCase.otherParams.subCases[0].to
             let value = testCase.otherParams.subCases[0].value
             for(let i = 0; i < successCount; i++){
-                let hash = results[i]
+                let hash = results[i].result
                 let response = await utility.getTxByHash(testCase.server, hash, 0)
                 // expect(response.status).to.be.equal(140)
                 let tx = response.result

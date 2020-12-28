@@ -1173,7 +1173,7 @@ module.exports = framework = {
                             accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                         let result = await server.getResponse(server, txFunctionName, params)
                         if (testCase.otherParams.executeBothSignAndSend && txFunctionName == consts.rpcFunctions.signTx && utility.isResponseStatusSuccess(result)){
-                            result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
+                            result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0].result])
                         }
                         executeCount++
                         accountParam.results.push(result)
