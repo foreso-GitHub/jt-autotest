@@ -311,8 +311,10 @@ let allModes = [
 
 //region set jt nodes
 //region paths
-const cmds_path = '/root/cmds/'
-const cmds_path_tx = '/home/ubuntu/cmds/'
+const path_root = '/root/'
+const path_root_tx = '/home/ubuntu/'
+const cmds_path = path_root + 'cmds/'
+const cmds_path_tx = path_root_tx + 'cmds/'
 // const cmds_delay_path = 'delay/'
 // const cmds_loss_path = 'loss/'
 // const cmds_duplicate_path = 'duplicate/'
@@ -337,6 +339,8 @@ const cmd_loss30 = 'loss/loss30.sh'
 const cmd_duplicate30 = 'duplicate/duplicate30.sh'
 const cmd_corrupt30 = 'corrupt/corrupt30.sh'
 const cmd_reorder30 = 'reorder/reorder30.sh'
+
+const cmd_shasum = 'upgrade/shasum.sh'
 //endregion
 
 const cmds = {start: 'sudo ' + cmds_path + cmd_start, stop: 'sudo ' + cmds_path + cmd_stop,
@@ -346,7 +350,9 @@ const cmds = {start: 'sudo ' + cmds_path + cmd_start, stop: 'sudo ' + cmds_path 
     delay0_1_5: 'sudo ' + cmds_path + cmd_delay0_1_5,
     delay1s: 'sudo ' + cmds_path + cmd_delay1s, delay6s: 'sudo ' + cmds_path + cmd_delay6s,
     loss30: 'sudo ' + cmds_path + cmd_loss30, duplicate30: 'sudo ' + cmds_path + cmd_duplicate30,
-    corrupt30: 'sudo ' + cmds_path + cmd_corrupt30, reorder30: 'sudo ' + cmds_path + cmd_reorder30, }
+    corrupt30: 'sudo ' + cmds_path + cmd_corrupt30, reorder30: 'sudo ' + cmds_path + cmd_reorder30,
+    shasum: 'sudo ' + cmds_path + cmd_shasum,
+}
 
 const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmd_start, stop: 'sudo ' + cmds_path_tx + cmd_stop,
     resetNet: 'sudo ' + cmd_resetIptables, showNet: 'sudo ' + cmd_showIptables,
@@ -355,7 +361,9 @@ const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmd_start, stop: 'sudo ' + cmds
     delay0_1_5: 'sudo ' + cmds_path_tx + cmd_delay0_1_5,
     delay1s: 'sudo ' + cmds_path_tx + cmd_delay1s, delay6s: 'sudo ' + cmds_path_tx + cmd_delay6s,
     loss30: 'sudo ' + cmds_path_tx + cmd_loss30, duplicate30: 'sudo ' + cmds_path_tx + cmd_duplicate30,
-    corrupt30: 'sudo ' + cmds_path_tx + cmd_corrupt30, reorder30: 'sudo ' + cmds_path_tx + cmd_reorder30,}
+    corrupt30: 'sudo ' + cmds_path_tx + cmd_corrupt30, reorder30: 'sudo ' + cmds_path_tx + cmd_reorder30,
+    shasum: 'sudo ' + cmds_path_tx + cmd_shasum,
+}
 
 let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
     'root', 'Lianjing@123456', cmds)

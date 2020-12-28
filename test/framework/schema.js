@@ -376,7 +376,7 @@ const RESPONSE_SCHEMA = {
     required: [
         "id",
         "jsonrpc",
-        "result",
+        // "result",
         // "type",
         // "status",
     ],
@@ -397,6 +397,9 @@ const RESPONSE_SCHEMA = {
         status: {
             type: "integer"
         },
+        error: {
+            type: "object"
+        },
     },
 }
 
@@ -411,11 +414,11 @@ const ERROR_SCHEMA = {
     ],
     properties: {
         error: {
-            type: "string"
-        },
-        message: {
             type: "object"
         },
+        // message: {
+        //     type: "object"
+        // },
         type: {
             type: "string"
         },
@@ -559,7 +562,7 @@ const OLD_SENDTX_SCHEMA = {
             type: "array",
             minItems: 0,
             items: {
-                type: "string"
+                type: "object"
             }
         },
         status: {

@@ -311,7 +311,7 @@ module.exports = framework = {
                         resolve(responseOfSign)
                     }
                     else{
-                        let rawTx = testCase.actualResult[0].result[0]
+                        let rawTx = testCase.actualResult[0].result[0].result
                         if(rawTx && rawTx.length > 0){
                             let data = []
                             data.push(rawTx)
@@ -449,7 +449,7 @@ module.exports = framework = {
                 expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
                 let hashCount = 0
                 for(let i =0; i < responseOfSendTx.result.length; i++){
-                    let result = responseOfSendTx.result[i]
+                    let result = responseOfSendTx.result[i].result
                     if(result && utility.isHex(result)){
                         let hash = result
                         hashCount ++
@@ -648,7 +648,7 @@ module.exports = framework = {
         framework.checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
         if(testCase.expectedResult.needPass){
             expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            let signedTx = responseOfSendTx.result[0]
+            let signedTx = responseOfSendTx.result[0].result
             expect(typeof(signedTx) === 'string').to.be.ok
             expect(utility.isHex(signedTx)).to.be.ok
 
@@ -990,7 +990,7 @@ module.exports = framework = {
             }
 
             Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-                remote_sequence = Number(accountInfo.result.Sequence)
+                remote_sequence = accountInfo.result ? Number(accountInfo.result.Sequence) : -1
                 logger.debug("===get sequence from accountInfo: " + remote_sequence)
                 sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
                 framework.setSequence(server.getName(), from, sequence)
@@ -1232,11 +1232,11 @@ module.exports = framework = {
         let server = testCase.server
         let blockTime = server.mode.defaultBlockTime / 1000
 
-        let startTxHash = testCase.otherParams.successResults[0].result[0]
+        let startTxHash = testCase.otherParams.successResults[0].result[0].result
         let startTx = await utility.getTxByHash(server, startTxHash)
         let startBlockNumber = startTx.result.ledger_index
 
-        let endTxHash = testCase.otherParams.successResults[testCase.otherParams.successResults.length - 1].result[0]
+        let endTxHash = testCase.otherParams.successResults[testCase.otherParams.successResults.length - 1].result[0].result
         // logger.info("------endTxHash: " + endTxHash)
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index

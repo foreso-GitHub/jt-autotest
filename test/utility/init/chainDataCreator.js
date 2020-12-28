@@ -99,7 +99,7 @@ function chainDataCreator(){
         //region global coin (without issuer)
         result = await issueCoin(server, root, rootSequence, globalCoin, false, consts.flags.both)
         if(result){
-            chainData.tx_global_coin_hash = result.result[0]
+            chainData.tx_global_coin_hash = result.result[0].result
             rootSequence++
         }
         else{
@@ -110,7 +110,7 @@ function chainDataCreator(){
         //region local coin (with issuer)
         result = await issueCoin(server, root, rootSequence, localCoin, true, consts.flags.both)
         if(result){
-            chainData.tx_local_coin_hash = result.result[0]
+            chainData.tx_local_coin_hash = result.result[0].result
             rootSequence++
         }
         else{
@@ -125,8 +125,8 @@ function chainDataCreator(){
             && currenyResponse.result.TotalSupply.currency == existedCoin.symbol)){
 
             result = await issueCoin(server, root, rootSequence, existedCoin, true, consts.flags.normal)
-            if(result && result.result && result.result[0] && utility.isHex(result.result[0])){  // 判断是否交易成功，然后sequence再++
-                chainData.tx_existed_coin_hash = result.result[0]
+            if(result && result.result && result.result[0] && result.result[0].result && utility.isHex(result.result[0].result)){  // 判断是否交易成功，然后sequence再++
+                chainData.tx_existed_coin_hash = result.result[0].result
                 chainData.tx_existed_coin = existedCoin
                 rootSequence++
             }
@@ -165,7 +165,7 @@ function chainDataCreator(){
 
         result = await chargeCoin(server, root.address, root.secret, rootSequence, mode.addresses.balanceAccount.address, globalCoin)
         if(result){
-            chainData.charge_coin_tx_hash = result.result[0]
+            chainData.charge_coin_tx_hash = result.result[0].result
             rootSequence++
         }
         else{
@@ -190,7 +190,7 @@ function chainDataCreator(){
             null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
         if(result){
-            chainData.tx1_hash = result.result[0]
+            chainData.tx1_hash = result.result[0].result
         }
         else{
             logger.debug('=== Send tx1 failed!')
@@ -202,7 +202,7 @@ function chainDataCreator(){
             null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
         if(result){
-            chainData.tx_memo_hash = result.result[0]
+            chainData.tx_memo_hash = result.result[0].result
         }
         else{
             logger.debug('=== Send memo tx failed!')

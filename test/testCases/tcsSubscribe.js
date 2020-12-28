@@ -104,7 +104,7 @@ module.exports = tcsSubscribe = {
                     }
                     else if (action.type == actionTypes.signTx || action.type == actionTypes.sendRawTx){
                         let rawTxResponse = await server.getResponse(server, consts.rpcFunctions.signTx, txParams)
-                        let rawTx = rawTxResponse.result[0]
+                        let rawTx = rawTxResponse.result[0].result
                         if (action.type == actionTypes.signTx){
                             action.result = rawTx
                         }
@@ -3426,12 +3426,12 @@ module.exports = tcsSubscribe = {
             for(let i = 0;  i < action.checkParams.length; i++){
                 let expectedArray = tcsSubscribe.parseArray(action.checkParams[i])
                 if(expectedArray != null){
-                    let actualArray = tcsSubscribe.parseArray(results[0].result[i])
+                    let actualArray = tcsSubscribe.parseArray(results[0].result[i].result)
                     let compareResult = tcsSubscribe.compareArray(actualArray, expectedArray)
                     expect(compareResult).to.be.ok
                 }
                 else{
-                    expect(results[0].result[i]).to.be.equals(action.checkParams[i])
+                    expect(results[0].result[i].result).to.be.equals(action.checkParams[i])
                 }
             }
         }

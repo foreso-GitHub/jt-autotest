@@ -95,7 +95,7 @@ module.exports = tcsPressureSendTx = {
                     // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
                     // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[0].result[0]
+                        let hash = testCase.actualResult[0].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -168,7 +168,7 @@ module.exports = tcsPressureSendTx = {
                     await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
                     // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[0].result[0]
+                        let hash = testCase.actualResult[0].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -297,7 +297,7 @@ module.exports = tcsPressureSendTx = {
 
                     //wait transfer result written in block
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[0].result[0]
+                        let hash = testCase.actualResult[0].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -379,7 +379,7 @@ module.exports = tcsPressureSendTx = {
                     await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)   //NOTICE:  the last transfer must be right sequence, cannot be future sequnce!
                     // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[4].result[0]
+                        let hash = testCase.actualResult[4].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -501,7 +501,7 @@ module.exports = tcsPressureSendTx = {
                 // let hash = testCase.server.mode.service == serviceType.newChain ? result.result[0] : result.result.hash
                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                 if(server.mode.service == serviceType.newChain){
-                    let hash = testCase.actualResult[0].result[0]
+                    let hash = testCase.actualResult[0].result[0].result
                     let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                 }
                 else{
@@ -697,12 +697,12 @@ module.exports = tcsPressureSendTx = {
         let server = testCase.server
         let blockTime = server.mode.defaultBlockTime / 1000
 
-        let startTxHash = testCase.otherParams.accountParams[0].results[0].result[0]
+        let startTxHash = testCase.otherParams.accountParams[0].results[0].result[0].result
         let startTx = await utility.getTxByHash(server, startTxHash)
         let startBlockNumber = startTx.result.ledger_index
 
         let endAccountParams = testCase.otherParams.accountParams[testCase.otherParams.accountParams.length - 1]
-        let endTxHash = endAccountParams.results[endAccountParams.results.length - 1].result[0]
+        let endTxHash = endAccountParams.results[endAccountParams.results.length - 1].result[0].result
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index
 
@@ -1248,7 +1248,7 @@ module.exports = tcsPressureSendTx = {
             }
             else if(testCase.txFunctionName == consts.rpcFunctions.signTx){
                 let responseOfSignTx = await testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
-                let blob = utility.isResponseStatusSuccess(responseOfSignTx) ? responseOfSignTx.result[0] : ''
+                let blob = utility.isResponseStatusSuccess(responseOfSignTx) ? responseOfSignTx.result[0].result : ''
                 //sign tx, need record signed tx
                 let check_0 = {
                     title: 'sign tx result',
@@ -1314,7 +1314,7 @@ module.exports = tcsPressureSendTx = {
             // expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
             if(needPass){
                 expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
-                let hash = responseOfSendTx.result[0]
+                let hash = responseOfSendTx.result[0].result
                 let responseOfGetTx = await utility.getTxByHash(server, hash, 0)
                 framework.checkResponse(true, responseOfGetTx)
 

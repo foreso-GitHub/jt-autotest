@@ -126,7 +126,7 @@ module.exports = tcsSign = {
             let results = response.result
             expect(results.length).to.be.equals(signedTxs.length)
             for(let i = 0; i < results.length; i++){
-                expect(results[i]).to.be.equals(signedTxs[i])
+                expect(results[i].result).to.be.equals(signedTxs[i])
             }
         }
         else{

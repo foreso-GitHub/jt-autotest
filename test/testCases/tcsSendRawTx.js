@@ -285,7 +285,7 @@ module.exports = tcsSendRawTx = {
         for(let i = 0; i < testCase.otherParams.subCases.length; i++){
             let subCase = testCase.otherParams.subCases[i]
             for(let j = 0; j < (subCase.results ? subCase.results.length : 0); j++){
-                signedTxs.push(testCase.otherParams.subCases[i].results[j].result[0])
+                signedTxs.push(testCase.otherParams.subCases[i].results[j].result[0].result)
             }
         }
 
