@@ -664,7 +664,7 @@ module.exports = tcsPressureSendTx = {
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = await server.getResponse(server, txFunctionName, params)
                     if (txFunctionName == consts.rpcFunctions.signTx && utility.isResponseStatusSuccess(result)){
-                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0]])
+                        result = await server.getResponse(server, consts.rpcFunctions.sendRawTx, [result.result[0].result])
                     }
                     executeCount++
                     accountParam.results.push(result)
@@ -702,7 +702,8 @@ module.exports = tcsPressureSendTx = {
         let startBlockNumber = startTx.result.ledger_index
 
         let endAccountParams = testCase.otherParams.accountParams[testCase.otherParams.accountParams.length - 1]
-        let endTxHash = endAccountParams.results[endAccountParams.results.length - 1].result[0].result
+        let endAccountParamsResults = endAccountParams.results[endAccountParams.results.length - 1].result
+        let endTxHash = endAccountParamsResults[0] ? endAccountParamsResults[0].result : ''
         let endTx = await utility.getTxByHash(server, endTxHash)
         let endBlockNumber = endTx.result.ledger_index
 

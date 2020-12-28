@@ -627,7 +627,7 @@ const SIGNTX_SCHEMA = {
             type: "array",
             minItems: 0,
             items: {
-                type: "string"
+                type: "object"
             }
         },
         status: {

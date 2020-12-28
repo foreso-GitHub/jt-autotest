@@ -71,7 +71,7 @@ module.exports = tcsSendTxInOneRequest = {
         let hashList= testCase.actualResult[0].result
         let hashCount = 0
         for(let i = 0; i < hashList.length; i++){
-            let hash = hashList[i]
+            let hash = hashList[i].result
             if(hash && utility.isHex(hash)){
                 hashCount++
             }
