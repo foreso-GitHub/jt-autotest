@@ -370,7 +370,7 @@ module.exports = tcsSubscribe = {
             expect(receivedHashes.length).to.be.least(action.txCount)  //有可能链上同时有其他交易在跑
             if(realHashes){
                 realHashes.forEach(realHash => {
-                    expect(receivedHashes).to.be.contains(realHash)
+                    expect(receivedHashes).to.be.contains(realHash.result)
                 })
             }
         }
@@ -3426,12 +3426,12 @@ module.exports = tcsSubscribe = {
             for(let i = 0;  i < action.checkParams.length; i++){
                 let expectedArray = tcsSubscribe.parseArray(action.checkParams[i])
                 if(expectedArray != null){
-                    let actualArray = tcsSubscribe.parseArray(results[0].result[i].result)
+                    let actualArray = tcsSubscribe.parseArray(results[0].result[i])
                     let compareResult = tcsSubscribe.compareArray(actualArray, expectedArray)
                     expect(compareResult).to.be.ok
                 }
                 else{
-                    expect(results[0].result[i].result).to.be.equals(action.checkParams[i])
+                    expect(results[0].result[i]).to.be.equals(action.checkParams[i])
                 }
             }
         }
