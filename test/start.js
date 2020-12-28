@@ -77,7 +77,7 @@ describe('Jingtum测试', function() {
                 // logger.debug('after connnect')
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -199,12 +199,12 @@ describe('Jingtum测试', function() {
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
-                // this.timeout(24000)
-                // for(let i = 0; i < 5000; i++){
-                //     tcsPressureSendTx.testForFastPerformance(server,
-                //         '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 4, 'WithoutResponse')
-                // }
-                // this.timeout(timeout)
+                this.timeout(24000)
+                for(let i = 0; i < 10000; i++){
+                    tcsPressureSendTx.testForFastPerformance(server,
+                        '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 4, 'WithoutResponse')
+                }
+                this.timeout(timeout)
 
 
 
