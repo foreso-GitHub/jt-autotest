@@ -470,12 +470,7 @@ module.exports = framework = {
                 expect(hashCount).to.be.equal(testCase.txParams.length)
             }
             else{
-                expect(responseOfSendTx).to.be.jsonSchema(schema.ERROR_SCHEMA)
-                let results = responseOfSendTx.result
-                for(let i = 0; i < results.length; i++){
-                    let result = results[i]
-                    framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
-                }
+                framework.checkResponseError(testCase, responseOfSendTx, testCase.expectedResult.expectedError)
             }
         }
         else{
@@ -659,7 +654,7 @@ module.exports = framework = {
             await framework.checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
         }
         else{
-            framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, responseOfSendTx)
         }
     },
     //endregion
@@ -916,45 +911,29 @@ module.exports = framework = {
     },
 
     //region check response error
-    checkResponseError_1: function(testCase, message, expectedError){
+
+    checkResponseError: function(testCase, response, ){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(message).to.contains(expectedError)
-            // expect(message.result[0].error).to.contains(expectedError)
+            expect(response).to.be.jsonSchema(schema.ERROR_SCHEMA)
+            let compoundError = framework.getError(1000)
+            expect(response.status).to.equals(compoundError.status)
+            expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
+            // expect(actualError.error).to.contains(expectedError.error)
+            let results = response.result
+            for(let i = 0; i < results.length; i++){
+                let result = results[i]
+                framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
+            }
         }
     },
-
-    checkResponseError: function(testCase, actualError, expectedError){
-        if(NEED_CHECK_ExpectedResult
-            && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
-            expect(actualError.status).to.equals(expectedError.status)
-            expect(actualError.type).to.equals(expectedError.type)
-            expect(actualError.error).to.contains(expectedError.error)
-            // expect(message.result[0].error).to.contains(expectedError)
-        }
-    },
-
-    // checkErrorMessage: function(testCase, message, expectedError){
-    //     if(NEED_CHECK_ExpectedResult
-    //         && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-    //         expect(message).to.be.jsonSchema(schema.ERROR_MESSAGE_SCHEMA)
-    //         expect(message.engine_result_code).to.equals(expectedError.engine_result_code)
-    //         expect(message.engine_result).to.equals(expectedError.engine_result)
-    //         expect(message.engine_result_message).to.contains(expectedError.engine_result_message)
-    //         // expect(message.result[0].error).to.contains(expectedError)
-    //     }
-    // },
 
     checkErrorResult: function(testCase, result, expectedError){
-        if(NEED_CHECK_ExpectedResult
-            && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(result).to.be.jsonSchema(schema.ERROR_RESULT_SCHEMA)
-            expect(result.status).to.equals(expectedError.status)
-            expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
-            expect(result.error.description).to.equals(expectedError.description)
-            // expect(result.error.information).to.equals(expectedError.error.information)
-        }
+        expect(result).to.be.jsonSchema(schema.ERROR_SCHEMA)
+        expect(result.status).to.equals(expectedError.status)
+        expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
+        expect(result.error.description).to.equals(expectedError.description)
+        // expect(result.error.information).to.equals(expectedError.error.information)
     },
     //endregion
 

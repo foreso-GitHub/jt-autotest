@@ -124,8 +124,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = null
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'No secret found for')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'No secret found for' : consts.engineResults.temINVALID_SECRET)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -135,8 +134,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = '错误的秘钥'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad Base58 string')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'Bad Base58 string' : consts.engineResults.temMALFORMED)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -146,8 +144,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad Base58 checksum')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'Bad Base58 checksum' : consts.engineResults.temMALFORMED)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -157,8 +154,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad account address:')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'Bad account address:' : consts.engineResults.temINVALID_FROM_ADDRESS)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -168,8 +164,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad account address:')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'Bad account address:' : consts.engineResults.temINVALID_TO_ADDRESS)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -180,8 +175,7 @@ module.exports = tcsSendAndSignTx = {
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = consts.default.maxAmount.toString() + showSymbol
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'telINSUF_FEE_P Fee insufficient' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -196,8 +190,7 @@ module.exports = tcsSendAndSignTx = {
                 //     'temBAD_AMOUNT Can only send positive amounts')
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true,
                 //     'temBAD_AMOUNT Can only send positive amounts')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'value must be integer type and >= 0' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -207,8 +200,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = null
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Invalid Number')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'Invalid Number' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -218,8 +210,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "aawrwfsfs"
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Invalid Number')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'Invalid Number' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -228,8 +219,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "0.0000001"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -259,8 +249,7 @@ module.exports = tcsSendAndSignTx = {
                     ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals) + 1
                 let showValue = Math.pow(0.1, decimals).toFixed(decimals)
                 testCaseParams.txParams[0].value = showValue.toString() + showSymbol
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -269,8 +258,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1.0000011"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -312,8 +300,7 @@ module.exports = tcsSendAndSignTx = {
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = "-0.1" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    server.mode.service == serviceType.newChain ? 'value must be integer type' : consts.engineResults.temBAD_AMOUNT)
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -441,8 +428,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "9"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'tecINSUFF_FEE Insufficient balance to pay fee')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(136))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -451,8 +437,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "0"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'tecINSUFF_FEE Insufficient balance to pay fee')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(136))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -461,8 +446,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "12.5"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'tecINSUFF_FEE Insufficient balance to pay fee')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -471,8 +455,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = consts.default.maxAmount.toString()
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'telINSUF_FEE_P Fee insufficient')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -483,8 +466,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].fee = "-35"
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //     'tecINSUFF_FEE Insufficient balance to pay fee')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'tecINSUFF_FEE Insufficient balance to pay fee')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -493,8 +475,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = 35
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'interface conversion: interface {} is float64, not string')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }

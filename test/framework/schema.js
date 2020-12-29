@@ -403,28 +403,28 @@ const RESPONSE_SCHEMA = {
     },
 }
 
-const ERROR_SCHEMA = {
-    title: "test response error item schema",
-    type: "object",
-    required: [
-        "error",
-        "type",
-        "status",
-    ],
-    properties: {
-        error: {
-            type: "object"
-        },
-        type: {
-            type: "string"
-        },
-        status: {
-            type: "integer"
-        },
-    },
-}
+// const ERROR_SCHEMA = {
+//     title: "test response error item schema",
+//     type: "object",
+//     required: [
+//         "error",
+//         "type",
+//         "status",
+//     ],
+//     properties: {
+//         error: {
+//             type: "object"
+//         },
+//         type: {
+//             type: "string"
+//         },
+//         status: {
+//             type: "integer"
+//         },
+//     },
+// }
 
-const ERROR_RESULT_SCHEMA = {
+const ERROR_SCHEMA = {
     title: "test response error item schema",
     type: "object",
     required: [
@@ -438,9 +438,12 @@ const ERROR_RESULT_SCHEMA = {
             required: [
                 "description",
                 "information",
-                "message",
+                // "message",
             ],
             properties: {
+                count: {
+                    type: "integer"
+                },
                 description: {
                     type: "string"
                 },
@@ -888,7 +891,6 @@ module.exports = {
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
     ERROR_SCHEMA,
-    ERROR_RESULT_SCHEMA,
     SENDTX_SCHEMA,
     SIGNTX_SCHEMA,
     OLD_SENDTX_SCHEMA,
