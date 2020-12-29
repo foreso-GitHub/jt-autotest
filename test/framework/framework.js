@@ -605,14 +605,14 @@ module.exports = framework = {
                     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
                     if(realValue.symbol == consts.default.nativeCoin){
                         if(txParams.value.indexOf(consts.default.nativeCoin) != -1){//expected '1000000' to equal '1/SWT'
-                            expect(tx.Amount.value).to.be.equals((realValue.amount * consts.swtConsts.oneSwt).toString())
+                            expect(tx.Amount.value).to.be.equals((realValue.amount * consts.swtConsts.oneSwt).toFixed(0))
                         }
                         else{
                             expect(tx.Amount.value).to.be.equals(txParams.value)
                         }
                     }
                     else{
-                        expect(tx.Amount.value).to.be.equals((realValue.amount * Math.pow(10, consts.default.tokenDecimals)).toString())
+                        expect(tx.Amount.value).to.be.equals((realValue.amount * Math.pow(10, consts.default.tokenDecimals)).toFixed(0))
                     }
                 }
             }
