@@ -175,7 +175,8 @@ module.exports = tcsSendAndSignTx = {
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = consts.default.maxAmount.toString() + showSymbol
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -511,10 +512,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = "-10000"
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    {"engine_result": "tefNO_PERMISSION_ISSUE",
-                        "engine_result_code": -175,
-                        "engine_result_message": "No permission issue."})
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -524,8 +522,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].type = "issuecoin"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'Invalid Number:  Reason: strconv.ParseUint: parsing "": invalid syntax')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -535,8 +532,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].from = "from.address"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'Bad account address: from.address: Bad Base58 string: from.address')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -561,8 +557,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //     'failed to submit transaction')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'failed to submit transaction')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -583,8 +578,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(5)
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'symbol must be the characters with alphas[a-zA-Z], numbers[0-9], chinese characters[一-龥] and underscores[_]')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -598,7 +592,6 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        //todo it will cause no response, looks like no response from server.request
         testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
@@ -608,8 +601,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].symbol = existToken.symbol
                 testCaseParams.txParams[0].local = true
                 testCaseParams.txParams[0].flag = consts.flags.normal
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'tefNO_PERMISSION_ISSUE No permission issue')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -619,8 +611,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = "config.decimals"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'decimals must be integer type(string) and in range [0, 18]')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -630,8 +621,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = -8
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'decimals must be integer type(string) and in range [0, 18]')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -641,8 +631,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = '-8'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'decimals must be integer type(string) and in range [0, 18]')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -652,8 +641,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = 11.64
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'decimals must be integer type(string) and in range [0, 18]')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -663,8 +651,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = '11.64'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'decimals must be integer type(string) and in range [0, 18]')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -674,8 +661,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = "config.total_supply"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'total_supply must be integer type')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -685,8 +671,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = -10000000
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'invalid syntax')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -696,8 +681,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = '-10000000'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'invalid syntax')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -707,8 +691,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = 10000.12345678
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    'strconv.ParseInt: parsing')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -718,7 +701,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = '10000.12345678'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true, '')
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -746,77 +729,58 @@ module.exports = tcsSendAndSignTx = {
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                        'tefNO_PERMISSION_ISSUE No permission issue')
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
                 })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0371_0001\t增发可增发的代币' + testCaseParams.categoryName + '_decimal不一致'
+        testCaseParams.title = '0371_0001\t增发代币' + testCaseParams.categoryName + '_decimal不一致'
         {
             let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID_FLAG",
-                            "engine_result_code": -277,
-                            "engine_result_message": "The transaction has an invalid flag."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,framework.getError(-278))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "tefNO_PERMISSION_ISSUE",
-                            "engine_result_code": -175,
-                            "engine_result_message": "No permission issue."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,framework.getError(-278))
                 })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0371_0002\t增发可增发的代币' + testCaseParams.categoryName + '_name不一致'
+        testCaseParams.title = '0371_0002\t增发代币' + testCaseParams.categoryName + '_name不一致'
         {
             let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID_FLAG",
-                            "engine_result_code": -277,
-                            "engine_result_message": "The transaction has an invalid flag."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "tefNO_PERMISSION_ISSUE",
-                            "engine_result_code": -175,
-                            "engine_result_message": "No permission issue."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0371_0003\t增发可增发的代币' + testCaseParams.categoryName + '_flag不一致'
+        testCaseParams.title = '0371_0003\t增发代币' + testCaseParams.categoryName + '_flag不一致'
         {
             let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID",
-                            "engine_result_code": -278,
-                            "engine_result_message": "invalid transaction flags"})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
                 :
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID",
-                            "engine_result_code": -278,
-                            "engine_result_message": "invalid transaction flags"})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -840,77 +804,58 @@ module.exports = tcsSendAndSignTx = {
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                        'tefNO_PERMISSION_ISSUE No permission issue')
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
                 })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0381_0001\t增发可增发的代币' + testCaseParams.categoryName + '_decimal不一致'
+        testCaseParams.title = '0381_0001\t销毁代币' + testCaseParams.categoryName + '_decimal不一致'
         {
-            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+            let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID_FLAG",
-                            "engine_result_code": -277,
-                            "engine_result_message": "The transaction has an invalid flag."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "tefNO_PERMISSION_ISSUE",
-                            "engine_result_code": -175,
-                            "engine_result_message": "No permission issue."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
                 })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0381_0002\t增发可增发的代币' + testCaseParams.categoryName + '_name不一致'
+        testCaseParams.title = '0381_0002\t销毁代币' + testCaseParams.categoryName + '_name不一致'
         {
-            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+            let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID_FLAG",
-                            "engine_result_code": -277,
-                            "engine_result_message": "The transaction has an invalid flag."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "tefNO_PERMISSION_ISSUE",
-                            "engine_result_code": -175,
-                            "engine_result_message": "No permission issue."})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
                 })
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0381_0003\t增发可增发的代币' + testCaseParams.categoryName + '_flag不一致'
+        testCaseParams.title = '0381_0003\t销毁代币' + testCaseParams.categoryName + '_flag不一致'
         {
-            let testCase = tcsSendAndSignTx.canMint(testCaseParams.txParams[0].flags) ?
+            let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID",
-                            "engine_result_code": -278,
-                            "engine_result_message": "invalid transaction flags"})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
                 :
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,
-                        {"engine_result": "temINVALID",
-                            "engine_result_code": -278,
-                            "engine_result_message": "invalid transaction flags"})
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -921,8 +866,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].total_supply = '-997654319900000000'
                 let burnable = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags)
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                    burnable ? 'telINSUF_FUND Fund insufficient' : 'tefNO_PERMISSION_ISSUE No permission issue')
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    burnable ?  framework.getError(-386) :  framework.getError(-175))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -940,8 +885,7 @@ module.exports = tcsSendAndSignTx = {
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply =  '-49382716041'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                        'tefNO_PERMISSION_ISSUE No permission issue')
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,  framework.getError(-175))
                 })
             framework.addTestCase(testCases, testCase)
         }

@@ -921,9 +921,11 @@ module.exports = framework = {
             expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
             // expect(actualError.error).to.contains(expectedError.error)
             let results = response.result
-            for(let i = 0; i < results.length; i++){
-                let result = results[i]
-                framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
+            if(results){
+                for(let i = 0; i < results.length; i++){
+                    let result = results[i]
+                    framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
+                }
             }
         }
     },
