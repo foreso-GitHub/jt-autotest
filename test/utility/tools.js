@@ -16,8 +16,8 @@ const { modes, } = require("../config/config")
 const framekwork = require('../framework/framework')
 
 const reportComparor = require('./reportComparor/mochaReportComparor')
-
 const markdownTool = require('./markdown/markdownTool')
+const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 //endregion
 
 
@@ -27,6 +27,8 @@ const markdownTool = require('./markdown/markdownTool')
 // getAllTxBlock()
 // compare()
 // runMarkdown()
+// upgradeChain('20201229')
+
 
 //region init
 
@@ -150,25 +152,12 @@ async function md2Doc(file){
     utility.saveJsonFile(resultsPath, 'errors_doc', doc)
 }
 
-// async function md2Map(file){
-//     let content = await markdownTool.load(file, 'utf8',)
-//     let doc = markdownTool.parseErrorWiki(content)
-//     // printDoc(doc)
-//
-//     let map = markdownTool.doc2Map(doc)
-//     let resultsPath = '.\\test\\utility\\markdown\\results\\'
-//     utility.saveJsonFile(resultsPath, 'errors_map', map)
-//
-//     let keys = map.keys()
-//     for(let i = 0; i < keys.length; i++){
-//         markdownTool.printError((i+1).toString() + '. ' + JSON.stringify(map.get(keys[i])))
-//     }
-// }
-
 //endregion
 
 //region upgrade chain
 
-
+async function upgradeChain(newDate){
+    await upgradeChainTool.upgrade(newDate)
+}
 
 //endregion

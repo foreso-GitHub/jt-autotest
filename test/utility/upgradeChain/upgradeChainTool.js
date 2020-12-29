@@ -5,13 +5,14 @@ let logger = log4js.getLogger('default')
 let sshCmd = require('../../framework/sshCmd')
 let utility = require("../../framework/testUtility.js")
 const { jtNodes, } = require("../../config/config")
+const nodeStatusTool = require("../monitor/nodeStatusTool")
 //endregion
 
 /*
 
 1.shasum
 compare all.x
-compare last
+compare current chain.
 2.stop chain
 3. cp skywell.chain
 update update.sh
@@ -20,63 +21,128 @@ backup
 4. check again
 shasum
 5. start chain
-6. record shasum as last shasum
+// 6. record shasum as last shasum
 7. get ver
 8. update const, config
 
  */
 
+const cmds = {
+    shasum_newChain: 'shasum ./download/skywell.chain',
+    shasum_currentChain: 'shasum ./node/skywell.chain',
+    shasum_backupChain: 'shasum ./backup/versions/skywell.chain',
+    cp_newChain: 'cp ./download/skywell.chain ./node/skywell.chain',
+    cp_backup: 'cp ./download/skywell.chain ./backup/versions/skywell.chain',
+}
+
 module.exports = upgradeChainTool = {
 
-    shasum: function(service){
-        return new Promise(async (resolve, reject) => {
-            let servers = []
-            servers.push(sshCmd.setCmd(service, service.cmds.shasum))
-            sshCmd.execCmd(servers, function(error, results){
-                // results.forEach(result=>{
-                //     let shasum = upgradeChainTool.parseShasum(result.cmdResult)
-                //     shasums.push(shasum)
-                //     // logger.debug('service name:' + result.service.name)
-                //     // logger.debug('cmd result:' + result.cmdResult)
-                //
-                // })
+    //region shasum
 
-                let shasum = upgradeChainTool.parseShasum(results[0].cmdResult)
-                resolve(shasum)
-            })
-
-        })
+    shasumNewChain: async function(){
+        return await upgradeChainTool.execShasum(cmds.shasum_newChain)
     },
 
-    //2d55b2941a775a8c090b9039d57ef805dba3c516  ./download/skywell.chain
-    parseShasum: function(result){
-        let shasum = result.replace('  ./download/skywell.chain\r','')
-        return shasum
+    shasumCurrentChain: async function(){
+        return await upgradeChainTool.execShasum(cmds.shasum_currentChain)
     },
 
-    shasumNodes: async function(){
-        let shasums = []
-        let shasum
+    execShasum: async function(cmd){
+        let results = await upgradeChainTool.exec(jtNodes, cmd)
+        let result
         let allSame = true
-        for(let i = 0; i < jtNodes.length; i++){
-            let shasum = await upgradeChainTool.shasum(jtNodes[i])
-            shasums.push({node: jtNodes[i].name, shasum: shasum})
-        }
 
-        for(let i = 0; i < shasums.length; i++){
-            if(!shasum){
-                shasum = shasums[i]
+        for(let i = 0; i < results.length; i++){
+            results[i].shasum = upgradeChainTool.parseShasum(cmd, results[i].cmdResult)
+            // logger.debug(results[i].service.name + ': ' + results[i].shasum)
+            if(!result){
+                result = results[i]
             }
             else{
-                if(shasum.shasum != shasums[i].shasum){
+                if(result.shasum != results[i].shasum){
                     allSame = false
-                    logger.debug(shasum.node + ' and ' + shasums[i].node + ' have different shasum: '
-                        + shasum.shasum + ' | ' + shasums[i].shasum)
+                    logger.debug(result.service.name + ' and ' + results[i].service.name + ' have different shasum: '
+                        + result.shasum + ' | ' + results[i].shasum)
                 }
             }
         }
-        return allSame
+        // logger.debug(result.shasum)
+        return allSame ? result.shasum : null
     },
+
+    //2d55b2941a775a8c090b9039d57ef805dba3c516  ./download/skywell.chain
+    parseShasum: function(cmd, result){
+        let removePart = cmd.replace('shasum', '')
+        let shasum = result.replace(removePart,'')
+        shasum = shasum.replace('\r','')
+        return shasum
+    },
+
+    //endregion
+
+    //region common
+
+    exec: function(nodes, cmd){
+        return new Promise(async (resolve, reject) => {
+            let servers = []
+            for(let i = 0; i < nodes.length; i++){
+                servers.push(sshCmd.setCmd(nodes[i], cmd))
+            }
+            sshCmd.execCmd(servers, function(error, results){
+                resolve(results)
+            })
+        })
+    },
+
+    //endregion
+
+    upgrade: async function(newDate){
+        let error = 'Upgrade chain failed!'
+
+        if(!newDate)
+        {
+            logger.debug(error + ' No new date input!')
+            return false
+        }
+
+        let newShasum = await upgradeChainTool.shasumNewChain()
+        if(newShasum)
+        {
+            logger.debug('Find new version: ' + newShasum)
+            let currentShasum = await upgradeChainTool.shasumCurrentChain()
+            if(currentShasum && currentShasum != newShasum){
+                logger.debug('Versions check: pass!')
+
+                let cp_backup = cmds.cp_backup + '_' + newDate
+                let shasum_backupChain = cmds.shasum_backupChain + '_' + newDate
+                let cp_backup_results = await upgradeChainTool.exec(jtNodes, cp_backup)
+                let backupShasum = await upgradeChainTool.execShasum(shasum_backupChain)
+                if(backupShasum === newShasum){
+                    logger.debug('Backup chain done!')
+
+                    await nodeStatusTool.stopNodes()
+                    logger.debug('Stop chain!')
+                    await utility.timeout(5000)
+
+                    let cp_newChain_results = await upgradeChainTool.exec(jtNodes, cmds.cp_newChain)
+                    let updatedShasum = await upgradeChainTool.shasumCurrentChain()
+                    if(updatedShasum === newShasum){
+                        logger.debug('Update chain done!')
+                        await nodeStatusTool.startNodes()
+                        logger.debug('Start chain!')
+                        await utility.timeout(5000)
+                        logger.debug('Upgrade chain done!')
+                        return true
+                    }
+                }
+            }
+        }
+
+        logger.debug(error)
+        return false
+    },
+
+
 
 }
 
