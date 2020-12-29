@@ -912,10 +912,12 @@ module.exports = framework = {
 
     //region check response error
 
-    checkResponseError: function(testCase, response, ){
+    checkResponseError: function(testCase, response, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
             expect(response).to.be.jsonSchema(schema.ERROR_SCHEMA)
+
+            let realExpectedError = expectedError ? expectedError : testCase.expectedResult.expectedError
 
             if(response.result){
                 let compoundError = framework.getError(1000)
@@ -926,12 +928,12 @@ module.exports = framework = {
                 if(results){
                     for(let i = 0; i < results.length; i++){
                         let result = results[i]
-                        framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
+                        framework.checkErrorResult(testCase, result, realExpectedError)
                     }
                 }
             }
             else{
-                framework.checkErrorResult(testCase, response, testCase.expectedResult.expectedError)
+                framework.checkErrorResult(testCase, response, realExpectedError)
             }
 
 

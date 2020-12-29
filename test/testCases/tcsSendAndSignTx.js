@@ -176,7 +176,7 @@ module.exports = tcsSendAndSignTx = {
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = consts.default.maxAmount.toString() + showSymbol
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386))
+                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -278))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -876,7 +876,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-                    testCaseParams.txParams[0].total_supply =  '-987654319900000000'
+                    // testCaseParams.txParams[0].total_supply =  '-987654319900000000'
+                    testCaseParams.txParams[0].total_supply =  '-987654318899999997'
                     // testCaseParams.txParams[0].total_supply =
                     //     testCaseParams.txParams[0].flags == consts.flags.burnable ? '-987654319900000000' : '-987654319900000000'
                     testCaseParams.expectedResult = framework.createExpecteResult(true)
