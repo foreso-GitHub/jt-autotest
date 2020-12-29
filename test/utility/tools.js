@@ -26,7 +26,8 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // setNodeStatus()
 // getAllTxBlock()
 // compare()
-// runMarkdown()
+// updateErrorsDoc()
+// loadErrors()
 // upgradeChain('20201229')
 
 
@@ -114,7 +115,7 @@ async function compare(){
     // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
     let file1 = path + '\\baselines\\base-mochawesome-report-20201223c-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201228a-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201229a-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
@@ -126,13 +127,16 @@ async function compare(){
 
 //region markdown
 
-async function runMarkdown(){
-    let mdFile = '.\\test\\utility\\markdown\\sample\\chainErrors.md'
-    // md2Doc(mdFile)
+async function updateErrorsDoc(){
+    let mdFile = '.\\test\\utility\\markdown\\md\\chainErrors_20201229.md'
+    let doc = await md2Doc(mdFile)
+    let docFile = '.\\test\\testData\\errors.json'
+    markdownTool.saveDocFile(doc, docFile)
+}
 
-    let resultsPath = '.\\test\\utility\\markdown\\results\\'
-    let docFile = 'errors_doc_2020-12-29T02-34-19.750Z.json'
-    let doc = await loadDoc(resultsPath + docFile)
+async function loadErrors(){
+    let docFile = '.\\test\\testData\\errors.json'
+    let doc = await loadDoc(docFile)
     let map = markdownTool.doc2Map(doc)
     markdownTool.printMap(map)
 }
@@ -150,6 +154,8 @@ async function md2Doc(file){
 
     let resultsPath = '.\\test\\utility\\markdown\\results\\'
     utility.saveJsonFile(resultsPath, 'errors_doc', doc)
+
+    return doc
 }
 
 //endregion
