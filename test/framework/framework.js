@@ -15,6 +15,8 @@ const AccountsDealer = require('../utility/init/accountsDealer')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const testModeEnums = testMode
 const { allModes, } = require("../config/config")
+let errorsDoc = require('../testData/errors').errors
+let mdTool = require('../utility/markdown/markdownTool')
 //endregion
 
 //region global fields
@@ -1464,6 +1466,13 @@ module.exports = framework = {
         return servers
     },
 
+    //endregion
+
+    //region load errors
+    loadErrors: function(){
+        let map = mdTool.doc2Map(errorsDoc)
+        framework.errors = map
+    },
     //endregion
 }
 

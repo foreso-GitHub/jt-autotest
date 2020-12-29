@@ -206,6 +206,25 @@ module.exports = markdownTool = {
             })
         })
     },
+
+    saveJsFile: function(jsonObject, file){
+        let destFile = testUtility.updatePath(file)
+        return new Promise(async (resolve, reject) =>{
+            let moduleName = 'errors'
+            let fileString = 'let ' + moduleName + ' = '
+                + JSON.stringify(jsonObject)
+                + '\r\nmodule.exports = { ' + moduleName +' }'
+            fs.writeFile(destFile, fileString, function (err) {
+                if (err) {
+                    console.log(err)
+                    reject(err)
+                } else {
+                    console.log(moduleName + ' js saved: ' + destFile)
+                    resolve(jsonObject)
+                }
+            })
+        })
+    },
     //endregion
 
 }

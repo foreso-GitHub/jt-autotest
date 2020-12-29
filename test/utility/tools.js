@@ -115,7 +115,7 @@ async function compare(){
     // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
     let file1 = path + '\\baselines\\base-mochawesome-report-20201223c-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201229a-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201229b-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
@@ -130,8 +130,8 @@ async function compare(){
 async function updateErrorsDoc(){
     let mdFile = '.\\test\\utility\\markdown\\md\\chainErrors_20201229.md'
     let doc = await md2Doc(mdFile)
-    let docFile = '.\\test\\testData\\errors.json'
-    markdownTool.saveDocFile(doc, docFile)
+    let docFile = '.\\test\\testData\\errors.js'
+    markdownTool.saveJsFile(doc, docFile)
 }
 
 async function loadErrors(){
