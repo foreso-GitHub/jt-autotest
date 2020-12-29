@@ -10,7 +10,7 @@ const { jtNodes, } = require("../../config/config")
 /*
 
 1.shasum
-compare all
+compare all.x
 compare last
 2.stop chain
 3. cp skywell.chain

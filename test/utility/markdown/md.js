@@ -30,7 +30,7 @@ async function convert(){
     let doc = tool.parseErrorWiki(content)
     // printDoc(doc)
 
-    let map = tool.errorDoc2map(doc)
+    let map = tool.doc2Map(doc)
     let resultsPath = '.\\test\\utility\\markdown\\results\\'
     utility.saveJsonFile(resultsPath, 'errors_map', map)
 

@@ -9,92 +9,92 @@ module.exports = markdownTool = {
     //region parse error wiki
 
     parseErrorWiki: function(content){
-    let reader = new commonmark.Parser()
-    let tree = reader.parse(content) // tree is a 'Node' tree
-    let walker = tree.walker()
-    let event, node, currentMark, lastNodeType, txt, category, error
-    let marks = []
-    let doc = []
+        let reader = new commonmark.Parser()
+        let tree = reader.parse(content) // tree is a 'Node' tree
+        let walker = tree.walker()
+        let event, node, currentMark, lastNodeType, txt, category, error
+        let marks = []
+        let doc = []
 
-    while ((event = walker.next())) {
-        node = event.node
+        while ((event = walker.next())) {
+            node = event.node
 
-        if(node.type === consts.markdownTypes.document
-            || node.type === consts.markdownTypes.heading
-            || node.type === consts.markdownTypes.block_quote
-            || node.type === consts.markdownTypes.paragraph
-            || node.type === consts.markdownTypes.strong
-        ){
-            if(markdownTool.getLastMark(marks) === node.type){
-                marks.pop()
-                currentMark = markdownTool.getLastMark(marks)
-            }
-            else{
-                marks.push(node.type)
-                currentMark = node.type
-            }
-        }
-        else if(node.type === consts.markdownTypes.text
-            || node.type === consts.markdownTypes.code
-        ){
-            if(!markdownTool.ifAllSpace(node.literal)){
-                if(lastNodeType === node.type){
-                    txt += node.literal
+            if(node.type === consts.markdownTypes.document
+                || node.type === consts.markdownTypes.heading
+                || node.type === consts.markdownTypes.block_quote
+                || node.type === consts.markdownTypes.paragraph
+                || node.type === consts.markdownTypes.strong
+            ){
+                if(markdownTool.getLastMark(marks) === node.type){
+                    marks.pop()
+                    currentMark = markdownTool.getLastMark(marks)
                 }
                 else{
-                    txt = node.literal
+                    marks.push(node.type)
+                    currentMark = node.type
                 }
-
-                if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.heading){  //category name
-                    category = markdownTool.newCategory(txt,)
-                    doc.push(category)
-                }
-                else if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.paragraph){
-                    if(markdownTool.getLastMark(marks, 2) === consts.markdownTypes.block_quote){//the mark in outer level
-                        //category desc
-                        category.desc = txt
+            }
+            else if(node.type === consts.markdownTypes.text
+                || node.type === consts.markdownTypes.code
+            ){
+                if(!markdownTool.ifAllSpace(node.literal)){
+                    if(lastNodeType === node.type){
+                        txt += node.literal
                     }
                     else{
-                        //error status
-                        let status = Number(txt)
-                        error = markdownTool.newError(status, null, null, category.name)
-                        category.errors.push(error)
+                        txt = node.literal
+                    }
+
+                    if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.heading){  //category name
+                        category = markdownTool.newCategory(txt,)
+                        doc.push(category)
+                    }
+                    else if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.paragraph){
+                        if(markdownTool.getLastMark(marks, 2) === consts.markdownTypes.block_quote){//the mark in outer level
+                            //category desc
+                            category.desc = txt
+                        }
+                        else{
+                            //error status
+                            let status = Number(txt)
+                            error = markdownTool.newError(status, null, null, category.name)
+                            category.errors.push(error)
+                        }
+                    }
+                    else if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.strong){  //error type
+                        error.type = txt
+                    }
+                    else if(node.type === consts.markdownTypes.code){  //error desc
+                        error.desc = txt
+                    }
+                    else{
+                        console.log('=== unknown mark: ' + currentMark + ', type: ' +node.type + ' @ ' + node.sourcepos)
                     }
                 }
-                else if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.strong){  //error type
-                    error.type = txt
-                }
-                else if(node.type === consts.markdownTypes.code){  //error desc
-                    error.desc = txt
-                }
                 else{
-                    console.log('=== unknown mark: ' + currentMark + ', type: ' +node.type + ' @ ' + node.sourcepos)
+                    // console.log('=== all space: ' + node.literal + ' @ ' + node.sourcepos)
                 }
             }
             else{
-                // console.log('=== all space: ' + node.literal + ' @ ' + node.sourcepos)
+                console.log('=== unknown type: ' + node.type + ' @ ' + node.sourcepos)
+            }
+            lastNodeType = node.type
+        }
+
+        return doc
+    },
+
+    doc2Map: function(doc){
+        let map = new HashMap()
+        for(let i = 0; i < doc.length; i++){
+            let errors = doc[i].errors
+            for(let j = 0; j < errors.length; j++){
+                let error = errors[j]
+                map.set(error.status, error)
             }
         }
-        else{
-            console.log('=== unknown type: ' + node.type + ' @ ' + node.sourcepos)
-        }
-        lastNodeType = node.type
-    }
-
-    return doc
-},
-
-    errorDoc2map: function(doc){
-    let map = new HashMap()
-    for(let i = 0; i < doc.length; i++){
-        let errors = doc[i].errors
-        for(let j = 0; j < errors.length; j++){
-            let error = errors[j]
-            map.set(error.status, error)
-        }
-    }
-    return map
-},
+        return map
+    },
 
     //endregion
 
@@ -158,6 +158,16 @@ module.exports = markdownTool = {
     //region print
     printDoc: function(doc){
         markdownTool.printArray(doc, markdownTool.printCategory)
+    },
+
+    printMap: function(map){
+        let errors = map.values()
+        // let index = 1
+        errors.forEach(error => {
+            // console.log((index++).toString())
+            markdownTool.printError(error)
+        })
+
     },
 
     printCategory: function(category){
