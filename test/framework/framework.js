@@ -27,7 +27,7 @@ let _FullTestCaseList = []
 let accountsDealer = new AccountsDealer()
 let START
 let END
-let NEED_CHECK_ExpectedResult = false
+let NEED_CHECK_ExpectedResult = true
 //endregion
 
 module.exports = framework = {
@@ -474,8 +474,7 @@ module.exports = framework = {
                 let results = responseOfSendTx.result
                 for(let i = 0; i < results.length; i++){
                     let result = results[i]
-                    // framework.checkErrorMessage(testCase, result.message, testCase.expectedResult[i].expectedError)
-                    framework.checkErrorMessage(testCase, result.message, testCase.expectedResult.expectedError)
+                    framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
                 }
             }
         }
@@ -936,14 +935,25 @@ module.exports = framework = {
         }
     },
 
-    checkErrorMessage: function(testCase, message, expectedError){
+    // checkErrorMessage: function(testCase, message, expectedError){
+    //     if(NEED_CHECK_ExpectedResult
+    //         && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
+    //         expect(message).to.be.jsonSchema(schema.ERROR_MESSAGE_SCHEMA)
+    //         expect(message.engine_result_code).to.equals(expectedError.engine_result_code)
+    //         expect(message.engine_result).to.equals(expectedError.engine_result)
+    //         expect(message.engine_result_message).to.contains(expectedError.engine_result_message)
+    //         // expect(message.result[0].error).to.contains(expectedError)
+    //     }
+    // },
+
+    checkErrorResult: function(testCase, result, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(message).to.be.jsonSchema(schema.ERROR_MESSAGE_SCHEMA)
-            expect(message.engine_result_code).to.equals(expectedError.engine_result_code)
-            expect(message.engine_result).to.equals(expectedError.engine_result)
-            expect(message.engine_result_message).to.contains(expectedError.engine_result_message)
-            // expect(message.result[0].error).to.contains(expectedError)
+            expect(result).to.be.jsonSchema(schema.ERROR_RESULT_SCHEMA)
+            expect(result.status).to.equals(expectedError.status)
+            expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
+            expect(result.error.description).to.equals(expectedError.description)
+            // expect(result.error.information).to.equals(expectedError.error.information)
         }
     },
     //endregion
@@ -1473,6 +1483,10 @@ module.exports = framework = {
         let map = mdTool.doc2Map(errorsDoc)
         framework.errors = map
     },
+
+    getError: function(code){
+        return framework.errors.get(code)
+    }
     //endregion
 }
 

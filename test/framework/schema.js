@@ -408,7 +408,6 @@ const ERROR_SCHEMA = {
     type: "object",
     required: [
         "error",
-        // "message",
         "type",
         "status",
     ],
@@ -416,9 +415,43 @@ const ERROR_SCHEMA = {
         error: {
             type: "object"
         },
-        // message: {
-        //     type: "object"
-        // },
+        type: {
+            type: "string"
+        },
+        status: {
+            type: "integer"
+        },
+    },
+}
+
+const ERROR_RESULT_SCHEMA = {
+    title: "test response error item schema",
+    type: "object",
+    required: [
+        "error",
+        "type",
+        "status",
+    ],
+    properties: {
+        error: {
+            type: "object",
+            required: [
+                "description",
+                "information",
+                "message",
+            ],
+            properties: {
+                description: {
+                    type: "string"
+                },
+                information: {
+                    type: "string"
+                },
+                message: {
+                    type: "object"
+                },
+            }
+        },
         type: {
             type: "string"
         },
@@ -855,7 +888,7 @@ module.exports = {
     WALLET_SCHEMA,
     RESPONSE_SCHEMA,
     ERROR_SCHEMA,
-    ERROR_MESSAGE_SCHEMA,
+    ERROR_RESULT_SCHEMA,
     SENDTX_SCHEMA,
     SIGNTX_SCHEMA,
     OLD_SENDTX_SCHEMA,

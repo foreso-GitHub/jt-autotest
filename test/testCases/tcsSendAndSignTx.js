@@ -98,10 +98,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/swt"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, {
-                    "engine_result": "terNO_CURRENCY",
-                    "engine_result_code": -87,
-                    "engine_result_message": "The currency does not exist."})
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -113,7 +110,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/Swt"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true,
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278),
                     'failed to submit transaction')
             })
             //only test when send swt
