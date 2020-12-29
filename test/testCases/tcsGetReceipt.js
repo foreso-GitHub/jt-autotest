@@ -35,19 +35,20 @@ module.exports = tcsGetReceipt = {
         title = '0020\t无效交易哈希：不存在的交易哈希'
         needPass = false
         hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
-        expectedError = 'can\'t find transaction'
+        expectedError = framework.getError(140)
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t无效交易哈希：数字'
         hash = '100093'
-        expectedError = 'NewHash256: Wrong length'
+        expectedError = framework.getError(-269)
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t无效交易哈希：字符串乱码'
         hash = '1231dsfafwrwerwer'
-        expectedError = 'invalid byte'
+        expectedError = framework.getError(-269)
+        // expectedError.description = 'invalid byte'
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -95,7 +96,7 @@ module.exports = tcsGetReceipt = {
             expect(to).to.be.equals(testCase.server.mode.txs.tx1.Destination)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
 

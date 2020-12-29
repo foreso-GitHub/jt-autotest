@@ -48,36 +48,36 @@ module.exports = tcsGetTx = {
         title = '0040\t查询无效交易哈希:数字'
         hash = 1231111
         needPass = false
-        //expectedError = 'interface conversion: interface {} is float64, not string'  //new chain
-        expectedError = 'invalid tx hash'
+        expectedError = framework.getError(-269)
+        expectedError.information = 'hash is not string'
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0040\t查询无效交易哈希:字符串'
         hash = 'data.tx1.hash'
-        //expectedError = 'encoding/hex: invalid byte:'
-        expectedError = 'invalid tx hash'
+        expectedError = framework.getError(-269)
+        expectedError.information = 'invalid byte'
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0040\t查询无效交易哈希:参数为空'
         hash = null
-        //expectedError = 'interface conversion: interface {} is nil, not string'
-        expectedError = 'invalid tx hash'
+        expectedError = framework.getError(-269)
+        expectedError.information = 'hash is null'
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0040\t无效交易哈希：不存在的hash'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-        //expectedError = 'can\'t find transaction'
-        expectedError = 'Transaction not found.'
+        expectedError = framework.getError(140)
+        expectedError.information = 'find transaction'
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0040\t无效交易哈希：hash长度超过标准'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
-        //expectedError = 'index out of range'
-        expectedError = 'invalid tx hash'
+        expectedError = framework.getError(-189)
+        expectedError.information = 'index out of range'
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -126,7 +126,7 @@ module.exports = tcsGetTx = {
             expect(response.result.hash).to.be.equal(hash)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
     //endregion

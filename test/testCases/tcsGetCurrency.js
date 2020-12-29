@@ -66,39 +66,39 @@ module.exports = tcsGetCurrency = {
             title = '0030\t查询无效的代币，代币不存在'
             let symbol = 'NoCoin_1'
             needPass = false
-            expectedError = 'can\'t find currency'
+            expectedError = framework.getError(140)
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 symbol, null, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0031\t查询无效的代币，代币名过长'
             symbol = 'CoinNotExists'
-            expectedError = 'Bad Currency'
+            expectedError = framework.getError(-269)
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 symbol, null, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0040\t查询无效的全局代币，错误的issuer'
-            expectedError = 'can\'t find currency'
+            expectedError = framework.getError(140)
             let wrongAddress = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 globalCoin.symbol, wrongAddress, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0041\t查询无效的全局代币，错误格式的issuer'
-            expectedError = 'can\'t find currency'
+            expectedError = framework.getError(-269)
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 globalCoin.symbol, globalCoin.issuer + 'a', tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0050\t查询无效的本地代币，错误的issuer'
-            expectedError = 'can\'t find currency'
+            expectedError = framework.getError(140)
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 localCoin.symbol, wrongAddress, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0051\t查询无效的本地代币，错误格式的issuer'
-            expectedError = 'can\'t find currency'
+            expectedError = framework.getError(-269)
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 localCoin.symbol, localCoin.issuer + 'a', tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
@@ -151,7 +151,7 @@ module.exports = tcsGetCurrency = {
             expect(response.result.TotalSupply.currency).to.equals(testCase.txParams[0])
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
 //endregion

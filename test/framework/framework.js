@@ -943,7 +943,7 @@ module.exports = framework = {
         expect(result.status).to.equals(expectedError.status)
         expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
         expect(result.error.description).to.equals(expectedError.description)
-        // expect(result.error.information).to.equals(expectedError.error.information)
+        // expect(result.error.information).to.contains(expectedError.information)
     },
     //endregion
 
@@ -1474,7 +1474,7 @@ module.exports = framework = {
     },
 
     getError: function(code){
-        return framework.errors.get(code)
+        return utility.deepClone(framework.errors.get(code))
     }
     //endregion
 }
