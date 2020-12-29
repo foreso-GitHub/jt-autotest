@@ -14,7 +14,7 @@ module.exports = sshCmd = {
         async.each(services, function(service, cb2) {
             let _result = {}
             let hasCallbacked = false
-            logger.debug('service.cmd: ' + service.cmd)
+            // logger.debug('service.cmd: ' + service.cmd)
             ssh.exec(service, service.cmd, function(err, stdout, stderr, service, conn) {
                 _result['service'] = service
                 if (err) {

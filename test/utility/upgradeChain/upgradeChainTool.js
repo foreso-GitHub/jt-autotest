@@ -13,17 +13,11 @@ const nodeStatusTool = require("../monitor/nodeStatusTool")
 1.shasum
 compare all.x
 compare current chain.
-2.stop chain
-3. cp skywell.chain
-update update.sh
-cp
-backup
-4. check again
-shasum
-5. start chain
-// 6. record shasum as last shasum
-7. get ver
-8. update const, config
+2. backup chain
+3.stop chain
+4. cp skywell.chain
+5. check shasum again
+6. start chain
 
  */
 
@@ -134,8 +128,24 @@ module.exports = upgradeChainTool = {
                         logger.debug('Upgrade chain done!')
                         return true
                     }
+                    else{
+                        logger.debug(error + ' Update chain failed!')
+                        return false
+                    }
+                }
+                else{
+                    logger.debug(error + ' Backup chain failed!')
+                    return false
                 }
             }
+            else{
+                logger.debug(error + ' Current chain doesn\'t exist or it is the same as new version!')
+                return false
+            }
+        }
+        else{
+            logger.debug(error + ' Not all nodes have new version!')
+            return false
         }
 
         logger.debug(error)
