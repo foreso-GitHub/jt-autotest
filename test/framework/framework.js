@@ -916,17 +916,25 @@ module.exports = framework = {
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
             expect(response).to.be.jsonSchema(schema.ERROR_SCHEMA)
-            let compoundError = framework.getError(1000)
-            expect(response.status).to.equals(compoundError.status)
-            expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
-            // expect(actualError.error).to.contains(expectedError.error)
-            let results = response.result
-            if(results){
-                for(let i = 0; i < results.length; i++){
-                    let result = results[i]
-                    framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
+
+            if(response.result){
+                let compoundError = framework.getError(1000)
+                expect(response.status).to.equals(compoundError.status)
+                expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
+                // expect(actualError.error).to.contains(expectedError.error)
+                let results = response.result
+                if(results){
+                    for(let i = 0; i < results.length; i++){
+                        let result = results[i]
+                        framework.checkErrorResult(testCase, result, testCase.expectedResult.expectedError)
+                    }
                 }
             }
+            else{
+                framework.checkErrorResult(testCase, response, testCase.expectedResult.expectedError)
+            }
+
+
         }
     },
 

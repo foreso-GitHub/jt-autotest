@@ -69,27 +69,27 @@ module.exports = tcsGetAccount = {
         title = '0020\t查询未激活的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.address
         needPass = false
-        //expectedError = 'no such account'
-        expectedError = 'Account not found.'
+        expectedError = framework.getError(-96)
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0040\t查询未激活的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.nickName
-        //expectedError = 'Bad account address:'
-        expectedError = 'invalid account'
+        expectedError = framework.getError(-96)
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0050\t查询无效的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.address
+        expectedError = framework.getError(-96)
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0060\t查询无效的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
+        expectedError = framework.getError(-96)
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -145,7 +145,7 @@ module.exports = tcsGetAccount = {
             expect(Number(valueString)).to.be.above(0)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
 //endregion

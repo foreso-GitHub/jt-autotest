@@ -90,35 +90,35 @@ module.exports = tcsCreateWallet = {
         title = '0050\t创建账户-无效的参数: 数字'
         type = 123123
         needPass = false
-        expectedError = {"error":"key type is not string","status":-269,"type":"temBAD_PARAMETER"}
+        expectedError = framework.getError(-269)
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0051\t创建账户-无效的参数: 非ECDSA/Ed25519/SM2'
         type = "123123"
         needPass = false
-        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
+        expectedError = framework.getError(-191)
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0052\t创建账户-无效的参数: 空格'
         type = "   "
         needPass = false
-        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
+        expectedError = framework.getError(-191)
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0053\t创建账户-无效的参数: 空格SM2'
         type = "  SM2"
         needPass = false
-        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
+        expectedError = framework.getError(-191)
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0054\t创建账户-参数为""'
         type = ''
         needPass = false
-        expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
+        expectedError = framework.getError(-191)
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
         //endregion
