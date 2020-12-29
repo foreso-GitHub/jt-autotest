@@ -169,15 +169,37 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testCases, testCase)
         }
 
-        testCaseParams.title = '0060\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
+        testCaseParams.title = '0060_0001\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-                let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
-                testCaseParams.txParams[0].value = consts.default.maxAmount.toString() + showSymbol
+                let showValue = utility.getFullCurrency('12345678901' ,rawValue.symbol, rawValue.issuer)
+                testCaseParams.txParams[0].value = showValue
+                // testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -278))
+                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386))
             })
+            framework.addTestCase(testCases, testCase)
+        }
+
+        testCaseParams.title = '0060_0002\t发起' + categoryName + '无效交易_04: 交易额超过最大值'
+        {
+            let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
+            let showValue = utility.getFullCurrency(consts.default.maxAmount.toString(), rawValue.symbol, rawValue.issuer)
+            let testCase
+
+            if(rawValue.symbol == consts.default.nativeCoin){
+                testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
+                    testCaseParams.txParams[0].value = showValue
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
+                })
+            }
+            else{
+                testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
+                    testCaseParams.txParams[0].value = showValue
+                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                })
+            }
             framework.addTestCase(testCases, testCase)
         }
 
@@ -187,10 +209,6 @@ module.exports = tcsSendAndSignTx = {
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = "-100" + showSymbol
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
-                //     'temBAD_AMOUNT Can only send positive amounts')
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, true,
-                //     'temBAD_AMOUNT Can only send positive amounts')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
             })
             framework.addTestCase(testCases, testCase)
@@ -877,9 +895,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
                 framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
                     // testCaseParams.txParams[0].total_supply =  '-987654319900000000'
-                    testCaseParams.txParams[0].total_supply =  '-987654318899999997'
-                    // testCaseParams.txParams[0].total_supply =
-                    //     testCaseParams.txParams[0].flags == consts.flags.burnable ? '-987654319900000000' : '-987654319900000000'
+                    testCaseParams.txParams[0].total_supply =
+                        testCaseParams.txParams[0].flags == consts.flags.burnable ? '-987654318899999988' : '-987654318899999997'
                     testCaseParams.expectedResult = framework.createExpecteResult(true)
                     testCaseParams.expectedResult.expectedBalance = 0
                 })

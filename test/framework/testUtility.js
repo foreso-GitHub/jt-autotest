@@ -288,6 +288,13 @@ module.exports = testUtility = {
         || ((symbol == 'swt' || symbol == 'SWT') && (!issuer || issuer == null || issuer == ''))) ? '' : ('/' + symbol + '/' + issuer)
     },
 
+    getFullCurrency: function(value, symbol, issuer){
+        let currency = symbol.toUpperCase() === consts.default.nativeCoin
+            ? value + '/' + consts.default.nativeCoin
+            : value + '/' + symbol + '/' + issuer
+        return currency
+    },
+
     getShowValue: function(value, symbol, issuer){
         return value + this.getShowSymbol(symbol, issuer)
     },
