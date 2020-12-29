@@ -39,7 +39,8 @@ module.exports = tcsSign = {
         title = '0020\t无效的地址参数： 没有秘钥'
         {
             needPass = false
-            expectedError = 'null from key'
+            expectedError = framework.getError(140)
+            expectedError.information = 'null from key'
             txParam = {from: server.mode.addresses.sender1.address, message: message}
             expectedSignedTxs = []
             testCase = tcsSign.createSingleTestCase(server, title, [txParam], expectedSignedTxs, needPass, expectedError)
@@ -49,7 +50,8 @@ module.exports = tcsSign = {
         title = '0021\t无效的地址参数： 错误的秘钥1'
         {
             needPass = false
-            expectedError = 'Unknown secret format'
+            expectedError = framework.getError(-191)
+            expectedError.information = 'Unknown secret format'
             txParam = {from: sender.address, secret: '错误的秘钥', message: message}
             expectedSignedTxs = []
             testCase = tcsSign.createSingleTestCase(server, title, [txParam], expectedSignedTxs, needPass, expectedError)
@@ -59,7 +61,8 @@ module.exports = tcsSign = {
         title = '0022\t无效的地址参数： 错误的秘钥2'
         {
             needPass = false
-            expectedError = 'Bad Base58 checksum'
+            expectedError = framework.getError(-191)
+            expectedError.information = 'Bad Base58 checksum'
             txParam = {from: sender.address, secret: sender.secret + '1', message: message}
             expectedSignedTxs = []
             testCase = tcsSign.createSingleTestCase(server, title, [txParam], expectedSignedTxs, needPass, expectedError)
@@ -69,7 +72,8 @@ module.exports = tcsSign = {
         title = '0023\t无效的地址参数： 错误的发起钱包地址（乱码字符串）'
         {
             needPass = false
-            expectedError = 'Bad account address'
+            expectedError = framework.getError(-278)
+            expectedError.information = 'Bad account address'
             txParam = {from: sender.address + '1', secret: sender.secret, message: message}
             expectedSignedTxs = []
             expectedSignedTxs = ['0x304402204EDF7F9B3039663A89B50F1254EE8F3094BED8F23DA733DBDB166DA63C7B363C02203D220EB6B80BC629142462740B0990816749191C6B664AA4F3C80736DB27A740']
@@ -130,7 +134,7 @@ module.exports = tcsSign = {
             }
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
     //endregion

@@ -183,7 +183,8 @@ module.exports = tcsGetTx = {
         {
             index = 99999999
             needPass = false
-            expectedError = 'can\'t find transaction'
+            expectedError = framework.getError(140)
+            expectedError.information = 'can\'t find transaction'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -191,6 +192,9 @@ module.exports = tcsGetTx = {
         title = '0020\t有效的地址，无效的sequence：0'
         {
             index = 0
+            needPass = false
+            expectedError = framework.getError(140)
+            expectedError.information = 'can\'t find transaction'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -198,6 +202,9 @@ module.exports = tcsGetTx = {
         title = '0020\t有效的地址，无效的sequence：负数'
         {
             index = -1
+            needPass = false
+            expectedError = framework.getError(-269)
+            expectedError.information = 'index or sequence should be >= 0'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -205,6 +212,9 @@ module.exports = tcsGetTx = {
         title = '0020\t有效的地址，无效的sequence：小数'
         {
             index = 5.87
+            needPass = false
+            expectedError = framework.getError(-269)
+            expectedError.information = 'index or sequence is not integer'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -212,6 +222,9 @@ module.exports = tcsGetTx = {
         title = '0020\t有效的地址，无效的sequence：乱码字符串'
         {
             index = 'sjdflsajf32241kjksd'
+            needPass = false
+            expectedError = framework.getError(-269)
+            expectedError.information = 'index or sequence is not integer'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -221,7 +234,8 @@ module.exports = tcsGetTx = {
             from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSV'
             index = 1
             needPass = false
-            expectedError = 'Bad account address'
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -229,6 +243,9 @@ module.exports = tcsGetTx = {
         title = '0030\t无效的地址参数_01：地址长度过长'
         {
             from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm1'
+            needPass = false
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -236,6 +253,9 @@ module.exports = tcsGetTx = {
         title = '0030\t无效的地址参数_01：地址不以j开头'
         {
             from = 'tpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm'
+            needPass = false
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -244,7 +264,8 @@ module.exports = tcsGetTx = {
         {
             from = server.mode.addresses.inactiveAccount1.address
             needPass = false
-            expectedError = 'can\'t find transaction'
+            expectedError = framework.getError(140)
+            expectedError.information = 'can\'t find transaction'
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
         }
@@ -326,7 +347,8 @@ module.exports = tcsGetTx = {
         hash = txs.block.blockHash
         index = '999999'
         needPass = false
-        expectedError = 'no such transaction in block'
+        expectedError = framework.getError(140)
+        expectedError.information = 'no such transaction in block'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -335,7 +357,8 @@ module.exports = tcsGetTx = {
         hash = txs.block.blockHash
         index = '-1'
         needPass = false
-        expectedError = 'index out of range'
+        expectedError = framework.getError(-189)
+        expectedError.information = 'index out of range'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -344,7 +367,8 @@ module.exports = tcsGetTx = {
         hash = txs.block.blockHash
         index = 'asdf'
         needPass = false
-        expectedError = 'invalid syntax'
+        expectedError = framework.getError(-269)
+        expectedError.information = 'index is not integer'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -353,7 +377,8 @@ module.exports = tcsGetTx = {
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
         index = '0'
         needPass = false
-        expectedError = 'can\'t find block'
+        expectedError = framework.getError(140)
+        expectedError.information = 'can\'t find block'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -405,7 +430,8 @@ module.exports = tcsGetTx = {
         blockNumber = tx1.ledger_index.toString()
         index = '100'
         needPass = false
-        expectedError = 'no such transaction in block'
+        expectedError = framework.getError(140)
+        expectedError.information = 'no such transaction in block'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -414,7 +440,8 @@ module.exports = tcsGetTx = {
         blockNumber = tx1.ledger_index.toString()
         index = '-1'
         needPass = false
-        expectedError = 'index out of range'
+        expectedError = framework.getError(-189)
+        expectedError.information = 'index out of range'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -423,7 +450,8 @@ module.exports = tcsGetTx = {
         blockNumber = tx1.ledger_index.toString()
         index = 'asdf'
         needPass = false
-        expectedError = 'invalid syntax'
+        expectedError = framework.getError(-269)
+        expectedError.information = 'index is not integer'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -432,7 +460,8 @@ module.exports = tcsGetTx = {
         blockNumber = '999999999'
         index = '0'
         needPass = false
-        expectedError = 'can\'t find block'
+        expectedError = framework.getError(140)
+        expectedError.information = 'can\'t find block'
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestCase(testCases, testCase)
@@ -478,7 +507,7 @@ module.exports = tcsGetTx = {
             framework.compareTx(response.result, tx1)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
 

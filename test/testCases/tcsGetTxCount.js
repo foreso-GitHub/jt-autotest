@@ -36,14 +36,16 @@ module.exports = tcsGetTxCount = {
         title = '0020\t无效交易哈希：不存在的hash'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
         needPass = false
-        expectedError = 'can\'t find block'
+        expectedError = framework.getError(140)
+        expectedError.information = 'can\'t find block'
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t无效交易哈希：hash长度超过标准'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
         needPass = false
-        expectedError = 'index out of range'
+        expectedError = framework.getError(-189)
+        expectedError.information = 'index out of range'
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -64,21 +66,24 @@ module.exports = tcsGetTxCount = {
         title = '0020\t无效交易编号：9999999'
         blockNumber = '999999999'
         needPass = false
-        expectedError = 'can\'t find block'
+        expectedError = framework.getError(140)
+        expectedError.information = 'can\'t find block'
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t无效交易编号：负数'
         blockNumber = '-100'
         needPass = false
-        expectedError = 'invalid syntax'
+        expectedError = framework.getError(140)
+        expectedError.information = 'invalid syntax'
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0020\t无效交易编号：乱码'
         blockNumber = 'addeew'
         needPass = false
-        expectedError = 'invalid syntax'
+        expectedError = framework.getError(140)
+        expectedError.information = 'invalid syntax'
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -121,7 +126,7 @@ module.exports = tcsGetTxCount = {
             expect(txCount).to.equal(response.result)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
 
@@ -198,7 +203,8 @@ module.exports = tcsGetTxCount = {
             addressOrName = 'jnZ7CDuqmj6Pe1KGMdiacfh4aeuXSDj'
             needSendTx = false
             needPass = false
-            expectedError = 'Bad account address'
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
             testCases.push(testCase)
         }
@@ -207,7 +213,8 @@ module.exports = tcsGetTxCount = {
         {
             addressOrName = from.address + 'a'
             needPass = false
-            expectedError = 'Bad account address'
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
             testCases.push(testCase)
         }
@@ -216,7 +223,8 @@ module.exports = tcsGetTxCount = {
         {
             addressOrName = server.mode.addresses.wrongFormatAccount1.address
             needPass = false
-            expectedError = 'Bad account address'
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
             testCases.push(testCase)
         }
@@ -225,7 +233,8 @@ module.exports = tcsGetTxCount = {
         {
             addressOrName = server.mode.addresses.inactiveAccount1.nickName
             needPass = false
-            expectedError = 'Bad account address'
+            expectedError = framework.getError(-96)
+            expectedError.information = 'Bad account address'
             testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
             testCases.push(testCase)
         }
@@ -290,7 +299,7 @@ module.exports = tcsGetTxCount = {
             testCase.subCheck(testCase)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testCase, response)
         }
     },
     //endregion
