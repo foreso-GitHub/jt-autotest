@@ -946,7 +946,7 @@ module.exports = framework = {
         expect(result.status).to.equals(expectedError.status)
         expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
         expect(result.error.description).to.equals(expectedError.description)
-        // expect(result.error.information).to.contains(expectedError.information)
+        expect(result.error.information).to.contains(expectedError.information)
     },
     //endregion
 

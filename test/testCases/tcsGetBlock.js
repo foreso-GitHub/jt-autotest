@@ -98,20 +98,23 @@ module.exports = tcsGetBlock = {
         }
 
         testNumber = '0110_0001'
-        numberOrHash = validNumberOrHash
-        showFullTx = 'wrwerwre'
-        needPass = false
-        expectedError = framework.getError(-269)
-        testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是字符串'
-        testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestCase(testCases, testCase)
+        {
+            numberOrHash = validNumberOrHash
+            showFullTx = 'wrwerwre'
+            needPass = false
+            expectedError = framework.getError(-269, 'full is not boolean')
+            testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
+            testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是字符串'
+            testCase.supportedServices.push(serviceType.oldChain)
+            framework.addTestCase(testCases, testCase)
+        }
+
 
         testNumber = '0110_0002'
         numberOrHash = validNumberOrHash
         showFullTx = 123123
         needPass = false
-        expectedError = framework.getError(-269)
+        expectedError = framework.getError(-269, 'full is not boolean')
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是数字'
         testCase.supportedServices.push(serviceType.oldChain)
@@ -121,7 +124,7 @@ module.exports = tcsGetBlock = {
         numberOrHash = validNumberOrHash
         showFullTx = null
         needPass = false
-        expectedError = framework.getError(-269)
+        expectedError = framework.getError(-269, 'full is null')
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是空值'
         testCase.supportedServices.push(serviceType.oldChain)
@@ -131,7 +134,9 @@ module.exports = tcsGetBlock = {
         numberOrHash = '9990000000'
         showFullTx = false
         needPass = false
-        expectedError = framework.getError(functionName == consts.rpcFunctions.getBlockByNumber ? 140 : -269)
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? framework.getError(140, 'value out of range')
+            : framework.getError(-269, 'NewHash256: Wrong length')
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         // testCase.supportedServices.push(serviceType.oldChain)  //old chain not support huge block number, it will cause test hook more than 20s
         framework.addTestCase(testCases, testCase)
@@ -140,7 +145,9 @@ module.exports = tcsGetBlock = {
         numberOrHash = '99900000'
         showFullTx = false
         needPass = false
-        expectedError = framework.getError(functionName == consts.rpcFunctions.getBlockByNumber ? 140 : -269)
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? framework.getError(140, 't find block')
+            : framework.getError(-269, 'NewHash256: Wrong length')
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -149,7 +156,9 @@ module.exports = tcsGetBlock = {
         numberOrHash = '-1000'
         showFullTx = false
         needPass = false
-        expectedError = framework.getError(functionName == consts.rpcFunctions.getBlockByNumber ? 140 : -269)
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? framework.getError(140, 'invalid syntax')
+            : framework.getError(-269, 'encoding/hex: invalid byte')
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
@@ -158,7 +167,9 @@ module.exports = tcsGetBlock = {
         numberOrHash = 'abcdefg'
         showFullTx = false
         needPass = false
-        expectedError = framework.getError(functionName == consts.rpcFunctions.getBlockByNumber ? 140 : -269)
+        expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
+            ? framework.getError(140, 'invalid syntax')
+            : framework.getError(-269, 'encoding/hex: invalid byte')
         testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
         if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)

@@ -34,6 +34,15 @@ module.exports = consts = {
     },
     //endregion
 
+    //region block tag
+    tags: {
+        null: undefined,
+        current: 'current',
+        validated: 'validated',
+        latest: 'latest',
+    },
+    //endregion
+
     //region ipfs
     ipfsFunctions: {
         getNodeInfo:'sw_nodeInfo',

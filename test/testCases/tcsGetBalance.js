@@ -41,8 +41,8 @@ module.exports = tcsGetBalance = {
 
     testForGetBalanceByAllTags: function(server, symbol, issuer){
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, null)
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'current')
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'validated')
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, consts.tags.current)
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, consts.tags.validated)
 
         //todo need restore when these tags are supported.
         // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'earliest')
@@ -77,27 +77,27 @@ module.exports = tcsGetBalance = {
         title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.address
         needPass = false
-        expectedError =framework.getError(-96)
+        expectedError = framework.getError(-96, tag == consts.tags.current ? 'no such account info' : 't find account' )
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询未激活的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.nickName
-        expectedError =framework.getError(-96)
+        expectedError =framework.getError(-96, 'Bad account address')
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.address
-        expectedError =framework.getError(-96)
+        expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
-        expectedError =framework.getError(-96)
+        expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 

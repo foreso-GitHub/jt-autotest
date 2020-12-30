@@ -34,7 +34,7 @@ module.exports = tcsCreateAccount = {
         title = '0020_0001\t创建无效的账户:重复的名字'
         nickName = server.mode.addresses.balanceAccount.nickName
         needPass = false
-        expectedError = framework.getError(-191)
+        expectedError = framework.getError(-191, 'the nickname already exists')
         testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -44,7 +44,7 @@ module.exports = tcsCreateAccount = {
             + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
             + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
         needPass = false
-        expectedError = framework.getError(-278)
+        expectedError = framework.getError(-278, 'the length of the nickname must be in the range (0,256]')
         testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 

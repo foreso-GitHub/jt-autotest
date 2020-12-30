@@ -33,8 +33,8 @@ module.exports = tcsGetAccount = {
     testForGetAccountByTag: function(server, describeTitle, symbol, issuer){
         describe(describeTitle, function () {
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, null)
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'validated')
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'current')
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, consts.tags.validated)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, consts.tags.current)
 
             //todo need restore when these tags are supported.
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
@@ -69,27 +69,27 @@ module.exports = tcsGetAccount = {
         title = '0020\t查询未激活的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.address
         needPass = false
-        expectedError = framework.getError(-96)
+        expectedError = framework.getError(-96, 'no such account')
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0040\t查询未激活的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.nickName
-        expectedError = framework.getError(-96)
+        expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
         title = '0050\t查询无效的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.address
-        expectedError = framework.getError(-96)
+        expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         testCase.supportedServices.push(serviceType.oldChain)
         framework.addTestCase(testCases, testCase)
 
         title = '0060\t查询无效的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
-        expectedError = framework.getError(-96)
+        expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestCase(testCases, testCase)
 
@@ -116,7 +116,7 @@ module.exports = tcsGetAccount = {
         expectedResult.needPass = needPass
         expectedResult.isErrorInResult = true
         expectedResult.expectedError = expectedError
-        // let rLevel = (tag == null || tag == 'validated' || tag == 'current') ? restrictedLevel.L2 : restrictedLevel.L4
+        // let rLevel = (tag == null || tag == consts.tags.validated || tag == consts.tags.current) ? restrictedLevel.L2 : restrictedLevel.L4
 
         let testCase = framework.createTestCase(
             title,
