@@ -915,32 +915,33 @@ module.exports = framework = {
     checkResponseError: function(testCase, response, expectedError){
         if(NEED_CHECK_ExpectedResult
             && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(response).to.be.jsonSchema(schema.ERROR_SCHEMA)
-
             let realExpectedError = expectedError ? expectedError : testCase.expectedResult.expectedError
-
-            if(response.result){
-                let compoundError = framework.getError(1000)
-                expect(response.status).to.equals(compoundError.status)
-                expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
-                // expect(actualError.error).to.contains(expectedError.error)
-                let results = response.result
-                if(results){
-                    for(let i = 0; i < results.length; i++){
-                        let result = results[i]
-                        framework.checkErrorResult(testCase, result, realExpectedError)
-                    }
-                }
-            }
-            else{
-                framework.checkErrorResult(testCase, response, realExpectedError)
-            }
-
-
+            framework.checkErrorResponse(response, realExpectedError)
         }
     },
 
-    checkErrorResult: function(testCase, result, expectedError){
+    checkErrorResponse: function(response, expectedError){
+        expect(response).to.be.jsonSchema(schema.ERROR_SCHEMA)
+        let realExpectedError = expectedError
+        if(response.result){
+            let compoundError = framework.getError(1000)
+            expect(response.status).to.equals(compoundError.status)
+            expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
+            // expect(actualError.error).to.contains(expectedError.error)
+            let results = response.result
+            if(results){
+                for(let i = 0; i < results.length; i++){
+                    let result = results[i]
+                    framework.checkErrorResult(result, realExpectedError)
+                }
+            }
+        }
+        else{
+            framework.checkErrorResult(response, realExpectedError)
+        }
+    },
+
+    checkErrorResult: function(result, expectedError){
         expect(result).to.be.jsonSchema(schema.ERROR_SCHEMA)
         expect(result.status).to.equals(expectedError.status)
         expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
@@ -1475,8 +1476,12 @@ module.exports = framework = {
         framework.errors = map
     },
 
-    getError: function(code){
-        return utility.deepClone(framework.errors.get(code))
+    getError: function(code, information){
+        let error = utility.deepClone(framework.errors.get(code))
+        if(information) {
+            error.information = information
+        }
+        return error
     }
     //endregion
 }

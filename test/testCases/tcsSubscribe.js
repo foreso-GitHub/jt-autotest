@@ -38,7 +38,7 @@ const outputType = {
 const Not_Used_Address = 'j9t5tjAawNoAxgn7FudkaKTo7GjD3HqvtH'
 const Wrong_Format_Address = Not_Used_Address + '_1'
 const Subscribe_Timeout = 1000
-const If_Check_Error = false
+const If_Check_Error = true
 
 module.exports = tcsSubscribe = {
 
@@ -311,9 +311,10 @@ module.exports = tcsSubscribe = {
             let errors = messages.errors
             if(If_Check_Error){
                 expect(errors.length).to.be.least(1)
-                expect(errors[0].status).to.be.equals(action.expectedResult.expectedError.status)
-                expect(errors[0].message).to.contains(action.expectedResult.expectedError.message)
-                expect(errors[0].result).to.be.equals(action.expectedResult.expectedError.result)
+                framework.checkErrorResponse(errors[0], action.expectedResult.expectedError)
+                // expect(errors[0].status).to.be.equals(action.expectedResult.expectedError.status)
+                // expect(errors[0].message).to.contains(action.expectedResult.expectedError.message)
+                // expect(errors[0].result).to.be.equals(action.expectedResult.expectedError.result)
             }
         }
     },
@@ -446,7 +447,7 @@ module.exports = tcsSubscribe = {
                 txParams: ['block', 'abcd'],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid parameters')},
             })
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
@@ -519,7 +520,7 @@ module.exports = tcsSubscribe = {
                 txParams: ['tx', 'abcd'],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: false, expectedError: {message:"invalid parameters",result:"",status:-278}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid parameters')},
             })
 
             action = tcsSubscribe.createRealTxAction(server)
@@ -620,9 +621,8 @@ module.exports = tcsSubscribe = {
                 txParams: ['abcd'],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: false, expectedError: {message:"no such topic ",result:"",status:-278}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'no such topic')},
             })
-
 
             action = tcsSubscribe.createRealTxAction(server)
             action.receiveBlock = false
@@ -641,7 +641,7 @@ module.exports = tcsSubscribe = {
                 txParams: [''],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: false, expectedError: {message:"no such topic ",result:"",status:-278}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'no such topic')},
             })
 
             action = tcsSubscribe.createRealTxAction(server)
@@ -661,7 +661,7 @@ module.exports = tcsSubscribe = {
                 txParams: ['12312312313212312312313131adfasdfaskdfajsfoieurowarolkdjasfldjf'],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: false, expectedError: {message:"no such topic ",result:"",status:-278}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'no such topic')},
             })
 
             action = tcsSubscribe.createRealTxAction(server)
@@ -681,7 +681,7 @@ module.exports = tcsSubscribe = {
                 txParams: [],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: false, expectedError: {message:"no parameters",result:"",status:-269}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-269, 'no parameters')},
             })
 
             action = tcsSubscribe.createRealTxAction(server)
@@ -3003,7 +3003,7 @@ module.exports = tcsSubscribe = {
                 checkParams: [],
                 timeout: 1000,
                 checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: false, expectedError: {error:"invalid topic", result:"", status:-278, type: 'temINVALID'}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -3018,7 +3018,7 @@ module.exports = tcsSubscribe = {
                 checkParams: [],
                 timeout: 1000,
                 checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: false, expectedError: {error:"invalid topic", result:"", status:-278, type: 'temINVALID'}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -3297,7 +3297,7 @@ module.exports = tcsSubscribe = {
                 checkParams: [],
                 timeout: 1000,
                 checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: false, expectedError: {error:"invalid topic", result:"", status:-278, type: 'temINVALID'}},
+                expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
@@ -3439,10 +3439,11 @@ module.exports = tcsSubscribe = {
             let errors = messages.errors
             if(If_Check_Error){
                 expect(errors.length).to.be.least(1)
-                expect(errors[0].status).to.be.equals(action.expectedResult.expectedError.status)
-                expect(errors[0].type).to.be.equals(action.expectedResult.expectedError.type)
-                expect(errors[0].error).to.contains(action.expectedResult.expectedError.error)
-                expect(errors[0].result).to.be.equals(action.expectedResult.expectedError.result)
+                framework.checkErrorResponse(errors[0], action.expectedResult.expectedError)
+                // expect(errors[0].status).to.be.equals(action.expectedResult.expectedError.status)
+                // expect(errors[0].type).to.be.equals(action.expectedResult.expectedError.type)
+                // expect(errors[0].error).to.contains(action.expectedResult.expectedError.error)
+                // expect(errors[0].result).to.be.equals(action.expectedResult.expectedError.result)
             }
         }
     },
