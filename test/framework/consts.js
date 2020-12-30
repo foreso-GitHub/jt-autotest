@@ -40,6 +40,8 @@ module.exports = consts = {
         current: 'current',
         validated: 'validated',
         latest: 'latest',
+        earliest: 'earliest',
+        pending: 'pending',
     },
     //endregion
 

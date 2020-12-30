@@ -24,8 +24,8 @@ module.exports = tcsGetCurrency = {
     //region get currency
     testForGetCurrency: function(server, describeTitle){
         tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, null)
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'validated')
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'current')
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, consts.tags.validated)
+        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, consts.tags.current)
 
         //todo need restore when these tags are supported.
         // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'earliest')
@@ -66,39 +66,45 @@ module.exports = tcsGetCurrency = {
             title = '0030\t查询无效的代币，代币不存在'
             let symbol = 'NoCoin_1'
             needPass = false
-            expectedError = framework.getError(140)
+            expectedError = tag == consts.tags.current
+                ? framework.getError(140, 'no such currency info')
+                : framework.getError(140, 't find currency')
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 symbol, null, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0031\t查询无效的代币，代币名过长'
             symbol = 'CoinNotExists'
-            expectedError = framework.getError(-269)
+            expectedError = framework.getError(-269, 'Bad Currency')
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 symbol, null, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0040\t查询无效的全局代币，错误的issuer'
-            expectedError = framework.getError(140)
+            expectedError = tag == consts.tags.current
+                ? framework.getError(140, 'no such currency info')
+                : framework.getError(140, 't find currency')
             let wrongAddress = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 globalCoin.symbol, wrongAddress, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0041\t查询无效的全局代币，错误格式的issuer'
-            expectedError = framework.getError(-269)
+            expectedError = framework.getError(-269, 'Bad Base58 checksum')
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 globalCoin.symbol, globalCoin.issuer + 'a', tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0050\t查询无效的本地代币，错误的issuer'
-            expectedError = framework.getError(140)
+            expectedError = tag == consts.tags.current
+                ? framework.getError(140, 'no such currency info')
+                : framework.getError(140, 't find currency')
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 localCoin.symbol, wrongAddress, tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
 
             title = '0051\t查询无效的本地代币，错误格式的issuer'
-            expectedError = framework.getError(-269)
+            expectedError = framework.getError(-269, 'Bad Base58 checksum')
             testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
                 localCoin.symbol, localCoin.issuer + 'a', tag, needPass, expectedError)
             framework.addTestCase(testCases, testCase)
