@@ -28,7 +28,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // compare()
 // updateErrorsDoc()
 // loadErrors()
-// upgradeChain('20201229')
+// upgradeChain('20201229b')
 
 
 //region init
@@ -58,8 +58,8 @@ async function init_based_on_existed_accounts(){
 
 function setNetStatus(){
     netStatusTool.showTcAll()
-    // netStatusTool.showNetAll()
-    //
+    netStatusTool.showNetAll()
+
     // netStatusTool.resetTcAll()
     // netStatusTool.resetNetAll()
 }
@@ -115,7 +115,7 @@ async function compare(){
     // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
     let file1 = path + '\\baselines\\base-mochawesome-report-20201223c-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201229c-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201229d-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 

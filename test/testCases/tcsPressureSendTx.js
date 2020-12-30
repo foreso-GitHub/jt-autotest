@@ -95,7 +95,7 @@ module.exports = tcsPressureSendTx = {
                     // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
                     // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[0].result[0].result
+                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -168,7 +168,7 @@ module.exports = tcsPressureSendTx = {
                     await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
                     // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[0].result[0].result
+                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -198,10 +198,9 @@ module.exports = tcsPressureSendTx = {
             testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
             let signTxExpectedResult = framework.createExpecteResult(true)
-            let sendTxExpectedResult = framework.createExpecteResult(false, true,
-                testCase.server.mode.service == serviceType.newChain
-                    ? 'temBAD_SEQUENCE Malformed: Sequence is not in the past.'
-                    : consts.engineResults.tefPAST_SEQ)
+            let expectedError = framework.getError(-284)
+            expectedError.information = 'Malformed: Sequence is not in the past.'
+            let sendTxExpectedResult = framework.createExpecteResult(false, expectedError)
             testCase.executeFunction = function(testCase){
                 return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
                     function(txParams, currentSequence){
@@ -215,8 +214,9 @@ module.exports = tcsPressureSendTx = {
         {
             testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let signTxExpectedResult = framework.createExpecteResult(false, true,
-                server.mode.service == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
+            let expectedError = framework.getError(-284)
+            expectedError.information = 'Malformed: Sequence is not in the past.'
+            let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
             let sendTxExpectedResult = signTxExpectedResult
             testCase.executeFunction = function(testCase){
                 return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
@@ -233,8 +233,9 @@ module.exports = tcsPressureSendTx = {
         {
             testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let signTxExpectedResult = framework.createExpecteResult(false, true,
-                server.mode.service == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
+            let expectedError = framework.getError(-284)
+            expectedError.information = 'sequence must be positive integer'
+            let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
             let sendTxExpectedResult = signTxExpectedResult
             testCase.executeFunction = function(testCase){
                 return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
@@ -249,8 +250,9 @@ module.exports = tcsPressureSendTx = {
         {
             testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let signTxExpectedResult = framework.createExpecteResult(false, true,
-                server.mode.service == serviceType.newChain ? 'sequence must be positive integer' : consts.engineResults.temBAD_SEQUENCE)
+            let expectedError = framework.getError(-284)
+            expectedError.information = 'sequence must be positive integer'
+            let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
             let sendTxExpectedResult = signTxExpectedResult
             testCase.executeFunction = function(testCase){
                 return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
@@ -297,7 +299,7 @@ module.exports = tcsPressureSendTx = {
 
                     //wait transfer result written in block
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[0].result[0].result
+                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -379,7 +381,7 @@ module.exports = tcsPressureSendTx = {
                     await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)   //NOTICE:  the last transfer must be right sequence, cannot be future sequnce!
                     // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
                     if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[4].result[0].result
+                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
                         let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
                     }
                     else{
@@ -1326,7 +1328,7 @@ module.exports = tcsPressureSendTx = {
             }
             else{
                 let expectedResult = check.expectedResult
-                framework.checkResponseError(testCase, responseOfSendTx.message, expectedResult.expectedError)
+                framework.checkResponseError(testCase, responseOfSendTx, expectedResult.expectedError)
             }
         }
         else{
@@ -1358,7 +1360,7 @@ module.exports = tcsPressureSendTx = {
         }
         else{
             let expectedResult = check.expectedResult
-            framework.checkResponseError(testCase, responseOfSendTx.message, expectedResult.expectedError)
+            framework.checkResponseError(testCase, responseOfSendTx, expectedResult.expectedError)
         }
     },
 

@@ -46,6 +46,7 @@ let _FullTestCaseList = []
 describe('Jingtum测试', function() {
 
     framework.startWork()
+    framework.loadErrors()
     let allRpcServers = framework.activeAllRpcServers()
 
     for(let mode of modes){
@@ -189,8 +190,8 @@ describe('Jingtum测试', function() {
                 // // tcsSubscribe.testForUnsubscribe_2(server, '测试jt_unsubscribe')
                 //
                 // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
                 // this.timeout(timeout)
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
@@ -207,6 +208,7 @@ describe('Jingtum测试', function() {
                 // this.timeout(timeout)
 
                 //region special
+
                 // this.timeout(3600000)
                 // tcsBugInjection.test(server, '故障注入测试')
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
@@ -214,7 +216,12 @@ describe('Jingtum测试', function() {
                 // for(let i = 0; i < 100; i++){
                 //     tcsBugInjection.test(server, '故障注入测试')
                 // }
+
                 //endregion
+
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
             })
         })
