@@ -204,7 +204,7 @@ module.exports = tcsSendAndSignTx = {
                 })
             }
             else{
-                testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
+                testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                     testCaseParams.txParams[0].value = showValue
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-386, 'Fund insufficient.'))
