@@ -98,7 +98,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/swt"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 't find currency'))
             })
             //only test when send swt
             if(testCaseParams.txParams[0].symbol == null) {
@@ -110,7 +111,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1/Swt"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278),
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 't find currency'),
                     'failed to submit transaction')
             })
             //only test when send swt
@@ -124,7 +126,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = null
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'No secret found for')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'No secret found for'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -134,7 +137,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = '错误的秘钥'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad Base58 string')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'Unknown secret format'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -144,7 +148,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad Base58 checksum')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'Bad Base58 checksum'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -154,7 +159,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad account address:')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-284, 'sequence must be positive integer'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -164,7 +170,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad account address:')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'Bad account address'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -177,7 +184,8 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].value = showValue
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386))
+                    framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
+                        rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -191,13 +199,15 @@ module.exports = tcsSendAndSignTx = {
             if(rawValue.symbol == consts.default.nativeCoin){
                 testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                     testCaseParams.txParams[0].value = showValue
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-394, 'Fee insufficient.'))
                 })
             }
             else{
                 testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                     testCaseParams.txParams[0].value = showValue
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'error value, out of range'))
                 })
             }
             framework.addTestCase(testCases, testCase)
@@ -209,7 +219,8 @@ module.exports = tcsSendAndSignTx = {
                 let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = "-100" + showSymbol
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'value must be integer type and >= 0'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -219,7 +230,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = null
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Invalid Number')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'value must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -229,7 +241,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "aawrwfsfs"
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Invalid Number')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'value must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -238,7 +251,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "0.0000001"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'value must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -268,7 +282,7 @@ module.exports = tcsSendAndSignTx = {
                     ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals) + 1
                 let showValue = Math.pow(0.1, decimals).toFixed(decimals)
                 testCaseParams.txParams[0].value = showValue.toString() + showSymbol
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'error value'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -277,7 +291,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].value = "1.0000011"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'value must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -319,7 +334,8 @@ module.exports = tcsSendAndSignTx = {
                 let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
                 testCaseParams.txParams[0].value = "-0.1" + showSymbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'value must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -447,7 +463,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "9"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(136))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(136, 'Insufficient balance to pay fee.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -456,7 +473,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "0"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(136))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(136, 'Insufficient balance to pay fee.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -465,7 +483,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "12.5"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'strconv.ParseUint'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -474,7 +493,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = consts.default.maxAmount.toString()
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-394, 'Fee insufficient.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -485,7 +505,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].fee = "-35"
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //     'tecINSUFF_FEE Insufficient balance to pay fee')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'strconv.ParseUint'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -494,7 +514,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = 35
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'strconv.ParseUint'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -530,7 +550,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = "-10000"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -540,7 +560,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].type = "issuecoin"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'error type issuecoin'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -550,7 +570,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].from = "from.address"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284, 'sequence must be positive integer'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -575,7 +595,8 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
                 // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
                 //     'failed to submit transaction')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'The length of the name should be <= 256'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -596,7 +617,8 @@ module.exports = tcsSendAndSignTx = {
         {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(5)
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -619,7 +641,8 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].symbol = existToken.symbol
                 testCaseParams.txParams[0].local = true
                 testCaseParams.txParams[0].flag = consts.flags.normal
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'invalid parameter flag'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -629,7 +652,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = "config.decimals"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -639,7 +663,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = -8
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -649,7 +674,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = '-8'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -659,7 +685,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = 11.64
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -669,7 +696,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].decimals = '11.64'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -679,7 +707,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = "config.total_supply"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'total_supply must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -689,7 +718,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = -10000000
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'total_supply must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -699,7 +729,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = '-10000000'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
+                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -709,7 +739,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = 10000.12345678
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'total_supply must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -719,7 +750,8 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                 framework.updateTokenInTestCaseParams(testCaseParams)
                 testCaseParams.txParams[0].total_supply = '10000.12345678'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                testCaseParams.expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-278, 'total_supply must be integer type'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -747,7 +779,8 @@ module.exports = tcsSendAndSignTx = {
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-175, 'No permission issue.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -758,13 +791,15 @@ module.exports = tcsSendAndSignTx = {
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'The transaction is ill-formed.'))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'The transaction is ill-formed.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -775,13 +810,15 @@ module.exports = tcsSendAndSignTx = {
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'The transaction is ill-formed.'))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'The transaction is ill-formed.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -792,13 +829,15 @@ module.exports = tcsSendAndSignTx = {
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'invalid parameter flag'))
                 })
                 :
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'invalid parameter flag'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -822,7 +861,8 @@ module.exports = tcsSendAndSignTx = {
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-175, 'No permission issue.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -833,13 +873,15 @@ module.exports = tcsSendAndSignTx = {
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'The transaction is ill-formed.'))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].decimals = '9'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-175, 'No permission issue.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -850,13 +892,15 @@ module.exports = tcsSendAndSignTx = {
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'The transaction is ill-formed.'))
                 })
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].name = 'TestCoin_StrangeName'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-175, 'No permission issue.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -867,13 +911,15 @@ module.exports = tcsSendAndSignTx = {
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'invalid parameter flag'))
                 })
                 :
                 framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply = '-9'
                     testCaseParams.txParams[0].flag = 1
-                    testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,
+                        framework.getError(-278, 'invalid parameter flag'))
                 })
             framework.addTestCase(testCases, testCase)
         }
@@ -885,7 +931,8 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].total_supply = '-997654319900000000'
                 let burnable = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags)
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    burnable ?  framework.getError(-386) :  framework.getError(-175))
+                    burnable ?  framework.getError(-386, 'Fund insufficient.')
+                        : framework.getError(-175, 'No permission issue.'))
             })
             framework.addTestCase(testCases, testCase)
         }
@@ -903,7 +950,7 @@ module.exports = tcsSendAndSignTx = {
                 :
                 framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
                     testCaseParams.txParams[0].total_supply =  '-49382716041'
-                    testCaseParams.expectedResult = framework.createExpecteResult(false,  framework.getError(-175))
+                    testCaseParams.expectedResult = framework.createExpecteResult(false,  framework.getError(-175, 'No permission issue.'))
                 })
             framework.addTestCase(testCases, testCase)
         }
