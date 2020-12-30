@@ -69,7 +69,7 @@ module.exports = tcsSign = {
         title = '0023\t无效的地址参数： 错误的发起钱包地址（乱码字符串）'
         {
             needPass = false
-            expectedError = framework.getError(-278, 'Bad account address')
+            expectedError = framework.getError(-96, 'Bad account address')
             txParam = {from: sender.address + '1', secret: sender.secret, message: message}
             expectedSignedTxs = []
             expectedSignedTxs = ['0x304402204EDF7F9B3039663A89B50F1254EE8F3094BED8F23DA733DBDB166DA63C7B363C02203D220EB6B80BC629142462740B0990816749191C6B664AA4F3C80736DB27A740']
