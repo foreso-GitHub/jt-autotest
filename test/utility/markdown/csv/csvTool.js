@@ -31,18 +31,28 @@ module.exports = csvTool = {
 
     convertToTestCases: function(table){
         let testCases = []
-        for(let i = 0; i < table.length; i++){
+        for(let i = 1; i < table.length - 1; i++){
             let row = table[i]
             let testCase = {}
-            testCase.code = row[2]
-            testCase.title = row[3]
-            testCase.precondition = row[4]
-            testCase.input = row[5]
-            testCase.expetedResult = row[6]
+            testCase.code = csvTool.clean(row[2])
+            testCase.title = csvTool.clean(row[3])
+            testCase.precondition = csvTool.clean(row[4])
+            testCase.input = csvTool.clean(row[5])
+            testCase.expetedResult = csvTool.clean(row[6])
             testCases.push(testCase)
         }
         return testCases
     },
+
+    clean: function(cell){
+        if(cell){
+            let result = cell
+                .replace(new RegExp('\n','g'), '')
+                .replace(new RegExp('jt_','g'), 'FUNC_')
+            return result
+        }
+        return cell
+    }
 
 }
 

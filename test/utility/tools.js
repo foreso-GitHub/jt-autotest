@@ -17,10 +17,11 @@ const framekwork = require('../framework/framework')
 
 const reportComparor = require('./reportComparor/mochaReportComparor')
 const markdownTool = require('./markdown/markdownTool')
-const csvTool = require('./markdown/csvTool')
+const csvTool = require('./markdown/csv/csvTool')
 const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 //endregion
 
+//region work dock
 
 // init()
 // setNetStatus()
@@ -32,6 +33,8 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // loadErrors()
 // upgradeChain('20201230')
 loadCSV()
+
+//endregion
 
 //region init
 
@@ -117,7 +120,7 @@ async function compare(){
     // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
     let file1 = path + '\\baselines\\base-mochawesome-report-20201230a-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201230c-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201230d-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
@@ -152,6 +155,10 @@ async function loadCSV(){
     let csv = '.\\test\\utility\\markdown\\sample\\sample.csv'
     let table = await csvTool.load(csv)
     let testCases = csvTool.convertToTestCases(table)
+    let content = markdownTool.testCases2md_style_2(testCases)
+    let md = '.\\test\\utility\\markdown\\results\\testcases_' + utility.getNowDateTimeString() + '.md'
+    await markdownTool.saveFile(md, content)
+
 }
 
 //endregion

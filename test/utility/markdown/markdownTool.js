@@ -100,6 +100,8 @@ module.exports = markdownTool = {
 
     //region parse testcase wiki
 
+    //region parse
+
     parseTestCaseWiki: function(content){
         let lines = content.split('\r\n')
         let testCaseLines = lines.slice(2, lines.length -1)
@@ -108,10 +110,6 @@ module.exports = markdownTool = {
             testCases.push(markdownTool.parseTestCaseLine(testCaseLines[i]))
         }
         return testCases
-    },
-
-    testCases2md: function(testCases){
-
     },
 
     parseTestCaseLine: function(line){
@@ -144,6 +142,89 @@ module.exports = markdownTool = {
 
         return testCase
     },
+
+    //endregion
+
+    //region style 1
+    testCases2md_style_1: function(testCases){
+        let header = '|用例编号\t|用例标题\t|预置条件\t|输入内容\t|预期结果\t|' + '\r\n'
+        header += '|----------------|----------------|----------------|----------------|----------------|' + '\r\n'
+        return markdownTool.testCases2md(header, testCases, markdownTool.testCase2md_style_1)
+    },
+
+    testCase2md_style_1: function(testCase){
+        let content = '|'
+        content += markdownTool.collapse(testCase.code, 20) + '|'
+        content += testCase.title + '|'
+        content += testCase.precondition + '|'
+        content += testCase.input + '|'
+        content += testCase.expetedResult + '|'
+        return content
+    },
+    //endregion
+
+    //region style 2
+    testCases2md_style_2: function(testCases){
+        let header = '|用例编号|用例标题|预置条件<br>输入内容<br>预期结果|' + '\r\n'
+        header += '|----------------|----------------|----------------|' + '\r\n'
+        return markdownTool.testCases2md(header, testCases, markdownTool.testCase2md_style_2)
+    },
+
+    testCase2md_style_2: function(testCase){
+        let content = '|'
+        content += markdownTool.collapse(testCase.code, 20) + '|'
+        content += testCase.title + '|'
+        content += markdownTool.deco('预置条件', testCase.precondition? testCase.precondition : '无') + '<br><br>'
+        content += markdownTool.deco('输入内容', testCase.input? testCase.input : '无') + '<br><br>'
+        content += markdownTool.deco('预期结果', testCase.expetedResult? testCase.expetedResult : '无') + '|'
+        return content
+    },
+
+    //endregion
+
+    //region common
+
+    testCases2md: function(header, testCases, testCaseFunc){
+        let lines = []
+        for(let i = 0; i < testCases.length; i++){
+            if(testCases[i].code){
+                lines.push(testCaseFunc(testCases[i]))
+            }
+        }
+        let content = header
+        for(let i = 0; i < lines.length; i++){
+            content += lines[i] + '\r\n'
+        }
+        return content
+    },
+
+    deco: function(title, content){
+        let result = '**' + title + '**'
+            + '`' + content + '`'
+        return result
+    },
+
+    collapse: function(content, maxLength){
+        let result = ''
+        let length = content.length
+        let collapse_times = Math.floor((length - 1) / maxLength)
+
+        for(let i = 0; i < collapse_times; i++){
+            let start = maxLength * i
+            let end = maxLength * (i + 1)
+            // let end = i == collapse_times ? maxLength * (i + 1) : content.length - 1
+            result += content.substring(start, end) + '<br>'
+            if(i == collapse_times - 1){
+                result += content.substring(end, content.length)
+            }
+        }
+
+        return collapse_times == 0 ? content : result
+    },
+
+    //endregion
+
+
 
     //endregion
 
@@ -241,9 +322,6 @@ module.exports = markdownTool = {
         let destFile = testUtility.updatePath(file)
         return new Promise(async (resolve, reject) =>{
             let moduleName = 'errors'
-            // let fileString = 'let ' + moduleName + ' = '
-            //     + JSON.stringify(jsonObject)
-            //     + '\r\nmodule.exports = { ' + moduleName +' }'
             fs.writeFile(destFile, JSON.stringify(jsonObject), function (err) {
                 if (err) {
                     console.log(err)
@@ -270,6 +348,21 @@ module.exports = markdownTool = {
                 } else {
                     console.log(moduleName + ' js saved: ' + destFile)
                     resolve(jsonObject)
+                }
+            })
+        })
+    },
+
+    saveFile: function(file, content){
+        let destFile = testUtility.updatePath(file)
+        return new Promise(async (resolve, reject) =>{
+            fs.writeFile(destFile, content, function (err) {
+                if (err) {
+                    console.log(err)
+                    reject(err)
+                } else {
+                    console.log(destFile + ' has been saved!')
+                    resolve(destFile)
                 }
             })
         })
