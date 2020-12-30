@@ -17,6 +17,7 @@ const framekwork = require('../framework/framework')
 
 const reportComparor = require('./reportComparor/mochaReportComparor')
 const markdownTool = require('./markdown/markdownTool')
+const csvTool = require('./markdown/csvTool')
 const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 //endregion
 
@@ -26,10 +27,11 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // setNodeStatus()
 // getAllTxBlock()
 // compare()
+// updateTestCaseDoc()
 // updateErrorsDoc()
 // loadErrors()
-// upgradeChain('20201229b')
-
+// upgradeChain('20201230')
+loadCSV()
 
 //region init
 
@@ -114,8 +116,8 @@ async function compare(){
     // let file1 = path + '\\normal\\mochawesome-report-20201116a-no_exp-rpc\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
-    let file1 = path + '\\baselines\\base-mochawesome-report-20201223c-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201229d-no_exp-ws\\' + 'mochawesome.json'
+    let file1 = path + '\\baselines\\base-mochawesome-report-20201230a-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201230c-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
@@ -127,11 +129,39 @@ async function compare(){
 
 //region markdown
 
+//region testcases
+async function updateTestCaseDoc(){
+    let mdFile = '.\\test\\utility\\markdown\\sample\\testcase.md'
+    let doc = await tsmd2Doc(mdFile)
+    let docFile = '.\\test\\testData\\testcase.js'
+    markdownTool.saveJsFile(doc, 'testCases', docFile)
+}
+
+async function tsmd2Doc(file){
+    let content = await markdownTool.load(file, 'utf8',)
+    let testCases = markdownTool.parseTestCaseWiki(content)
+    // markdownTool.printDoc(doc)
+
+    let resultsPath = '.\\test\\utility\\markdown\\results\\'
+    utility.saveJsonFile(resultsPath, 'testcases_doc', testCases)
+
+    return testCases
+}
+
+async function loadCSV(){
+    let csv = '.\\test\\utility\\markdown\\sample\\sample.csv'
+    let table = await csvTool.load(csv)
+    let testCases = csvTool.convertToTestCases(table)
+}
+
+//endregion
+
+//region errors
 async function updateErrorsDoc(){
     let mdFile = '.\\test\\utility\\markdown\\md\\chainErrors_20201229.md'
     let doc = await md2Doc(mdFile)
     let docFile = '.\\test\\testData\\errors.js'
-    markdownTool.saveJsFile(doc, docFile)
+    markdownTool.saveJsFile(doc, 'errors', docFile)
 }
 
 async function loadErrors(){
@@ -157,6 +187,7 @@ async function md2Doc(file){
 
     return doc
 }
+//endregion
 
 //endregion
 

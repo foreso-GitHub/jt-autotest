@@ -98,6 +98,55 @@ module.exports = markdownTool = {
 
     //endregion
 
+    //region parse testcase wiki
+
+    parseTestCaseWiki: function(content){
+        let lines = content.split('\r\n')
+        let testCaseLines = lines.slice(2, lines.length -1)
+        let testCases = []
+        for(let i = 0; i < testCaseLines.length; i++){
+            testCases.push(markdownTool.parseTestCaseLine(testCaseLines[i]))
+        }
+        return testCases
+    },
+
+    testCases2md: function(testCases){
+
+    },
+
+    parseTestCaseLine: function(line){
+        let cells = line.split('|')
+        let tsCells = []
+
+        for(let i = 0; i < cells.length; i++){
+            let cell = cells[i]
+                .replace(new RegExp(' ','g'), '')
+                .replace(new RegExp('\t','g'), '')
+                .replace(new RegExp('<br>','g'), '')
+
+            if(!((i == 0 || i == cells.length - 1) && cell == '')){
+                tsCells.push(cell)
+            }
+        }
+
+        let testCase
+        if(tsCells.length == 5){
+            testCase = {}
+            testCase.code = tsCells[0]
+            testCase.title = tsCells[1]
+            testCase.precondition = tsCells[2]
+            testCase.input = tsCells[3]
+            testCase.expetedResult = tsCells[4]
+        }
+        else{
+            console.log('Parse test cases error: not 5 cells in line!');
+        }
+
+        return testCase
+    },
+
+    //endregion
+
     //region utility
 
     getLastMark: function(marks, offset){
@@ -207,10 +256,10 @@ module.exports = markdownTool = {
         })
     },
 
-    saveJsFile: function(jsonObject, file){
+    saveJsFile: function(jsonObject, moduleName, file){
         let destFile = testUtility.updatePath(file)
         return new Promise(async (resolve, reject) =>{
-            let moduleName = 'errors'
+            // let moduleName = 'errors'
             let fileString = 'let ' + moduleName + ' = '
                 + JSON.stringify(jsonObject)
                 + '\r\nmodule.exports = { ' + moduleName +' }'
