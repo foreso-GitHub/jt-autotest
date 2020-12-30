@@ -215,7 +215,7 @@ module.exports = tcsPressureSendTx = {
             testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
             let expectedError = framework.getError(-284)
-            expectedError.information = 'Malformed: Sequence is not in the past.'
+            expectedError.information = 'sequence must be positive integer'
             let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
             let sendTxExpectedResult = signTxExpectedResult
             testCase.executeFunction = function(testCase){
