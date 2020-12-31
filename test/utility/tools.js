@@ -13,7 +13,6 @@ let creator = new ChainDataCreator()
 const netStatusTool = require("./monitor/netStatusTool")
 const nodeStatusTool = require("./monitor/nodeStatusTool")
 const { modes, } = require("../config/config")
-const framekwork = require('../framework/framework')
 
 const reportComparor = require('./reportComparor/mochaReportComparor')
 const markdownTool = require('./markdown/markdownTool')
@@ -24,15 +23,21 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 //region work dock
 
 // init()
+
 // setNetStatus()
 // setNodeStatus()
 // getAllTxBlock()
+
 // compare()
-// updateTestCaseDoc()
-// updateErrorsDoc()
+
+// upgradeChain('20201231')
+
+// updateErrorsDoc('..\\ipfslib.wiki\\chain错误信息整理.md')
 // loadErrors()
-// upgradeChain('20201230')
-loadCSV()
+
+updateTestCaseDoc('.\\test\\utility\\markdown\\sample\\ipfslib.wiki\\测试用例3.md')
+// loadTestCases()
+// loadCSV()
 
 //endregion
 
@@ -115,12 +120,8 @@ function printBar(tps){
 async function compare(){
 
     let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
-    // let file1 = path + '\\baselines\\base-mochawesome-report-20201111d-no_exp-ws\\' + 'mochawesome.json'
-    // let file1 = path + '\\normal\\mochawesome-report-20201116a-no_exp-rpc\\' + 'mochawesome.json'
-    // let file1 = path + '\\normal\\mochawesome-report-20201121b-no_exp-ws\\' + 'mochawesome.json'
-    // let file1 = path + '\\normal\\mochawesome-report-20201209c-no_exp-ws\\' + 'mochawesome.json'
-    let file1 = path + '\\baselines\\base-mochawesome-report-20201230a-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201230d-no_exp-ws\\' + 'mochawesome.json'
+    let file1 = path + '\\baselines\\base-mochawesome-report-20201231a-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20201231a-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
@@ -133,20 +134,27 @@ async function compare(){
 //region markdown
 
 //region testcases
-async function updateTestCaseDoc(){
-    let mdFile = '.\\test\\utility\\markdown\\sample\\testcase.md'
+
+async function updateTestCaseDoc(mdFile){
+    // let mdFile = '.\\test\\utility\\markdown\\sample\\testcase.md'
     let doc = await tsmd2Doc(mdFile)
     let docFile = '.\\test\\testData\\testcase.js'
     markdownTool.saveJsFile(doc, 'testCases', docFile)
 }
 
-async function tsmd2Doc(file){
-    let content = await markdownTool.load(file, 'utf8',)
-    let testCases = markdownTool.parseTestCaseWiki(content)
-    // markdownTool.printDoc(doc)
+async function ts2Doc(indexFile){
+    let indexContent = await utility.loadFile(indexFile, 'utf8',)
 
-    let resultsPath = '.\\test\\utility\\markdown\\results\\'
-    utility.saveJsonFile(resultsPath, 'testcases_doc', testCases)
+    return testCases
+}
+
+async function tsmd2Doc(file){
+    let content = await utility.loadFile(file, 'utf8',)
+    let testCases = markdownTool.parseTestCaseWiki(content)
+
+    // markdownTool.printDoc(doc)
+    // let resultsPath = '.\\test\\utility\\markdown\\results\\'
+    // utility.saveJsonFile(resultsPath, 'testcases_doc', testCases)
 
     return testCases
 }
@@ -157,35 +165,37 @@ async function loadCSV(){
     let testCases = csvTool.convertToTestCases(table)
     let content = markdownTool.testCases2md_style_2(testCases)
     let md = '.\\test\\utility\\markdown\\results\\testcases_' + utility.getNowDateTimeString() + '.md'
-    await markdownTool.saveFile(md, content)
-
+    await utility.saveFile(md, content)
 }
 
 //endregion
 
 //region errors
-async function updateErrorsDoc(){
-    let mdFile = '.\\test\\utility\\markdown\\md\\chainErrors_20201229.md'
+
+async function updateErrorsDoc(mdFile){
+    // let mdFile = '.\\test\\utility\\markdown\\md\\chainErrors_20201229.md'
     let doc = await md2Doc(mdFile)
     let docFile = '.\\test\\testData\\errors.js'
     markdownTool.saveJsFile(doc, 'errors', docFile)
 }
 
 async function loadErrors(){
-    let docFile = '.\\test\\testData\\errors.json'
-    let doc = await loadDoc(docFile)
+    let docFile = '.\\test\\testData\\errors.js'
+    let content = await utility.loadFile(docFile)
+    let jsonString = errorsJs2Json(content)
+    let doc = JSON.parse(jsonString)
     let map = markdownTool.doc2Map(doc)
     markdownTool.printMap(map)
 }
 
-async function loadDoc(file){
-    let doc = await utility.loadJsonFile(file)
-    // markdownTool.printDoc(doc)
-    return doc
+function errorsJs2Json(content){
+    return content
+        .replace(new RegExp('let errors = ', 'g'), '')
+        .replace(new RegExp('module.exports = \{ errors \}', 'g'), '')
 }
 
 async function md2Doc(file){
-    let content = await markdownTool.load(file, 'utf8',)
+    let content = await utility.loadFile(file, 'utf8',)
     let doc = markdownTool.parseErrorWiki(content)
     markdownTool.printDoc(doc)
 

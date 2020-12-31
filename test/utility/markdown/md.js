@@ -17,7 +17,7 @@ async function loadDoc(){
 }
 
 async function run(){
-    let content = await tool.load(file, 'utf8',)
+    let content = await utility.loadFile(file, 'utf8',)
     let doc = tool.parseErrorWiki(content)
     tool.printDoc(doc)
 
@@ -26,7 +26,7 @@ async function run(){
 }
 
 async function convert(){
-    let content = await tool.load(file, 'utf8',)
+    let content = await utility.loadFile(file, 'utf8',)
     let doc = tool.parseErrorWiki(content)
     // printDoc(doc)
 

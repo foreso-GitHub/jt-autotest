@@ -111,23 +111,6 @@ module.exports = testUtility = {
             })
         })
     },
-
-    copyFile: function(srcFilePath, destFilePath){
-        srcFilePath = testUtility.updatePath(srcFilePath)
-        destFilePath = testUtility.updatePath(destFilePath)
-        return new Promise((resolve, reject) =>{
-            fs.copyFile(srcFilePath, destFilePath,function(err){
-                if(err) {
-                    console.log('Copy file error: ' + err)
-                    reject(err)
-                }
-                else {
-                    console.log('Copy file succeed! From [' + srcFilePath + '] to [' + destFilePath + ']!')
-                    resolve(destFilePath)
-                }
-            })
-        })
-    },
     //endregion
 
     //region load/save json file
@@ -183,6 +166,54 @@ module.exports = testUtility = {
             })
         })
     },
+    //endregion
+
+    //region load/save/copy file
+
+    saveFile: function(file, content){
+        let destFile = testUtility.updatePath(file)
+        return new Promise(async (resolve, reject) =>{
+            fs.writeFile(destFile, content, function (err) {
+                if (err) {
+                    console.log(err)
+                    reject(err)
+                } else {
+                    console.log(destFile + ' has been saved!')
+                    resolve(destFile)
+                }
+            })
+        })
+    },
+
+    loadFile: function(file, encoding){
+        file = testUtility.updatePath(file)
+        return new Promise((resolve, reject) => {
+            fs.readFile(file, encoding ? encoding : 'utf8', function (err, data) {
+                if (err) {
+                    throw err
+                }
+                resolve(data.toString())
+            })
+        })
+    },
+
+    copyFile: function(srcFilePath, destFilePath){
+        srcFilePath = testUtility.updatePath(srcFilePath)
+        destFilePath = testUtility.updatePath(destFilePath)
+        return new Promise((resolve, reject) =>{
+            fs.copyFile(srcFilePath, destFilePath,function(err){
+                if(err) {
+                    console.log('Copy file error: ' + err)
+                    reject(err)
+                }
+                else {
+                    console.log('Copy file succeed! From [' + srcFilePath + '] to [' + destFilePath + ']!')
+                    resolve(destFilePath)
+                }
+            })
+        })
+    },
+
     //endregion
 
     //region windows/linux path

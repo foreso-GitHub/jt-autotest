@@ -14,7 +14,7 @@ function testAll(){
 }
 
 async function testParse(){
-    let content = await tool.load(file, 'utf8',)
+    let content = await utility.loadFile(file, 'utf8',)
     let doc = tool.parseErrorWiki(content)
     let baselineDoc = await utility.loadJsonFile(baselinePath + baselineDocFile)
     let result = JSON.stringify(doc) === JSON.stringify(baselineDoc)
@@ -22,7 +22,7 @@ async function testParse(){
 }
 
 async function testDoc2Map(){
-    let content = await tool.load(file, 'utf8',)
+    let content = await utility.loadFile(file, 'utf8',)
     let doc = tool.parseErrorWiki(content)
     let map = tool.doc2Map(doc)
     let baselineMap = await utility.loadJsonFile(baselinePath + baselineMapFile)

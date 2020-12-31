@@ -272,17 +272,6 @@ module.exports = markdownTool = {
         return true
     },
 
-    load: function(file){
-        return new Promise((resolve, reject) => {
-            fs.readFile(file, 'utf8', function (err, data) {
-                if (err) {
-                    throw err
-                }
-                resolve(data)
-            })
-        })
-    },
-
     //endregion
 
     //region print
