@@ -91,25 +91,29 @@ module.exports = testUtility = {
     //endregion
 
     //region save js file
-    saveJsFile: function(moduleName, jsonObject, filePath){
-        filePath = testUtility.updatePath(filePath)
+    saveJsFile: function(jsonObject, moduleName, file){
+        let destFile = testUtility.updatePath(file)
         return new Promise(async (resolve, reject) =>{
-            let destFile = testUtility.updatePath(commonPaths.test_data_backup_path)
-                + moduleName + '_backup_' + testUtility.getNowDateTimeString() + '.js'
-            await testUtility.copyFile(filePath, destFile)  //backup
             let fileString = 'let ' + moduleName + ' = '
                 + JSON.stringify(jsonObject)
                 + '\r\nmodule.exports = { ' + moduleName +' }'
-            fs.writeFile(filePath, fileString, function (err) {
+            fs.writeFile(destFile, fileString, function (err) {
                 if (err) {
-                    logger.info(err)
+                    console.log(err)
                     reject(err)
                 } else {
-                    logger.info('Accounts js saved: ' + filePath)
+                    console.log(moduleName + ' js saved: ' + destFile)
                     resolve(jsonObject)
                 }
             })
         })
+    },
+
+    backupFile: async function(moduleName, file){
+        filePath = testUtility.updatePath(file)
+        let destFile = testUtility.updatePath(commonPaths.test_data_backup_path)
+            + moduleName + '_backup_' + testUtility.getNowDateTimeString() + '.js'
+        await testUtility.copyFile(filePath, destFile)  //backup
     },
     //endregion
 

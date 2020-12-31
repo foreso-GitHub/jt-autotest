@@ -306,58 +306,6 @@ module.exports = markdownTool = {
     },
     //endregion
 
-    //region save js file
-    saveDocFile: function(jsonObject, file){
-        let destFile = testUtility.updatePath(file)
-        return new Promise(async (resolve, reject) =>{
-            let moduleName = 'errors'
-            fs.writeFile(destFile, JSON.stringify(jsonObject), function (err) {
-                if (err) {
-                    console.log(err)
-                    reject(err)
-                } else {
-                    console.log(moduleName + ' json saved: ' + destFile)
-                    resolve(jsonObject)
-                }
-            })
-        })
-    },
-
-    saveJsFile: function(jsonObject, moduleName, file){
-        let destFile = testUtility.updatePath(file)
-        return new Promise(async (resolve, reject) =>{
-            // let moduleName = 'errors'
-            let fileString = 'let ' + moduleName + ' = '
-                + JSON.stringify(jsonObject)
-                + '\r\nmodule.exports = { ' + moduleName +' }'
-            fs.writeFile(destFile, fileString, function (err) {
-                if (err) {
-                    console.log(err)
-                    reject(err)
-                } else {
-                    console.log(moduleName + ' js saved: ' + destFile)
-                    resolve(jsonObject)
-                }
-            })
-        })
-    },
-
-    saveFile: function(file, content){
-        let destFile = testUtility.updatePath(file)
-        return new Promise(async (resolve, reject) =>{
-            fs.writeFile(destFile, content, function (err) {
-                if (err) {
-                    console.log(err)
-                    reject(err)
-                } else {
-                    console.log(destFile + ' has been saved!')
-                    resolve(destFile)
-                }
-            })
-        })
-    },
-    //endregion
-
 }
 
 

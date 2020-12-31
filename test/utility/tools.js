@@ -35,7 +35,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // updateErrorsDoc('..\\ipfslib.wiki\\chain错误信息整理.md')
 // loadErrors()
 
-updateTestCaseDoc('.\\test\\utility\\markdown\\sample\\ipfslib.wiki\\测试用例3.md')
+// updateTestCaseDoc('.\\test\\utility\\markdown\\sample\\ipfslib.wiki\\测试用例3.md')
 // loadTestCases()
 // loadCSV()
 
@@ -139,7 +139,7 @@ async function updateTestCaseDoc(mdFile){
     // let mdFile = '.\\test\\utility\\markdown\\sample\\testcase.md'
     let doc = await tsmd2Doc(mdFile)
     let docFile = '.\\test\\testData\\testcase.js'
-    markdownTool.saveJsFile(doc, 'testCases', docFile)
+    utility.saveJsFile(doc, 'testCases', docFile)
 }
 
 async function ts2Doc(indexFile){
@@ -176,7 +176,7 @@ async function updateErrorsDoc(mdFile){
     // let mdFile = '.\\test\\utility\\markdown\\md\\chainErrors_20201229.md'
     let doc = await md2Doc(mdFile)
     let docFile = '.\\test\\testData\\errors.js'
-    markdownTool.saveJsFile(doc, 'errors', docFile)
+    utility.saveJsFile(doc, 'errors', docFile)
 }
 
 async function loadErrors(){

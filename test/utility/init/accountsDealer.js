@@ -391,8 +391,8 @@ function accountsDealer() {
                         createCount++
                         if(createCount == needCreateMode.length) {
                             if(needSaveAccountsJsFile){
-                                await utility.saveJsFile('modeAccounts', modeAccounts,
-                                    utility.updatePath(commonPaths.accounts_js_file_path))
+                                await utility.backupFile('modeAccounts', commonPaths.accounts_js_file_path)
+                                await utility.saveJsFile(modeAccounts, 'modeAccounts', commonPaths.accounts_js_file_path)
                                 result.modeAccounts = modeAccounts
                                 result.needCreateModes = needCreateMode
                                 resolve(result)
