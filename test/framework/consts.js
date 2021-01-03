@@ -228,7 +228,13 @@ module.exports = consts = {
             "checksum": "72973ab08899c404ac4998f2e79c8b5fac0e199e",
             "time": "20201231",
             "version": "v0.5.3-dev"
+        },
+        '20210102':{
+            "checksum": "c85d82ae7cb89316bf2190fcd7450f635d5eaf98",
+            "time": "20210102",
+            "version": "v0.5.3-dev"
         }
+
     },
     //endregion
 
