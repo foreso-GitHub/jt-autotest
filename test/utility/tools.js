@@ -35,9 +35,11 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // updateErrorsDoc('..\\ipfslib.wiki\\chain错误信息整理.md')
 // loadErrors()
 
-// updateTestCaseDoc('.\\test\\utility\\markdown\\sample\\ipfslib.wiki\\', '测试用例3.md')
-// loadTestCases()
-csv2Md()
+// csv2Md()
+// updateTestCaseDoc('..\\ipfslib.wiki\\', '_TestCase_Index.md')
+// loadTestCasesFromMdFiles('..\\ipfslib.wiki\\', '_TestCase_Index.md')
+// updateTestCaseJson('..\\ipfslib.wiki\\', '_TestCase_Index.md')
+// loadTestCasesFromJson('.\\test\\utility\\markdown\\json\\testcase.json')
 
 //endregion
 
@@ -135,47 +137,35 @@ async function compare(){
 
 //region testcases
 
-async function updateTestCaseDoc(path, indexFile){
-    // let mdFile = '.\\test\\utility\\markdown\\sample\\testcase.md'
-    let doc = await ts2Doc(path, indexFile)
-    let docFile = '.\\test\\testData\\testcase.js'
-    utility.saveJsFile(doc, 'testCases', docFile)
-}
-
-async function ts2Doc(path, indexFile){
-    let indexContent = await utility.loadFile(path + indexFile, 'utf8',)
-    let lines = indexContent.split('\r\n')
-    let files = []
-    for(let i = 0; i < lines.length; i++){
-        let line = lines[i]
-        if(line.indexOf('* [') != -1){
-            let start = line.indexOf('](./') + 4
-            files.push(line.substring(start, line.length - 1))
-        }
-    }
-
-    let testCases = []
-    for(let i = 0; i < files.length; i++){
-        testCases = testCases.concat(await tsmd2Doc(path + files[i] + '.md'))
-    }
-
-    return testCases
-}
-
-async function tsmd2Doc(file){
-    let content = await utility.loadFile(file, 'utf8',)
-    let testCases = markdownTool.parseTestCaseWiki_style_2(content)
-    // markdownTool.printDoc(doc)
-    // let resultsPath = '.\\test\\utility\\markdown\\results\\'
-    // utility.saveJsonFile(resultsPath, 'testcases_doc', testCases)
-
-    return testCases
-}
-
 async function csv2Md(){
     let csvPath = '.\\test\\utility\\markdown\\csv\\20201231'
     let mdPath = '.\\test\\utility\\markdown\\md\\20201231'
     await markdownTool.csv2Md(csvPath, mdPath)
+}
+
+async function updateTestCaseDoc(path, indexFile){
+    let testCases = await markdownTool.ts2Doc(path, indexFile)
+    let docFile = '.\\test\\testData\\testcase.js'
+    utility.saveJsFile(testCases, 'testCases', docFile)
+}
+
+async function loadTestCasesFromMdFiles(path, indexFile){
+    let testCases = await markdownTool.ts2Doc(path, indexFile)
+    console.log('testcases count: ' + testCases.length)
+    return testCases
+}
+
+async function updateTestCaseJson(path, indexFile){
+    let testCases = await markdownTool.ts2Doc(path, indexFile)
+    let docFile = '.\\test\\utility\\markdown\\json\\testcase.json'
+    utility.saveFile(docFile, JSON.stringify(testCases))
+}
+
+async function loadTestCasesFromJson(jsonPath){
+    let content = await utility.loadFile(jsonPath)
+    let testCases = JSON.parse(content)
+    console.log('testcases count: ' + testCases.length)
+    return testCases
 }
 
 //endregion

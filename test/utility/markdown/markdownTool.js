@@ -436,6 +436,36 @@ module.exports = markdownTool = {
 
     //endregion
 
+    //region md2testcases
+
+    ts2Doc: async function(path, indexFile){
+        let indexContent = await utility.loadFile(path + indexFile, 'utf8',)
+        let lines = indexContent.split('\r\n')
+        let files = []
+        for(let i = 0; i < lines.length; i++){
+            let line = lines[i]
+            if(line.indexOf('* [') != -1){
+                let start = line.indexOf('](./') + 4
+                files.push(line.substring(start, line.length - 1))
+            }
+        }
+
+        let testCases = []
+        for(let i = 0; i < files.length; i++){
+            testCases = testCases.concat(await markdownTool.tsmd2Doc(path + files[i] + '.md'))
+        }
+
+        return testCases
+    },
+
+    tsmd2Doc: async function(file){
+        let content = await utility.loadFile(file, 'utf8',)
+        let testCases = markdownTool.parseTestCaseWiki_style_2(content)
+        return testCases
+    },
+
+    //endregion
+
     //endregion
 
     //region utility
