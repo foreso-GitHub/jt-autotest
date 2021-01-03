@@ -23,14 +23,18 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 //region work dock
 
 // init()
+// compare()
+// upgradeChain('20210102b')
+
+//region set status
 
 // setNetStatus()
 // setNodeStatus()
 // getAllTxBlock()
 
-// compare()
+//endregion
 
-// upgradeChain('20210102b')
+//region update errors and testcases
 
 // updateErrorsDoc('..\\ipfslib.wiki\\chain错误信息整理.md')
 // loadErrors()
@@ -40,6 +44,8 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // loadTestCasesFromMdFiles('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // updateTestCaseJson('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // loadTestCasesFromJson('.\\test\\utility\\markdown\\json\\testcase.json')
+
+//endregion
 
 //endregion
 
@@ -151,7 +157,7 @@ async function updateTestCaseDoc(path, indexFile){
 
 async function loadTestCasesFromMdFiles(path, indexFile){
     let testCases = await markdownTool.ts2Doc(path, indexFile)
-    console.log('testcases count: ' + testCases.length)
+    markdownTool.printTestCases(testCases)
     return testCases
 }
 
@@ -164,7 +170,7 @@ async function updateTestCaseJson(path, indexFile){
 async function loadTestCasesFromJson(jsonPath){
     let content = await utility.loadFile(jsonPath)
     let testCases = JSON.parse(content)
-    console.log('testcases count: ' + testCases.length)
+    markdownTool.printTestCases(testCases)
     return testCases
 }
 

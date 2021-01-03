@@ -544,6 +544,22 @@ module.exports = markdownTool = {
             printFunc(array[i])
         }
     },
+
+    printTestCase: function(testCase){
+        console.log(
+            testCase.code.toString()
+            + ': '
+            + testCase.title.toString()
+        )
+    },
+
+    printTestCases: function(testCases){
+        testCases.forEach(testCase =>{
+            markdownTool.printTestCase(testCase)
+        })
+        console.log('Total test cases count: ' + testCases.length)
+    },
+
     //endregion
 
 }
