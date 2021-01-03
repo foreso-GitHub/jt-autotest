@@ -1,0 +1,1020 @@
+JSON-RPC methods,用例编号,用例编号（新）,用例标题,预置条件,输入,预期结果,测试结果,失败原因
+jt_sendTransaction,0010,jt_sendTransaction_000010,发起底层币有效交易_01,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额不超过发起钱包余额；
+交易额只填数字",返回结果有交易哈希,PASS,
+,0020,jt_sendTransaction_000020,发起底层币有效交易_02,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额不超过发起钱包余额；
+交易额填""1/swt""或“100/SWT”等",返回结果有交易哈希,PASS,
+,0030,jt_sendTransaction_000030,发起底层币无效交易_01,发起钱包有底层币,"正确的发起钱包；
+错误的秘钥或者没有秘钥；
+正确的接收钱包地址；
+交易额不超过发起钱包余额",返回相应提示,,
+,0040,jt_sendTransaction_000040,发起底层币无效交易_02,,"错误的发起钱包地址（乱码字符串）；
+正确的接收钱包地址；",返回相应提示：Bad account address,,
+,0050,jt_sendTransaction_000050,发起底层币无效交易_03,发起钱包有底层币,"正确的发起钱包和秘钥；
+错误的接收钱包地址（乱码字符串）；
+交易额不超过发起钱包余额",返回相应提示,,
+,0060,jt_sendTransaction_000060,发起底层币无效交易_04,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额超过发起钱包余额",返回相应提示,,
+,0070,jt_sendTransaction_000070,发起底层币无效交易_05,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额为负数",返回相应提示,,
+,0080,jt_sendTransaction_000080,发起底层币无效交易_06,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额为空或者字符串",返回相应提示,,
+,0090,jt_sendTransaction_000090,发起底层币无效交易_07,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额为小于1的正小数",返回相应提示,,
+,0100,jt_sendTransaction_000100,发起底层币无效交易_08,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额为大于1的小数",返回相应提示,,
+,0110,jt_sendTransaction_000110,发起底层币无效交易_09,发起钱包有底层币,"正确的发起钱包和秘钥；
+正确的接收钱包地址；
+交易额为负小数：-0.1、-1.23等",返回相应提示,,
+,0120,jt_sendTransaction_000120,发起带有效memo的交易_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",memo格式为："memos":["大家好"],"返回结果有交易哈希；
+通过交易哈希查询该交易，可以看到保存的memo十六进制信息",,
+,0130,jt_sendTransaction_000130,发起带有效memo的交易_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；","memo格式为： ""memos"":[{""type"":""ok"",""format"":""utf8"",""data"":""E5A4A7E5AEB6E5A5BD""}]","返回结果有交易哈希；
+通过交易哈希查询该交易，可以看到保存的memo",,
+,0140,jt_sendTransaction_000140,发起带无效memo的交易_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；","memo格式为：""memos"":[""大家好""]；
+memo内容使整个交易内容超过900K",交易失败并返回相应提示信息,,
+,0150,jt_sendTransaction_000150,发起带无效memo的交易_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；","memo格式为： ""memos"":[{""type"":""ok"",""format"":""utf8"",""data"":""E5A4A7E5AEB6E5A5BD""}]；
+memo内容使整个交易内容超过900K",交易失败并返回相应提示信息,,
+,0160,jt_sendTransaction_000160,发起带有效fee的交易_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee为默认值12,交易成功，发起钱包的余额为：原余额-交易额-fee,,
+,0170,jt_sendTransaction_000170,发起带有效fee的交易_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee比12小，但是足以发起成功的交易,交易成功，发起钱包的余额为：原余额-交易额-fee,,
+,0180,jt_sendTransaction_000180,发起带有效fee的交易_03,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee比12大但小于钱包余额,交易成功，发起钱包的余额为：原余额-交易额-fee,,
+,0190,jt_sendTransaction_000190,发起带无效fee的交易_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee比12小（比如5），但是不足以发起成功的交易,交易失败并返回相应提示信息,,
+,0200,jt_sendTransaction_000200,发起带无效fee的交易_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee为0,交易失败并返回相应提示信息,,
+,0210,jt_sendTransaction_000210,发起带无效fee的交易_03,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee为大于0的小数，比如12.5、5.5,交易失败并返回相应提示信息,,
+,0220,jt_sendTransaction_000220,发起带无效fee的交易_04,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee为大于发起钱包底层币余额的整数,交易失败并返回相应提示信息,,
+,0230,jt_sendTransaction_000230,发起带无效fee的交易_05,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee为负数，比如-3.5、-555等,交易失败并返回相应提示信息,,
+,0240,jt_sendTransaction_000240,发起带无效fee的交易_06,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",fee为字符串,交易失败并返回相应提示信息,,
+,0250,jt_sendTransaction_000250,发起token有效交易,"发起钱包有底层币作为燃料；
+发起钱包有token可发送；",参考”发起底层币有效交易“的测试用例（注意：token的交易额可以为小数，但是底层币不可以）,参考”发起底层币有效交易“的测试用例,,
+,0260,jt_sendTransaction_000260,发起token无效交易,发起钱包有底层币作为燃料；,参考”发起底层币无效交易“的测试用例,参考”发起底层币无效交易“的测试用例,,
+,0270,jt_sendTransaction_000270,发行不可增发不可销毁全局代币，发行量为正整数，total_supply格式为“100”,,"正确的发币参数，如：
+{
+    ""jsonrpc"": ""2.0"",
+    ""method"": ""jt_sendTransaction"",
+    ""params"": [
+        {
+            ""type"": ""IssueCoin"",
+            ""from"": ""root"",
+            ""name"": ""ZYD TOKEN"",
+            ""symbol"": ""ZYDT"",
+            ""decimals"": 8,
+            ""total_supply"": ""10000000000000000""
+        }
+    ],
+    ""id"": 1
+}，发行量为正整数，total_supply格式为“100”",发币成功，返回哈希值,PASS,
+,0271,jt_sendTransaction_000271,发行不可增发不可销毁全局代币，发行量为正小数，total_supply格式为“100.5/USD”，小数位数小于等于decimals,,正确的发币参数，发行量为正小数，total_supply格式为“100.5/USD”，小数位数小于等于decimals，且USD与symbol一致,发币成功，返回哈希值,PASS,
+,0272,jt_sendTransaction_000272,发行不可增发不可销毁全局代币，发行量为正小数，total_supply格式为“100.5/USD”，小数位数大于decimals,,正确的发币参数，发行量为正小数，total_supply格式为“100.5/USD”，且USD与symbol一致，但小数位数大于decimals,发币失败，返回相应的提示信息,PASS,"{
+    ""error"": ""1 errors"",
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": ""error total_supply value"",
+            ""message"": {
+                ""decimals"": ""6"",
+                ""from"": ""jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J"",
+                ""local"": false,
+                ""name"": """",
+                ""symbol"": ""EET4"",
+                ""total_supply"": ""10000.1234567/EET4"",
+                ""type"": ""IssueCoin""
+            },
+            ""status"": -278,
+            ""type"": ""temINVALID""
+        }
+    ],
+    ""status"": -278,
+    ""type"": ""temINVALID""
+}"
+,0273,jt_sendTransaction_000273,发行不可增发不可销毁全局代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的发币参数，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,发币失败，返回相应的提示信息,PASS,
+,0280,jt_sendTransaction_000280,发行的全局代币可以交易，交易额为正整数,交易钱包有全局代币,发送代币，交易额为正整数,接收方能收到代币，余额变化正确,PASS,
+,0281,jt_sendTransaction_000281,发行的全局代币可以交易，交易额为正小数，小数位数小于等于代币decimals,交易钱包有全局代币,发送代币，交易额为正小数，小数位数小于等于代币decimals,接收方能收到代币，余额变化正确,PASS,
+,0282,jt_sendTransaction_000282,发行的全局代币可以交易，交易额为负数,交易钱包有全局代币,发送代币，交易额为负数,交易失败并返回相应提示信息,PASS,"{
+    ""error"": ""1 errors"",
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": ""value must be integer type and >= 0"",
+            ""message"": {
+                ""from"": ""jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J"",
+                ""to"": ""js3MF5kQkTG6NBVj9HEiw9cFe4ckNvMYGg"",
+                ""value"": ""-10/EET3""
+            },
+            ""status"": -278,
+            ""type"": ""temINVALID""
+        }
+    ],
+    ""status"": -278,
+    ""type"": ""temINVALID""
+}"
+,0283,jt_sendTransaction_000283,发行的全局代币可以交易，交易额为正小数，小数位数大于代币decimals,交易钱包有全局代币,发送代币，交易额为正小数，小数位数大于代币decimals,交易失败并返回相应提示信息,PASS,"{
+    ""error"": ""1 errors"",
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": ""error value value"",
+            ""message"": {
+                ""from"": ""jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J"",
+                ""to"": ""js3MF5kQkTG6NBVj9HEiw9cFe4ckNvMYGg"",
+                ""value"": ""10.1234567/EET3""
+            },
+            ""status"": -278,
+            ""type"": ""temINVALID""
+        }
+    ],
+    ""status"": -278,
+    ""type"": ""temINVALID""
+}"
+,0290,jt_sendTransaction_000290,发行不可增发不可销毁全局代币_无效的type参数,,type参数为非”IssueCoin“，比如：issuecoin、iSsueCoin、212332等,发行失败，返回相应提示,,
+,0300,jt_sendTransaction_000300,发行不可增发不可销毁全局代币_无效的from参数,,from参数为一个不存在的账户，比如：122、-sdfs等,发行失败，返回相应提示,,
+,0310,jt_sendTransaction_000310,发行不可增发不可销毁全局代币_无效的name参数,,name参数为一个无效的值，比如：很长的数字、很长的字符串,发行失败，返回相应提示,,
+,0320,jt_sendTransaction_000320,发行不可增发不可销毁全局代币_无效的symbol参数,,symbol参数为一个无效的值，比如：2332432、很长的字符串、被已有代币使用过的symbol等,发行失败，返回相应提示,,
+,0330,jt_sendTransaction_000330,发行不可增发不可销毁全局代币_无效的decimals参数,,decimals参数为一个无效的值，比如：sdfa、-23、0.5等,发行失败，返回相应提示,,
+,0340,jt_sendTransaction_000340,发行不可增发不可销毁全局代币_无效的total_supply参数,,total_supply参数为一个无效的值，比如：adfa、-122、-1.5等,发行失败，返回相应提示,,
+,0341,jt_sendTransaction_000341,发行不可增发不可销毁全局代币_total_supply超过900兆（9后面带18个0）,,total_supply参数格式为"100"或者"100/USD"，但总量超过900兆（9后面带18个0）,发行失败，返回相应提示,,"{
+    ""error"": ""1 errors"",
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": ""error total_supply value"",
+            ""message"": {
+                ""decimals"": ""6"",
+                ""from"": ""jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J"",
+                ""local"": false,
+                ""name"": """",
+                ""symbol"": ""EET5"",
+                ""total_supply"": ""9300000000000/EET5"",
+                ""type"": ""IssueCoin""
+            },
+            ""status"": -278,
+            ""type"": ""temINVALID""
+        }
+    ],
+    ""status"": -278,
+    ""type"": ""temINVALID""
+}"
+,0350,jt_sendTransaction_000350,发行可增发的全局代币，发行量为正整数，total_supply格式为“100”,,"正确的发币参数
+“flags”:        float64(data.TxCoinMintable | data.TxCoinBurnable)
+TxCoinMintable  TransactionFlag = 0x00010000，发行量为正整数，total_supply格式为“100”",发行成功,PASS,
+,0351,jt_sendTransaction_000351,发行可增发的全局代币，发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,PASS,"{
+    ""error"": ""1 errors"",
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": ""No permission issue."",
+            ""status"": -175,
+            ""type"": ""tefNO_PERMISSION_ISSUE""
+        }
+    ],
+    ""status"": 1000,
+    ""type"": ""tedCOMPOUND""
+}"
+,0352,jt_sendTransaction_000352,发行可增发的全局代币，发行量为正小数，total_supply格式为“100.5/USD”，小数位数小于等于decimals,,正确的发币参数，但是发行量是小数，total_supply格式为“100.5/USD”，小数位数小于等于decimals，且USD与symbol一致,发行成功,PASS,
+,0353,jt_sendTransaction_000353,发行可增发的全局代币，发行量为正小数，total_supply格式为“100.5/USD”，小数位数大于decimals,,正确的发币参数，但是发行量是小数，total_supply格式为“100.5/USD”，且USD与symbol一致，但小数位数大于decimals,发行失败，返回相应提示,PASS,
+,0354,jt_sendTransaction_000354,发行不可增发不可销毁全局代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的发币参数，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,发行失败，返回相应提示,PASS,
+,0360,jt_sendTransaction_000360,可增发的全局代币可以交易，交易额为正整数,,发送代币，交易额为正整数,接收方能收到代币，余额变化正确,PASS,
+,0361,jt_sendTransaction_000361,可增发的全局代币可以交易，交易额为正小数，小数位数小于等于代币decimals,,发送代币，交易额为正小数，小数位数小于等于代币decimals,接收方能收到代币，余额变化正确,PASS,
+,0362,jt_sendTransaction_000362,可增发的全局代币可以交易，交易额为负数,,发送代币，交易额为负数,交易失败并返回相应提示信息,PASS,
+,0363,jt_sendTransaction_000363,可增发的全局代币可以交易，交易额为正小数，小数位数大于代币decimals,,发送代币，交易额为正小数，小数位数大于代币decimals,交易失败并返回相应提示信息,PASS,
+,0370,jt_sendTransaction_000370,增发可增发的全局代币，total_supply为正整数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正整数，格式可以是"100"也可以是"100/USD",增发成功，余额变化正确,,
+,0371,jt_sendTransaction_000371,增发可增发的全局代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,增发失败,,
+,0372,jt_sendTransaction_000372,增发可增发的全局代币，total_supply为正小数，小数位数小于等于代币decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,增发成功，余额变化正确,PASS,
+,0373,jt_sendTransaction_000373,增发可增发的全局代币，total_supply为负数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为负数，格式可以是"100"也可以是"100/USD",增发失败,PASS,"{
+    ""error"": ""1 errors"",
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": ""total_supply must be integer type"",
+            ""message"": {
+                ""decimals"": ""6"",
+                ""flags"": 65536,
+                ""from"": ""jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J"",
+                ""local"": false,
+                ""name"": """",
+                ""symbol"": ""EET7"",
+                ""total_supply"": ""-920092/EET7"",
+                ""type"": ""IssueCoin""
+            },
+            ""status"": -278,
+            ""type"": ""temINVALID""
+        }
+    ],
+    ""status"": -278,
+    ""type"": ""temINVALID""
+}"
+,0374,jt_sendTransaction_000374,增发可增发的全局代币，total_supply为正小数，小数位数大于代币decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数大于代币decimals，USD与symbol一致,增发失败,PASS,
+,0375,jt_sendTransaction_000375,增发可增发的全局代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,增发失败,PASS,
+,0376,jt_sendTransaction_000376,增发可增发的全局代币，增发量可使代币余额超过900兆（9后面带18个0）,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，增发量可使代币余额超过900兆（9后面带18个0）,增发失败,FAIL,
+,0380,jt_sendTransaction_000380,销毁可增发的全局代币,,尝试销毁代币，flags为销毁参数，total_supply为负数,销毁失败,,
+,0390,jt_sendTransaction_000390,发行可销毁的全局代币，发行量为正整数,,"正确的发币参数
+“flags”:        float64(data.TxCoinMintable | data.TxCoinBurnable)
+TxCoinBurnable  TransactionFlag = 0x00020000，发行量为正整数，total_supply格式可以是""100""也可以是""100/USD""",发行成功,,
+,0391,jt_sendTransaction_000391,发行可销毁的全局代币_发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,,
+,0392,jt_sendTransaction_000392,发行可销毁的全局代币_发行量为正小数，小数位数小于等于decimals,,正确的发币参数，但是发行量是正小数，total_supply格式是"100.5/USD"，小数位数小于等于decimals，USD与symbol一致,发行成功,,
+,0393,jt_sendTransaction_000393,发行可销毁的全局代币_发行量为正小数，小数位数大于decimals,,正确的发币参数，但是发行量是正小数，total_supply格式是"100.5/USD"，小数位数大于decimals，USD与symbol一致,发行失败，返回相应提示,,
+,0394,jt_sendTransaction_000394,发行可销毁的全局代币_total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的发币参数，total_supply格式可以是"100"也可以是"100/USD"，但USD与symbol不一致,发行失败，返回相应提示,,
+,0400,jt_sendTransaction_000400,可销毁的全局代币可以交易，交易额为正整数,,发送代币，交易额为正整数,接收方能收到代币,,
+,0401,jt_sendTransaction_000401,可销毁的全局代币可以交易，交易额为正小数，小数位数小于等于代币decimals,,发送代币，交易额为正小数，小数位数小于等于代币decimals,接收方能收到代币,,
+,0402,jt_sendTransaction_000402,可销毁的全局代币可以交易，交易额为负数,,发送代币，交易额为负数,交易失败并返回相应提示信息,,
+,0403,jt_sendTransaction_000403,可销毁的全局代币可以交易，交易额为正小数，小数位数大于代币decimals,,发送代币，交易额为正小数，小数位数大于代币decimals,交易失败并返回相应提示信息,,
+,0410,jt_sendTransaction_000410,销毁可销毁的全局代币，total_supply为负整数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负整数，格式可以是"-100"也可以是"-100/USD",销毁成功,FAIL,
+,0411,jt_sendTransaction_000411,销毁可销毁的全局代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,销毁失败,,
+,0412,jt_sendTransaction_000412,销毁可销毁的全局代币，total_supply为负小数，小数位数小于等于代币decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,销毁成功,FAIL,
+,0413,jt_sendTransaction_000413,销毁可销毁的全局代币，total_supply为正数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为正数，格式可以是"100"也可以是"100/USD",销毁失败,PASS,
+,0414,jt_sendTransaction_000414,销毁可销毁的全局代币，total_supply为负小数，小数位数大于代币decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数大于代币decimals，USD与symbol一致,销毁失败,FAIL,
+,0415,jt_sendTransaction_000415,销毁可销毁的全局代币，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,销毁失败,FAIL,
+,0420,jt_sendTransaction_000420,无效地销毁可销毁的全局代币,,销毁的代币数量大于可销毁的代币,销毁失败,,
+,0430,jt_sendTransaction_000430,增发可销毁的全局代币,,尝试增发代币，flags为增发参数，total_supply为正数,增发失败,PASS,
+,0440,jt_sendTransaction_000440,发行既可增发又可销毁的全局代币，发行量为正整数,,正确的发币参数，发行量为正整数，total_supply格式可以是"100"也可以是"100/USD",发行成功,PASS,
+,0441,jt_sendTransaction_000441,发行既可增发又可销毁的全局代币，发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,PASS,
+,0442,jt_sendTransaction_000442,发行既可增发又可销毁的全局代币，发行量为正小数，小数位数小于等于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数小于等于decimals，USD与symbol一致,发行成功,PASS,
+,0443,jt_sendTransaction_000443,发行既可增发又可销毁的全局代币，发行量为正小数，小数位数大于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数大于decimals，USD与symbol一致,发行失败，返回相应提示,PASS,
+,0444,jt_sendTransaction_000444,发行既可增发又可销毁的全局代币，total_supply格式是"100.5/USD"或"100/USD"，USD与symbol不一致,,正确的发币参数，total_supply格式是"100.5/USD"或"100/USD"USD与symbol不一致,发行失败，返回相应提示,PASS,
+,0450,jt_sendTransaction_000450,可增发可销毁的全局代币可以交易，交易额为正整数,,发送代币，交易额为正整数,交易成功，余额发生相应变化,PASS,
+,0451,jt_sendTransaction_000451,可增发可销毁的全局代币可以交易，交易额为正小数，小数位数小于等于decimals,,发送代币，交易额为正小数，小数位数小于等于decimals,交易成功，余额发生相应变化,FAIL,交易量为100，余额无变化
+,0452,jt_sendTransaction_000452,可增发可销毁的全局代币可以交易，交易额为负数,,发送代币，交易额为负数,交易失败并返回相应提示信息,PASS,
+,0453,jt_sendTransaction_000453,可增发可销毁的全局代币可以交易，交易额为正小数，小数位数大于decimals,,发送代币，交易额为正小数，小数位数大于decimals,交易失败并返回相应提示信息,PASS,
+,0460,jt_sendTransaction_000460,增发可增发可销毁的全局代币，total_supply为正整数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正整数，格式可以是"100"也可以是"100/USD",增发成功，余额变化正确,FAIL,增发量为100，余额无变化
+,0461,jt_sendTransaction_000461,增发可增发可销毁的全局代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,增发失败,PASS,
+,0462,jt_sendTransaction_000462,增发可增发可销毁的全局代币，total_supply为正小数，小数位数小于等于decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,增发成功，余额变化正确,FAIL,增发0.000001/USD，余额无变化
+,0463,jt_sendTransaction_000463,增发可增发可销毁的全局代币，total_supply为正小数，小数位数大于decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数大于代币decimals，USD与symbol一致,增发失败,PASS,
+,0464,jt_sendTransaction_000464,增发可增发可销毁的全局代币，total_supply格式为"100/USD"或"100.5/USD"，USD与symbol不一致,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,增发失败,PASS,
+,0465,jt_sendTransaction_000465,增发可增发可销毁的全局代币，增发量可使代币余额超过900兆（9后面带18个0）,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，增发量可使代币余额超过900兆（9后面带18个0）,增发失败,FAIL,
+,0470,jt_sendTransaction_000470,销毁可增发可销毁的全局代币，total_supply为负整数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负整数，格式可以是"-100"也可以是"-100/USD",销毁成功，余额变化正确,FAIL,
+,0471,jt_sendTransaction_000471,销毁可增发可销毁的全局代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,销毁失败,PASS,
+,0472,jt_sendTransaction_000472,销毁可增发可销毁的全局代币，total_supply为负小数，小数位数小于等于decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,销毁成功，余额变化正确,FAIL,
+,0473,jt_sendTransaction_000473,销毁可增发可销毁的全局代币，total_supply为正数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为正数,销毁边增发，增发成功，余额变化正确,PASS,
+,0474,jt_sendTransaction_000474,销毁可增发可销毁的全局代币，total_supply为负小数，小数位数大于decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数大于代币decimals，USD与symbol一致,销毁失败,,
+,0475,jt_sendTransaction_000475,销毁可增发可销毁的全局代币，total_supply格式为"100/USD"或"100.5/USD"，USD与symbol不一致,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,销毁失败,,
+,0480,jt_sendTransaction_000480,无效地销毁可增发可销毁的全局代币,,销毁的代币数量大于可销毁的代币,销毁失败,PASS,
+,0490,jt_sendTransaction_000490,发行带issuer的不可增发不可销毁本地代币，发行量为正整数,,正确的发币参数，发行量为正整数，total_supply格式可以是"100"也可以是"100/USD",发行成功,PASS,
+,0491,jt_sendTransaction_000491,发行带issuer的不可增发不可销毁本地代币，发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,PASS,
+,0492,jt_sendTransaction_000492,发行带issuer的不可增发不可销毁本地代币，发行量为正小数，小数位数小于等于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数小于等于decimals，USD与symbol一致,发行成功,PASS,
+,0493,jt_sendTransaction_000493,发行带issuer的不可增发不可销毁本地代币，发行量为正小数，小数位数大于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数大于decimals，USD与symbol一致,发行失败，返回相应提示,PASS,
+,0494,jt_sendTransaction_000494,发行带issuer的不可增发不可销毁本地代币，total_supply格式是"100.5/USD"或"100/USD"，USD与symbol不一致,,正确的发币参数，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,发行失败，返回相应提示,PASS,
+,0500,jt_sendTransaction_000500,带issuer的不可增发不可销毁本地代币可以交易，交易额为正整数,,发送代币，交易额为正整数,交易成功，余额发生相应变化,PASS,
+,0501,jt_sendTransaction_000501,带issuer的不可增发不可销毁本地代币可以交易，交易额为正小数，小数位数小于等于代币decimals,,发送代币，交易额为正小数小数位数小于等于代币decimals,交易成功，余额发生相应变化,FAIL,
+,0502,jt_sendTransaction_000502,带issuer的不可增发不可销毁本地代币可以交易，交易额为负数,,发送代币，交易额为负数,交易失败并返回相应提示信息,PASS,
+,0503,jt_sendTransaction_000503,带issuer的不可增发不可销毁本地代币可以交易，交易额为正小数，小数位数大于代币decimals,,发送代币，交易额为正小数小数位数大于代币decimals,交易失败并返回相应提示信息,PASS,
+,0510,jt_sendTransaction_000510,发行带issuer的可增发的本地代币，发行量为正整数,,正确的发币参数，但是发行量是正整数，total_supply格式可以是"100"也可以是"100/USD",发行成功,PASS,
+,0511,jt_sendTransaction_000511,发行带issuer的可增发的本地代币，发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,PASS,
+,0512,jt_sendTransaction_000512,发行带issuer的可增发的本地代币，发行量为正小数，小数位数小于等于decimals,,正确的发币参数，但是发行量是正小数，total_supply格式是"100.5/USD"，小数位数小于等于decimals，USD与symbol一致,发行成功,FAIL,https://github.com/caivega/ipfslib/issues/160
+,0513,jt_sendTransaction_000513,发行带issuer的可增发的本地代币，发行量为正小数，小数位数大于decimals，,,正确的发币参数，但是发行量是正小数，total_supply格式是"100.5/USD"，小数位数大于decimals，USD与symbol一致,发行失败，返回相应提示,FAIL,https://github.com/caivega/ipfslib/issues/160
+,0514,jt_sendTransaction_000514,发行带issuer的可增发的本地代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的发币参数，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,发行失败，返回相应提示,PASS,
+,0520,jt_sendTransaction_000520,带issuer的可增发的本地代币可以交易，交易额为正整数,,发送代币，交易额为正整数,交易成功，余额发生相应变化,FAIL,https://github.com/caivega/ipfslib/issues/164
+,0521,jt_sendTransaction_000521,带issuer的可增发的本地代币可以交易，交易额为正小数，小数位数小于等于代币decimals,,发送代币，交易额为正小数，小数位数小于等于代币decimals,交易成功，余额发生相应变化,FAIL,https://github.com/caivega/ipfslib/issues/164
+,0522,jt_sendTransaction_000522,带issuer的可增发的本地代币可以交易，交易额为负数,,发送代币，交易额为负数,交易失败并返回相应提示信息,PASS,
+,0523,jt_sendTransaction_000523,带issuer的可增发的本地代币可以交易，交易额为正小数，小数位数大于代币decimals,,发送代币，交易额为正小数，小数位数大于代币decimals,交易失败并返回相应提示信息,FAIL,https://github.com/caivega/ipfslib/issues/160
+,0530,jt_sendTransaction_000530,增发带issuer的可增发的本地代币，total_supply为正整数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正整数，格式可以是"100"也可以是"100/USD",增发成功，余额变化正确,FAIL,decimals是18，total_supply是1或99，增发后余额没变化，应该类似 https://github.com/caivega/ipfslib/issues/160
+,0531,jt_sendTransaction_000531,增发带issuer的可增发的本地代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,增发失败,PASS,
+,0532,jt_sendTransaction_000532,增发带issuer的可增发的本地代币，total_supply为正小数，小数位数小于等于代币decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,增发成功，余额变化正确,,
+,0533,jt_sendTransaction_000533,增发带issuer的可增发的本地代币，total_supply为负数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为负数,增发失败,PASS,
+,0534,jt_sendTransaction_000534,销毁带issuer的可增发的本地代币,,尝试销毁代币，flags为销毁参数，total_supply为负数,销毁失败,PASS,
+,0535,jt_sendTransaction_000535,增发带issuer的可增发的本地代币，total_supply为正小数，小数位数大于代币decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数大于代币decimals，USD与symbol一致,增发失败,PASS,
+,0536,jt_sendTransaction_000536,增发带issuer的可增发的本地代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,增发失败,PASS,
+,0537,jt_sendTransaction_000537,增发带issuer的可增发的本地代币，增发量可使代币余额超过900兆（9后面带18个0）,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，增发量可使代币余额超过900兆（9后面带18个0）,增发失败,,
+,0540,jt_sendTransaction_000540,发行带issuer的可销毁的本地代币，发行量为正整数,,正确的发币参数，发行量为正整数，total_supply格式可以是"100"也可以是"100/USD",发行成功,FAIL,"            ""decimals"": ""14"",
+            ""total_supply"": ""92000/AAT39"","
+,0541,jt_sendTransaction_000541,发行带issuer的可销毁的本地代币，发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,PASS,
+,0542,jt_sendTransaction_000542,发行带issuer的可销毁的本地代币，发行量为正小数，小数位数小于等于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数小于等于decimals，USD与symbol一致,发行成功,FAIL,"            ""decimals"": ""18"",
+            ""total_supply"": ""9.2/AAT37"",
+            ""decimals"": ""16"",
+            ""total_supply"": ""9.2/AAT37"","
+,0543,jt_sendTransaction_000543,发行带issuer的可销毁的本地代币，发行量为正小数，小数位数大于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数大于decimals，USD与symbol一致,发行失败，返回相应提示,PASS,
+,0544,jt_sendTransaction_000544,发行带issuer的可销毁的本地代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的发币参数，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,发行失败，返回相应提示,PASS,
+,0550,jt_sendTransaction_000550,带issuer的可销毁的本地代币可以交易，交易额为正整数,,发送代币，交易额为正整数,交易成功，余额发生相应变化,PASS,
+,0551,jt_sendTransaction_000551,带issuer的可销毁的本地代币可以交易，交易额为正小数，小数位数小于等于代币decimals,,发送代币，交易额为正小数，小数位数小于等于代币decimals,交易成功，余额发生相应变化,PASS,
+,0552,jt_sendTransaction_000552,带issuer的可销毁的本地代币可以交易，交易额为负数,,发送代币，交易额为负数,交易失败并返回相应提示信息,PASS,"{
+    ""error"": {
+        ""count"": 1,
+        ""description"": ""The compound error."",
+        ""information"": ""1 errors""
+    },
+    ""id"": 1,
+    ""jsonrpc"": ""2.0"",
+    ""result"": [
+        {
+            ""error"": {
+                ""description"": ""The transaction is ill-formed."",
+                ""information"": ""value must be integer type and >= 0"",
+                ""message"": {
+                    ""from"": ""jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J"",
+                    ""to"": ""js3MF5kQkTG6NBVj9HEiw9cFe4ckNvMYGg"",
+                    ""value"": ""-0.00000000000001/AAT40/jPdx7mG595P6CowtGYbxRkik9HdWUWtB2J""
+                }
+            },
+            ""status"": -278,
+            ""type"": ""temINVALID""
+        }
+    ],
+    ""status"": 1000,
+    ""type"": ""tedCOMPOUND""
+}"
+,0553,jt_sendTransaction_000553,带issuer的可销毁的本地代币可以交易，交易额为正小数，小数位数大于代币decimals,,发送代币，交易额为正小数，小数位数大于代币decimals,交易失败并返回相应提示信息,PASS,
+,0560,jt_sendTransaction_000560,销毁带issuer的可销毁的本地代币，total_supply为负整数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负整数，格式可以是"-100"也可以是"-100/USD",销毁成功，余额变化正确,PASS,
+,0561,jt_sendTransaction_000561,销毁带issuer的可销毁的本地代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,销毁失败,PASS,
+,0562,jt_sendTransaction_000562,销毁带issuer的可销毁的本地代币，total_supply为负小数，小数位数小于等于代币decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,销毁成功，余额变化正确,,
+,0563,jt_sendTransaction_000563,销毁带issuer的可销毁的本地代币，total_supply为正数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为正数，格式可以是"100"也可以是"100/USD",销毁失败,PASS,
+,0564,jt_sendTransaction_000564,增发带issuer的可销毁的本地代币,,尝试增发代币，flags为增发参数，total_supply为正数,增发失败,PASS,
+,0565,jt_sendTransaction_000565,销毁带issuer的可销毁的本地代币，total_supply为负小数，小数位数大于代币decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数大于代币decimals，USD与symbol一致,销毁失败,,
+,0566,jt_sendTransaction_000566,销毁带issuer的可销毁的本地代币，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,销毁失败,,
+,0570,jt_sendTransaction_000570,无效地销毁带issuer的可销毁的本地代币,,销毁的代币数量大于可销毁的代币,销毁失败,PASS,
+,0580,jt_sendTransaction_000580,发行带issuer的可增发可销毁的本地代币，发行量为正整数,,正确的发币参数，发行量为正整数，total_supply格式可以是"100"也可以是"100/USD",发行成功,,
+,0581,jt_sendTransaction_000581,发行带issuer的可增发可销毁的本地代币，发行量为负数,,正确的发币参数，但是发行量是负数,发行失败，返回相应提示,,
+,0582,jt_sendTransaction_000582,发行带issuer的可增发可销毁的本地代币，发行量为正小数，小数位数小于等于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数小于等于decimals，USD与symbol一致,发行成功,,
+,0583,jt_sendTransaction_000583,发行带issuer的可增发可销毁的本地代币，发行量为正小数，小数位数大于decimals,,正确的发币参数，发行量为正小数，total_supply格式是"100.5/USD"，小数位数大于decimals，USD与symbol一致,发行失败，返回相应提示,,
+,0584,jt_sendTransaction_000584,发行带issuer的可增发可销毁的本地代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的发币参数，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,发行失败，返回相应提示,,
+,0590,jt_sendTransaction_000590,带issuer的可增发可销毁的本地代币可以交易，交易额是正整数,,发送代币，交易额为正整数,交易成功，余额发生相应变化,,
+,0591,jt_sendTransaction_000591,带issuer的可增发可销毁的本地代币可以交易，交易额是正小数，小数位数小于等于代币decimals,,发送代币，交易额为正小数，小数位数小于等于代币decimals,交易成功，余额发生相应变化,,
+,0592,jt_sendTransaction_000592,带issuer的可增发可销毁的本地代币可以交易，交易额是负数,,发送代币，交易额是负数,交易失败并返回相应提示信息,,
+,0593,jt_sendTransaction_000593,带issuer的可增发可销毁的本地代币可以交易，交易额是正小数，小数位数大于decimals,,发送代币，交易额为正小数，小数位数大于decimals,交易失败并返回相应提示信息,,
+,0600,jt_sendTransaction_000600,增发带issuer的可增发可销毁的本地代币，total_supply是正整数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正整数，格式可以是"100"也可以是"100/USD",增发成功，余额变化正确,,
+,0601,jt_sendTransaction_000601,增发带issuer的可增发可销毁的本地代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,增发失败,,
+,0602,jt_sendTransaction_000602,增发带issuer的可增发可销毁的本地代币，total_supply是正小数，小数位数小于等于代币decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,增发成功，余额变化正确,,
+,0603,jt_sendTransaction_000603,增发带issuer的可增发可销毁的本地代币，total_supply是负数,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply是负数,增发失败,,
+,0604,jt_sendTransaction_000604,增发带issuer的可增发可销毁的本地代币，total_supply是正小数，小数位数大于代币decimals,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply为正小数，格式为"100.5/USD"，小数位数大于代币decimals，USD与symbol一致,增发失败,,
+,0605,jt_sendTransaction_000605,增发带issuer的可增发可销毁的本地代币，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为“100.5/USD”或"100/USD"，但USD与symbol不一致,增发失败,,
+,0606,jt_sendTransaction_000606,增发带issuer的可增发可销毁的本地代币，增发量可使代币余额超过900兆（9后面带18个0）,,正确的增发参数：name、decimal、flags等参数和发行代币时一致，增发量可使代币余额超过900兆（9后面带18个0）,增发失败,,
+,0610,jt_sendTransaction_000610,销毁带issuer的可增发可销毁的本地代币，total_supply是负整数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负整数，格式可以是"-100"也可以是"-100/USD",销毁成功，余额变化正确,,
+,0611,jt_sendTransaction_000611,销毁带issuer的可增发可销毁的本地代币_参数不一致,,name、decimal、flags等参数和发行代币时不一致,销毁失败,,
+,0612,jt_sendTransaction_000612,销毁带issuer的可增发可销毁的本地代币，total_supply是负小数，小数位数小于等于代币decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数小于等于代币decimals，USD与symbol一致,销毁成功，余额变化正确,,
+,0613,jt_sendTransaction_000613,销毁带issuer的可增发可销毁的本地代币，total_supply是正数,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply是正数,销毁失败,,
+,0614,jt_sendTransaction_000614,销毁带issuer的可增发可销毁的本地代币，total_supply是负小数，小数位数大于代币decimals,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply为负小数，格式为"-100.5/USD"，小数位数大于代币decimals，USD与symbol一致,销毁失败,,
+,0615,jt_sendTransaction_000615,销毁带issuer的可增发可销毁的本地代币，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,,正确的销毁参数：name、decimal、flags等参数和发行代币时一致，total_supply格式为"-100/USD"或"-100.5/USD"，USD与symbol不一致,销毁失败,,
+,0620,jt_sendTransaction_000620,无效地销毁带issuer的可增发可销毁的本地代币,,销毁的代币数量大于可销毁的代币,销毁失败,,
+,0630,jt_sendTransaction_000630,有效的sequence参数_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1,交易成功，余额发生相应变化,,
+,0640,jt_sendTransaction_000640,有效的sequence参数_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2,返回交易哈希，但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上,,
+,0650,jt_sendTransaction_000650,无效的sequence参数_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数,交易失败并返回相应提示信息,,
+,0660,jt_sendTransaction_000660,无效的sequence参数_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",指定sequence为正整数之外的其他值：小数、负数、字符串等,交易失败并返回相应提示信息,,
+,0670,jt_sendTransaction_000670,同时发起多个交易时指定sequence_01,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",假设发起钱包的sequence已经到了n，同时发起m个交易，指定每个交易的sequence分别为n+1、n+2、…、n+m,m个交易都成功，余额发生相应变化,,
+,0680,jt_sendTransaction_000680,同时发起多个交易时指定sequence_02,"发起钱包有底层币；
+正确的发起钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",假设发起钱包的sequence已经到了n，同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1,sequence为n+1的交易成功，余额发生相应变化。其他交易返回交易哈希，但是余额并没有发生相应变化,,
+,,,,,,,,
+,,,从编号jt_sendTransaction_002000开始，验证jt_sendTransaction的参数数组功能,,,,,
+,,,此部分用例都需要用jt_signTransaction和jt_sendRawTransaction再验证一遍,,,,,
+,2000,jt_sendTransaction_002000,交易参数组最大上限（1024）测试,,不断增加交易参数组的交易至1024组，且每个交易都是有效的交易,每个交易都成功,,
+,2010,jt_sendTransaction_002010,同一钱包向同一地址发起多个有效的底层币交易,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包向同一地址发送底层币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2020,jt_sendTransaction_002020,同一钱包向不同地址发起多个有效的底层币交易,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包向不同地址发送底层币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2030,jt_sendTransaction_002030,不同钱包向同一地址发起多个有效的底层币交易,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是不同钱包向同一地址发送底层币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2040,jt_sendTransaction_002040,不同钱包向不同地址发起多个有效的底层币交易,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是不同钱包向不同地址发送底层币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2050,jt_sendTransaction_002050,同一钱包发起多个底层币交易，交易总额大于余额,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包发起的底层币交易，其中每笔交易的交易额都小于余额，但交易总额大于余额,部分交易成功，部分失败,,
+,2060,jt_sendTransaction_002060,同一钱包发起多个底层币交易，fee不够,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包发起的底层币交易，交易总额小于余额，但是剩余的底层币只能满足部分交易的fee,部分交易成功，部分失败,,
+,2070,jt_sendTransaction_002070,不同钱包发起多个底层币交易,"发起钱包有底层币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A向另一个钱包发送底层币但是交易额大于钱包A余额，第二个交易是钱包B向钱包A发送底层币可使钱包A的余额大于第一个交易的交易额,第二个交易成功，第一个交易可能失败,,
+,2080,jt_sendTransaction_002080,同一钱包向同一地址发起多个有效的全局代币交易,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包向同一地址发送全局代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2090,jt_sendTransaction_002090,同一钱包向不同地址发起多个有效的全局代币交易,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包向不同地址发送全局代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2100,jt_sendTransaction_002100,不同钱包向同一地址发起多个有效的全局代币交易,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是不同钱包向同一地址发送全局代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2110,jt_sendTransaction_002110,不同钱包向不同地址发起多个有效的全局代币交易,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是不同钱包向不同地址发送全局代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2120,jt_sendTransaction_002120,同一钱包发起多个全局代币交易，交易总额大于余额,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包发起的全局代币交易，其中每笔交易的交易额都小于余额，但交易总额大于余额,部分交易成功，部分失败,,
+,2130,jt_sendTransaction_002130,同一钱包发起多个全局代币交易，fee不够,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包发起的全局代币交易，交易总额小于余额，但是钱包的底层币只能满足部分交易的fee,部分交易成功，部分失败,,
+,2140,jt_sendTransaction_002140,同一钱包发起多个发行全局代币交易，symbol都不相同且fee足够,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的发行全局代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都不相同且有效，fee足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的发币信息,,
+,2150,jt_sendTransaction_002150,同一钱包发起多个发行全局代币交易，symbol都不相同但fee不够,"发起钱包没有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的发行全局代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都不相同且有效，但是钱包的底层币只能满足部分交易的fee,部分交易成功，部分失败,,
+,2160,jt_sendTransaction_002160,同一钱包发起多个发行全局代币交易，symbol都相同,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的发行全局代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都相同且有效，fee足够,只有一个发币交易成功，其他都失败,,
+,2170,jt_sendTransaction_002170,不同钱包发起多个发行全局代币交易，symbol都相同,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是不同钱包发起的发行全局代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都相同且有效，fee足够,只有一个发币交易成功，其他都失败,,
+,2180,jt_sendTransaction_002180,同一钱包发起多个增发可增发全局代币交易，参数都有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发可增发全局代币交易，参数都有效,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2190,jt_sendTransaction_002190,同一钱包发起多个增发可增发全局代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发可增发全局代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为负数等等）,参数有效的交易成功，其他交易失败,,
+,2200,jt_sendTransaction_002200,同一钱包发起多个增发既可增发又可销毁全局代币交易，参数都有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发既可增发又可销毁全局代币交易，参数都有效,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2210,jt_sendTransaction_002210,同一钱包发起多个增发既可增发又可销毁全局代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发既可增发又可销毁全局代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为负数等等）,参数有效的交易成功，其他交易失败,,
+,2220,jt_sendTransaction_002220,同一钱包发起多个销毁可销毁全局代币交易，参数都有效，销毁总量小于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁可销毁全局代币交易，参数都有效，且销毁总量小于该代币余额,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2230,jt_sendTransaction_002230,同一钱包发起多个销毁可销毁全局代币交易，参数都有效，销毁总量大于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁可销毁全局代币交易，参数都有效，每个交易的销毁量都小于代币余额，但销毁总量大于代币余额,部分交易成功，部分失败,,
+,2240,jt_sendTransaction_002240,同一钱包发起多个销毁可销毁全局代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁可销毁全局代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为正数等等）,参数有效的交易成功，其他交易失败,,
+,2250,jt_sendTransaction_002250,同一钱包发起多个销毁既可增发又可销毁全局代币交易，参数都有效，销毁总量小于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁既可增发又可销毁全局代币交易，参数都有效，且销毁总量小于该代币余额,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2260,jt_sendTransaction_002260,同一钱包发起多个销毁既可增发又可销毁全局代币交易，参数都有效，销毁总量大于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁既可增发又可销毁全局代币交易，参数都有效，每个交易的销毁量都小于代币余额，但销毁总量大于代币余额,部分交易成功，部分失败,,
+,2270,jt_sendTransaction_002270,同一钱包发起多个销毁既可增发又可销毁全局代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁既可增发又可销毁全局代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为正数等等）,参数有效的交易成功，其他交易失败,,
+,2280,jt_sendTransaction_002280,同一钱包发起多个增发、销毁既可增发又可销毁全局代币交易，参数都有效，情况一,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组。第一个交易是销毁全局代币，销毁量小于余额；第二个交易是增发全局代币,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2290,jt_sendTransaction_002290,同一钱包发起多个增发、销毁既可增发又可销毁全局代币交易，参数都有效，情况二,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组。第一个交易是销毁全局代币，销毁量大于余额；第二个交易是增发全局代币，增发量和余额之和大于销毁量,增发交易成功，销毁交易可能失败,,
+,2300,jt_sendTransaction_002300,同一钱包发起多个增发、销毁既可增发又可销毁全局代币交易，参数都有效，情况三,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组。第一个交易是增发全局代币；第二个交易是销毁全局代币，销毁量大于增发量和余额之和,增发交易成功，销毁失败,,
+,2310,jt_sendTransaction_002310,不同钱包发起多个全局代币交易,"发起钱包有全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A向另一个钱包发送全局代币但是交易额大于钱包A余额，第二个交易是钱包B向钱包A发送全局代币可使钱包A的余额大于第一个交易的交易额,第二个交易成功，第一个交易可能失败,,
+,2320,jt_sendTransaction_002320,同一钱包发起发送、增发可增发全局代币交易,"发起钱包有可增发全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A向另一个钱包发送全局代币但是交易额大于钱包A余额，第二个交易是钱包A增发全局代币可使钱包A的余额大于第一个交易的交易额,第二个交易成功，第一个交易可能失败,,
+,2330,jt_sendTransaction_002330,同一钱包发起发送、销毁可销毁全局代币交易,"发起钱包有可销毁全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A销毁全局代币但是销毁量大于钱包A余额，第二个交易是钱包B向钱包A发送全局代币可使钱包A的余额大于第一个交易的销毁量,第二个交易成功，第一个交易可能失败,,
+,2340,jt_sendTransaction_002340,同一钱包发起本地币、全局代币交易,"发起钱包本地币和全局代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包往外发送本地币，使剩余的本地币不足以为交易参数组内其他交易提供足够的fee；参数组内其他交易是全局代币的发行、发送、增发、销毁等交易,部分交易成功，部分失败,,
+,2350,jt_sendTransaction_002350,同一钱包向同一地址发起多个有效的本地代币交易,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包向同一地址发送本地代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2360,jt_sendTransaction_002360,同一钱包向不同地址发起多个有效的本地代币交易,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包向不同地址发送本地代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2370,jt_sendTransaction_002370,不同钱包向同一地址发起多个有效的本地代币交易,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是不同钱包向同一地址发送本地代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2380,jt_sendTransaction_002380,不同钱包向不同地址发起多个有效的本地代币交易,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是不同钱包向不同地址发送本地代币，发送钱包的余额足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,2390,jt_sendTransaction_002390,同一钱包发起多个本地代币交易，交易总额大于余额,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包发起的本地代币交易，其中每笔交易的交易额都小于余额，但交易总额大于余额,部分交易成功，部分失败,,
+,2400,jt_sendTransaction_002400,同一钱包发起多个本地代币交易，fee不够,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，每个交易都是同一钱包发起的本地代币交易，交易总额小于余额，但是钱包的底层币只能满足部分交易的fee,部分交易成功，部分失败,,
+,2410,jt_sendTransaction_002410,同一钱包发起多个发行本地代币交易，symbol都不相同且fee足够,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的发行本地代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都不相同且有效，fee足够,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的发币信息,,
+,2420,jt_sendTransaction_002420,同一钱包发起多个发行本地代币交易，symbol都不相同但fee不够,"发起钱包没有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的发行本地代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都不相同且有效，但是钱包的底层币只能满足部分交易的fee,部分交易成功，部分失败,,
+,2430,jt_sendTransaction_002430,同一钱包发起多个发行本地代币交易，symbol都相同,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的发行本地代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都相同且有效，fee足够,只有一个发币交易成功，其他都失败,,
+,2440,jt_sendTransaction_002440,不同钱包发起多个发行本地代币交易，symbol都相同,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是不同钱包发起的发行本地代币交易，有不可增发不可销毁的，有可增发的，有可销毁的，有可增发可销毁的，symbol都相同且有效，fee足够,只有一个发币交易成功，其他都失败,,
+,2450,jt_sendTransaction_002450,同一钱包发起多个增发可增发本地代币交易，参数都有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发可增发本地代币交易，参数都有效,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2460,jt_sendTransaction_002460,同一钱包发起多个增发可增发本地代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发可增发本地代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为负数等等）,参数有效的交易成功，其他交易失败,,
+,2470,jt_sendTransaction_002470,同一钱包发起多个增发既可增发又可销毁本地代币交易，参数都有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发既可增发又可销毁本地代币交易，参数都有效,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2480,jt_sendTransaction_002480,同一钱包发起多个增发既可增发又可销毁本地代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的增发既可增发又可销毁本地代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为负数等等）,参数有效的交易成功，其他交易失败,,
+,2490,jt_sendTransaction_002490,同一钱包发起多个销毁可销毁本地代币交易，参数都有效，销毁总量小于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁可销毁本地代币交易，参数都有效，且销毁总量小于该代币余额,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2500,jt_sendTransaction_002500,同一钱包发起多个销毁可销毁本地代币交易，参数都有效，销毁总量大于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁可销毁本地代币交易，参数都有效，每个交易的销毁量都小于代币余额，但销毁总量大于代币余额,部分交易成功，部分失败,,
+,2510,jt_sendTransaction_002510,同一钱包发起多个销毁可销毁本地代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁可销毁本地代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为正数等等）,参数有效的交易成功，其他交易失败,,
+,2520,jt_sendTransaction_002520,同一钱包发起多个销毁既可增发又可销毁本地代币交易，参数都有效，销毁总量小于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁既可增发又可销毁本地代币交易，参数都有效，且销毁总量小于该代币余额,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2530,jt_sendTransaction_002530,同一钱包发起多个销毁既可增发又可销毁本地代币交易，参数都有效，销毁总量大于余额,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁既可增发又可销毁本地代币交易，参数都有效，每个交易的销毁量都小于代币余额，但销毁总量大于代币余额,部分交易成功，部分失败,,
+,2540,jt_sendTransaction_002540,同一钱包发起多个销毁既可增发又可销毁本地代币交易，参数不全有效,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组，每个交易都是同一钱包发起的销毁既可增发又可销毁本地代币交易，有的交易参数都有效，有的交易参数无效（比如name、decimals、flags与原来不一致，total_supply为正数等等）,参数有效的交易成功，其他交易失败,,
+,2550,jt_sendTransaction_002550,同一钱包发起多个增发、销毁既可增发又可销毁本地代币交易，参数都有效，情况一,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组。第一个交易是销毁本地代币，销毁量小于余额；第二个交易是增发本地代币,交易都成功，返回多个交易哈希，通过哈希可以查询到详细的增发信息，余额变化正确,,
+,2560,jt_sendTransaction_002560,同一钱包发起多个增发、销毁既可增发又可销毁本地代币交易，参数都有效，情况二,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组。第一个交易是销毁本地代币，销毁量大于余额；第二个交易是增发本地代币，增发量和余额之和大于销毁量,增发交易成功，销毁交易可能失败,,
+,2570,jt_sendTransaction_002570,同一钱包发起多个增发、销毁既可增发又可销毁本地代币交易，参数都有效，情况三,"发起钱包有足够的底层币做fee；
+正确的钱包地址和秘钥；",多个交易参数组。第一个交易是增发本地代币；第二个交易是销毁本地代币，销毁量大于增发量和余额之和,增发交易成功，销毁失败,,
+,2580,jt_sendTransaction_002580,不同钱包发起多个本地代币交易,"发起钱包有本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A向另一个钱包发送本地代币但是交易额大于钱包A余额，第二个交易是钱包B向钱包A发送本地代币可使钱包A的余额大于第一个交易的交易额,第二个交易成功，第一个交易可能失败,,
+,2590,jt_sendTransaction_002590,同一钱包发起发送、增发可增发本地代币交易,"发起钱包有可增发本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A向另一个钱包发送本地代币但是交易额大于钱包A余额，第二个交易是钱包A增发本地代币可使钱包A的余额大于第一个交易的交易额,第二个交易成功，第一个交易可能失败,,
+,2600,jt_sendTransaction_002600,同一钱包发起发送、销毁可销毁本地代币交易,"发起钱包有可销毁本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包A销毁本地代币但是销毁量大于钱包A余额，第二个交易是钱包B向钱包A发送本地代币可使钱包A的余额大于第一个交易的销毁量,第二个交易成功，第一个交易可能失败,,
+,2610,jt_sendTransaction_002610,同一钱包发起本地币、本地代币交易,"发起钱包本地币和本地代币；
+正确的发送钱包和秘钥；
+正确的接收钱包地址；
+有效的交易额；",多个交易参数组，第一个交易是钱包往外发送本地币，使剩余的本地币不足以为交易参数组内其他交易提供足够的fee；参数组内其他交易是本地代币的发行、发送、增发、销毁等交易,部分交易成功，部分失败,,
+,,,,,,,,
+jt_getTransactionByHash,0010,jt_getTransactionByHash_000010,查询有效交易哈希-底层币,,查询有效交易哈希，交易内容为底层币,返回正确的交易信息,,
+,0020,jt_getTransactionByHash_000020,查询有效交易哈希-token,,查询有效交易哈希，交易内容token,返回正确的交易信息,,
+,0030,jt_getTransactionByHash_000030,查询有效交易哈希-memos,,查询有效交易哈希，交易内容包含memos,返回正确的交易信息和memos,,
+,0040,jt_getTransactionByHash_000040,查询无效交易哈希,,查询无效交易哈希：数字、字符串、参数为空等,返回相应错误提示,,
+jt_version,0010,jt_version_000010,查询版本，不带参数,,无参数,返回正确的版本号,,
+,0020,jt_version_000020,查询版本，带"json"参数,,带"json"参数,返回正确的版本号，格式为json,,
+,0030,jt_version_000030,查询版本，带无效参数,,带无效参数，比如"123"、"abc"等,查询失败，返回相应的提示信息,,
+jt_createAccount,0010,jt_createAccount_000010,创建有效的账户,,创建账户时提供有效的账户昵称,创建成功，返回必要的账户信息；新建的账户可以发送和接收底层币和各种代币，并且能够发币,,
+,0020,jt_createAccount_000020,创建无效的账户,,创建账户时提供无效的账户昵称，比如超过长度的字符串数字等、一些特殊字符等等,创建失败,,
+jt_createWallet,0010,jt_createWallet_000010,创建账户-参数为空,,创建账户时参数为空（params: []）,创建成功，返回必要的账户信息；新建的账户可以发送和接收底层币和各种代币，并且能够发币,,
+,0020,jt_createWallet_000020,创建账户-参数为ECDSA,,创建账户时参数为ECDSA（"params": "ECDSA"）,创建成功，返回必要的账户信息（默认加密方式为ECDSA）；新建的账户可以发送和接收底层币和各种代币，并且能够发币,,
+,0030,jt_createWallet_000030,创建账户-参数为Ed25519,,创建账户时参数为Ed25519（"params": "Ed25519"）,创建成功，返回必要的账户信息；新建的账户可以发送和接收底层币和各种代币，并且能够发币,,
+,0040,jt_createWallet_000040,创建账户-参数为SM2,,创建账户时参数为SM2（"params": "SM2"）,创建成功，返回必要的账户信息；新建的账户可以发送和接收底层币和各种代币，并且能够发币,,
+,0050,jt_createWallet_000050,创建账户-无效的参数,,创建账户时提供无效的参数，比如非ECDSA/Ed25519/SM2、超长字符串数字等，一些特殊字符等等,创建失败,,
+,,,,,,,,
+jt_getAccount,0010,jt_getAccount_000010,查询有效的地址_01,地址内有底层币和代币,查询地址的底层币、代币,返回底层币、代币余额,,
+,0020,jt_getAccount_000020,查询有效的地址_02,地址内没有有底层币和代币,查询地址的底层币、代币,返回相应的提示信息,,
+,0030,jt_getAccount_000030,查询有效的昵称_01,昵称对应的地址内有底层币和代币,查询昵称的底层币、代币,返回底层币、代币余额,,
+,0040,jt_getAccount_000040,查询有效的昵称_02,昵称对应的地址内没有底层币和代币,查询昵称的底层币、代币,返回相应的提示信息,,
+,0050,jt_getAccount_000050,查询不存在的地址,,查询不存在的地址,返回相应的提示信息,,
+,0060,jt_getAccount_000060,查询不存在的昵称,,查询不存在的昵称,返回相应的提示信息,,
+,0070,jt_getAccount_000070,验证validated参数,,查询账户信息时使用validated参数,返回已经共识过的账户信息,,
+,0080,jt_getAccount_000080,验证current参数,,查询账户信息时使用current参数,返回正在共识的账户信息,,
+,0090,jt_getAccount_000090,验证closed参数,,查询账户信息时使用closed参数,目前可能还不支持closed参数,,
+jt_syncing,0010,jt_syncing_000010,,,,,,
+,0020,jt_syncing_000020,,,,,,
+,0030,jt_syncing_000030,,,,,,
+,0040,jt_syncing_000040,,,,,,
+,0050,jt_syncing_000050,,,,,,
+,0060,jt_syncing_000060,,,,,,
+jt_blockNumber,0010,jt_blockNumber_000010,查询最新区块号,,发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求,每次都能返回最新区块号，第二次返回的区块号比第一次大,,
+jt_getBalance,0010,jt_getBalance_000010,查询有效的地址_01,地址内有底层币和代币,查询地址的底层币、代币,返回底层币、代币余额,,
+,0020,jt_getBalance_000020,查询有效的地址_02,地址内没有有底层币和代币,查询地址的底层币、代币,返回相应的提示信息,,
+,0030,jt_getBalance_000030,查询有效的昵称_01,昵称对应的地址内有底层币和代币,查询昵称的底层币、代币,返回底层币、代币余额,,
+,0040,jt_getBalance_000040,查询有效的昵称_02,昵称对应的地址内没有底层币和代币,查询昵称的底层币、代币,返回相应的提示信息,,
+,0050,jt_getBalance_000050,查询不存在的地址,,查询不存在的地址,返回相应的提示信息,,
+,0060,jt_getBalance_000060,查询不存在的昵称,,查询不存在的昵称,返回相应的提示信息,,
+,0070,jt_getBalance_000070,验证validated参数,,查询账户信息时使用validated参数,返回已经共识过的账户信息,,
+,0080,jt_getBalance_000080,验证current参数,,查询账户信息时使用current参数,返回正在共识的账户信息,,
+,0090,jt_getBalance_000090,验证closed参数,,查询账户信息时使用closed参数,目前可能还不支持closed参数,,
+"jt_getTransactionCount
+（9545上不work）",0010,jt_getTransactionCount_000010,查询有效地址，无区块参数,,查询有效地址，无区块参数；然后从该地址发起一笔交易，再次查询该地址，无区块参数,第一次查询返回该地址发起的所有交易次数；第二次查询的返回值比第一次多1,,
+,0020,jt_getTransactionCount_000020,查询有效昵称，无区块参数,,查询有效昵称，无区块参数；然后从该昵称发起一笔交易，再次查询该昵称，无区块参数,第一次查询返回该昵称发起的所有交易次数；第二次查询的返回值比第一次多1,,
+,0030,jt_getTransactionCount_000030,查询无效地址，无区块参数,,查询无效地址，比如不存在的地址、长度不够的地址、纯数字等,返回相应的提示信息,,
+,0040,jt_getTransactionCount_000040,查询无效昵称，无区块参数,,查询无效昵称，比如不存在的昵称等,返回相应的提示信息,,
+,0050,jt_getTransactionCount_000050,查询有效地址，区块参数是有效区块号,,查询有效地址，区块参数是有效区块号,返回指定区块内该地址的交易数,,
+,0060,jt_getTransactionCount_000060,查询有效地址，区块参数是有效区块哈希,,查询有效地址，区块参数是有效区块哈希,返回指定区块内该地址的交易数,,
+,0070,jt_getTransactionCount_000070,查询有效昵称，区块参数是有效区块号,,查询有效昵称，区块参数是有效区块号,返回指定区块内该地址的交易数,,
+,0080,jt_getTransactionCount_000080,查询有效昵称，区块参数是有效区块哈希,,查询有效昵称，区块参数是有效区块哈希,返回指定区块内该地址的交易数,,
+,0090,jt_getTransactionCount_000090,查询有效地址，区块参数是无效区块号,,查询有效地址，区块参数是无效区块号（比如不存在的区块号）,返回相应的提示信息,,
+,0100,jt_getTransactionCount_000100,查询有效地址，区块参数是无效区块哈希,,查询有效地址，区块参数是无效区块号（比如不存在的区块哈希、长度不够的哈希）,返回相应的提示信息,,
+,0110,jt_getTransactionCount_000110,查询有效昵称，区块参数是无效区块号,,查询有效昵称，区块参数是无效区块号（比如不存在的区块号）,返回相应的提示信息,,
+,0120,jt_getTransactionCount_000120,查询有效昵称，区块参数是无效区块哈希,,查询有效昵称，区块参数是无效区块号（比如不存在的区块哈希、长度不够的哈希）,返回相应的提示信息,,
+,0130,jt_getTransactionCount_000130,查询无效地址，区块参数是无效区块号,,查询无效地址，区块参数是无效区块号,返回相应的提示信息,,
+,0140,jt_getTransactionCount_000140,查询无效地址，区块参数是无效区块哈希,,查询无效地址，区块参数是无效区块号,返回相应的提示信息,,
+,0150,jt_getTransactionCount_000150,查询无效昵称，区块参数是无效区块号,,查询无效昵称，区块参数是无效区块号,返回相应的提示信息,,
+,0160,jt_getTransactionCount_000160,查询无效昵称，区块参数是无效区块哈希,,查询无效昵称，区块参数是无效区块号,返回相应的提示信息,,
+,0170,jt_getTransactionCount_000170,验证validated参数,,查询有效地址，第二个参数为validated,,,
+,0180,jt_getTransactionCount_000180,验证current参数,,查询有效地址，第二个参数current,,,
+,0190,jt_getTransactionCount_000190,验证closed参数,,查询有效地址，第二个参数为closed,,,
+,,,,,,,,
+jt_getBlockTransactionCountByHash,0010,jt_getBlockTransactionCountByHash_000010,查询有效区块哈希,,查询有效区块哈希：第一个区块、最新的区块等,返回指定区块内的交易数,,
+,0020,jt_getBlockTransactionCountByHash_000020,查询无效区块哈希,,查询无效区块哈希,返回相应的提示信息,,
+jt_getBlockTransactionCountByNumber,0010,jt_getBlockTransactionCountByNumber_000010,查询有效区块编号,,查询有效区块编号：第一个区块、最新的区块等,返回指定区块内的交易数,,
+,0020,jt_getBlockTransactionCountByNumber_000020,查询无效区块编号,,查询无效区块编号：不存在的区块编号、字符串等,返回相应的提示信息,,
+jt_getBlockByHash,0010,jt_getBlockByHash_000010,有效区块哈希，Boolean为ture,,查询有效区块哈希，第二个参数为ture,返回指定区块内所有交易的整个对象,,
+,0020,jt_getBlockByHash_000020,有效区块哈希，Boolean为false,,查询有效区块哈希，第二个参数为false,返回指定区块内所有交易的哈希,,
+,0030,jt_getBlockByHash_000030,有效区块哈希，无效Boolean参数,,查询有效区块哈希，第二个参数既不是ture也不是false、或者不写第二个参数,返回相应的提示信息,,
+,0040,jt_getBlockByHash_000040,无效区块哈希,,查询无效区块哈希（不存在的哈希、长度不够的哈希、任意数字字符串），Boolean可以为任意值或不填,返回相应的提示信息,,
+jt_getBlockByNumber,0010,jt_getBlockByNumber_000010,有效区块编号，Boolean为ture,,查询有效区块编号（第一个区块、最新的区块等），第二个参数为ture,返回指定区块内所有交易的整个对象,,
+,0020,jt_getBlockByNumber_000020,有效区块编号，Boolean为false,,查询有效区块编号（第一个区块、最新的区块等），第二个参数为false,返回指定区块内所有交易的哈希,,
+,0030,jt_getBlockByNumber_000030,区块编号为"earliest"，Boolean为ture,,查询"earliest"区块，第二个参数为ture,返回指定区块内所有交易的整个对象,,
+,0040,jt_getBlockByNumber_000040,区块编号为"earliest"，Boolean为false,,查询"earliest"区块，第二个参数为false,返回指定区块内所有交易的哈希,,
+,0050,jt_getBlockByNumber_000050,区块编号为"latest"，Boolean为ture,,查询"latest"区块，第二个参数为ture,返回指定区块内所有交易的整个对象,,
+,0060,jt_getBlockByNumber_000060,区块编号为"latest"，Boolean为false,,查询"latest"区块，第二个参数为false,返回指定区块内所有交易的哈希,,
+,0090,jt_getBlockByNumber_000090,区块编号为"pending"，Boolean为ture,,查询"pending"区块，第二个参数为ture,返回指定区块内所有交易的整个对象,,
+,0100,jt_getBlockByNumber_000100,区块编号为"pending"，Boolean为false,,查询"pending"区块，第二个参数为false,返回指定区块内所有交易的哈希,,
+,0110,jt_getBlockByNumber_000110,有效区块编号，无效Boolean参数,,查询有效区块编号（包括earliest、latest、pending等），第二个参数既不是ture也不是false、或者不写第二个参数,返回相应的提示信息,,
+,0120,jt_getBlockByNumber_000120,无效区块编号,,查询无效区块编号（不存在的编号、负数、乱码字符串等），Boolean可以为ture、false、或其他任意值或不填,返回相应的提示信息,,
+jt_getTransactionByHash,0010,jt_getTransactionByHash_000010,有效交易哈希,,查询有效的交易哈希（发币的交易、发送币的交易、底层币、代币等）,返回详细的交易信息,,
+,0020,jt_getTransactionByHash_000020,无效交易哈希,,查询无效的交易哈希（不存在的交易哈希、乱码数字字符串等）,返回相应的提示信息,,
+jt_getTransactionByBlockHashAndIndex,0010,jt_getTransactionByBlockHashAndIndex_000010,有效区块哈希，有效交易索引,区块内有数笔交易,查询有效区块哈希，遍历所有有效交易索引,返回详细的交易信息,,
+,0020,jt_getTransactionByBlockHashAndIndex_000020,有效区块哈希，无效交易索引,区块内有数笔交易,查询有效区块哈希，但是交易索引无效（比如一个很大的数值、负数、小数、乱码字符串等）,返回相应的提示信息,,
+,0030,jt_getTransactionByBlockHashAndIndex_000030,无效区块哈希,,查询无效区块哈希（不存在的哈希、长度不够的哈希、任意数字字符串），索引为任意数字或字符串等,返回相应的提示信息,,
+jt_getTransactionByIndex,0010,jt_getTransactionByIndex_000010,有效的地址，有效的sequence,地址有历史交易,查询有效的地址，遍历所有的有效sequence,返回详细的交易信息,,
+,0020,jt_getTransactionByIndex_000020,有效的地址，无效的sequence,地址有历史交易,查询有效的地址，但是sequence无效（比如一个很大的数值、0、负数、小数、乱码字符串等）,返回相应的提示信息,,
+,0030,jt_getTransactionByIndex_000030,无效的地址参数_01,,地址长度不够、或者过长、或者不以j开头,返回相应的提示信息,,
+,0040,jt_getTransactionByIndex_000040,无效的地址参数_02,,地址长度没问题且以j开头，但是一个不存在没被使用过的地址,返回相应的提示信息,,
+"jt_getTransactionByBlockNumberAndIndex
+（7545上不work）",0010,jt_getTransactionByBlockNumberAndIndex_000010,有效区块编号，有效交易索引,区块内有数笔交易,查询有效区块编号，遍历所有有效交易索引,返回详细的交易信息,,
+,0020,jt_getTransactionByBlockNumberAndIndex_000020,区块编号为"earliest"，有效交易索引,区块内有数笔交易,查询"earliest"区块，遍历所有有效交易索引,返回详细的交易信息,,
+,0030,jt_getTransactionByBlockNumberAndIndex_000030,区块编号为"latest"，有效交易索引,区块内有数笔交易,查询"latest"区块，遍历所有有效交易索引,返回详细的交易信息,,
+,0040,jt_getTransactionByBlockNumberAndIndex_000040,区块编号为"pending"，有效交易索引,区块内有数笔交易,查询"pending"区块，遍历所有有效交易索引,返回详细的交易信息,,
+,0050,jt_getTransactionByBlockNumberAndIndex_000050,有效区块编号，无效交易索引,区块内有数笔交易,查询有效区块编号（包括earliest、latest、pending等），但是交易索引无效（比如一个很大的数值、负数、小数、乱码字符串等）,返回相应的提示信息,,
+,0060,jt_getTransactionByBlockNumberAndIndex_000060,无效区块编号,,查询无效区块编号（不存在的编号、负数、乱码字符串等），索引为任意数字或字符串等,返回相应的提示信息,,
+jt_getTransactionReceipt,0010,jt_getTransactionReceipt_000010,有效交易哈希,,查询有效的交易哈希（发币的交易、发送币的交易、底层币、代币等）,返回详细的交易收据,,
+,0020,jt_getTransactionReceipt_000020,无效交易哈希,,查询无效的交易哈希（不存在的交易哈希、乱码数字字符串等）,返回相应的提示信息,,
+jt_accounts,0010,jt_accounts_000010,jt_accounts,,jt_accounts,返回所拥有的地址列表,,
+"jt_account
+（9545上不work）",0010,jt_account_000010,有效的参数：地址,账户有历史底层币、代币交易,有效的钱包地址或昵称，其他参数可皆为空,返回所有in、out交易，包括底层币和代币的交易历史,,
+,0020,jt_account_000020,无效的参数：地址,,无效的钱包地址或昵称：不存在的地址和昵称、纯数字、乱码字符串等,返回相应的提示信息,,
+,0030,jt_account_000030,有效的参数：起始页号,账户有历史底层币、代币交易,有效的钱包地址或昵称，有效的起始页号,返回相应的交易信息,,
+,0040,jt_account_000040,无效的参数：起始页号,,有效的钱包地址或昵称，无效的起始页号：小数、负数、特别大的数等,返回相应的提示信息,,
+,0050,jt_account_000050,有效的参数：每页交易数,账户有历史底层币、代币交易,有效的钱包地址或昵称，有效的每页交易数,返回相应的交易信息,,
+,0060,jt_account_000060,无效的参数：每页交易数,,有效的钱包地址或昵称，无效的每页交易数：小数、负数、特别大的数等,返回相应的提示信息,,
+,0070,jt_account_000070,有效的BOOL参数,账户有历史底层币、代币交易,有效的钱包地址或昵称，BOOL参数为ture或false,"参数是ture，最新交易在前
+参数是false，最新交易在后",,
+,0080,jt_account_000080,无效的BOOL参数,,有效的钱包地址或昵称，BOOL参数为ture和false之外的其他乱码字符串等,返回相应的提示信息,,
+,0090,jt_account_000090,有效的参数：交易方向,账户有历史底层币、代币各种方向的交易,有效的钱包地址或昵称，交易方向参数为both、in或out,参数为both，返回所有双向交易；参数为in，返回所有输入交易；参数为out，返回所有输出交易,,
+,0100,jt_account_000100,无效的参数：交易方向,,有效的钱包地址或昵称，交易方向参数为both、in和out之外的任意乱码字符串等,返回相应的提示信息,,
+,0110,jt_account_000110,所有参数都有效,账户有历史底层币、代币各种方向的交易,每个参数都为有效值，并且尝试不同的有效值,根据不同的有效参数，返回对应的交易信息,,
+,0120,jt_account_000120,部分参数有效,账户有历史底层币、代币各种方向的交易,所有参数都存在，但是当中一个参数为无效值（尝试不同的参数为无效值），其他参数都为有效值,返回相应的提示信息,,
+,,,,,,,,
+jt_sign,0010,jt_sign_000010,有效的地址参数,,有效的地址参数和签名消息,返回签名,,
+,0020,jt_sign_000020,无效的地址参数,,无效地址：过长、过短的地址，乱码、数字等,返回相应的提示信息,,
+,0030,jt_sign_000030,过长的签名消息,,很长的签名消息，验证签名消息是否有长度限制,返回相应结果或提示信息（Unsupported Variable Length encoding: 1048576）,,
+jt_signTransaction,0010,jt_signTransaction_000010,验证jt_signTransaction,,参考jt_sendTransaction,参考jt_sendTransaction,,
+jt_sendRawTransaction,0010,jt_sendRawTransaction_000010,有效的单个交易数据,,有效的单个交易数据,返回交易哈希，通过该哈希可以查询到详细的交易信息,,
+,0020,jt_sendRawTransaction_000020,无效的单个交易数据,,无效的单个交易数据,返回相应的提示信息,,
+,0030,jt_sendRawTransaction_000030,多个有效的交易数据,,多个有效的交易数据,返回多个交易哈希，通过哈希可以查询到详细的交易信息,,
+,0040,jt_sendRawTransaction_000040,多个无效的交易数据,,多个无效的交易数据,返回相应的提示信息,,
+,0050,jt_sendRawTransaction_000050,多个交易数据，部分有效部分无效,,多个交易数据，其中部分有效部分无效,有效的交易数据返回交易哈希，无效的交易数据返回相应的提示信息,,
+,0060,jt_sendRawTransaction_000060,大量交易数据测试_01,,输入上千、上万个有效的交易数据，测试大量交易数据是否有上限,达到某个上限时，交易可能失败并返回相应的提示信息；未达到某个上限时，交易都能成功,,
+,0070,jt_sendRawTransaction_000070,大量交易数据测试_02,,输入上万、几十万个无效的交易数据,返回相应的提示信息，并且系统不崩溃,,
+jt_subscribe,0010,jt_subscribe_000010,订阅区块,,订阅区块，订阅内容为block，无订阅参数,订阅成功，最新的区块信息推送过来,,
+,0011,jt_subscribe_000011,订阅区块，带无效的订阅参数,,订阅区块，订阅内容为block，订阅参数为任意值,订阅失败（因为订阅block时不支持带订阅参数）,,
+,0012,jt_subscribe_000012,重复订阅区块,,某client重复发送订阅区块命令,返回该client端已经订阅区块的提示信息，链端始终只推送一份区块信息给该client端,,
+,0020,jt_subscribe_000020,订阅交易,,订阅交易，订阅内容为tx，无订阅参数,订阅成功，最新的交易信息推送过来,,
+,0021,jt_subscribe_000021,订阅交易，带无效的订阅参数,,订阅交易，订阅内容为tx，订阅参数为任意值,订阅失败（因为订阅tx时不支持带订阅参数）,,
+,0022,jt_subscribe_000022,重复订阅交易,,某client重复发送订阅交易命令,返回该client端已经订阅交易的提示信息，链端始终只推送一份交易信息给该client端,,
+,0023,jt_subscribe_000023,订阅交易，进行代币的发行、增发、销毁测试,,订阅交易，订阅内容为tx，无订阅参数，进行全局代币和本地代币的发行、增发、销毁测试,订阅成功，相关的代币交易信息推送过来,,
+,0024,jt_subscribe_000024,订阅交易，进行jt_signTransaction和jt_sendRawTransaction测试,,订阅交易，订阅内容为tx，无订阅参数，进行jt_signTransaction和jt_sendRawTransaction测试,订阅成功，jt_signTransaction时，交易信息不推送，只有jt_sendRawTransaction后，交易信息才推送,,
+,0030,jt_subscribe_000030,订阅-无效的内容,,订阅时提供无效的订阅内容，比如非block/tx/token/account、超长字符串数字等，一些特殊字符等等,订阅失败，返回相应的提示信息,,
+,0040,jt_subscribe_000040,订阅-内容为空,,订阅时参数为空,订阅失败，返回相应的提示信息,,
+,0050,jt_subscribe_000050,已订阅区块时再订阅交易,,已经成功订阅了区块block，再用jt_subscribe订阅交易tx,既推送block，又推送tx,,
+,0060,jt_subscribe_000060,已订阅交易时再订阅区块,,已经成功订阅了交易tx，再用jt_subscribe订阅区块block,既推送tx，又推送block,,
+,0070,jt_subscribe_000070,订阅token，不带参数,,订阅内容为token，不带订阅参数,订阅失败，返回相应的提示信息,,
+,0080,jt_subscribe_000080,订阅token，带有效参数（全局token）,,订阅内容为token，订阅参数为某全局token,订阅成功，该token相关的信息都推送过来,,
+,0081,jt_subscribe_000081,订阅token，带有效参数（全局token），进行发币、增发、销毁测试,,订阅内容为token，订阅参数为某全局token，进行该全局token的发行、增发、销毁操作,订阅成功，相关操作信息都推送过来,,
+,0090,jt_subscribe_000090,订阅token，带有效参数（带issuer的token）,,订阅内容为token，订阅参数为某带issuer的token,订阅成功，该token相关的信息都推送过来,,
+,0091,jt_subscribe_000091,订阅token，带有效参数（带issuer的token），进行发币、增发、销毁测试,,订阅内容为token，订阅参数为某带issuer的token，进行该token的发行、增发、销毁操作,订阅成功，相关操作信息都推送过来,,
+,0100,jt_subscribe_000100,订阅token，带无效参数,,订阅内容为token，订阅参数为无效的token名字；或者token名字正确但issuer地址无效,订阅失败，返回相应的提示信息,,
+,0110,jt_subscribe_000110,订阅token，参数为空,,订阅内容为token，订阅参数为空,订阅失败，返回相应的提示信息,,
+,0120,jt_subscribe_000120,重复订阅相同的token,,某client重复订阅同一个token,返回该client端已经订阅该token的提示信息，链端始终只推送一份该token相关信息给该client端,,
+,0130,jt_subscribe_000130,订阅不同的token,,某client发起多次token订阅，但每次订阅的token名字都不同，有全局的，有带issuer的,每次订阅都成功，相关token的信息都被推送过来,,
+,0140,jt_subscribe_000140,订阅同名的token,,某client发起多次token订阅，每次订阅的token名字都相同，但是issuer都不同（包括全局的）,每次订阅都成功，相关token的信息都被推送过来,,
+,0150,jt_subscribe_000150,订阅account，不带参数,,订阅内容为account，不带订阅参数,订阅失败，返回相应的提示信息,,
+,0160,jt_subscribe_000160,订阅account，带有效参数,,订阅内容为account，订阅参数为一个有效的地址,订阅成功，该account相关的信息都推送过来,,
+,0161,jt_subscribe_000161,订阅account，带有效参数，且参数是接收方地址,,订阅内容为account，订阅参数为一个有效的接收方地址,订阅成功，该account相关的信息都推送过来,,
+,0162,jt_subscribe_000162,订阅account，带有效参数，测试代币发行,,订阅内容为account，订阅参数为一个有效的地址，通过该地址进行全局代币、本地代币的发行操作,订阅成功，该account代币发行信息能推送过来,,
+,0163,jt_subscribe_000163,订阅account，带有效参数，测试代币增发,,订阅内容为account，订阅参数为一个有效的地址，通过该地址进行全局代币、本地代币的增发操作,订阅成功，该account代币增发信息能推送过来,,
+,0164,jt_subscribe_000164,订阅account，带有效参数，测试代币销毁,,订阅内容为account，订阅参数为一个有效的地址，通过该地址进行全局代币、本地代币的销毁操作,订阅成功，该account代币销毁信息能推送过来,,
+,0180,jt_subscribe_000180,订阅account，带无效参数,,订阅内容为account，订阅参数为一个无效的地址（即地址不合法）,订阅失败，返回相应的提示信息,,
+,0190,jt_subscribe_000190,订阅account，参数为空,,订阅内容为account，订阅参数为空,订阅失败，返回相应的提示信息,,
+,0200,jt_subscribe_000200,重复订阅相同的account,,某client重复订阅同一个account,返回该client端已经订阅该account的提示信息，链端始终只推送一份该account相关信息给该client端,,
+,0210,jt_subscribe_000210,订阅不同的account,,某client发起多次account订阅，每次订阅的account地址都不同，但都是合法地址,每次订阅都成功，相关account的信息都被推送过来,,
+,0220,jt_subscribe_000220,订阅不同的内容,,某client既订阅block，又订阅tx，还订阅token和account，且订阅了多个不同的token和account,订阅都成功，相关信息都能推送过来,,
+,,,,,,,,
+jt_unsubscribe,0010,jt_unsubscribe_000010,取消订阅区块block_01,已订阅区块,取消订阅区块，订阅内容为block，无订阅参数,取消订阅成功，停止推送相关信息,,
+,0011,jt_unsubscribe_000011,取消订阅区块block_02,无订阅区块,client没有订阅区块，但是发送取消订阅区块block请求,取消订阅失败，返回相应的提示信息,,
+,0012,jt_unsubscribe_000012,取消订阅区块block_03,已订阅区块,取消订阅区块，订阅内容为block，订阅参数为任意值,取消订阅失败，返回相应的提示信息,,
+,0020,jt_unsubscribe_000020,取消订阅交易tx_01,已订阅交易,取消订阅交易，订阅内容为tx，无订阅参数,取消订阅成功，停止推送相关信息,,
+,0021,jt_unsubscribe_000021,取消订阅交易tx_02,无订阅交易,client没有订阅交易，但是发送取消订阅交易tx请求,取消订阅失败，返回相应的提示信息,,
+,0022,jt_unsubscribe_000022,取消订阅交易tx_03,已订阅区块,取消订阅交易，订阅内容为tx，订阅参数为任意值,取消订阅失败，返回相应的提示信息,,
+,0030,jt_unsubscribe_000030,已订阅区块block，取消订阅交易tx,已订阅区块,取消订阅交易，订阅内容为tx，无订阅参数,取消失败，继续推送区块信息,,
+,0040,jt_unsubscribe_000040,已订阅交易tx，取消订阅区块block,已订阅交易,取消订阅区块，订阅内容为block，无订阅参数,取消失败，继续推送交易信息,,
+,0050,jt_unsubscribe_000050,取消订阅-无效的订阅内容,已订阅区块或交易,取消订阅时提供无效的订阅内容，比如非block/tx/token/account、超长字符串数字等，一些特殊字符等,取消失败，继续推送订阅的信息,,
+,0060,jt_unsubscribe_000060,取消订阅-订阅内容为空,已订阅区块或交易,取消订阅时订阅内容为空,取消失败，继续推送订阅的信息,,
+,0070,jt_unsubscribe_000070,取消订阅token，不带参数,,取消订阅内容为token，但不带参数,取消订阅失败，返回相应的提示信息,,
+,0080,jt_unsubscribe_000080,取消订阅token，参数为空,,取消订阅内容为token，但参数为空,取消订阅失败，返回相应的提示信息,,
+,0090,jt_unsubscribe_000090,取消订阅不存在的token,,取消订阅内容为token，但参数是不存在的token名字,取消订阅失败，返回相应的提示信息,,
+,0100,jt_unsubscribe_000100,取消订阅全局token,有订阅的全局token,取消订阅内容为token，参数是某全局token名字,取消订阅成功，停止推送相关信息,,
+,0110,jt_unsubscribe_000110,取消订阅带issuer的token_01,有订阅的带issuer的token,取消订阅内容为token，参数是token名字/正确的issuer地址,取消订阅成功，停止推送相关信息,,
+,0120,jt_unsubscribe_000120,取消订阅带issuer的token_02,有订阅的带issuer的token,取消订阅内容为token，参数是token名字/错误的issuer地址,取消订阅失败，返回相应的提示信息,,
+,0130,jt_unsubscribe_000130,取消订阅account，不带参数,,取消订阅内容为account，但不带参数,取消订阅失败，返回相应的提示信息,,
+,0140,jt_unsubscribe_000140,取消订阅account，参数为空,,取消订阅内容为account，但参数为空,取消订阅失败，返回相应的提示信息,,
+,0150,jt_unsubscribe_000150,取消订阅非法的account地址,,取消订阅内容为account，但参数是非法的地址,取消订阅失败，返回相应的提示信息,,
+,,jt_unsubscribe_00,取消订阅无效的account地址,,取消订阅内容为account，参数是合法的地址，但是该地址没被订阅过,取消订阅失败，返回相应的提示信息,,
+,0160,jt_unsubscribe_000160,取消订阅有效的account地址,client有订阅的account,取消订阅内容为account，参数是合法的地址，且该地址也被订阅过,取消订阅成功，停止推送相关信息,,
+,0170,jt_unsubscribe_000170,取消所有订阅_01,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,取消订阅内容为all，不带参数,取消订阅成功，停止推送相关信息,,
+,0180,jt_unsubscribe_000180,取消所有订阅_02,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,取消订阅内容为all，带参数，参数内容为任意值,取消订阅失败，返回相应的提示信息,,
+,0190,jt_unsubscribe_000190,取消所有订阅_03,client没有订阅任何信息,取消订阅内容为all，不带参数,取消订阅失败，返回相应的提示信息,,
+,,,,,,,,
+jt_listSubscribe,0010,jt_listSubscribe_000010,参数为空_01,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为空,返回所有的订阅内容,,
+,0020,jt_listSubscribe_000020,参数为空_02,client没有订阅任何信息,参数列表为空,返回相应的提示信息,,
+,0030,jt_listSubscribe_000030,参数为block_01,client订阅了block,参数列表为["block"],返回所有的订阅内容,,
+,0040,jt_listSubscribe_000040,参数为block_02,client没有订阅block,参数列表为["block"],返回相应的提示信息,,
+,0050,jt_listSubscribe_000050,参数为tx_01,client订阅了tx,参数列表为["tx"],返回所有的订阅内容,,
+,0060,jt_listSubscribe_000060,参数为tx_02,client没有订阅tx,参数列表为["tx"],返回相应的提示信息,,
+,0070,jt_listSubscribe_000070,参数为token_01,client订阅了多个token（全局的和带issuer的都有）,参数列表为["token"],返回所有的订阅内容,,
+,0080,jt_listSubscribe_000080,参数为token_02,client没有订阅token,参数列表为["token"],返回相应的提示信息,,
+,0090,jt_listSubscribe_000090,参数为account_01,client订阅了多个account,参数列表为["account"],返回所有的订阅内容,,
+,0100,jt_listSubscribe_000100,参数为account_02,client没有订阅account,参数列表为["account"],返回相应的提示信息,,
+,0110,jt_listSubscribe_000110,无效的参数,,参数列表的内容不是block/tx/token/account，可以是数字、乱码字符串等等,返回相应的提示信息,,
+,0120,jt_listSubscribe_000120,参数包含多个内容_01,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,"参数列表为[""block"",""tx"",""token"", ""account""]",返回所有的订阅内容,,
+,0130,jt_listSubscribe_000130,参数包含多个内容_02,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,"参数列表为[""block"",""token""]",返回订阅的block和token内容,,
+,0140,jt_listSubscribe_000140,参数包含多个内容_03,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,"参数列表为[""tx"", ""account""]",返回订阅的tx和account内容,,
+,0150,jt_listSubscribe_000150,参数包含多个内容_04,client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,"参数列表包含一个有效的参数，一个无效的参数，比如[""block"",""123""]",只返回block订阅内容，或者返回错误的提示信息,,
+,0160,jt_listSubscribe_000160,参数包含多个内容_05,,"参数列表包含几个无效的参数，比如[""abc"",""123""]",返回相应的提示信息,,
+,0170,jt_listSubscribe_000170,参数包含多个内容_06,client订阅了block、tx、多个token（全局和带issuer的都有），没有订阅account,"参数列表为[""block"",""account""]",只返回block订阅内容,,
+,0180,jt_listSubscribe_000180,参数包含多个内容_07,client订阅了block、多个token（全局和带issuer的都有）、多个account，没有订阅tx,"参数列表为[""tx"", ""token""]",只返回token订阅内容,,
+,0190,jt_listSubscribe_000190,参数包含多个内容_08,client什么都没订阅,"参数列表为[""block"",""tx"",""token"", ""account""]",返回相应的提示信息,,
+,,,,,,,,
+jt_issueToken,0010,jt_issueToken_000010,无效的from参数,,无效的from参数（即发行token的帐户地址）：地址过长或过短、纯数字、不以j开头的地址等,返回相应的提示信息,,
+,0020,jt_issueToken_000020,无效的secret参数,,其他参数都有效，secret跟发行账户地址不匹配,返回相应的提示信息,,
+,0030,jt_issueToken_000030,无效的to参数,,无效的to参数（即创建token的帐户地址）：地址过长或过短、纯数字、不以j开头的地址等,返回相应的提示信息,,
+,0040,jt_issueToken_000040,无效的token name参数,,在token的定义信息里面，name为空，或者name字符串过长,返回相应的提示信息,,
+,0050,jt_issueToken_000050,无效的token symbol参数,,在token的定义信息里面，symbol为空，或者symbol字符串过长，或者是一个被其他token使用过的symbol，或者symbol包含特殊字符串“\/*$&”等,返回相应的提示信息,,
+,0060,jt_issueToken_000060,无效的token total_supply参数,,在token的定义信息里面，total_supply为0、负数、小数、字符串等,返回相应的提示信息,,
+,0070,jt_issueToken_000070,无效的token属性参数：name,,name为空，或者很长的字符串（name长度上限为256字节）,返回相应的提示信息,,
+,0080,jt_issueToken_000080,无效的token属性参数：type,,"type支持八种类型boolean, integer, string, number, binary, file, list, map；测试这八种类型外的其他字符串",返回相应的提示信息,,
+,0090,jt_issueToken_000090,无效的token属性参数：desc,,desc可以为空，这里用很长的字符串测试是否有长度上限,返回相应的提示信息,,
+,0100,jt_issueToken_000100,无效的token属性参数：属性上限,,目前不只token最多可以有多少个属性，此处测试属性个数是否有上限,返回相应的提示信息,,
+,0110,jt_issueToken_000110,有效的参数测试，发行账号燃料足够,,每个参数都有效，token有八个属性，分别覆盖八个不同的属性类型,token发行成功,,
+,0120,jt_issueToken_000120,有效的参数测试，发行账号燃料不够,,每个参数都有效，token有八个属性，分别覆盖八个不同的属性类型；但是发现账号燃料不够,返回相应的提示信息,,
+,,,,,,,,
+jt_createToken,0010,jt_createToken_000010,无效的from参数,,无效的from参数（即创建token的帐户地址）：地址过长或过短、纯数字、不以j开头的地址等,返回相应的提示信息,,
+,0020,jt_createToken_000020,无效的secret参数,,其他参数都有效，secret跟创建账户地址不匹配,返回相应的提示信息,,
+,0030,jt_createToken_000030,无效的to参数,,无效的to参数（即接收token的帐户地址）：地址过长或过短、纯数字、不以j开头的地址等,返回相应的提示信息,,
+,0040,jt_createToken_000040,无效的token info参数,,info参数应该是jt_issueToken返回的哈希值，此处无效指：哈希值过长或过短、纯数字、乱码字符串等,返回相应的提示信息,,
+,0050,jt_createToken_000050,from参数与info参数不匹配,,from参数是一个有效的地址，info参数也是一个有效的定义token的哈希，但是该哈希并不是from参数指定的地址所创建,返回相应的提示信息,,
+,0060,jt_createToken_000060,无效的token uri参数,,验证uri是否可以为空，以及是否有长度限制,返回相应的提示信息,,
+,0070,jt_createToken_000070,无效的token属性：name无效,,某个属性的name为空，或者在token的定义里面不存在,返回相应的提示信息,,
+,0080,jt_createToken_000080,无效的token属性：type不匹配,,比如某个属性name对应的type定义为string，但是实际给出的value属性是number或其他类型（反之亦然，此处需要覆盖很多不匹配的场景）,返回相应的提示信息,,
+,0090,jt_createToken_000090,无效的token属性：属性不全,,比如token定义了三个属性，此处指给出其中两个属性的值,返回相应的提示信息,,
+,0100,jt_createToken_000100,无效的token属性：属性过多,,比如token定义了三个属性，此处参数给出了四个属性，其中一个属性重复出现了两次,返回相应的提示信息,,
+,0110,jt_createToken_000110,有效的参数测试，创建账号燃料足够,,每个参数都有效，token有八个属性，分别覆盖八个不同的属性类型,token创建成功,,
+,0120,jt_createToken_000120,有效的参数测试，创建账号燃料不够,,每个参数都有效，token有八个属性，分别覆盖八个不同的属性类型，但是创建账号燃料不够,返回相应的提示信息,,
+,0130,jt_createToken_000130,有效的参数测试，token属性重复,,希望创建的token的某个属性的value已经被之前创建过的token使用过了,需要明确不同token某个属性的value是否可以一致,,
+,0140,jt_createToken_000140,有效的参数测试，超过token定义的total_supply,,比如token定义的total_supply为100，此时已经创建了100个token，继续创建第101个,返回相应的提示信息,,
+,,,,,,,,
+jt_ownerOf,0010,jt_ownerOf_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_ownerOf_000020,无效的哈希参数_02,,哈希长度没问题，但是是不存在的token哈希,返回相应的提示信息,,
+,0030,jt_ownerOf_000030,有效的哈希参数_01,,有效的token哈希（jt_createToken返回的hash值）,该token的拥有者的地址,,
+,0040,jt_ownerOf_000040,有效的哈希参数_02,,有效的token哈希（jt_transferToken返回的hash值）,该token的拥有者的地址,,
+,,,,,,,,
+jt_tokensOf,0010,jt_tokensOf_000010,无效的地址参数_01,,地址长度不够、或者过长、或者不以j开头,返回相应的提示信息,,
+,0020,jt_tokensOf_000020,无效的地址参数_02,,地址长度没问题且以j开头，但是一个不存在没被使用过的地址,返回相应的提示信息,,
+,0030,jt_tokensOf_000030,有效的地址参数_01,,地址有效且有底层币，但是没有token,返回相应的提示信息,,
+,0040,jt_tokensOf_000040,有效的地址参数_02,,拥有token的地址,返回token的概要信息列表,,
+,,,,,,,,
+jt_getTokenByHash,0010,jt_getTokenByHash_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_getTokenByHash_000020,无效的哈希参数_02,,哈希长度没问题，但是是不存在的token哈希,返回相应的提示信息,,
+,0030,jt_getTokenByHash_000030,有效的哈希参数_01,,有效的token哈希（jt_createToken返回的hash值）,token的详细信息,,
+,0040,jt_getTokenByHash_000040,有效的哈希参数_02,,有效的token哈希（jt_transferToken返回的hash值）,token的详细信息,,
+,0050,jt_getTokenByHash_000050,有效的哈希参数_03,,有效的token哈希（jt_tokensOf返回的hash值）,token的详细信息,,
+,,,,,,,,
+jt_getTokenByIndex,0010,jt_getTokenByIndex_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_getTokenByIndex_000020,无效的哈希参数_02,,哈希长度没问题，但是是不存在的token哈希,返回相应的提示信息,,
+,0030,jt_getTokenByIndex_000030,有效的哈希有效的index,,有效的token哈希（jt_issueToken返回的hash值），有效的index,token的详细信息,,
+,0040,jt_getTokenByIndex_000040,有效的哈希无效的index,,有效的token哈希（jt_issueToken返回的hash值），无效的index（负数、小数、超过合理范围的正整数等）,返回相应的提示信息,,
+,,,,,,,,
+jt_getTokenCount,0010,jt_getTokenCount_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_getTokenCount_000020,无效的哈希参数_02,,哈希长度没问题，但是是不存在的token哈希,返回相应的提示信息,,
+,0030,jt_getTokenCount_000030,有效的哈希参数_01,,有效的Token Info的哈希,返回该种Token的当前数量,,
+,,,,,,,,
+jt_getTokenInfoByHash,0010,jt_getTokenInfoByHash_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_getTokenInfoByHash_000020,无效的哈希参数_02,,哈希长度没问题，但是是不存在的token哈希,返回相应的提示信息,,
+,0030,jt_getTokenInfoByHash_000030,有效的哈希参数_01,,有效的token哈希（jt_issueToken返回的hash值）,token定义的具体信息,,
+,0040,jt_getTokenInfoByHash_000040,有效的哈希参数_02,,有效的token哈希（jt_tokensOf返回的hash值）,token定义的具体信息,,
+,,,,,,,,
+jt_createData,0010,jt_createData_000010,无效的from参数_01,,from地址参数位数不够、或过长、或不以j开头,返回相应的提示信息,,
+,0020,jt_createData_000020,无效的from参数_02,,from地址参数格式正确，但地址内没有底层币等任何币种,返回相应的提示信息,,
+,0030,jt_createData_000030,无效的to参数_01,,to地址参数位数不够、或过长、或不以j开头,返回相应的提示信息,,
+,0040,jt_createData_000040,无效的to参数_02,,to地址参数格式正确，但地址内没有底层币等任何币种,返回相应的提示信息,,
+,0050,jt_createData_000050,无效的fee参数_01,,fee为0、小数、负数、或字符串等,返回相应的提示信息,,
+,0060,jt_createData_000060,无效的fee参数_02,,fee为不足以发起交易的数,返回相应的提示信息,,
+,0070,jt_createData_000070,无效的fee参数_03,,fee大于12，但是超过from地址的余额,返回相应的提示信息,,
+,0080,jt_createData_000080,无效的secret参数_01,,secret参数位数不够、或过长、或不以s开头,返回相应的提示信息,,
+,0090,jt_createData_000090,无效的secret参数_02,,secret参数格式正确，但不是from地址正确的秘钥,返回相应的提示信息,,
+,0100,jt_createData_000100,无效的data参数,,data参数哈希长度不够或过长,返回相应的提示信息,,
+,0110,jt_createData_000110,有效的存证数据交易,,所有参数有效,存证数据成功,,
+,,,,,,,,
+jt_removeData,0010,jt_removeData_000010,无效的from参数_01,,from地址参数位数不够、或过长、或不以j开头,返回相应的提示信息,,
+,0020,jt_removeData_000020,无效的from参数_02,,from地址参数格式正确，但地址内没有底层币等任何币种,返回相应的提示信息,,
+,0030,jt_removeData_000030,无效的to参数_01,,to地址参数位数不够、或过长、或不以j开头,返回相应的提示信息,,
+,0040,jt_removeData_000040,无效的to参数_02,,to地址参数格式正确，但地址内没有底层币等任何币种,返回相应的提示信息,,
+,0050,jt_removeData_000050,无效的fee参数_01,,fee为0、小数、负数、或字符串等,返回相应的提示信息,,
+,0060,jt_removeData_000060,无效的fee参数_02,,fee为不足以发起交易的数,返回相应的提示信息,,
+,0070,jt_removeData_000070,无效的fee参数_03,,fee大于12，但是超过from地址的余额,返回相应的提示信息,,
+,0080,jt_removeData_000080,无效的secret参数_01,,secret参数位数不够、或过长、或不以s开头,返回相应的提示信息,,
+,0090,jt_removeData_000090,无效的secret参数_02,,secret参数格式正确，但不是from地址正确的秘钥,返回相应的提示信息,,
+,0100,jt_removeData_000100,无效的data参数_01,,data参数哈希长度不够或过长,返回相应的提示信息,,
+,0110,jt_removeData_000110,无效的data参数_02,,data参数哈希没有被存证过,返回相应的提示信息,,
+,0120,jt_removeData_000120,有效的删除数据交易,,所有参数有效,删除数据成功,,
+,,,,,,,,
+jt_uploadData,0010,jt_uploadData_000010,无效字符测试,,上传的数据内包含非十六进制字符,返回相应的提示信息,,
+,0020,jt_uploadData_000020,单个字符串最大长度测试,,上传一个很长的十六进制字符串（可逐渐加长），测试字符串是否有长度上限,上传成功或返回相应的提示信息,,
+,0030,jt_uploadData_000030,字符串最多个数测试,,上传多个十六进制字符串测试（个数可逐渐增加），测试字符串个数是否有上限,上传成功或返回相应的提示信息,,
+,0040,jt_uploadData_000040,有效的单个字符串,,上传一个十六进制字符串,上传成功并返回对应的哈希,,
+,0050,jt_uploadData_000050,有效的多个字符串,,上传多个十六进制字符串,上传成功并返回对应的哈希,,
+,,,,,,,,
+jt_downloadData,0010,jt_downloadData_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_downloadData_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的原始数据,返回相应的提示信息,,
+,0030,jt_downloadData_000030,单个有效的哈希参数,,有效的哈希参数,返回对应的原始数据,,
+,0040,jt_downloadData_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,jt_downloadData_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,jt_downloadData_000060,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,返回对应的原始数据或相应的提示信息,,
+,0070,jt_downloadData_000070,多个有效的哈希参数,,输入多个有效的哈希参数,返回对应的原始数据,,
+,,,,,,,,
+jt_clearData,0010,jt_clearData_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_clearData_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的原始数据,返回相应的提示信息,,
+,0030,jt_clearData_000030,单个有效的哈希参数,,有效的哈希参数,清除数据成功,,
+,0040,jt_clearData_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,jt_clearData_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,jt_clearData_000060,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,清除数据成功或返回相应的提示信息,,
+,0070,jt_clearData_000070,多个有效的哈希参数,,输入多个有效的哈希参数,清除数据成功,,
+,,,,,,,,
+jt_encryptData,0010,jt_encryptData_000010,无效的address参数_01,,address参数是一个不存在的地址,返回相应的提示信息,,
+,0020,jt_encryptData_000020,无效的address参数_02,,address参数是一个存在的地址，但是没有底层币,返回相应的提示信息,,
+,0030,jt_encryptData_000030,无效的secret参数_01,,secret参数位数不够、或过长、或不以s开头,返回相应的提示信息,,
+,0040,jt_encryptData_000040,无效的secret参数_02,,secret参数格式正确，但不是from地址正确的秘钥,返回相应的提示信息,,
+,0050,jt_encryptData_000050,无效的data参数,,data参数包含非十六进制字符,返回相应的提示信息,,
+,0060,jt_encryptData_000060,data参数最大长度测试,,其他参数都有效，输入很长的十六进制字符串作为data参数（长度可以逐渐增加），测试该参数是否有最大长度限制,数据加密成功或返回相应的提示信息,,
+,0070,jt_encryptData_000070,有效的数据加密测试,,所以参数都有效,数据加密成功,,
+,,,,,,,,
+jt_decryptData,0010,jt_decryptData_000010,无效的address参数_01,,address参数是一个不存在的地址,返回相应的提示信息,,
+,0020,jt_decryptData_000020,无效的address参数_02,,address参数是一个存在的地址，但是没有底层币,返回相应的提示信息,,
+,0030,jt_decryptData_000030,无效的secret参数_01,,secret参数位数不够、或过长、或不以s开头,返回相应的提示信息,,
+,0040,jt_decryptData_000040,无效的secret参数_02,,secret参数格式正确，但不是from地址正确的秘钥,返回相应的提示信息,,
+,0050,jt_decryptData_000050,无效的data参数_01,,data哈希长度不够或者过长,返回相应的提示信息,,
+,0060,jt_decryptData_000060,无效的data参数_02,,data哈希长度没问题，但没有对应的加密数据,返回相应的提示信息,,
+,0070,jt_decryptData_000070,有效的数据解密测试,,所以参数都有效，data哈希有对应的加密数据,数据解密成功,,
+,,,,,,,,
+jt_uploadFile,0010,jt_uploadFile_000010,上传存在的文件,,通过API接口上传文件，指定的文件存在,上传成功，返回文件对应的哈希和字节数,,
+,0020,jt_uploadFile_000020,上传不存在的文件,,通过API接口上传文件，指定的文件并不存在,返回相应的提示信息,,
+,0030,jt_uploadFile_000030,最大上传文件测试,,尝试上传不同大小的文件，测试是否有最大文件大小限制,上传成功或返回相应的提示信息,,
+,0040,jt_uploadFile_000040,不同文件类型上传测试,,上传不同类型的文件,上传成功,,
+,,,,,,,,
+jt_downloadFile,0010,jt_downloadFile_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_downloadFile_000020,无效的哈希参数_02,,哈希长度没问题，但是没有对应的文件,返回相应的提示信息,,
+,0030,jt_downloadFile_000030,有效的哈希参数,,哈希参数有效，有对应的文件,下载文件成功，文件名为哈希参数,,
+,0040,jt_downloadFile_000040,有效的哈希参数和文件名,,哈希参数有效，有对应的文件；并且指定了文件名参数,下载文件成功，文件名为指定的文件名,,
+,0050,jt_downloadFile_000050,文件名长度测试,,哈希参数有效，有对应的文件；不断增加文件名长度，测试文件名长度是否有上限,下载文件成功，或者返回相应的提示信息,,
+,,,,,,,,
+jt_clearFile,0010,jt_clearFile_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,jt_clearFile_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的上传文件,返回相应的提示信息,,
+,0030,jt_clearFile_000030,单个有效的哈希参数,,有效的哈希参数,清除文件成功,,
+,0040,jt_clearFile_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,jt_clearFile_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应上传文件的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,jt_clearFile_000060,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,清除文件成功或返回相应的提示信息,,
+,0070,jt_clearFile_000070,多个有效的哈希参数,,输入多个有效的哈希参数,清除文件成功,,
+,,,,,,,,
+jt_encryptFile,0010,jt_encryptFile_000010,无效的address参数_01,,address参数是一个不存在的地址,返回相应的提示信息,,
+,0020,jt_encryptFile_000020,无效的address参数_02,,address参数是一个存在的地址，但是没有底层币,返回相应的提示信息,,
+,0030,jt_encryptFile_000030,无效的secret参数_01,,secret参数位数不够、或过长、或不以s开头,返回相应的提示信息,,
+,0040,jt_encryptFile_000040,无效的secret参数_02,,secret参数格式正确，但不是from地址正确的秘钥,返回相应的提示信息,,
+,0050,jt_encryptFile_000050,无效的data参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0060,jt_encryptFile_000060,无效的data参数_02,,哈希长度没问题，但没有对应的上传文件,返回相应的提示信息,,
+,0070,jt_encryptFile_000070,有效的文件加密测试,,所以参数都有效,数据加密成功，返回对应的加密的文件的Hash及长度,,
+,,,,,,,,
+jt_decryptFile,0010,jt_decryptFile_000010,无效的address参数_01,,address参数是一个不存在的地址,返回相应的提示信息,,
+,0020,jt_decryptFile_000020,无效的address参数_02,,address参数是一个存在的地址，但是没有底层币,返回相应的提示信息,,
+,0030,jt_decryptFile_000030,无效的secret参数_01,,secret参数位数不够、或过长、或不以s开头,返回相应的提示信息,,
+,0040,jt_decryptFile_000040,无效的secret参数_02,,secret参数格式正确，但不是from地址正确的秘钥,返回相应的提示信息,,
+,0050,jt_decryptFile_000050,无效的data参数_01,,data哈希长度不够或者过长,返回相应的提示信息,,
+,0060,jt_decryptFile_000060,无效的data参数_02,,data哈希长度没问题，但没有对应的加密文件,返回相应的提示信息,,
+,0070,jt_decryptFile_000070,有效的文件解密测试,,所以参数都有效，data哈希有对应的加密文件,文件解密成功，返回对应数据内容的十六进制字符串,,
+,,,,,,,,
+,,,,,,,,
+针对新版IPFS文档的测试用例,,,,,,,,
+sw_uploadData,0010,sw_uploadData_000010,有效的单个字符串,,上传一个十六进制字符串，一般字符串，纯数字字符串， 空格,上传成功并返回对应的数据哈希、IPFS地址、数据对应的字节数,,
+,0020,sw_uploadData_000020,有效的多个字符串,,上传多个十六进制字符串，一般字符串，纯数字字符串， 空格,上传成功并返回对应的数据哈希、IPFS地址、数据对应的字节数,,
+,0030,sw_uploadData_000030,无效数据测试_01,,上传的数据为空,返回相应的提示信息,,
+,0040,sw_uploadData_000040,无效数据测试_02,,上传的数据为数字,返回相应的提示信息,,
+,0050,sw_uploadData_000050,无效数据测试_03,,上传的数据为单引号字符串,返回相应的提示信息,,
+,0060,sw_uploadData_000060,多个无效数据测试,,,返回相应的提示信息,,
+,0070,sw_uploadData_000070,多个有效无效数据混合测试,,,返回相应的提示信息,,
+,0080,sw_uploadData_000080,单个字符串最大长度测试,,上传一个很长的十六进制字符串（可逐渐加长），测试字符串是否有长度上限,上传成功或返回相应的提示信息,,
+,0090,sw_uploadData_000090,字符串最多个数测试,,上传多个十六进制字符串测试（个数可逐渐增加），测试字符串个数是否有上限,上传成功或返回相应的提示信息,,
+,0100,sw_uploadData_000100,存储相同的数据,,存储相同的数据,产生的ipfs_hash应该一致,,
+,,,,,,,,
+sw_downloadData,0010,sw_downloadData_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,sw_downloadData_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的原始数据,返回相应的提示信息,,
+,0030,sw_downloadData_000030,单个有效的哈希参数,,有效的哈希参数,返回对应的原始数据,,
+,0040,sw_downloadData_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,sw_downloadData_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,sw_downloadData_000060,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,返回对应的原始数据或相应的提示信息,,
+,0070,sw_downloadData_000070,多个有效的哈希参数,,输入多个有效的哈希参数,返回对应的原始数据,,
+,,,,,,,,
+sw_removeData,0010,sw_removeData_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,sw_removeData_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的原始数据,返回相应的提示信息,,
+,0030,sw_removeData_000030,单个有效的哈希参数,,有效的哈希参数,删除数据成功,,
+,0040,sw_removeData_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,sw_removeData_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,sw_removeData_000060,有效和无效混合的哈希参数_03,,输入多个哈希参数，其中部分哈希参数重复,返回相应的提示信息,,
+,0070,sw_removeData_000070,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,删除数据成功或返回相应的提示信息,,
+,0080,sw_removeData_000080,多个有效的哈希参数,,输入多个有效的哈希参数,删除数据成功,,
+,,,,,,,,
+sw_uploadFile,0010,sw_uploadFile_000010,上传存在的文件,,通过API接口上传文件，指定的文件存在,上传成功，返回文件对应的哈希、IPFS地址、字节数,,
+,0020,sw_uploadFile_000020,上传不存在的文件,,通过API接口上传文件，指定的文件并不存在,返回相应的提示信息,,
+,0030,sw_uploadFile_000030,最大上传文件测试,,尝试上传不同大小的文件，测试是否有最大文件大小限制,上传成功或返回相应的提示信息,,
+,0040,sw_uploadFile_000040,最大上传文件名测试,,尝试上传不同文件名长度的文件，测试是否有最大文件名长度限制,上传成功或返回相应的提示信息,,
+,0050,sw_uploadFile_000050,不同文件类型上传测试,,上传不同类型的文件,上传成功,,
+,,,,,,,,
+sw_downloadFile,0010,sw_downloadFile_000010,无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,sw_downloadFile_000020,无效的哈希参数_02,,哈希长度没问题，但是没有对应的文件,返回相应的提示信息,,
+,0030,sw_downloadFile_000030,有效的哈希参数,,哈希参数有效，有对应的文件,下载文件成功，文件名为哈希参数,,
+,0040,sw_downloadFile_000040,有效的哈希参数和文件名,,哈希参数有效，有对应的文件；并且指定了文件名参数,下载文件成功，文件名为指定的文件名,,
+,0050,sw_downloadFile_000050,文件名长度测试,,哈希参数有效，有对应的文件；不断增加文件名长度，测试文件名长度是否有上限,下载文件成功，或者返回相应的提示信息,,
+,,,,,,,,
+sw_pinData,0010,sw_pinData_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,sw_pinData_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的上传数据,返回相应的提示信息,,
+,0030,sw_pinData_000030,单个有效的哈希参数,,有效的哈希参数,pin上传的数据成功,,
+,0040,sw_pinData_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,sw_pinData_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应上传数据的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,sw_pinData_000060,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,pin上传的数据成功或返回相应的提示信息,,
+,0070,sw_pinData_000070,多个有效的哈希参数,,输入多个有效的哈希参数,pin上传的数据成功,,
+,,,,,,,,
+sw_unpinData,0010,sw_unpinData_000010,单个无效的哈希参数_01,,哈希长度不够或者过长,返回相应的提示信息,,
+,0020,sw_unpinData_000020,单个无效的哈希参数_02,,哈希长度没问题，但没有对应的上传数据,返回相应的提示信息,,
+,0030,sw_unpinData_000030,单个有效的哈希参数,,有效的哈希参数,unpin上传的数据成功,,
+,0040,sw_unpinData_000040,有效和无效混合的哈希参数_01,,输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0050,sw_unpinData_000050,有效和无效混合的哈希参数_02,,输入多个哈希参数，其中部分是没有对应上传数据的哈希参数，部分是有效的哈希参数,返回相应的提示信息,,
+,0060,sw_unpinData_000060,哈希参数最多个数测试,,输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限,unpin上传的数据成功或返回相应的提示信息,,
+,0070,sw_unpinData_000070,多个有效的哈希参数,,输入多个有效的哈希参数,unpin上传的数据成功,,
+,,,,,,,,
+sw_nodeInfo,0010,sw_nodeInfo_000010,显示节点状态,,显示节点状态,返回结果与实际情况一致,,
+,,,,,,,,

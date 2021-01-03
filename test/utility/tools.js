@@ -16,7 +16,7 @@ const { modes, } = require("../config/config")
 
 const reportComparor = require('./reportComparor/mochaReportComparor')
 const markdownTool = require('./markdown/markdownTool')
-const csvTool = require('./markdown/csv/csvTool')
+const csvTool = require('./markdown/csvTool')
 const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 //endregion
 
@@ -30,14 +30,14 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 
 // compare()
 
-// upgradeChain('20201231')
+// upgradeChain('20210102b')
 
 // updateErrorsDoc('..\\ipfslib.wiki\\chain错误信息整理.md')
 // loadErrors()
 
-// updateTestCaseDoc('.\\test\\utility\\markdown\\sample\\ipfslib.wiki\\测试用例3.md')
+// updateTestCaseDoc('.\\test\\utility\\markdown\\sample\\ipfslib.wiki\\', '测试用例3.md')
 // loadTestCases()
-// loadCSV()
+csv2Md()
 
 //endregion
 
@@ -70,8 +70,8 @@ function setNetStatus(){
     netStatusTool.showTcAll()
     netStatusTool.showNetAll()
 
-    // netStatusTool.resetTcAll()
-    // netStatusTool.resetNetAll()
+    netStatusTool.resetTcAll()
+    netStatusTool.resetNetAll()
 }
 
 function setNodeStatus(){
@@ -121,7 +121,7 @@ async function compare(){
 
     let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
     let file1 = path + '\\baselines\\base-mochawesome-report-20201231a-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20201231a-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20210103a-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
@@ -135,23 +135,36 @@ async function compare(){
 
 //region testcases
 
-async function updateTestCaseDoc(mdFile){
+async function updateTestCaseDoc(path, indexFile){
     // let mdFile = '.\\test\\utility\\markdown\\sample\\testcase.md'
-    let doc = await tsmd2Doc(mdFile)
+    let doc = await ts2Doc(path, indexFile)
     let docFile = '.\\test\\testData\\testcase.js'
     utility.saveJsFile(doc, 'testCases', docFile)
 }
 
-async function ts2Doc(indexFile){
-    let indexContent = await utility.loadFile(indexFile, 'utf8',)
+async function ts2Doc(path, indexFile){
+    let indexContent = await utility.loadFile(path + indexFile, 'utf8',)
+    let lines = indexContent.split('\r\n')
+    let files = []
+    for(let i = 0; i < lines.length; i++){
+        let line = lines[i]
+        if(line.indexOf('* [') != -1){
+            let start = line.indexOf('](./') + 4
+            files.push(line.substring(start, line.length - 1))
+        }
+    }
+
+    let testCases = []
+    for(let i = 0; i < files.length; i++){
+        testCases = testCases.concat(await tsmd2Doc(path + files[i] + '.md'))
+    }
 
     return testCases
 }
 
 async function tsmd2Doc(file){
     let content = await utility.loadFile(file, 'utf8',)
-    let testCases = markdownTool.parseTestCaseWiki(content)
-
+    let testCases = markdownTool.parseTestCaseWiki_style_2(content)
     // markdownTool.printDoc(doc)
     // let resultsPath = '.\\test\\utility\\markdown\\results\\'
     // utility.saveJsonFile(resultsPath, 'testcases_doc', testCases)
@@ -159,13 +172,10 @@ async function tsmd2Doc(file){
     return testCases
 }
 
-async function loadCSV(){
-    let csv = '.\\test\\utility\\markdown\\sample\\sample.csv'
-    let table = await csvTool.load(csv)
-    let testCases = csvTool.convertToTestCases(table)
-    let content = markdownTool.testCases2md_style_2(testCases)
-    let md = '.\\test\\utility\\markdown\\results\\testcases_' + utility.getNowDateTimeString() + '.md'
-    await utility.saveFile(md, content)
+async function csv2Md(){
+    let csvPath = '.\\test\\utility\\markdown\\csv\\20201231'
+    let mdPath = '.\\test\\utility\\markdown\\md\\20201231'
+    await markdownTool.csv2Md(csvPath, mdPath)
 }
 
 //endregion

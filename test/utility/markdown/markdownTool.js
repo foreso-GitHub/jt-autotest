@@ -1,8 +1,9 @@
 const commonmark = require('commonmark')
-const fs = require('fs')
+const fs = require("fs")
 const HashMap = require('hashmap')
 const consts = require('../../framework/consts')
-// const utility = require("../../framework/testUtility")
+const utility = require("../../framework/testUtility")
+const TESTCASE_MD_FILE_PREFIX = '_TestCase_'
 
 module.exports = markdownTool = {
 
@@ -100,6 +101,24 @@ module.exports = markdownTool = {
 
     //region parse testcase wiki
 
+    //region style 1
+
+    testCases2Md_style_1: function(testCases){
+        let header = '|用例编号\t|用例标题\t|预置条件\t|输入内容\t|预期结果\t|' + '\r\n'
+        header += '|----------------|----------------|----------------|----------------|----------------|' + '\r\n'
+        return markdownTool.testCases2Md(header, testCases, markdownTool.testCase2Md_style_1)
+    },
+
+    testCase2Md_style_1: function(testCase){
+        let content = '|'
+        content += markdownTool.collapse(testCase.code, 20) + '|'
+        content += testCase.title + '|'
+        content += testCase.precondition + '|'
+        content += testCase.input + '|'
+        content += testCase.expetedResult + '|'
+        return content
+    },
+
     //region parse
 
     parseTestCaseWiki: function(content){
@@ -145,32 +164,17 @@ module.exports = markdownTool = {
 
     //endregion
 
-    //region style 1
-    testCases2md_style_1: function(testCases){
-        let header = '|用例编号\t|用例标题\t|预置条件\t|输入内容\t|预期结果\t|' + '\r\n'
-        header += '|----------------|----------------|----------------|----------------|----------------|' + '\r\n'
-        return markdownTool.testCases2md(header, testCases, markdownTool.testCase2md_style_1)
-    },
-
-    testCase2md_style_1: function(testCase){
-        let content = '|'
-        content += markdownTool.collapse(testCase.code, 20) + '|'
-        content += testCase.title + '|'
-        content += testCase.precondition + '|'
-        content += testCase.input + '|'
-        content += testCase.expetedResult + '|'
-        return content
-    },
     //endregion
 
     //region style 2
-    testCases2md_style_2: function(testCases){
+
+    testCases2Md_style_2: function(testCases){
         let header = '|用例编号|用例标题|预置条件<br>输入内容<br>预期结果|' + '\r\n'
         header += '|----------------|----------------|----------------|' + '\r\n'
-        return markdownTool.testCases2md(header, testCases, markdownTool.testCase2md_style_2)
+        return markdownTool.testCases2Md(header, testCases, markdownTool.testCase2Md_style_2)
     },
 
-    testCase2md_style_2: function(testCase){
+    testCase2Md_style_2: function(testCase){
         let content = '|'
         content += markdownTool.collapse(testCase.code, 20) + '|'
         content += testCase.title + '|'
@@ -180,11 +184,69 @@ module.exports = markdownTool = {
         return content
     },
 
+    //region parse
+
+    parseTestCaseWiki_style_2: function(content){
+        let lines = content.split('\r\n')
+        let testCaseLines = lines.slice(2, lines.length -1)
+        let testCases = []
+        for(let i = 0; i < testCaseLines.length; i++){
+            testCases.push(markdownTool.parseTestCaseLine_style_2(testCaseLines[i]))
+        }
+        return testCases
+    },
+
+    parseTestCaseLine_style_2: function(line){
+        let cells = line.split('|')
+        let tsCells = []
+
+        for(let i = 0; i < cells.length; i++){
+            let cell = cells[i]
+                .replace(new RegExp(' ','g'), '')
+                .replace(new RegExp('\t','g'), '')
+
+            if(!((i == 0 || i == cells.length - 1) && cell == '')){
+                tsCells.push(cell)
+            }
+        }
+
+        let testCase
+        if(tsCells.length == 3){
+            testCase = {}
+            testCase.code = tsCells[0]
+            testCase.title = tsCells[1]
+
+            // |**预置条件**`无`<br><br>**输入内容**`无参数`<br><br>**预期结果**`返回正确的版本号`|
+            let details = tsCells[2]
+            const mark1 = "**预置条件**`"
+            const mark2 = "`<br><br>**输入内容**`"
+            const mark3 = "`<br><br>**预期结果**`"
+            let start = details.indexOf(mark1) + mark1.length
+            let end = details.indexOf(mark2)
+            testCase.precondition = details.substring(start, end)
+
+            start = end + mark2.length
+            end = details.indexOf(mark3)
+            testCase.input = details.substring(start, end)
+
+            start = end + mark3.length
+            end = details.length - 1
+            testCase.expetedResult = details.substring(start, end)
+        }
+        else{
+            console.log('Parse test cases error: not 3 cells in line!');
+        }
+
+        return testCase
+    },
+
+    //endregion
+
     //endregion
 
     //region common
 
-    testCases2md: function(header, testCases, testCaseFunc){
+    testCases2Md: function(header, testCases, testCaseFunc){
         let lines = []
         for(let i = 0; i < testCases.length; i++){
             if(testCases[i].code){
@@ -222,9 +284,157 @@ module.exports = markdownTool = {
         return collapse_times == 0 ? content : result
     },
 
+    groupTestCases: function(testCases){
+        let testCaseGroup = new HashMap()
+        for(let i = 0; i< testCases.length; i++){
+            let prefix = markdownTool.getPrefix(testCases[i].code, 2)
+            let group = testCaseGroup.get(prefix)
+            if(group == undefined){
+                group = []
+                testCaseGroup.set(prefix, group)
+            }
+            group.push(testCases[i])
+        }
+        return testCaseGroup
+    },
+
+    groupNames: function(names){
+        let nameGroup = new HashMap()
+        for(let i = 0; i< names.length; i++){
+            let prefix = markdownTool.getPrefix(names[i], 1)
+            let group = nameGroup.get(prefix)
+            if(group == undefined){
+                group = []
+                nameGroup.set(prefix, group)
+            }
+            group.push(names[i])
+        }
+        return nameGroup
+    },
+
+    getPrefix: function(code, level){
+        let phases = code.split('_')
+
+        if(level > 3 || level <1){
+            console.log('getPrefix error: wrong level')
+            return null
+        }
+        // if(phases.length != 3){
+        //     console.log('getPrefix error: ' + code + ' phases count is not 3.')
+        //     return null
+        // }
+
+        if(level == 1){
+            return phases[0]
+        }
+        else if(level == 2){
+            return phases[0] + '_' + phases[1]
+        }
+        else if(level == 3){
+            return phases[0] + '_' + phases[1] + '_' + phases[2]
+        }
+
+        return null
+    },
+
     //endregion
 
+    //region csv2Md
 
+    csv2Md: async function (csvPath, mdPath){
+
+        let testCases = await markdownTool.csv2TestCases(csvPath)
+        let group = markdownTool.groupTestCases(testCases)
+        await markdownTool.group2MdFiles(group, mdPath)
+        await markdownTool.group2IndexMdFile(group, mdPath)
+    },
+
+    csv2TestCases: async function(csvPath){
+        let files = fs.readdirSync(csvPath)
+        let testCases = []
+        for(let i = 0; i < files.length; i++){
+            let file = files[i]
+            if(file.substring(file.length - 4, file.length).toLowerCase() == '.csv'){
+                let table = await csvTool.load(csvPath + '\\' + file)
+                testCases = testCases.concat(csvTool.convertToTestCases(table))
+            }
+        }
+        return testCases
+    },
+
+    group2MdFiles: async function(group, mdPath){
+        let mdNames = group.keys()
+        for(let i = 0; i < mdNames.length; i++){
+            let mdName = mdNames[i]
+            let content = markdownTool.testCases2Md_style_2(group.get(mdName))
+            let mdFile = mdPath + '\\' + TESTCASE_MD_FILE_PREFIX + mdName + '.md'
+            await utility.saveFile(mdFile, content)
+        }
+    },
+
+    group2IndexMdFile: async function(group, mdPath){
+        let indexContent = '# 测试用例目录\r\n'
+        indexContent += '\r\n'
+
+        let mdNames = group.keys()
+        let nameGroup = markdownTool.groupNames(mdNames)
+        let categories = nameGroup.keys()
+        for(let i = 0; i < categories.length; i++){
+            let category = categories[i]
+            indexContent += '## ' + markdownTool.categoryConvert(category) + '\r\n'
+            let files = nameGroup.get(category)
+            for(let j = 0; j < files.length; j++){
+                //* [Home](./Home)
+                let file = files[j]
+                indexContent += '* [' + file + '](./' + TESTCASE_MD_FILE_PREFIX + file + ')\r\n'
+            }
+            indexContent += '\r\n'
+        }
+
+        let mdFile = mdPath + '\\' + TESTCASE_MD_FILE_PREFIX + 'Index.md'
+        await utility.saveFile(mdFile, indexContent)
+    },
+
+    categoryConvert: function(category){
+        if(category == 'FCJT'){
+            return '接口功能测试_jt'
+        }
+
+        if(category == 'FCSW'){
+            return '接口功能测试_sw'
+        }
+
+        if(category == 'ERR'){
+            return '故障测试'
+        }
+
+        if(category == 'CONS'){
+            return '共识机制测试'
+        }
+
+        if(category == 'CMPT'){
+            return '兼容性测试'
+        }
+
+        if(category == 'PFMC'){
+            return '性能测试'
+        }
+
+        if(category == 'INTR'){
+            return '接口交互测试'
+        }
+
+        if(category == 'SVT'){
+            return '系统测试'
+        }
+
+        if(category == 'CONF'){
+            return '配置维护测试'
+        }
+
+    },
+
+    //endregion
 
     //endregion
 
