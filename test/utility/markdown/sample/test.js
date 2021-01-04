@@ -24,7 +24,7 @@ async function testParse(){
 async function testDoc2Map(){
     let content = await utility.loadFile(file, 'utf8',)
     let doc = tool.parseErrorWiki(content)
-    let map = tool.doc2Map(doc)
+    let map = tool.errors2Map(doc)
     let baselineMap = await utility.loadJsonFile(baselinePath + baselineMapFile)
     let result = JSON.stringify(map) === JSON.stringify(baselineMap)
     console.log('markdownTool.errorDoc2map test result: ' + (result ? 'Pass!' : 'Fail!'))

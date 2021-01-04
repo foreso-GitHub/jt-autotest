@@ -17,6 +17,7 @@ const testModeEnums = testMode
 const { allModes, } = require("../config/config")
 let errorsDoc = require('../testData/errors').errors
 let mdTool = require('../utility/markdown/markdownTool')
+let testCasesDoc = require('../testData/testCase').fullTestCases
 //endregion
 
 //region global fields
@@ -95,6 +96,33 @@ module.exports = framework = {
         testCase.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
         testCase.checks = []
         return testCase
+    },
+
+    createTestScript: function(testCaseCode, scriptCode, server, txFunctionName, txParams, otherParams,
+                               executeFunction, checkFunction, expectedResult,
+                             restrictedLv, supportedServices, supportedInterfaces){
+        let testScript = {}
+        testScript.type = "it"
+        let testCase = framework.getTestCase(testCaseCode)
+        testScript.testCase = testCase
+        testCase.scripts.push(testScript)
+        testScript.scriptCode = scriptCode
+        testScript.title = testScript.testCase.code + '-' + testScript.scriptCode + ': ' + testScript.testCase.title
+        if(server) testScript.server = server
+        if(txFunctionName) testScript.txFunctionName = txFunctionName
+        if(txParams) testScript.txParams = txParams
+        if(otherParams) testScript.otherParams = otherParams
+        if(executeFunction) testScript.executeFunction = executeFunction
+        if(checkFunction) testScript.checkFunction = checkFunction
+        if(expectedResult) testScript.expectedResult = expectedResult
+        testScript.hasExecuted = false
+        testScript.actualResult = []
+        testScript.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
+        testScript.supportedServices = (supportedServices) ? utility.cloneArray(supportedServices) : []
+        testScript.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
+        testScript.checks = []
+        testScript.testResult = false
+        return testScript
     },
 
     createTestCaseByParams: function(testCaseParams){
@@ -1430,6 +1458,14 @@ module.exports = framework = {
 
     //endregion
 
+    //region init
+
+    init: function(){
+        framework.startWork()
+        framework.loadErrors()
+        framework.loadTestCases()
+    },
+
     //region active server
     activeServer: function(mode){
         let server = mode.server
@@ -1472,7 +1508,7 @@ module.exports = framework = {
 
     //region load errors
     loadErrors: function(){
-        let map = mdTool.doc2Map(errorsDoc)
+        let map = mdTool.errors2Map(errorsDoc)
         framework.errors = map
     },
 
@@ -1482,7 +1518,21 @@ module.exports = framework = {
             error.information = information
         }
         return error
-    }
+    },
+    //endregion
+
+    //region load testCases
+    loadTestCases: function(){
+        let map = mdTool.testCases2Map(testCasesDoc)
+        framework.testCases = map
+    },
+
+    getTestCase: function(code){
+        let testCase = framework.testCases.get(code)
+        return testCase
+    },
+    //endregion
+
     //endregion
 }
 

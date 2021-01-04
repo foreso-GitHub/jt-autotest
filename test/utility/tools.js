@@ -40,7 +40,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // loadErrors()
 
 // csv2Md()
-// updateTestCaseDoc('..\\ipfslib.wiki\\', '_TestCase_Index.md')
+// updateTestCaseJs('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // loadTestCasesFromMdFiles('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // updateTestCaseJson('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // loadTestCasesFromJson('.\\test\\utility\\markdown\\json\\testcase.json')
@@ -149,10 +149,10 @@ async function csv2Md(){
     await markdownTool.csv2Md(csvPath, mdPath)
 }
 
-async function updateTestCaseDoc(path, indexFile){
+async function updateTestCaseJs(path, indexFile){
     let testCases = await markdownTool.ts2Doc(path, indexFile)
-    let docFile = '.\\test\\testData\\testcase.js'
-    utility.saveJsFile(testCases, 'testCases', docFile)
+    let jsFile = '.\\test\\testData\\testCase.js'
+    utility.saveJsFile(testCases, 'fullTestCases', jsFile)
 }
 
 async function loadTestCasesFromMdFiles(path, indexFile){
@@ -190,7 +190,7 @@ async function loadErrors(){
     let content = await utility.loadFile(docFile)
     let jsonString = errorsJs2Json(content)
     let doc = JSON.parse(jsonString)
-    let map = markdownTool.doc2Map(doc)
+    let map = markdownTool.errors2Map(doc)
     markdownTool.printMap(map)
 }
 

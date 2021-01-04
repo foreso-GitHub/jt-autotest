@@ -85,7 +85,7 @@ module.exports = markdownTool = {
         return doc
     },
 
-    doc2Map: function(doc){
+    errors2Map: function(doc){
         let map = new HashMap()
         for(let i = 0; i < doc.length; i++){
             let errors = doc[i].errors
@@ -462,6 +462,20 @@ module.exports = markdownTool = {
         let content = await utility.loadFile(file, 'utf8',)
         let testCases = markdownTool.parseTestCaseWiki_style_2(content)
         return testCases
+    },
+
+    //endregion
+
+    //region test cases 2 map
+
+    testCases2Map: function(doc){
+        let map = new HashMap()
+        for(let i = 0; i < doc.length; i++){
+            let testCase = doc[i]
+            testCase.scripts = []
+            map.set(testCase.code, testCase)
+        }
+        return map
     },
 
     //endregion

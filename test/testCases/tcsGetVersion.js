@@ -23,56 +23,74 @@ module.exports = tcsGetVersion = {
 
     //region get accounts
     testForGetVersion: function(server, describeTitle){
-        let testCases = []
+        let testScripts = []
+        let testCaseCode
+        let scriptCode = '000100'
 
-        let functionName = consts.rpcFunctions.getVersion
-        let txParams = []
-        let expectedResult = {}
-        expectedResult.needPass = true
-
-        let title = '0010\tjt_version，不带参数'
+        testCaseCode = 'FCJT_version_000010'
+        scriptCode = '000100_参数空数组'
         {
-            let testCase = framework.createTestCase(
-                title,
-                server,
-                functionName,
-                txParams,
-                null,
-                framework.executeTestCaseForGet,
-                tcsGetVersion.checkGetVersion,
-                expectedResult,
-                restrictedLevel.L2,
-                [serviceType.newChain, ],
-                [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-            )
-            framework.addTestCase(testCases, testCase)
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            framework.addTestCase(testScripts, testScript)
         }
 
-        title = '0020\tjt_version，带json参数'
+        testCaseCode = 'FCJT_version_000020'
+        scriptCode = '000100_参数json'
         {
-            let testCase = framework.createTestCase(
-                title,
-                server,
-                functionName,
-                txParams,
-                null,
-                framework.executeTestCaseForGet,
-                tcsGetVersion.checkGetVersion,
-                expectedResult,
-                restrictedLevel.L2,
-                [serviceType.newChain, ],
-                [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-            )
-            testCase.txParams = ['json']
-            framework.addTestCase(testCases, testCase)
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.txParams = ['json']
+            framework.addTestCase(testScripts, testScript)
         }
 
-        framework.testTestCases(server, describeTitle, testCases)
+        testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000100_参数空字符串'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000200_参数123'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.txParams = ['123']
+            testScript.expectedResult = {needPass: false, expetedError: {}}
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000300_参数abc'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.txParams = ['abc']
+            testScript.expectedResult = {needPass: false, expetedError: {}}
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        framework.testTestCases(server, describeTitle, testScripts)
     },
 
-    checkGetVersion: function(testCase){
-        let response = testCase.actualResult[0]
-        let needPass = testCase.expectedResult.needPass
+    createTestScript: function(server, testCaseCode, scriptCode){
+        let testScript = framework.createTestScript(
+            testCaseCode,
+            scriptCode,
+            server,
+            consts.rpcFunctions.getVersion,
+            [],
+            null,
+            framework.executeTestCaseForGet,
+            tcsGetVersion.checkGetVersion,
+            {needPass: true},
+            restrictedLevel.L2,
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+        return testScript
+    },
+
+    checkGetVersion: function(testScript){
+        let response = testScript.actualResult[0]
+        let needPass = testScript.expectedResult.needPass
         framework.checkResponse(needPass, response)
         if(needPass){
             let version = response.result
@@ -86,8 +104,9 @@ module.exports = tcsGetVersion = {
             expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(testScript, response.message, testScript.expectedResult.expectedError)
         }
+        testScript.testResult = true
     },
 //endregion
 
