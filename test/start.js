@@ -45,8 +45,7 @@ let _FullTestCaseList = []
 
 describe('Jingtum测试', function() {
 
-    framework.startWork()
-    framework.loadErrors()
+    framework.init()
     let allRpcServers = framework.activeAllRpcServers()
 
     for(let mode of modes){
@@ -219,9 +218,8 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
-                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
             })
         })

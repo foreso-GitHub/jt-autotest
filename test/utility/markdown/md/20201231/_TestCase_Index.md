@@ -25,10 +25,7 @@
 * [INTR_SendIssue](./_TestCase_INTR_SendIssue)
 
 ## 接口功能测试_jt
-* [FCJT_sendTransaction_原生币](./_TestCase_FCJT_sendTransaction_nativeCoin)
-* [FCJT_sendTransaction_代币](./_TestCase_FCJT_sendTransaction_coin)
-* [FCJT_sendTransaction_sequence](./_TestCase_FCJT_sendTransaction_sequence)
-* [FCJT_sendTransaction_参数数组](./_TestCase_FCJT_sendTransaction_paramArray)
+* [FCJT_sendTransaction](./_TestCase_FCJT_sendTransaction)
 * [FCJT_getTransactionByHash](./_TestCase_FCJT_getTransactionByHash)
 * [FCJT_version](./_TestCase_FCJT_version)
 * [FCJT_createAccount](./_TestCase_FCJT_createAccount)

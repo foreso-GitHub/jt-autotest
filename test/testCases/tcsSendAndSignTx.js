@@ -932,6 +932,7 @@ module.exports = tcsSendAndSignTx = {
                 let burnable = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags)
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     burnable ?  framework.getError(-386, 'Fund insufficient.')
+                    // burnable ?  framework.getError(-298, 'Can only send non-negative amounts.')
                         : framework.getError(-175, 'No permission issue.'))
             })
             framework.addTestCase(testCases, testCase)

@@ -176,6 +176,7 @@ module.exports = markdownTool = {
 
     testCase2Md_style_2: function(testCase){
         let content = '|'
+        content += "<a name=\"" + testCase.code + "\"></a>"  //add anchor
         content += markdownTool.collapse(testCase.code, 20) + '|'
         content += testCase.title + '|'
         content += markdownTool.deco('预置条件', testCase.precondition? testCase.precondition : '无') + '<br><br>'
