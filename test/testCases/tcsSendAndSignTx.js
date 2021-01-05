@@ -129,52 +129,53 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testScripts, testScript)
         }
 
-        // testCaseParams.title = '0031\t发起' + categoryName + '无效交易_01: 错误的秘钥1'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].secret = '错误的秘钥'
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad Base58 string')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'Unknown secret format'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0032\t发起' + categoryName + '无效交易_01: 错误的秘钥2'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].secret = testCaseParams.txParams[0].secret + '1'
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad Base58 checksum')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'Bad Base58 checksum'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0040\t发起' + categoryName + '无效交易_02: 错误的发起钱包地址（乱码字符串）'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].from = testCaseParams.txParams[0].from + '1'
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad account address:')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-284, 'sequence must be positive integer'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0050\t发起' + categoryName + '无效交易_03: 错误的接收钱包地址（乱码字符串）'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].to = testCaseParams.txParams[0].to + '1'
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Bad account address:')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'Bad account address'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000030'
+        scriptCode = '000200_' + type + '_错误的秘钥1'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].secret = '错误的秘钥'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Unknown secret format'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000030'
+        scriptCode = '000300_' + type + '_错误的秘钥2'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].secret = testScript.actions[0].txParams[0].secret + '1'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Bad Base58 checksum'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000040'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].from = testScript.actions[0].txParams[0].from + '1'
+            testScript.actions[0].txParams[0].sequence = 1
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Bad account address'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000050'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].to = testScript.actions[0].txParams[0].to + '1'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Bad account address'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
 
         testCaseCode = 'FCJT_sendTransaction_000060'
-        scriptCode = defaultScriptCode
+        scriptCode = defaultScriptCode + '_交易额超过发起钱包余额'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
@@ -187,169 +188,149 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestCase(testScripts, testScript)
         }
 
-        // testCaseParams.title = '0060_0001\t发起' + categoryName + '无效交易_04: 交易额超过发起钱包余额'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showValue = utility.getFullCurrency('12345678901' ,rawValue.symbol, rawValue.issuer)
-        //         testCaseParams.txParams[0].value = showValue
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-394))
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
-        //                 rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000060'
+        scriptCode = '000200_' + type + '_交易额超过最大值'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showValue = utility.getFullCurrency((consts.default.maxAmount + 1).toString() ,rawValue.symbol, rawValue.issuer)
+            testScript.actions[0].txParams[0].value = showValue
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
+                    rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
 
-        // testCaseParams.title = '0060_0002\t发起' + categoryName + '无效交易_04: 交易额超过最大值'
-        // {
-        //     let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //     let showValue = utility.getFullCurrency(consts.default.maxAmount.toString(), rawValue.symbol, rawValue.issuer)
-        //     let testCase
-        //
-        //     if(rawValue.symbol == consts.default.nativeCoin){
-        //         testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-        //             testCaseParams.txParams[0].value = showValue
-        //             testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //                 framework.getError(-394, 'Fee insufficient.'))
-        //         })
-        //     }
-        //     else{
-        //         testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-        //             testCaseParams.txParams[0].value = showValue
-        //             testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //                 framework.getError(-386, 'Fund insufficient.'))
-        //         })
-        //     }
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0070\t发起' + categoryName + '无效交易_05: 交易额为负数'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
-        //         testCaseParams.txParams[0].value = "-100" + showSymbol
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'value must be integer type and >= 0'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0080\t发起' + categoryName + '无效交易_06: 交易额为空'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].value = null
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Invalid Number')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'value must be integer type'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0081\t发起' + categoryName + '无效交易_06: 交易额为字符串'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].value = "aawrwfsfs"
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'Invalid Number')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'value must be integer type'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0090_0001\t发起' + categoryName + '无效交易_07: 不带currency，交易额为小于1(最小数额)的正小数'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].value = "0.0000001"
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'value must be integer type'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0090_0002\t发起' + categoryName + '有效交易_07: 带currency，交易额为小于1的正小数'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
-        //             ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
-        //         let decimals = (rawValue.symbol == consts.default.nativeCoin)
-        //             ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
-        //         let showValue = Math.pow(0.1, decimals).toFixed(decimals)
-        //         testCaseParams.txParams[0].value = showValue.toString() + showSymbol
-        //         testCaseParams.expectedResult = framework.createExpecteResult(true, )
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0090_0003\t发起' + categoryName + '无效交易_07: 带currency，交易额为小于最小数额的正小数'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
-        //             ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
-        //         let decimals = ((rawValue.symbol == consts.default.nativeCoin)
-        //             ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals) + 1
-        //         let showValue = Math.pow(0.1, decimals).toFixed(decimals)
-        //         testCaseParams.txParams[0].value = showValue.toString() + showSymbol
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'error value'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0100_0001\t发起' + categoryName + '无效交易_08: 不带currency，交易额为大于1(最小数额)的小数'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         testCaseParams.txParams[0].value = "1.0000011"
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'value must be integer type'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0100_0002\t发起' + categoryName + '有效交易_08: 带currency，交易额为大于1的小数'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
-        //             ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
-        //         let decimals = (rawValue.symbol == consts.default.nativeCoin)
-        //             ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
-        //         let showValue = (1 + Math.pow(0.1, decimals)).toFixed(decimals)
-        //         testCaseParams.txParams[0].value = showValue.toString() + showSymbol
-        //         testCaseParams.expectedResult = framework.createExpecteResult(true, )
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0100_0003\t发起' + categoryName + '有效交易_08: 带currency，交易额为10.00000001'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
-        //             ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
-        //         let decimals = (rawValue.symbol == consts.default.nativeCoin)
-        //             ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
-        //         let showValue = (10 + Math.pow(0.1, decimals)).toFixed(decimals)
-        //         testCaseParams.txParams[0].value = showValue.toString() + showSymbol
-        //         testCaseParams.expectedResult = framework.createExpecteResult(true, )
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
-        //
-        // testCaseParams.title = '0110\t发起' + categoryName + '无效交易_09: 交易额为负小数：-0.1、-1.23等'
-        // {
-        //     let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-        //         let rawValue = utility.parseShowValue(testCaseParams.txParams[0].value)
-        //         let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
-        //         testCaseParams.txParams[0].value = "-0.1" + showSymbol
-        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'value must be integer type')
-        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
-        //             framework.getError(-278, 'value must be integer type'))
-        //     })
-        //     framework.addTestCase(testScripts, testCase)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000070'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+            testScript.actions[0].txParams[0].value = "-100" + showSymbol
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'value must be integer type and >= 0'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000080'
+        scriptCode = defaultScriptCode + '_交易额为空'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = null
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'value must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000080'
+        scriptCode = '000200_' + type + '_交易额为字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = "aawrwfsfs"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'value must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000090'
+        scriptCode = defaultScriptCode + '_不带currency，交易额为小于1(最小数额)的正小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = "0.0000001"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'value must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000090'
+        scriptCode = '000200_' + type + '_带currency，交易额为小于1的正小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+            let decimals = (rawValue.symbol == consts.default.nativeCoin)
+                ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
+            let showValue = Math.pow(0.1, decimals).toFixed(decimals)
+            testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000090'
+        scriptCode = '000300_' + type + '_带currency，交易额为小于最小数额的正小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+            let decimals = ((rawValue.symbol == consts.default.nativeCoin)
+                ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals) + 1
+            let showValue = Math.pow(0.1, decimals).toFixed(decimals)
+            testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error value'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000100'
+        scriptCode = defaultScriptCode + '_不带currency，交易额为大于1(最小数额)的小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = "1.0000011"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'value must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000100'
+        scriptCode = '000200_' + type + '_带currency，交易额为大于1的小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+            let decimals = (rawValue.symbol == consts.default.nativeCoin)
+                ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
+            let showValue = (1 + Math.pow(0.1, decimals)).toFixed(decimals)
+            testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000100'
+        scriptCode = '000300_' + type + '_带currency，交易额为10.000001/SWT或者10.00000001/Coin'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showSymbol = (rawValue.symbol != consts.default.nativeCoin)
+                ? utility.getShowSymbol(rawValue.symbol, rawValue.issuer) : '/' + rawValue.symbol
+            let decimals = (rawValue.symbol == consts.default.nativeCoin)
+                ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
+            let showValue = (10 + Math.pow(0.1, decimals)).toFixed(decimals)
+            testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
+            framework.addTestCase(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000110'
+        scriptCode = defaultScriptCode + '_交易额为负小数：-0.1、-1.23等'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
+            testScript.actions[0].txParams[0].value = "-0.1" + showSymbol
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'value must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestCase(testScripts, testScript)
+        }
 
         //endregion
 

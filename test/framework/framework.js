@@ -274,21 +274,22 @@ module.exports = framework = {
             let sequence
             for(let i = 0; i < totalCount; i++){
                 let data = action.txParams[i]
-                let from = data.from
 
-                // if(i != 0 && action.sendType &&
-                //     (action.sendType == consts.sendTxType.InOneRequestQuickly
-                //     || action.sendType == consts.sendTxType.InOneRequest)){
-                if(totalCount > 1 && i != 0){
-                    sequence++
-                }else{
-                    sequence = await framework.getSequence(server, from)
-                    if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
-                        data.sequence = isNaN(sequence) ? 1 : sequence
+                if(!data.sequence){
+                    // if(i != 0 && action.sendType &&
+                    //     (action.sendType == consts.sendTxType.InOneRequestQuickly
+                    //     || action.sendType == consts.sendTxType.InOneRequest)){
+                    if(totalCount > 1 && i != 0){
+                        sequence++
+                    }else{
+                        sequence = await framework.getSequence(server, data.from)
+                        if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
+                            data.sequence = isNaN(sequence) ? 1 : sequence
+                        }
                     }
-                }
-                if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
-                    data.sequence = sequence
+                    if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
+                        data.sequence = sequence
+                    }
                 }
 
                 if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
@@ -921,8 +922,9 @@ module.exports = framework = {
         let paramValueObject = utility.parseShowValue(param.value)
         if(paramValueObject.symbol == consts.default.nativeCoin){
             if(param.value.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
-                expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount)
-                    * Math.pow(10, consts.default.nativeCoinDecimals))
+                expect(tx.Amount.value).to.be.equals(
+                    (Number(paramValueObject.amount) * Math.pow(10, consts.default.nativeCoinDecimals)).toFixed(0)
+                )
             }
             else{
                 expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount))
