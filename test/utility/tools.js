@@ -24,7 +24,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 
 // init()
 // compare()
-// upgradeChain('20210102b')
+// upgradeChain('20210105')
 
 //region set status
 
@@ -78,8 +78,8 @@ function setNetStatus(){
     netStatusTool.showTcAll()
     netStatusTool.showNetAll()
 
-    netStatusTool.resetTcAll()
-    netStatusTool.resetNetAll()
+    // netStatusTool.resetTcAll()
+    // netStatusTool.resetNetAll()
 }
 
 function setNodeStatus(){
