@@ -30,27 +30,27 @@ module.exports = tcsGetReceipt = {
         let needPass = true
         let expectedError = ''
         let testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易哈希：不存在的交易哈希'
         needPass = false
         hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
         expectedError = framework.getError(140, 't find transaction')
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易哈希：数字'
         hash = '100093'
         expectedError = framework.getError(-269, 'NewHash256: Wrong length')
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易哈希：字符串乱码'
         hash = '1231dsfafwrwerwer'
         expectedError = framework.getError(-269, 'encoding/hex: invalid byte')
         // expectedError.description = 'invalid byte'
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },

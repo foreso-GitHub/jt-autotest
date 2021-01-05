@@ -39,7 +39,7 @@ module.exports = tcsRASTest = {
             otherParams.initNodeCount = 5
             otherParams.reduceCount = 1
             testCase = tcsRASTest.createTestCase(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
             framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)  //node operation will conflict.  so one case, one test.
 
             // title = '0030\t减少共识节点 - 5个节点减少2个'
@@ -48,7 +48,7 @@ module.exports = tcsRASTest = {
             // otherParams.reduceCount = 2
             // testCase = tcsRASTest.createTestCase(server, title, otherParams)
             // testCases = []
-            // framework.addTestCase(testCases, testCase)
+            // framework.addTestScript(testCases, testCase)
             // framework.testTestCases(server, describeTitle + '_' + titleIndex++, testCases)
         })
 

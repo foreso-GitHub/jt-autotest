@@ -67,12 +67,12 @@ module.exports = tcsGetBalance = {
         let expectedError = ''
         let testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t查询有效的昵称_01:地址内有底层币和代币'
         addressOrName = server.mode.addresses.balanceAccount.nickName
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.address
@@ -80,26 +80,26 @@ module.exports = tcsGetBalance = {
         expectedError = framework.getError(-96, tag == consts.tags.current ? 'no such account info' : 't find account' )
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t查询未激活的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.inactiveAccount1.nickName
         expectedError =framework.getError(-96, 'Bad account address')
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.address
         expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
         addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
         expectedError = framework.getError(-96, 'Bad account address')
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },

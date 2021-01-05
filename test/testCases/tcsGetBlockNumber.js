@@ -55,7 +55,7 @@ module.exports = tcsGetBlockNumber = {
                 [],//[interfaceType.rpc, interfaceType.websocket]
             )
         }
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
     
         title = '0010\t查询最新区块号'
         {
@@ -73,7 +73,7 @@ module.exports = tcsGetBlockNumber = {
                 [],//[interfaceType.rpc, interfaceType.websocket]
             )
         }
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         framework.testTestCases(server, describeTitle, testCases)
     },
     

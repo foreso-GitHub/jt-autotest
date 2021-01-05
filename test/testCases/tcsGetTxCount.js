@@ -31,21 +31,21 @@ module.exports = tcsGetTxCount = {
         let needPass = true
         let expectedError = ''
         let testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易哈希：不存在的hash'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
         needPass = false
         expectedError = framework.getError(140, 't find block')
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易哈希：hash长度超过标准'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
         needPass = false
         expectedError = framework.getError(-189, 'index out of range')
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },
@@ -59,28 +59,28 @@ module.exports = tcsGetTxCount = {
         let needPass = true
         let expectedError = ''
         let testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易编号：9999999'
         blockNumber = '999999999'
         needPass = false
         expectedError = framework.getError(140, 't find block')
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易编号：负数'
         blockNumber = '-100'
         needPass = false
         expectedError = framework.getError(140, 'invalid syntax')
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t无效交易编号：乱码'
         blockNumber = 'addeew'
         needPass = false
         expectedError = framework.getError(140, 'invalid syntax')
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },

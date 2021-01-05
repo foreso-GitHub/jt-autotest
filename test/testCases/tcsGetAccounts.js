@@ -43,7 +43,7 @@ module.exports = tcsGetAccounts = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },

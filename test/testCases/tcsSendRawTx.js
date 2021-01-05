@@ -69,7 +69,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         //region different error raw tx like not_enough_fund, bad_format_tx, etc
@@ -82,7 +82,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0021\t无效的单个交易数据：未激活的发送帐号'
@@ -93,7 +93,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0022\t无效的单个交易数据：余额不足'
@@ -104,7 +104,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0023\t无效的单个交易数据：空交易'
@@ -115,7 +115,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0024\t无效的单个交易数据：参数为空数组'
@@ -126,7 +126,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0025\t无效的单个交易数据：错误的rawTx格式1'
@@ -137,7 +137,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         // title = '0026\t无效的单个交易数据：错误的rawTx格式2'  //todo need add
@@ -148,7 +148,7 @@ module.exports = tcsSendRawTx = {
         //         txFunction, successCount, failRawTxs, framework.createSubCases)
         //     testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
         //         caseRestrictedLevel, subCaseFunctionParams)
-        //     framework.addTestCase(testCases, testCase)
+        //     framework.addTestScript(testCases, testCase)
         // }
 
         title = '0027\t无效的单个交易数据：错误的rawTx格式3'
@@ -159,7 +159,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0028\t无效的单个交易数据：错误的rawTx格式4'
@@ -170,7 +170,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         //endregion
@@ -183,7 +183,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0040\t多个无效的交易数据'
@@ -194,7 +194,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t多个交易数据，部分有效部分无效\n'
@@ -205,7 +205,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0060\t大量交易数据测试_01：输入上千、上万个有效的交易数据，测试大量交易数据是否有上限\n'
@@ -216,7 +216,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t大量交易数据测试_02：输入上万、几十万个无效的交易数据\n'
@@ -227,7 +227,7 @@ module.exports = tcsSendRawTx = {
                 txFunction, successCount, failRawTxs, framework.createSubCases)
             testCase = framework.createTestCaseForSubCases(server, title, tcsSendRawTx.executeForSendRawTxs, tcsSendRawTx.checkForSendRawTxs,
                 caseRestrictedLevel, subCaseFunctionParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle, testCases)
@@ -365,7 +365,7 @@ module.exports = tcsSendRawTx = {
                 testCase = framework.createTestCaseForSubCases(runServer, title, executeFunc, checkFunc,
                     caseRestrictedLevel, subCaseFunctionParams)
                 testCases = []
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
                 framework.testTestCases(runServer, describeTitle + "_" + (i + 1), testCases)
             }
         }

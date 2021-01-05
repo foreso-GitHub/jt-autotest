@@ -33,48 +33,48 @@ module.exports = tcsGetTx = {
         let needPass = true
         let expectedError = ''
         let testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t查询有效交易哈希-token'
         hash = txs.tx_token.hash
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0030\t查询有效交易哈希-memos'
         hash = txs.tx_memo.hash
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0040\t查询无效交易哈希:数字'
         hash = 1231111
         needPass = false
         expectedError = framework.getError(-269, 'hash is not string')
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0040\t查询无效交易哈希:字符串'
         hash = 'data.tx1.hash'
         expectedError = framework.getError(-269, 'invalid byte')
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0040\t查询无效交易哈希:参数为空'
         hash = null
         expectedError = framework.getError(-269, 'hash is null')
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0040\t无效交易哈希：不存在的hash'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
         expectedError = framework.getError(140, 't find transaction')
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0040\t无效交易哈希：hash长度超过标准'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
         expectedError = framework.getError(-189, 'index out of range')
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },
@@ -147,7 +147,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = tx.Sequence
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0010\t查询有效交易哈希-底层币'
@@ -157,7 +157,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = tx.Sequence
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0010\t有效的地址，遍历部分有效sequence：'
@@ -170,7 +170,7 @@ module.exports = tcsGetTx = {
                 testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title + index,
                     hash, from, index, needPass, expectedError)
                 testCase.checkFunction = tcsGetTx.checkTransactionByIndex
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
         }
 
@@ -180,7 +180,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(140, 't find transaction')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的地址，无效的sequence：0'
@@ -189,7 +189,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(140, 't find transaction')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的地址，无效的sequence：负数'
@@ -198,7 +198,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(-269, 'index or sequence should be >= 0')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的地址，无效的sequence：小数'
@@ -207,7 +207,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(-269, 'index or sequence is not integer')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的地址，无效的sequence：乱码字符串'
@@ -216,7 +216,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(-269, 'index or sequence is not integer')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t无效的地址参数_01：地址长度不够'
@@ -226,7 +226,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(-96, 'Bad account address')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t无效的地址参数_01：地址长度过长'
@@ -235,7 +235,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(-96, 'Bad account address')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t无效的地址参数_01：地址不以j开头'
@@ -244,7 +244,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(-96, 'Bad account address')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0040\t无效的地址参数_02：地址长度没问题且以j开头，但是一个不存在没被使用过的地址'
@@ -253,7 +253,7 @@ module.exports = tcsGetTx = {
             needPass = false
             expectedError = framework.getError(140, 't find transaction')
             testCase = tcsGetTx.createSingleTestCaseForGetTransactionByIndex(server, title, hash, from, index, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle, testCases)
@@ -321,13 +321,13 @@ module.exports = tcsGetTx = {
         let expectedError = ''
         let testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
         hash = txs.block.blockHash
         testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockHash(server, title, hash)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t有效区块哈希，无效交易索引无效交易索引:100'
         hash = txs.block.blockHash
@@ -336,7 +336,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(140, 'no such transaction in block')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t有效区块哈希，无效交易索引无效交易索引:负数'
         hash = txs.block.blockHash
@@ -345,7 +345,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(-189, 'index out of range')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t有效区块哈希，无效交易索引无效交易索引:乱码'
         hash = txs.block.blockHash
@@ -354,7 +354,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(-269, 'index is not integer')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0030\t无效区块哈希'
         hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
@@ -363,7 +363,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(140, 't find block')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },
@@ -381,32 +381,32 @@ module.exports = tcsGetTx = {
         let expectedError = ''
         let testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
         blockNumber = txs.block.blockNumber
         testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         //todo need restore when these tags are supported.
         // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引'
         // blockNumber = "earliest"
         // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
         // testCase.supportedServices = [serviceType.newChain,]
-        // framework.addTestCase(testCases, testCase)
+        // framework.addTestScript(testCases, testCase)
         //
         // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引'
         // blockNumber = "latest"
         // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
         // testCase.supportedServices = [serviceType.newChain,]
-        // framework.addTestCase(testCases, testCase)
+        // framework.addTestScript(testCases, testCase)
         //
         // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引'
         // blockNumber = "pending"
         // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
         // testCase.supportedServices = [serviceType.newChain,]
-        // framework.addTestCase(testCases, testCase)
+        // framework.addTestScript(testCases, testCase)
 
         title = '0020\t有效区块编号，无效交易索引无效交易索引:100'
         blockNumber = tx1.ledger_index.toString()
@@ -415,7 +415,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(140, 'no such transaction in block')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t有效区块编号，无效交易索引无效交易索引:负数'
         blockNumber = tx1.ledger_index.toString()
@@ -424,7 +424,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(-189, 'index out of range')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0020\t有效区块编号，无效交易索引无效交易索引:乱码'
         blockNumber = tx1.ledger_index.toString()
@@ -433,7 +433,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(-269, 'index is not integer')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0030\t无效区块编号'
         blockNumber = '999999999'
@@ -442,7 +442,7 @@ module.exports = tcsGetTx = {
         expectedError = framework.getError(140, 't find block')
         testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
         testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         framework.testTestCases(server, describeTitle, testCases)
     },

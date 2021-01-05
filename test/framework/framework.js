@@ -233,7 +233,7 @@ module.exports = framework = {
     //endregion
 
     //region common
-    addTestCase: function(testScripts, testScript){
+    addTestScript: function(testScripts, testScript){
         if(framework.ifNeedExecuteOrCheck(testScript)){
             testScripts.push(testScript)
             _FullTestCaseList.push(testScript)
@@ -836,23 +836,23 @@ module.exports = framework = {
         }
     },
 
-    ifNeedExecuteOrCheck: function(testCase){
-        if(!testCase){
+    ifNeedExecuteOrCheck: function(testScript){
+        if(!testScript){
             logger.debug("Error: test case doesn't exist!")
         }
-        if(testCase.server.mode.restrictedLevel < testCase.restrictedLevel){
+        if(testScript.server.mode.restrictedLevel < testScript.restrictedLevel){
             return false
         }
-        else if(!(!testCase.supportedServices || testCase.supportedServices.length == 0)
-            && !utility.ifArrayHas(testCase.supportedServices, testCase.server.mode.service)){
+        else if(!(!testScript.supportedServices || testScript.supportedServices.length == 0)
+            && !utility.ifArrayHas(testScript.supportedServices, testScript.server.mode.service)){
             return false
         }
-        else if(!(!testCase.supportedInterfaces || testCase.supportedInterfaces.length == 0)
-            && !utility.ifArrayHas(testCase.supportedInterfaces, testCase.server.mode.interface)){
+        else if(!(!testScript.supportedInterfaces || testScript.supportedInterfaces.length == 0)
+            && !utility.ifArrayHas(testScript.supportedInterfaces, testScript.server.mode.interface)){
             return false
         }
-        else if(testCase.txFunctionName == consts.rpcFunctions.signTx
-            && testCase.server.mode.service == serviceType.oldChain){
+        else if(testScript.txFunctionName == consts.rpcFunctions.signTx
+            && testScript.server.mode.service == serviceType.oldChain){
             return false
         }
         else{

@@ -184,7 +184,7 @@ module.exports = tcsIpfs = {
             let txParams = []
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.executeFunction = tcsIpfs.executeForNodeInfo
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -231,35 +231,35 @@ module.exports = tcsIpfs = {
         {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0010\t有效的单个字符串：上传一般字符串'
         {
             dataArray = ['Hello jingtum\t!\r\n']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0010\t有效的单个字符串：上传纯数字'
         {
             dataArray = ['1234567890']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0010\t有效的单个字符串：上传空格'
         {
             dataArray = [' ']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0010\t有效的单个字符串：上传中文'
         {
             dataArray = ['你好井通']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -268,35 +268,35 @@ module.exports = tcsIpfs = {
         {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 'QmXGoXxdRBYjXE3Wj95NBLHqg8hEG1W8xXHF99aH3q921b']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的多个字符串：上传多个一般字符串'
         {
             dataArray = ['Hello jingtum!', 'Make jingtum great!']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的多个字符串：上传多个纯数字字符串'
         {
             dataArray = ['1234567890', '9876543210']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的多个字符串：上传多个空格'
         {
             dataArray = [' ', ' ']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t有效的多个字符串：上传多个中文'
         {
             dataArray = ['你好井通！', '我很好，你呢？']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -306,7 +306,7 @@ module.exports = tcsIpfs = {
             dataArray = []
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
             testCase.expectedResult = createExpecteResult(false, true, 'no hash')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t无效字符测试：上传的数据为数字'
@@ -314,7 +314,7 @@ module.exports = tcsIpfs = {
             dataArray = [123]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
             testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t无效字符测试：上传的数据为单引号字符串'  //cannot input 单引号字符串 by js
@@ -326,7 +326,7 @@ module.exports = tcsIpfs = {
             dataArray = [123, 456, 789]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
             testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t多个有效无效数据混合测试'
@@ -334,7 +334,7 @@ module.exports = tcsIpfs = {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 456, 789]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
             testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t多个有效无效数据混合测试'
@@ -342,7 +342,7 @@ module.exports = tcsIpfs = {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 456, '789']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
             testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t多个有效无效数据混合测试'
@@ -350,7 +350,7 @@ module.exports = tcsIpfs = {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', '456', 789]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
             testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -366,7 +366,7 @@ module.exports = tcsIpfs = {
             logger.debug('===txt length: ' + txt.length)
             let dataArray = [txt]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t字符串最多个数测试：上传多个十六进制字符串测试（个数可逐渐增加），测试字符串个数是否有上限'
@@ -378,7 +378,7 @@ module.exports = tcsIpfs = {
                 dataArray.push(i.toString() + '. ' + txt)
             }
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0080\t存储相同的数据'
@@ -405,7 +405,7 @@ module.exports = tcsIpfs = {
                     resolve(testCase)
                 })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         //endregion
@@ -500,7 +500,7 @@ module.exports = tcsIpfs = {
             let txParams = [validData.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.rawDatas = [validData.raw_data]
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度不够'
@@ -508,7 +508,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度过长'
@@ -516,7 +516,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
@@ -524,7 +524,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            // framework.addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
@@ -532,7 +532,7 @@ module.exports = tcsIpfs = {
             let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
@@ -540,7 +540,7 @@ module.exports = tcsIpfs = {
             let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            // framework.addTestCase(testCases, testCase) //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            // framework.addTestScript(testCases, testCase) //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
@@ -556,7 +556,7 @@ module.exports = tcsIpfs = {
             for(let i = 0; i < count; i++){
                 testCase.rawDatas.push(data.raw_data)
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t多个有效的哈希参数：输入多个有效的哈希参数'
@@ -571,7 +571,7 @@ module.exports = tcsIpfs = {
             poem.forEach((data)=>{
                 testCase.rawDatas.push(data.raw_data)
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t多个有效的哈希参数：输入多个有效但重复的哈希参数'
@@ -580,7 +580,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(true)
             testCase.rawDatas = [validData.raw_data, validData.raw_data, validData.raw_data,]
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -638,7 +638,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度不够'
@@ -646,7 +646,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度过长'
@@ -654,7 +654,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
@@ -662,7 +662,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
@@ -672,7 +672,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
@@ -682,7 +682,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0060\t有效和无效混合的哈希参数_03：输入多个哈希参数，其中部分哈希参数重复'
@@ -692,7 +692,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
@@ -700,7 +700,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, null)
             testCase.testCount = 30
             testCase.executeFunction = executeForRemoveDataInBatch
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0080\t多个有效的哈希参数：输入多个有效的哈希参数'
@@ -708,7 +708,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, null)
             testCase.testCount = 10
             testCase.executeFunction = executeForRemoveDataInBatch
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -800,7 +800,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForPinDataWithPreparation
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度不够'
@@ -808,7 +808,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度过长'
@@ -816,7 +816,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
@@ -824,7 +824,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
-            //framework.addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            //framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
@@ -834,7 +834,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForPinDataWithPreparation
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
@@ -844,7 +844,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForPinDataWithPreparation
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
-            // framework.addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
@@ -852,7 +852,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, null)
             testCase.testCount = 30
             testCase.executeFunction = executeForRemoveDataInBatch
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t多个有效的哈希参数：输入多个有效的哈希参数'
@@ -860,7 +860,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, null)
             testCase.testCount = 10
             testCase.executeFunction = executeForRemoveDataInBatch
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t有效和无效混合的哈希参数_03：输入多个哈希参数，其中部分哈希参数重复'
@@ -869,7 +869,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data, validData.raw_data]
             testCase.executeFunction = executeForPinDataWithPreparation
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -939,7 +939,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForUnpinDataWithPreparation
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度不够'
@@ -947,7 +947,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度过长'
@@ -955,7 +955,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
@@ -963,7 +963,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
-            //framework.addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            //framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         title = '0040\t有效和无效混合的哈希参数_01：输入多个哈希参数，其中部分是长度不够或过长的哈希参数，部分是有效的哈希参数'
@@ -973,7 +973,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
             testCase.executeFunction = executeForUnpinDataWithPreparation
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0050\t有效和无效混合的哈希参数_02：输入多个哈希参数，其中部分是没有对应原始数据的哈希参数，部分是有效的哈希参数'
@@ -983,7 +983,7 @@ module.exports = tcsIpfs = {
             testCase.uploadParams = [validData.raw_data]
             testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
             testCase.executeFunction = executeForUnpinDataWithPreparation
-            // framework.addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         title = '0060\t哈希参数最多个数测试：输入多个有效的哈希参数（个数可逐渐增加），测试哈希参数的个数是否有上限'
@@ -991,7 +991,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, null)
             testCase.testCount = 30
             testCase.executeFunction = executeForUnpinDataInBatch
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0070\t多个有效的哈希参数：输入多个有效的哈希参数'
@@ -999,7 +999,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, null)
             testCase.testCount = 10
             testCase.executeFunction = executeForUnpinDataInBatch
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -1075,7 +1075,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
             testCase.url = url
             testCase.rawDatas = testFile
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t不同文件类型上传测试：上传不同类型的文件'
@@ -1085,7 +1085,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, fileName)
             testCase.url = url
             testCase.rawDatas = testFile
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -1136,7 +1136,7 @@ module.exports = tcsIpfs = {
             let txParams = [validData.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.rawDatas = validData.raw_data
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度不够'
@@ -1144,7 +1144,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t单个无效的哈希参数_01：哈希长度过长'
@@ -1152,7 +1152,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0030\t单个无效的哈希参数_02：哈希长度没问题，但没有对应的原始数据'
@@ -1160,7 +1160,7 @@ module.exports = tcsIpfs = {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
-            // framework.addTestCase(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
+            // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
         return testCases
@@ -1210,7 +1210,7 @@ module.exports = tcsIpfs = {
             testCase.rawDatas = dataArray
             testCase.rawDownloadDatas = dataArray
             testCase.executeFunction = executeForFullProcessForUploadData
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0020\t上传文件'
@@ -1226,7 +1226,7 @@ module.exports = tcsIpfs = {
             testCase.rawDatas = testFile
             testCase.rawDownloadDatas = [testFile.raw_data]
             testCase.executeFunction = executeForFullProcessForUploadFile
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -1392,7 +1392,7 @@ module.exports = tcsIpfs = {
             let data = i.toString() + '. ' + txt
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, [data])
             testCase.title = '0010\t测试UploadData: ' + i + '/' + count
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -1409,7 +1409,7 @@ module.exports = tcsIpfs = {
         testCase.executeFunction = executeForpressureTestForUploadData
         testCase.testCount = 100
         testCase.title = '0020\t测试' + testCase.testCount + '个uploadData，在单个case内执行'
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         return testCases
     },
 
@@ -1428,7 +1428,7 @@ module.exports = tcsIpfs = {
             testCase.rawDownloadDatas = dataArray
             testCase.executeFunction = executeForFullProcessForUploadData
             testCase.title = '0010\t测试FullProcess: ' + i + '/' + count
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         return testCases
@@ -1447,7 +1447,7 @@ module.exports = tcsIpfs = {
         testCase.executeFunction = executeForFullProcessForUploadDataInOneCase
         testCase.testCount = 50
         testCase.title = '0010\t测试' + testCase.testCount + '个FullProcess，在单个case内执行'
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         return testCases
     },

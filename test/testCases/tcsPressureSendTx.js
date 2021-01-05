@@ -120,7 +120,7 @@ module.exports = tcsPressureSendTx = {
                     resolve(testCase)
                 })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
@@ -188,7 +188,7 @@ module.exports = tcsPressureSendTx = {
                     resolve(testCase)
                 })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         testCasesList.push(testCases)
         testCases = []
@@ -207,7 +207,7 @@ module.exports = tcsPressureSendTx = {
                         txParams.sequence = 1
                     })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
@@ -224,7 +224,7 @@ module.exports = tcsPressureSendTx = {
                         txParams.sequence = 0.5
                     })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         testCasesList.push(testCases)
         testCases = []
@@ -243,7 +243,7 @@ module.exports = tcsPressureSendTx = {
                         txParams.sequence = -1
                     })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
@@ -260,7 +260,7 @@ module.exports = tcsPressureSendTx = {
                         txParams.sequence = 'abcdefgijklmnopq'
                     })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         testCasesList.push(testCases)
         testCases = []
@@ -321,7 +321,7 @@ module.exports = tcsPressureSendTx = {
                     resolve(testCase)
                 })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         testCasesList.push(testCases)
         testCases = []
@@ -401,7 +401,7 @@ module.exports = tcsPressureSendTx = {
                     resolve(testCase)
                 })
             }
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         testCasesList.push(testCases)
         testCases = []
@@ -453,7 +453,7 @@ module.exports = tcsPressureSendTx = {
                 txFunctionName, txParams, null,
                 executeFunction, checkFunction, expectedResult,
                 restrictedLevel.L3, [serviceType.newChain, serviceType.oldChain])
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         return testCases
     },
@@ -464,7 +464,7 @@ module.exports = tcsPressureSendTx = {
         let title = '9000\t交易压力测试，交易数量：' + count
         let testCase = tcsPressureSendTx.createTestCaseForPressureTest(server, title, txFunctionName, count)
         testCase.restrictedLevel = restrictedLevel.L3
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         return testCases
     },
 
@@ -633,7 +633,7 @@ module.exports = tcsPressureSendTx = {
         testCase.executeFunction = tcsPressureSendTx.executePurePressureTest
         testCase.checkFunction = tcsPressureSendTx.checkPurePressureTest
 
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         return testCases
     },
 
@@ -789,7 +789,7 @@ module.exports = tcsPressureSendTx = {
             testCase.executeFunction = framework.executeSubCasesWithoutResponse
             testCase.checkFunction = framework.checkSubCasesWithoutResponse
         }
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         framework.testTestCases(server, describeTitle + '， 数量： ' + testCase.otherParams.totalCount, testCases)
     },
 
@@ -1110,35 +1110,35 @@ module.exports = tcsPressureSendTx = {
         {
             servers = framework.createServers(allServers, 1)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[1]
         {
             servers = framework.createServers(allServers, 2)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[2]
         {
             servers = framework.createServers(allServers, 3)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[3]
         {
             servers = framework.createServers(allServers, 4)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[4]
         {
             servers = framework.createServers(allServers, 5)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         //endregion
@@ -1163,35 +1163,35 @@ module.exports = tcsPressureSendTx = {
         {
             servers = framework.createServers(allServers, 1)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[1]
         {
             servers = framework.createServers(allServers, 2)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[2]
         {
             servers = framework.createServers(allServers, 3)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[3]
         {
             servers = framework.createServers(allServers, 4)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titles[4]
         {
             servers = framework.createServers(allServers, 5)
             testCase = tcsPressureSendTx.createTestCaseForPerformanceTest(server, title, servers, subCases, caseRestrictedLevel)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         //endregion

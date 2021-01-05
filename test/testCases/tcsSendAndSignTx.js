@@ -85,7 +85,7 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000020'
@@ -93,7 +93,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = "1/SWT"
-            if(type == NativeCoinTest) framework.addTestCase(testScripts, testScript)
+            if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000020'
@@ -104,7 +104,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 't find currency'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            if(type == NativeCoinTest) framework.addTestCase(testScripts, testScript)
+            if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000020'
@@ -115,7 +115,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 't find currency'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            if(type == NativeCoinTest) framework.addTestCase(testScripts, testScript)
+            if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000030'
@@ -126,7 +126,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'No secret found for'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000030'
@@ -137,7 +137,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'Unknown secret format'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000030'
@@ -148,7 +148,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'Bad Base58 checksum'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000040'
@@ -160,7 +160,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'Bad account address'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000050'
@@ -171,7 +171,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'Bad account address'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000060'
@@ -185,7 +185,7 @@ module.exports = tcsSendAndSignTx = {
                 framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
                     rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000060'
@@ -199,7 +199,7 @@ module.exports = tcsSendAndSignTx = {
                 framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
                     rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000070'
@@ -212,7 +212,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'value must be integer type and >= 0'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000080'
@@ -223,7 +223,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000080'
@@ -234,7 +234,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000090'
@@ -245,7 +245,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000090'
@@ -259,7 +259,7 @@ module.exports = tcsSendAndSignTx = {
                 ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
             let showValue = Math.pow(0.1, decimals).toFixed(decimals)
             testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000090'
@@ -276,7 +276,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'error value'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
 
         }
 
@@ -288,7 +288,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000100'
@@ -302,7 +302,7 @@ module.exports = tcsSendAndSignTx = {
                 ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
             let showValue = (1 + Math.pow(0.1, decimals)).toFixed(decimals)
             testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000100'
@@ -316,7 +316,7 @@ module.exports = tcsSendAndSignTx = {
                 ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals
             let showValue = (10 + Math.pow(0.1, decimals)).toFixed(decimals)
             testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000110'
@@ -329,7 +329,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         //endregion
@@ -348,7 +348,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["大家好"]
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0121\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]'
@@ -356,7 +356,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["12345"]
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0122\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]'
@@ -364,7 +364,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["123456"]
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0123\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
@@ -372,7 +372,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = ["E5A4A7E5AEB6E5A5BDff"]
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0130\t发起带有效memo的交易_02: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]'
@@ -380,7 +380,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0140\t发起带无效memo的交易_01: memo内容使整个交易内容超过900K'
@@ -394,7 +394,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.restrictedLevel = restrictedLevel.L4
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'memos data error')
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0150\t发起带无效memo的交易_02: memo内容使整个交易内容超过900K'
@@ -408,7 +408,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.restrictedLevel = restrictedLevel.L4
                 testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'memos data error')
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         // endregion
 
@@ -425,14 +425,14 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = server.mode.defaultFee
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0161\t发起带有效fee的交易_01: fee为null'
         {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易，fee=10'
@@ -440,7 +440,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "10"
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0180\t发起带有效fee的交易_03: fee比12大但小于钱包余额'
@@ -448,7 +448,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
                 testCaseParams.txParams[0].fee = "110"
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0190\t发起带无效fee的交易_01: fee比12小（比如5），但是不足以发起成功的交易，fee=9'
@@ -458,7 +458,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(136, 'Insufficient balance to pay fee.'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0200\t发起带无效fee的交易_02: fee为0'
@@ -468,7 +468,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(136, 'Insufficient balance to pay fee.'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0210\t发起带无效fee的交易_03: fee为大于0的小数，比如12.5、5.5'
@@ -478,7 +478,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'strconv.ParseUint'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0220\t发起带无效fee的交易_04: fee为大于发起钱包' + categoryName + '余额的整数'
@@ -488,7 +488,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-394, 'Fee insufficient.'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0230\t发起带无效fee的交易_05: fee为负数，比如-3.5、-555等'
@@ -499,7 +499,7 @@ module.exports = tcsSendAndSignTx = {
                 //     'tecINSUFF_FEE Insufficient balance to pay fee')
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'strconv.ParseUint'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0240\t发起带无效fee的交易_06: fee为数字'
@@ -508,7 +508,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].fee = 35
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'strconv.ParseUint'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -534,7 +534,7 @@ module.exports = tcsSendAndSignTx = {
             let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
                 testCaseParams.expectedResult.expectedBalance = txParams[0].total_supply
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0271\t发行' + testCaseParams.categoryName + '_发行量是负数'
@@ -544,7 +544,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].total_supply = "-10000"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
@@ -554,7 +554,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].type = "issuecoin"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'error type issuecoin'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0300\t发行' + testCaseParams.categoryName + '_无效的from参数'
@@ -564,7 +564,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].from = "from.address"
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284, 'sequence must be positive integer'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_有效的name参数:很长的字符串，正好256字节'
@@ -577,7 +577,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(true, true,
                     '')
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0311\t发行' + testCaseParams.categoryName + '_无效的name参数:很长的字符串，超过256字节'
@@ -590,7 +590,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'The length of the name should be <= 256'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0312\t发行' + testCaseParams.categoryName + '_有效的name参数:被已有代币使用过的name'
@@ -602,7 +602,7 @@ module.exports = tcsSendAndSignTx = {
                 //         //     'failed to submit transaction')
                 testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:长度超过12字节'
@@ -612,7 +612,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_有效的symbol参数:长度正好12字节'
@@ -621,7 +621,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(4)
                 testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
@@ -636,7 +636,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'invalid parameter flag'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:字符串'
@@ -647,7 +647,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0331\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
@@ -658,7 +658,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0332\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数字符串'
@@ -669,7 +669,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0333\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
@@ -680,7 +680,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0334\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数字符串'
@@ -691,7 +691,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:非数字字符串'
@@ -702,7 +702,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'total_supply must be integer type'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0341\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数'
@@ -713,7 +713,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'total_supply must be integer type'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数字符串'
@@ -723,7 +723,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.txParams[0].total_supply = '-10000000'
                 testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0343\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
@@ -734,7 +734,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'total_supply must be integer type'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0344\t发行' + testCaseParams.categoryName + '_有效的total_supply参数:小数字符串'
@@ -745,7 +745,7 @@ module.exports = tcsSendAndSignTx = {
                 testCaseParams.expectedResult = framework.createExpecteResult(false,
                     framework.getError(-278, 'total_supply must be integer type'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         //endregion
@@ -774,7 +774,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-175, 'No permission issue.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0371_0001\t增发代币' + testCaseParams.categoryName + '_decimal不一致'
@@ -793,7 +793,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-278, 'The transaction is ill-formed.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0371_0002\t增发代币' + testCaseParams.categoryName + '_name不一致'
@@ -812,7 +812,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-278, 'The transaction is ill-formed.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0371_0003\t增发代币' + testCaseParams.categoryName + '_flag不一致'
@@ -831,7 +831,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-278, 'invalid parameter flag'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -856,7 +856,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-175, 'No permission issue.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0381_0001\t销毁代币' + testCaseParams.categoryName + '_decimal不一致'
@@ -875,7 +875,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-175, 'No permission issue.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0381_0002\t销毁代币' + testCaseParams.categoryName + '_name不一致'
@@ -894,7 +894,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-175, 'No permission issue.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0381_0003\t销毁代币' + testCaseParams.categoryName + '_flag不一致'
@@ -913,7 +913,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.expectedResult = framework.createExpecteResult(false,
                         framework.getError(-278, 'invalid parameter flag'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0420\t无效地销毁：销毁数量大于发行数量' + testCaseParams.categoryName
@@ -927,7 +927,7 @@ module.exports = tcsSendAndSignTx = {
                     // burnable ?  framework.getError(-298, 'Can only send non-negative amounts.')
                         : framework.getError(-175, 'No permission issue.'))
             })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         testCaseParams.title = '0381_0004\t销毁所有' + testCaseParams.categoryName
@@ -945,7 +945,7 @@ module.exports = tcsSendAndSignTx = {
                     testCaseParams.txParams[0].total_supply =  '-49382716041'
                     testCaseParams.expectedResult = framework.createExpecteResult(false,  framework.getError(-175, 'No permission issue.'))
                 })
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 

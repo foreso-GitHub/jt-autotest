@@ -58,7 +58,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0020\t同时发起多个底层币发送交易_余额足够（通过jt_signTransaction测试）'
@@ -68,7 +68,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0030\t同时发起多个底层币发送交易_余额不够（通过jt_sendTransaction测试）'
@@ -78,7 +78,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0031\t同时向不同节点发起多个底层币发送交易_余额不够（通过jt_sendTransaction测试）'
@@ -89,7 +89,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0040\t同时发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）'
@@ -99,7 +99,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0041\t同时向不同节点发起多个底层币发送交易_余额不够（通过jt_signTransaction测试）\n'
@@ -110,7 +110,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币', testCases)
@@ -127,7 +127,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0060\t同时发起多个代币发送交易_余额足够（通过jt_signTransaction测试）'
@@ -137,7 +137,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0070\t同时发起多个代币发送交易_余额不够（通过jt_sendTransaction测试）'
@@ -147,7 +147,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0071\t同时向不同节点发起多个代币发送交易_余额不够（通过jt_sendTransaction测试）\n'
@@ -158,7 +158,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0080\t同时发起多个代币发送交易_余额不够（通过jt_signTransaction测试）'
@@ -168,7 +168,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0081\t同时向不同节点发起多个代币发送交易_余额不够（通过jt_signTransaction测试）\n'
@@ -179,7 +179,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             framework.testTestCases(server, '发送底层币/代币的交互性测试：代币', testCases)
@@ -203,7 +203,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0091\t同时发起多个底层币、代币发送交易_余额足够（通过jt_signTransaction测试）'
@@ -220,7 +220,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0100\t同时发起多个底层币、代币发送交易_余额不够（通过jt_sendTransaction测试）'
@@ -237,7 +237,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0101\t同时发起多个底层币、代币发送交易_余额不够（通过jt_signTransaction测试）'
@@ -254,7 +254,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0102\t同时向不同节点发起多个底层币、代币发送交易_余额不够（通过jt_sendTransaction测试）'
@@ -272,7 +272,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0103\t同时向不同节点发起多个底层币、代币发送交易_余额不够（通过jt_signTransaction测试）'
@@ -290,7 +290,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesForTotalNotEnough)
                 testCase.otherParams.subCaseFunctionParamsList.push(subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币混合', testCases)
@@ -304,7 +304,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0111\t同时向不同节点发送、接收底层币测试（通过jt_sendTransaction测试）'
@@ -315,7 +315,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0120\t同时发送、接收底层币测试（通过jt_signTransaction测试）'
@@ -325,7 +325,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0121\t同时向不同节点发送、接收底层币测试（通过jt_signTransaction测试）'
@@ -336,7 +336,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币混合', testCases)
@@ -350,7 +350,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0131\t同时向不同节点发送、接收代币测试（通过jt_sendTransaction测试）'
@@ -361,7 +361,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0140\t同时发送、接收代币测试（通过jt_signTransaction测试）'
@@ -371,7 +371,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0141\t同时向不同节点发送、接收代币测试（通过jt_signTransaction测试）'
@@ -382,7 +382,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesFor0110)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             framework.testTestCases(server, '发送底层币/代币的交互性测试：代币混合', testCases)
@@ -396,7 +396,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account1, account2, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0151\t同时向不同节点发送底层币、代币测试（通过jt_sendTransaction测试）'
@@ -407,7 +407,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0160\t同时发送底层币、代币测试（通过jt_signTransaction测试）'
@@ -417,7 +417,7 @@ module.exports = tcsInteractiveTest = {
                 subCaseFunctionParams = framework.createSubCasesParams(server, account3, account4, currency,
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             title = '0161\t同时向不同节点发送底层币、代币测试（通过jt_signTransaction测试）'
@@ -428,7 +428,7 @@ module.exports = tcsInteractiveTest = {
                     txFunction, tcsInteractiveTest.createSubCasesFor0150)
                 testCase = tcsInteractiveTest.createTestCase(server, title, caseRestrictedLevel, subCaseFunctionParams)
                 testCase.otherParams.servers = allServers
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
             }
 
             framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币同时混合', testCases)

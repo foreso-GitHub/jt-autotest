@@ -51,7 +51,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 5
             otherParams.execCmdsFunc = tcsBugInjection.loss30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             title = '0120\t网络丢包测试_02:单个节点Loss30%，然后恢复'
             otherParams = {}
@@ -59,7 +59,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 1
             otherParams.execCmdsFunc = tcsBugInjection.loss30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             framework.testTestCases(server, describeTitle + '_网络丢包测试', testCases)  //node operation will conflict.  so one case, one test.
 
@@ -75,7 +75,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 5
             otherParams.execCmdsFunc = tcsBugInjection.duplicate30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             title = '0140\t网络包重复测试_02:单个节点Duplicate30%，然后恢复'
             otherParams = {}
@@ -83,7 +83,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 1
             otherParams.execCmdsFunc = tcsBugInjection.duplicate30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             framework.testTestCases(server, describeTitle + '_网络包重复测试', testCases)  //node operation will conflict.  so one case, one test.
 
@@ -99,7 +99,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 5
             otherParams.execCmdsFunc = tcsBugInjection.corrupt30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             title = '0160\t网络包损坏测试_02:单个节点Corrupt30%，然后恢复'
             otherParams = {}
@@ -107,7 +107,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 1
             otherParams.execCmdsFunc = tcsBugInjection.corrupt30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             framework.testTestCases(server, describeTitle + '_网络包损坏测试', testCases)  //node operation will conflict.  so one case, one test.
 
@@ -123,7 +123,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 5
             otherParams.execCmdsFunc = tcsBugInjection.reorder30
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             title = '0180\t网络包乱序测试_02:单个节点Reorder30%，然后恢复'
             otherParams = {}
@@ -132,7 +132,7 @@ module.exports = tcsBugInjection = {
             otherParams.execCmdsFunc = tcsBugInjection.reorder30
             // otherParams.execNode = jtNodes[3]  //指定执行的node，不然会随机选择
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             framework.testTestCases(server, describeTitle + '_网络包乱序测试', testCases)  //node operation will conflict.  so one case, one test.
 
@@ -149,7 +149,7 @@ module.exports = tcsBugInjection = {
             otherParams.execCmdsFunc = tcsBugInjection.delay0_1_5
             otherParams.timeAfterResetCmds = 60000  //確保网络延时测试需要60s來恢復
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             title = '0100\t网络延时测试_02:单个节点5%概率延迟1s，然后恢复'
             otherParams = {}
@@ -159,7 +159,7 @@ module.exports = tcsBugInjection = {
             otherParams.timeAfterResetCmds = 60000  //確保网络延时测试需要60s來恢復
             // otherParams.execNode = jtNodes[0]  //指定执行的node为bd，不然会随机选择
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
 
             framework.testTestCases(server, describeTitle + '_网络延时测试', testCases)  //node operation will conflict.  so one case, one test.
 
@@ -174,7 +174,7 @@ module.exports = tcsBugInjection = {
             otherParams.initNodeCount = 5
             otherParams.execNodeCount = 1
             testCase = tcsBugInjection.createTestCase(server, title, otherParams)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
             framework.testTestCases(server, describeTitle + '_断网测试', testCases)  //node operation will conflict.  so one case, one test.
 
             for(let i = 1; i <= 5; i++){
@@ -185,7 +185,7 @@ module.exports = tcsBugInjection = {
                 otherParams.execNodeCount = 1
                 testCase = tcsBugInjection.createTestCase(server, title, otherParams)
                 testCase.restrictedLevel = restrictedLevel.L3
-                framework.addTestCase(testCases, testCase)
+                framework.addTestScript(testCases, testCase)
                 framework.testTestCases(server, describeTitle + '_断网测试_' + title, testCases)  //node operation will conflict.  so one case, one test.
             }
 

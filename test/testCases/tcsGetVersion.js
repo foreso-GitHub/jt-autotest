@@ -31,7 +31,7 @@ module.exports = tcsGetVersion = {
         scriptCode = '000100_参数空数组'
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_version_000020'
@@ -39,7 +39,7 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['json']
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_version_000030'
@@ -47,7 +47,7 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = [""]
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_version_000030'
@@ -56,7 +56,7 @@ module.exports = tcsGetVersion = {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['123']
             testScript.actions[0].expectedResult = {needPass: false, expetedError: {}}
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_version_000030'
@@ -65,7 +65,7 @@ module.exports = tcsGetVersion = {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['abc']
             testScript.actions[0].expectedResult = {needPass: false, expetedError: {}}
-            framework.addTestCase(testScripts, testScript)
+            framework.addTestScript(testScripts, testScript)
         }
 
         framework.testTestCases(server, describeTitle, testScripts)

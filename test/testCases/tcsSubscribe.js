@@ -437,7 +437,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0011\t订阅区块，带无效的订阅参数'
@@ -455,7 +455,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0012\t重复订阅区块'
@@ -483,7 +483,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_订阅block', testCases)
@@ -509,7 +509,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0021\t订阅交易，带无效的订阅参数'
@@ -529,7 +529,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0022\t重复订阅交易'
@@ -554,7 +554,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0024_001\t订阅交易，signTx'
@@ -575,7 +575,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0024_002\t订阅交易，signTx并且sendRawTx'
@@ -603,7 +603,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
@@ -630,7 +630,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0031\t订阅-无效的内容：参数为\'\''
@@ -650,7 +650,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0032\t订阅-无效的内容：参数为超长字符串'
@@ -670,7 +670,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0040\t订阅-内容为空'
@@ -690,7 +690,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_无效订阅', testCases)
@@ -725,7 +725,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0060\t已订阅交易时再订阅区块'
@@ -752,7 +752,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_多个订阅', testCases)
@@ -781,7 +781,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0080\t订阅token，带有效参数（全局token），参数不带issuer'
@@ -808,7 +808,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0080_001\t订阅token，带有效参数（全局token），参数带issuer'
@@ -835,7 +835,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0090\t订阅token，带有效参数（本地token）'
@@ -862,7 +862,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0100\t订阅token，带无效参数: token名字超过12字节'
@@ -883,7 +883,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0101\t订阅token，带无效参数: token名字正确但issuer地址非法'
@@ -904,7 +904,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0110\t订阅token，参数为空: 订阅内容为token，订阅参数为空字符串'
@@ -925,7 +925,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0120\t重复订阅相同的token'
@@ -953,7 +953,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0130\t订阅不同的token'
@@ -987,7 +987,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0140\t订阅多个同名的token，issuer不同，包括全局的'
@@ -1040,7 +1040,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_订阅token', testCases)
@@ -1068,7 +1068,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0160\t订阅account，带有效参数_01： 发送方地址'
@@ -1088,7 +1088,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0161\t订阅account，带有效参数_02： 接收方地址'
@@ -1108,7 +1108,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0180\t订阅account，带无效参数: 未激活地址'
@@ -1128,7 +1128,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0181\t订阅account，带无效参数: 地址格式错误'
@@ -1148,7 +1148,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0190\t订阅account，参数为空'
@@ -1168,7 +1168,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0200\t重复订阅相同的account'
@@ -1195,7 +1195,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0210\t订阅不同的account'
@@ -1235,7 +1235,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_订阅account', testCases)
@@ -1265,7 +1265,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0012\t订阅tx，发送token，全局token'
@@ -1284,7 +1284,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0013\t订阅tx，增发token，全局token'
@@ -1303,7 +1303,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0014\t订阅tx，销毁token，全局token'
@@ -1322,7 +1322,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0021\t订阅tx，发行token，本地token'
@@ -1340,7 +1340,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0022\t订阅tx，发送token，本地token'
@@ -1359,7 +1359,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0023\t订阅tx，增发token，本地token'
@@ -1378,7 +1378,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0023_0024\t订阅tx，销毁token，本地token'
@@ -1397,7 +1397,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -1420,7 +1420,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0081_0002\t订阅token，发送token，全局token'
@@ -1439,7 +1439,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0081_0003\t订阅token，增发token，全局token'
@@ -1458,7 +1458,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0081_0004\t订阅token，销毁token，全局token'
@@ -1477,7 +1477,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0091_0001\t订阅token，发行token，本地token'
@@ -1495,7 +1495,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0091_0002\t订阅token，发送token，本地token'
@@ -1514,7 +1514,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0091_0003\t订阅token，增发token，本地token'
@@ -1533,7 +1533,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0091_0004\t订阅token，销毁token，本地token'
@@ -1552,7 +1552,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -1575,7 +1575,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0160_0001\t订阅account，发送token，全局token'
@@ -1594,7 +1594,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0163_0001\t订阅account，增发token，全局token'
@@ -1613,7 +1613,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0164_0001\t订阅account，销毁token，全局token'
@@ -1632,7 +1632,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0162_0002\t订阅account，发行token，本地token'
@@ -1650,7 +1650,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0160_0002\t订阅account，发送token，本地token'
@@ -1669,7 +1669,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0163_0002\t订阅account，增发token，本地token'
@@ -1688,7 +1688,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0164_0002\t订阅account，销毁token，本地token'
@@ -1707,7 +1707,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
         //endregion
 
@@ -1832,7 +1832,7 @@ module.exports = tcsSubscribe = {
             //endregion
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0221\t订阅不同的内容，不包括tx'
@@ -1954,7 +1954,7 @@ module.exports = tcsSubscribe = {
             //endregion
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_混合订阅', testCases)
@@ -2024,7 +2024,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0011\t取消订阅区块block_02: 无订阅区块'
@@ -2040,7 +2040,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0012\t取消订阅区块block_03: 已订阅区块，取消订阅区块，订阅内容为block，订阅参数为任意值'
@@ -2068,7 +2068,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_退订block', testCases)
@@ -2108,7 +2108,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0021\t取消订阅交易tx_02: 无订阅交易，client没有订阅交易，但是发送取消订阅交易tx请求'
@@ -2128,7 +2128,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0022\t取消订阅交易tx_03: 已订阅区块，取消订阅交易，订阅内容为tx，订阅参数为任意值'
@@ -2160,7 +2160,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0030\t已订阅区块block，取消订阅交易tx:已订阅区块，取消订阅交易，订阅内容为tx，无订阅参数'
@@ -2192,7 +2192,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_退订tx', testCases)
@@ -2232,7 +2232,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0040_0001\t已订阅交易tx，取消订阅区块block:已订阅交易，取消订阅区块，订阅内容为block，无订阅参数'
@@ -2264,7 +2264,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0060_0001\t取消订阅-订阅内容为空:已订阅区块或交易，取消订阅时订阅内容为空'
@@ -2296,7 +2296,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0060_0002\t取消订阅-订阅内容为空:已订阅区块或交易，取消订阅时订阅内容为空'
@@ -2328,7 +2328,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_退订失败', testCases)
@@ -2351,7 +2351,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0080\t取消订阅token，参数为空:取消订阅内容为token，但参数为空'
@@ -2366,7 +2366,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0090\t取消订阅不存在的token:取消订阅内容为token，但参数是不存在的token名字'
@@ -2381,7 +2381,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0100\t取消订阅全局token:有订阅的全局token，取消订阅内容为token，参数是某全局token名字'
@@ -2415,7 +2415,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0110\t取消订阅带issuer的token_01:有订阅的带issuer的token，取消订阅内容为token，参数是token名字/正确的issuer地址'
@@ -2449,7 +2449,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0120\t取消订阅带issuer的token_02:有订阅的带issuer的token，取消订阅内容为token，参数是token名字/错误的issuer地址'
@@ -2483,7 +2483,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_退订token', testCases)
@@ -2506,7 +2506,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0140\t取消订阅account，参数为空'
@@ -2521,7 +2521,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0150\t取消订阅非法的account地址'
@@ -2536,7 +2536,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0151\t取消订阅无效的account地址'
@@ -2551,7 +2551,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0160\t取消订阅有效的account地址:client有订阅的account'
@@ -2583,7 +2583,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_退订account', testCases)
@@ -2650,7 +2650,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0180\t取消所有订阅_02:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account，取消订阅内容为all，带参数，参数内容为任意值'
@@ -2709,7 +2709,7 @@ module.exports = tcsSubscribe = {
             actions.push(action)
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0190\t取消所有订阅_03:client没有订阅任何信息，取消订阅内容为all，不带参数'
@@ -2724,7 +2724,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_退订all', testCases)
@@ -2821,7 +2821,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0020\t参数为空_02: client没有订阅任何信息'
@@ -2836,7 +2836,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0030\t参数为block_01: client订阅了block,参数列表为["block"]'
@@ -2852,7 +2852,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0040\t参数为block_02: client没有订阅block,参数列表为["block"]'
@@ -2867,7 +2867,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0050\t参数为tx_01: client订阅了tx,参数列表为["tx"]'
@@ -2883,7 +2883,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0060\t参数为tx_02:client没有订阅tx,参数列表为["tx"]'
@@ -2898,7 +2898,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0070\t参数为token_01:client订阅了多个token（全局的和带issuer的都有）,参数列表为["token"]'
@@ -2926,7 +2926,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0080\t参数为token_02:client没有订阅token,参数列表为["token"]'
@@ -2941,7 +2941,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0090\t参数为account_01:client订阅了多个account,参数列表为["account"]'
@@ -2969,7 +2969,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0100\t参数为account_02:client没有订阅account,参数列表为["account"]'
@@ -2984,7 +2984,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_列表normal', testCases)
@@ -3007,7 +3007,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0110_0002\t无效的参数: 乱码字符串'
@@ -3022,7 +3022,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0120\t参数包含多个内容_01:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["block","tx","token", "account"]'
@@ -3079,7 +3079,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0130\t参数包含多个内容_02:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["block","token"]'
@@ -3135,7 +3135,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0140\t参数包含多个内容_03:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["tx", "account"]'
@@ -3191,7 +3191,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0150\t参数包含多个内容_04:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表包含一个有效的参数，一个无效的参数，比如["block","123"]'
@@ -3246,7 +3246,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0160\t参数包含多个内容_05:参数列表包含几个无效的参数，比如["abc","123"]'
@@ -3301,7 +3301,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0170\t参数包含多个内容_06:client订阅了block、tx、多个token（全局和带issuer的都有），没有订阅account,参数列表为["block","account"]'
@@ -3343,7 +3343,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0180\t参数包含多个内容_07:client订阅了block、多个token（全局和带issuer的都有）、多个account，没有订阅tx,参数列表为["tx", "token"]'
@@ -3392,7 +3392,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         title = titlePrefix + '0190\t参数包含多个内容_08:client什么都没订阅,参数列表为["block","tx","token", "account"]'
@@ -3408,7 +3408,7 @@ module.exports = tcsSubscribe = {
             })
 
             testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestCase(testCases, testCase)
+            framework.addTestScript(testCases, testCase)
         }
 
         framework.testTestCases(server, describeTitle + '_列表mixed', testCases)

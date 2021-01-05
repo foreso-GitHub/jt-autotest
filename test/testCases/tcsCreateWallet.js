@@ -30,7 +30,7 @@ module.exports = tcsCreateWallet = {
         let expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
         let type
         let testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         //endregion
 
@@ -38,51 +38,51 @@ module.exports = tcsCreateWallet = {
         title = '0020\t创建账户-参数为ECDSA'
         type = consts.walletTypes.ECDSA
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0021\t创建账户-参数为ecdsa'
         type = 'ecdsa'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0022\t创建账户-参数为Ecdsa'
         type = 'Ecdsa'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         //endregion
 
         //region Ed25519
         title = '0020\t创建账户-参数为ECDSA'
         type = consts.walletTypes.Ed25519
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0021\t创建账户-参数为ed25519'
         type = 'ed25519'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0022\t创建账户-参数为ED25519'
         type = 'ED25519'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         //endregion
 
         //region SM2
         title = '0020\t创建账户-参数为SM2'
         type = consts.walletTypes.SM2
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0021\t创建账户-参数为sm2'
         type = 'sm2'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0022\t创建账户-参数为Sm2'
         type = 'Sm2'
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         //endregion
 
         //region 无效的参数
@@ -92,35 +92,35 @@ module.exports = tcsCreateWallet = {
         needPass = false
         expectedError = framework.getError(-269, 'key type is not string')
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0051\t创建账户-无效的参数: 非ECDSA/Ed25519/SM2'
         type = "123123"
         needPass = false
         expectedError = framework.getError(-191, 'unknown key type')
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0052\t创建账户-无效的参数: 空格'
         type = "   "
         needPass = false
         expectedError = framework.getError(-191, 'unknown key type')
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0053\t创建账户-无效的参数: 空格SM2'
         type = "  SM2"
         needPass = false
         expectedError = framework.getError(-191, 'unknown key type')
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
 
         title = '0054\t创建账户-参数为""'
         type = ''
         needPass = false
         expectedError = framework.getError(-191, 'unknown key type')
         testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestCase(testCases, testCase)
+        framework.addTestScript(testCases, testCase)
         //endregion
 
         framework.testTestCases(server, describeTitle, testCases)
