@@ -306,6 +306,7 @@ module.exports = testUtility = {
     //endregion
 
     //region issue token
+
     getDynamicTokenName: function(){
         let timeSeed = (_LastDynamicalTimeSeed) ? _LastDynamicalTimeSeed : Math.round(new Date().getTime()/1000)
         _LastDynamicalTimeSeed = ++timeSeed
@@ -370,6 +371,14 @@ module.exports = testUtility = {
             issuer: issuer,
         }
     },
+
+    amount2Value: function(value, symbol, issuer){
+        let currency = symbol.toUpperCase() === consts.default.nativeCoin
+            ? value
+            : value + '/' + symbol + '/' + issuer
+        return currency
+    },
+
     //endregion
 
     //region hex relative
@@ -379,30 +388,30 @@ module.exports = testUtility = {
     // ascii: QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW
     // base64: UW1VdVZmSnJRMm1iN0YyMjNmVWh2cGtRNmJqRkZNNEZhUEtuS0xMQldNRXBCVw==
 
-    hex2Utf8: function(hex){
-        return new Buffer.from(hex.toString(), 'hex').toString('utf8')
+    hex2Utf8: function(context){
+        return new Buffer.from(context.toString(), 'hex').toString('utf8')
     },
 
-    utf82Hex: function(hex){
-        return new Buffer.from(string, 'utf8').toString('hex')
+    utf82Hex: function(context){
+        return new Buffer.from(context, 'utf8').toString('hex')
     },
 
-    hex2Base64: function(hex){
+    hex2Base64: function(context){
         // return new Buffer.from(hex.toString(), 'hex').toString('utf8')
-        return new Buffer.from(hex.toString(), 'hex').toString('base64')
+        return new Buffer.from(context.toString(), 'hex').toString('base64')
     },
 
-    base642Hex: function(string){
+    base642Hex: function(context){
         // return new Buffer.from(string, 'utf8').toString('hex')
-        return new Buffer.from(string, 'base64').toString('hex')
+        return new Buffer.from(context, 'base64').toString('hex')
     },
 
-    hex2Ascii: function(hex){
-        return new Buffer.from(hex.toString(), 'hex').toString('ascii')
+    hex2Ascii: function(context){
+        return new Buffer.from(context.toString(), 'hex').toString('ascii')
     },
 
-    ascii2Hex: function(string){
-        return new Buffer.from(string, 'ascii').toString('hex')
+    ascii2Hex: function(context){
+        return new Buffer.from(context, 'ascii').toString('hex')
     },
 
     isHex: function(context){
@@ -689,5 +698,67 @@ module.exports = testUtility = {
         return s
     },
 //endregion
+
+    //region common compare
+
+    compareMemos: function(paramMemos, txMemos){
+        if(paramMemos.length != txMemos.length){
+            return false
+        }
+        let result = true
+        for(let i = 0; i < paramMemos.length; i++){
+            let memo = paramMemos[i]
+            let hex = testUtility.utf82Hex(memo).toUpperCase()
+            if(hex !== txMemos[i].Memo.MemoData.toUpperCase()){
+                result = false
+            }
+        }
+        return result
+    },
+
+    compareTxs: function(tx1, tx2){
+        expect(tx1.Account).to.be.equals(tx2.Account)
+        expect(tx1.Destination).to.be.equals(tx2.Destination)
+        expect(tx1.Fee).to.be.equals(tx2.Fee)
+        expect(tx1.Amount.value).to.be.equals(tx2.Amount.value)
+        expect(tx1.Amount.currency).to.be.equals(tx2.Amount.currency)
+        expect(tx1.Amount.issuer).to.be.equals(tx2.Amount.issuer)
+        expect(JSON.stringify(tx1.Memos)).to.be.equals(JSON.stringify(tx2.Memos))
+        expect(tx1.Sequence).to.be.equals(tx2.Sequence)
+        expect(tx1.inLedger).to.be.equals(tx2.inLedger)
+        expect(tx1.date).to.be.equals(tx2.date)
+        expect(tx1.hash).to.be.equals(tx2.hash)
+        expect(tx1.TransactionType).to.be.equals(tx2.TransactionType)
+        if(tx1.TransactionType == consts.rpcParamConsts.issueCoin){
+            expect(tx1.Name).to.be.equals(tx2.Name)
+            expect(tx1.Decimals).to.be.equals(Number(tx2.Decimals))
+            expect(tx1.TotalSupply.value).to.be.equals(tx2.TotalSupply.value)
+            expect(tx1.TotalSupply.currency).to.be.equals(tx2.TotalSupply.currency)
+            expect(tx1.TotalSupply.issuer).to.be.equals(tx2.TotalSupply.issuer)
+            expect(tx1.Flags).to.be.equals(tx2.Flags)
+        }
+    },
+
+    compareParamAndTx: function(param, tx){
+        expect(tx.Account).to.be.equals(param.from)
+        expect(tx.Destination).to.be.equals(param.to)
+        expect(tx.Fee).to.be.equals(param.fee)
+        expect(tx.Sequence).to.be.equals(param.sequence)
+        let txValue = utility.amount2Value(tx.Amount.value, tx.Amount.currency, tx.Amount.issuer)
+        expect(txValue).to.be.equals(param.value)
+        if(param.memos) expect(utility.checkMemos(param.memos, tx.Memos)).to.be.ok
+        if(param.type) expect(tx.TransactionType).to.be.equals(param.type)
+        if(param.type == consts.rpcParamConsts.issueCoin){
+            expect(tx.Name).to.be.equals(param.name)
+            expect(tx.Decimals).to.be.equals(Number(param.decimals))
+            expect(tx.TotalSupply.value).to.be.equals(param.total_supply)
+            expect(tx.TotalSupply.currency).to.be.equals(param.symbol)
+            expect(tx.TotalSupply.issuer).to.be.equals((param.local) ? param.from : consts.default.issuer)
+            expect(tx.Flags).to.be.equals(param.flags)
+        }
+    },
+
+    //endregion
+
 }
 
