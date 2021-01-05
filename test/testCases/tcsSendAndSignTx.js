@@ -34,8 +34,8 @@ module.exports = tcsSendAndSignTx = {
 
             //region basic test
 
-
             categoryName = NativeCoinTest
+
             txFunctionName = consts.rpcFunctions.sendTx
             txParams = framework.createTxParamsForTransfer(server)
             describe(categoryName + '测试：' + txFunctionName, async function () {

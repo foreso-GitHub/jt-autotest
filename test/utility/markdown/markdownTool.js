@@ -115,7 +115,7 @@ module.exports = markdownTool = {
         content += testCase.title + '|'
         content += testCase.precondition + '|'
         content += testCase.input + '|'
-        content += testCase.expetedResult + '|'
+        content += testCase.expectedOutput + '|'
         return content
     },
 
@@ -153,7 +153,7 @@ module.exports = markdownTool = {
             testCase.title = tsCells[1]
             testCase.precondition = tsCells[2]
             testCase.input = tsCells[3]
-            testCase.expetedResult = tsCells[4]
+            testCase.expectedOutput = tsCells[4]
         }
         else{
             console.log('Parse test cases error: not 5 cells in line!');
@@ -181,7 +181,7 @@ module.exports = markdownTool = {
         content += testCase.title + '|'
         content += markdownTool.deco('预置条件', testCase.precondition? testCase.precondition : '无') + '<br><br>'
         content += markdownTool.deco('输入内容', testCase.input? testCase.input : '无') + '<br><br>'
-        content += markdownTool.deco('预期结果', testCase.expetedResult? testCase.expetedResult : '无') + '|'
+        content += markdownTool.deco('预期结果', testCase.expectedOutput? testCase.expectedOutput : '无') + '|'
         return content
     },
 
@@ -237,7 +237,7 @@ module.exports = markdownTool = {
 
             start = end + mark3.length
             end = details.length - 1
-            testCase.expetedResult = details.substring(start, end)
+            testCase.expectedOutput = details.substring(start, end)
         }
         else{
             console.log('Parse test cases error: not 3 cells in line!');

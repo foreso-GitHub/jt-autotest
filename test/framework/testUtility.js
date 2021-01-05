@@ -303,6 +303,16 @@ module.exports = testUtility = {
         })
     },
 
+    findTxByFromAndSequence: function(txs, from, sequence){
+        for(let i = 0; i < txs.length; i++){
+            let tx = txs[i]
+            if(tx.from == from && tx.sequence == sequence){
+                return tx
+            }
+        }
+        return null
+    },
+
     //endregion
 
     //region issue token

@@ -39,7 +39,7 @@ module.exports = csvTool = {
             testCase.title = csvTool.clean(row[3])
             testCase.precondition = csvTool.clean(row[4])
             testCase.input = csvTool.clean(row[5])
-            testCase.expetedResult = csvTool.clean(row[6])
+            testCase.expectedOutput = csvTool.clean(row[6])
             if(testCase.code && testCase.code.length > 0 && testCase.code.indexOf('用例编号（新）') == -1){
                 testCases.push(testCase)
             }

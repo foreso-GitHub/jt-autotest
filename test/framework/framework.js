@@ -93,11 +93,10 @@ module.exports = framework = {
         if(server) testScript.server = server
         if(actions) testScript.actions = actions
         testScript.otherParams = null
-        testScript.hasExecuted = false
         testScript.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
         testScript.supportedServices = (supportedServices) ? utility.cloneArray(supportedServices) : []
         testScript.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
-        testScript.actualResult = []
+        testScript.hasExecuted = false
         testScript.testResult = false
         return testScript
     },
@@ -115,6 +114,7 @@ module.exports = framework = {
         testAction.checkFunction = checkFunction
         testAction.expectedResult = expectedResult
         testAction.actualResult = []
+        testAction.testResult = false
         return testAction
     },
 
@@ -159,6 +159,8 @@ module.exports = framework = {
 
     //endregion
 
+    //region txParams
+
     createTestCaseByParams: function(testCaseParams){
         return framework.createTestCase(testCaseParams.title, testCaseParams.server,
             testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
@@ -202,6 +204,8 @@ module.exports = framework = {
             tokenName, tokenSymbol, token.decimals, token.total_supply, token.local, token.flags)
     },
 
+    //endregion
+
     createExpecteResult: function(needPass, expectedError){
         let expectedResult = {}
         expectedResult.needPass = needPass
@@ -210,7 +214,7 @@ module.exports = framework = {
     },
     //endregion
 
-    //region common create method for sendTx and signTx
+    //region change expected result for sendTx and signTx
 
     //当jt_sendTransaction和jt_signTransaction都通不过测试时
     changeExpectedResultWhenSignFail: function(testScript, expectedResult){
@@ -229,10 +233,10 @@ module.exports = framework = {
     //endregion
 
     //region common
-    addTestCase: function(testCases, testCase){
-        if(framework.ifNeedExecuteOrCheck(testCase)){
-            testCases.push(testCase)
-            _FullTestCaseList.push(testCase)
+    addTestCase: function(testScripts, testScript){
+        if(framework.ifNeedExecuteOrCheck(testScript)){
+            testScripts.push(testScript)
+            _FullTestCaseList.push(testScript)
             // logger.debug('====== _FullTestCaseList Count ======')
             // logger.debug(_FullTestCaseList.length)
         }
@@ -272,11 +276,10 @@ module.exports = framework = {
                 let data = action.txParams[i]
                 let from = data.from
 
-                // if(action.sendType &&
-                //     (action.sendType == consts.sendTxType.InOneRequestQuickly || action.sendType == consts.sendTxType.InOneRequest)
-                //     && i != 0){
-                //     }
-                if(totalCount > 0 && i != 0){
+                // if(i != 0 && action.sendType &&
+                //     (action.sendType == consts.sendTxType.InOneRequestQuickly
+                //     || action.sendType == consts.sendTxType.InOneRequest)){
+                if(totalCount > 1 && i != 0){
                     sequence++
                 }else{
                     sequence = await framework.getSequence(server, from)
@@ -447,24 +450,6 @@ module.exports = framework = {
         expect(result2.engine_result_message).to.equals(result1.engine_result_message)
     },
 
-    checkResponseOfTransfer1: async function(testCase, txParams){
-        await framework.checkResponseOfCommon1(testCase, txParams, async function(testCase, txParams, tx){
-            let params = framework.findTxByFromAndSequence(txParams, tx.Account, tx.Sequence)
-            // logger.debug('checkResponseOfTransfer: ' + tx.Sequence)
-            await framework.compareActualTxWithTxParams(params, tx, testCase.server.mode)
-
-            if(testCase.server.mode.restrictedLevel >= restrictedLevel.L5){
-                let expectedBalance = testCase.expectedResult.expectedBalance
-                if(expectedBalance){
-                    let server = testCase.server
-                    let from = params.from
-                    let symbol = params.symbol
-                    await framework.checkBalanceChange(server, from, symbol, expectedBalance)
-                }
-            }
-        })
-    },
-
     checkResponseOfCommon: function(action){
         framework.checkResponse(action.actualResult)
         let params = action.txParams
@@ -490,6 +475,7 @@ module.exports = framework = {
 
             if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
                 if(utility.isResponseStatusSuccess(actualResult)){
+                    action.testResult = true
                     continue
                 }
             }
@@ -520,16 +506,6 @@ module.exports = framework = {
             }
             action.testResult = true
         }
-    },
-
-    findTxByFromAndSequence: function(txs, from, sequence){
-        for(let i = 0; i < txs.length; i++){
-            let tx = txs[i]
-            if(tx.from == from && tx.sequence == sequence){
-                return tx
-            }
-        }
-        return null
     },
 
     getBalanceValue: function(balanceObject){
@@ -660,6 +636,7 @@ module.exports = framework = {
                 framework.checkResponseError(action, expectedResult, actualResult)
             }
         }
+        action.testResult = true
     },
 
     //endregion
@@ -689,10 +666,10 @@ module.exports = framework = {
         describeTitle = '【' + describeTitle + '】'
         let testMode = server.mode.testMode
         if(!testMode || testMode == testModeEnums.batchMode){
-            framework.testBatchTestCases(server, describeTitle, testCases)
+            framework.testOnBatchMode(server, describeTitle, testCases)
         }
         else if (testMode == testModeEnums.singleMode) {
-            framework.testSingleTestCases(server, describeTitle, testCases)
+            framework.testOnSingleMode(server, describeTitle, testCases)
         }
         else{
             logger.debug("No special test mode!")
@@ -701,7 +678,7 @@ module.exports = framework = {
 
     //region batch mode
 
-    testBatchTestCases: function(server, describeTitle, testScripts){
+    testOnBatchMode: function(server, describeTitle, testScripts){
         describe(describeTitle, async function () {
 
             before(async function() {
@@ -716,10 +693,11 @@ module.exports = framework = {
                             let action = testScript.actions[i]
                             // logger.debug('===before checkFunction')
                             // logger.debug('hasExecuted: ' + testScript.hasExecuted)
-                            framework.printTestCaseInfo(action)
                             await action.checkFunction(action)
                             // logger.debug('===after checkFunction')
-                            if(!action.testResult) testResult = false
+                            if(action.testResult != undefined && !action.testResult) {
+                                testResult = false
+                            }
                         }
                         testScript.testResult = testResult
                         framework.afterTestFinish(testScript)
@@ -730,6 +708,7 @@ module.exports = framework = {
                     }
                 })
             })
+
         })
     },
 
@@ -754,31 +733,41 @@ module.exports = framework = {
     //endregion
 
     //region single mode
-    testSingletestScripts: function(server, describeTitle, testCases) {
+
+    testOnSingleMode: function(server, describeTitle, testScripts) {
         describe(describeTitle, async function () {
-            testCases.forEach(async function(testCase){
-                it(testCase.title, async function () {
+            testScripts.forEach(async function(testScript){
+                it(testScript.title, async function () {
                     try{
-                        await testCase.executeFunction(testCase)
-                        framework.printTestCaseInfo(testCase)
-                        await testCase.checkFunction(testCase)
-                        framework.afterTestFinish(testCase)
+                        let testResult = true
+                        for(let i = 0; i < testScript.actions.length; i++){
+                            let action = testScript.actions[i]
+                            await action.executeFunction(action)
+                            await action.checkFunction(action)
+                            if(action.testResult != undefined && !action.testResult) {
+                                testResult = false
+                            }
+                        }
+                        testScript.testResult = testResult
+                        framework.afterTestFinish(testScript)
                     }
                     catch(ex){
-                        framework.afterTestFinish(testCase)
+                        framework.afterTestFinish(testScript)
                         throw ex
                     }
                 })
             })
         })
     },
+
     //endregion
 
     //region after test
-    afterTestFinish: function(testCase){
+    afterTestFinish: function(testScript){
         if(framework.checkIfAllTestHasBeenExecuted(_FullTestCaseList)){
-            framework.closeTest(testCase)
+            framework.closeTest(testScript)
         }
+        framework.printTestScript(testScript)
     },
 
     checkIfAllTestHasBeenExecuted: function(testCases){
@@ -827,23 +816,22 @@ module.exports = framework = {
     },
     //endregion
 
-    printTestCaseInfo: function(testCase){
-        logger.debug('---check title: ' + testCase.title)      //important logger
-        logger.debug('---function: ' + testCase.txFunctionName)
-        logger.debug('---paraments: ' + JSON.stringify(testCase.txParams))
-        logger.debug('---supportedServices: ' + JSON.stringify(testCase.supportedServices))
-        logger.debug('---supportedInterfaces: ' + JSON.stringify(testCase.supportedInterfaces))
-        logger.debug('---restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
-        // logger.debug('---hasExecuted: ' + testCase.hasExecuted)
-        for(let i = 0; i < testCase.actualResult.length; i++){
-            logger.debug('---result[' +i + ']: ' + JSON.stringify(testCase.actualResult[i]))    }
-        if(testCase.subTestCases != null && testCase.subTestCases.length > 0) {
-            logger.debug('---subTestCases result: ' + JSON.stringify(testCase.subTestCases[0].actualResult[0]))
-        }
-        if(testCase.checks != null && testCase.checks.length > 0) {
-            for(let i = 0; i < testCase.checks.length; i++){
-                logger.debug('---check[' + i + ']: ' + JSON.stringify(testCase.checks[i]))
-            }
+    printTestScript: function(testScript){
+        logger.debug('---script title: ' + testScript.title)      //important logger
+        logger.debug('---test precondition: ' + testScript.testCase.precondition)
+        logger.debug('---test input: ' + testScript.testCase.input)
+        logger.debug('---test expectedOutput: ' + testScript.testCase.expectedOutput)
+        logger.debug('---supportedServices: ' + JSON.stringify(testScript.supportedServices))
+        logger.debug('---supportedInterfaces: ' + JSON.stringify(testScript.supportedInterfaces))
+        logger.debug('---restrictedLevel: ' + JSON.stringify(testScript.restrictedLevel))
+        // logger.debug('---hasExecuted: ' + testScript.hasExecuted)
+        logger.debug('---testResult: ' + testScript.testResult)
+        for(let i = 0; i < testScript.actions.length; i++){
+            let action = testScript.actions[i]
+            logger.debug('---txFunctionName[' +i + ']: ' + JSON.stringify(action.txFunctionName))
+            logger.debug('---txParams[' +i + ']: ' + JSON.stringify(action.txParams))
+            logger.debug('---result[' +i + ']: ' + JSON.stringify(action.actualResult))
+            logger.debug('---testResult[' +i + ']: ' + action.testResult)
         }
     },
 
