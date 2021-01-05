@@ -40,7 +40,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // loadErrors()
 
 // csv2Md()
-// updateTestCaseJs('..\\ipfslib.wiki\\', '_TestCase_Index.md')
+updateTestCaseJs('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // loadTestCasesFromMdFiles('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // updateTestCaseJson('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // loadTestCasesFromJson('.\\test\\utility\\markdown\\json\\testcase.json')

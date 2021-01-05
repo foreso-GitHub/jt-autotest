@@ -33,43 +33,21 @@ let NEED_CHECK_ExpectedResult = true
 
 module.exports = framework = {
 
+    //region design
+
+    // 结构：
+    // TestCase => TestScript => Action => TxParam/ExpectedResult/ActualResult
+    // 执行模式：
+    // Batch: 数组中所有的TestScript都执行完后再检查，好处是节省时间
+    // Single: 数组中所有的TestScript都一个个单独执行，执行一个就检查一个，时间消耗比较高
+
+    //endregion
+
     //region auto test framework
 
     //region 1. create test cases
 
     //region create txParams
-
-    createTestCaseParams: function(server, categoryName, txFunctionName, txParams){
-        let testCaseParams = {}
-        testCaseParams.server = server
-        testCaseParams.categoryName = categoryName
-        testCaseParams.txFunctionName = txFunctionName
-        testCaseParams.title = ''
-        testCaseParams.originalTxParams = txParams
-        testCaseParams.txParams = utility.deepClone(txParams)
-        testCaseParams.otherParams = {}
-        testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
-        testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
-        testCaseParams.expectedResult = framework.createExpecteResult(true)
-        testCaseParams.testCase = {}
-        // testCaseParams.symbol = testCaseParams.txParams[0].symbol
-        // testCaseParams.showSymbol = (testCaseParams.txParams[0].showSymbol) ? testCaseParams.txParams[0].showSymbol : ''
-        if(txFunctionName === consts.rpcFunctions.sendTx) {
-            testCaseParams.executeFunction = framework.executeTestCaseOfSendTx
-            testCaseParams.checkFunction = framework.checkTestCaseOfSendTx
-        }
-        else if(txFunctionName === consts.rpcFunctions.signTx){
-            testCaseParams.executeFunction = framework.executeTestCaseOfSignTxAndSendRawTx
-            testCaseParams.checkFunction = framework.checkTestCaseOfSignTxAndSendRawTx
-        }
-        else{
-            throw new Error('txFunctionName doesn\'t exist!')
-        }
-        testCaseParams.restrictedLevel = restrictedLevel.L2
-        testCaseParams.supportedServices = [serviceType.newChain]
-        testCaseParams.supportedInterfaces = []
-        return testCaseParams
-    },
 
     updateTokenInTestCaseParams: function(testCaseParams){
         let token = utility.getDynamicTokenName()
@@ -84,7 +62,10 @@ module.exports = framework = {
         if(title) testCase.title = title
         if(server) testCase.server = server
         if(txFunctionName) testCase.txFunctionName = txFunctionName
-        if(txParams) testCase.txParams = txParams
+        if(txParams) {
+            testCase.originalTxParams = txParams
+            testCase.txParams = utility.deepClone(txParams)
+        }
         if(otherParams) testCase.otherParams = otherParams
         if(executeFunction) testCase.executeFunction = executeFunction
         if(checkFunction) testCase.checkFunction = checkFunction
@@ -98,9 +79,10 @@ module.exports = framework = {
         return testCase
     },
 
-    createTestScript: function(testCaseCode, scriptCode, server, txFunctionName, txParams, otherParams,
-                               executeFunction, checkFunction, expectedResult,
-                             restrictedLv, supportedServices, supportedInterfaces){
+    //region refactor
+
+    createTestScript: function(server, testCaseCode, scriptCode, actions,
+                               restrictedLv, supportedServices, supportedInterfaces){
         let testScript = {}
         testScript.type = "it"
         let testCase = framework.getTestCase(testCaseCode)
@@ -109,21 +91,73 @@ module.exports = framework = {
         testScript.scriptCode = scriptCode
         testScript.title = testScript.testCase.code + '-' + testScript.scriptCode + ': ' + testScript.testCase.title
         if(server) testScript.server = server
-        if(txFunctionName) testScript.txFunctionName = txFunctionName
-        if(txParams) testScript.txParams = txParams
-        if(otherParams) testScript.otherParams = otherParams
-        if(executeFunction) testScript.executeFunction = executeFunction
-        if(checkFunction) testScript.checkFunction = checkFunction
-        if(expectedResult) testScript.expectedResult = expectedResult
+        if(actions) testScript.actions = actions
+        testScript.otherParams = null
         testScript.hasExecuted = false
-        testScript.actualResult = []
         testScript.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
         testScript.supportedServices = (supportedServices) ? utility.cloneArray(supportedServices) : []
         testScript.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
-        testScript.checks = []
+        testScript.actualResult = []
         testScript.testResult = false
         return testScript
     },
+
+    createTestAction: function(testScript, txFunctionName, txParams, executeFunction, checkFunction, expectedResult){
+        let testAction = {}
+        testAction.testScript = testScript
+        testAction.server = testScript.server
+        testAction.txFunctionName = txFunctionName
+        if(txParams) {
+            testAction.originalTxParams = txParams
+            testAction.txParams = utility.deepClone(txParams)
+        }
+        testAction.executeFunction = executeFunction
+        testAction.checkFunction = checkFunction
+        testAction.expectedResult = expectedResult
+        testAction.actualResult = []
+        return testAction
+    },
+
+    createTestScriptForTx: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
+
+        let testScript = framework.createTestScript(
+            server,
+            testCaseCode,
+            scriptCode,
+            [],
+            restrictedLevel.L2,
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+
+        if(txFunctionName === consts.rpcFunctions.sendTx) {
+            let sendTxAction = framework.createTestAction(testScript, txFunctionName, txParams,
+                framework.executeTestCaseOfSendTx,
+                framework.checkTestCaseOfSendTx,
+                [{needPass: true}])
+            testScript.actions.push(sendTxAction)
+        }
+        else if(txFunctionName === consts.rpcFunctions.signTx){
+            let signTxAction = framework.createTestAction(testScript, txFunctionName, txParams,
+                framework.executeTestCaseOfSendTx,
+                framework.checkTestCaseOfSignTx,
+                [{needPass: true}])
+            testScript.actions.push(signTxAction)
+            let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [],
+                framework.executeTestCaseOfSendRawTx,
+                framework.checkTestCaseOfSendTx,
+                [{needPass: true}])
+            sendRawTxAction.signTxAction = signTxAction
+            testScript.actions.push(sendRawTxAction)
+        }
+        else{
+            throw new Error('txFunctionName doesn\'t exist!')
+        }
+
+        return testScript
+    },
+
+    //endregion
 
     createTestCaseByParams: function(testCaseParams){
         return framework.createTestCase(testCaseParams.title, testCaseParams.server,
@@ -168,14 +202,6 @@ module.exports = framework = {
             tokenName, tokenSymbol, token.decimals, token.total_supply, token.local, token.flags)
     },
 
-    createExpecteResult_1: function(needPass, isErrorInResult, expectedError){
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        // expectedResult.isErrorInResult = isErrorInResult != null ? isErrorInResult : true;
-        expectedResult.expectedError = expectedError
-        return expectedResult
-    },
-
     createExpecteResult: function(needPass, expectedError){
         let expectedResult = {}
         expectedResult.needPass = needPass
@@ -186,81 +212,19 @@ module.exports = framework = {
 
     //region common create method for sendTx and signTx
 
-    addTestCaseForSendRawTx: function(testCaseOfSignTx, expectedResultOfSendRawTx){
-        let txFunctionName = consts.rpcFunctions.sendRawTx
-        let testCaseOfSendRawTx = framework.createTestCase(testCaseOfSignTx.title + '-' + txFunctionName, testCaseOfSignTx.server,
-            txFunctionName, null,null, null, null, expectedResultOfSendRawTx,
-            testCaseOfSignTx.restrictedLevel, testCaseOfSignTx.supportedServices, testCaseOfSignTx.supportedInterfaces)
-        testCaseOfSignTx.subTestCases = []
-        testCaseOfSignTx.subTestCases.push(testCaseOfSendRawTx)
+    //当jt_sendTransaction和jt_signTransaction都通不过测试时
+    changeExpectedResultWhenSignFail: function(testScript, expectedResult){
+        testScript.actions[0].expectedResult = [expectedResult]
     },
 
-    //region 当jt_sendTransaction和jt_signTransaction都通过测试时
-
-    createTestCaseWhenSignPassAndSendRawTxPass: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = utility.deepClone(testCaseParams.originalTxParams)
-        updateTxParamsFunction()
-        // testCaseParams.expectedResult = framework.createExpecteResult(true)
-        let testCase = framework.createTestCaseByParams(testCaseParams)
-        if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
-            let expectedResultOfSendRawTx = framework.createExpecteResult(true)
-            framework.addTestCaseForSendRawTx(testCase, expectedResultOfSendRawTx)
+    //当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
+    changeExpectedResultWhenSignPassButSendRawTxFail: function(testScript, expectedResult){
+        if(testScript.actions[0].txFunctionName === consts.rpcFunctions.sendTx){
+            testScript.actions[0].expectedResult = [expectedResult]
+        }else{
+            testScript.actions[1].expectedResult = [expectedResult]
         }
-        return testCase
     },
-
-    createTestCaseWhenSignPassAndSendRawTxPassForTransfer: function(testCaseParams, updateTxParamsFunction){
-        return framework.createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction)
-    },
-
-    createTestCaseWhenSignPassAndSendRawTxPassForIssueToken: function(testCaseParams, updateTxParamsFunction){
-        return framework.createTestCaseWhenSignPassAndSendRawTxPass(testCaseParams, updateTxParamsFunction)
-    },
-
-    //endregion
-
-    //region 当jt_sendTransaction和jt_signTransaction都通不过测试时
-
-    createTestCaseWhenSignFail: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = utility.deepClone(testCaseParams.originalTxParams)
-        updateTxParamsFunction()
-        let testCase = framework.createTestCaseByParams(testCaseParams)
-        return testCase
-    },
-
-    createTestCaseWhenSignFailForTransfer: function(testCaseParams, updateTxParamsFunction){
-        return framework.createTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction)
-    },
-
-    createTestCaseWhenSignFailForIssueToken: function(testCaseParams, updateTxParamsFunction){
-        return framework.createTestCaseWhenSignFail(testCaseParams, updateTxParamsFunction)
-    },
-
-    //endregion
-
-    //region 当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
-
-    createTestCaseWhenSignPassButSendRawTxFail: function(testCaseParams, updateTxParamsFunction){
-        testCaseParams.txParams = utility.deepClone(testCaseParams.originalTxParams)
-        updateTxParamsFunction()
-        let testCase = framework.createTestCaseByParams(testCaseParams)
-        if(testCaseParams.txFunctionName === consts.rpcFunctions.signTx) {
-            let expectedResultOfSignTx = framework.createExpecteResult(true)
-            testCase.expectedResult = expectedResultOfSignTx
-            framework.addTestCaseForSendRawTx(testCase, testCaseParams.expectedResult)
-        }
-        return testCase
-    },
-
-    createTestCaseWhenSignPassButSendRawTxFailForTransfer: function(testCaseParams, updateTxParamsFunction){
-        return framework.createTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction)
-    },
-
-    createTestCaseWhenSignPassButSendRawTxFailForIssueToken: function(testCaseParams, updateTxParamsFunction){
-        return framework.createTestCaseWhenSignPassButSendRawTxFail(testCaseParams, updateTxParamsFunction)
-    },
-
-    //endregion
 
     //endregion
 
@@ -280,120 +244,94 @@ module.exports = framework = {
     //region 2. execute test cases
 
     //region for send
-    executeTestCaseOfCommon: function(testCase, specialExecuteFunction){
-        return new Promise(async function(resolve){
-            let server = testCase.server
-            let count = 0
-            let totalCount = testCase.txParams.length
-            testCase.balanceBeforeExecutionList = []
-
-            let sequence
-            for(let i = 0; i < totalCount; i++){
-                let data = testCase.txParams[i]
-                let from = data.from
-
-                if(testCase.sendType &&
-                    (testCase.sendType == consts.sendTxType.InOneRequestQuickly || testCase.sendType == consts.sendTxType.InOneRequest)
-                    && i != 0){
-                    sequence++
-                }else{
-                    sequence = await framework.getSequence(server, from)
-                }
-
-                if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
-                    data.sequence = isNaN(sequence) ? 1 : sequence
-                }
-
-                if(testCase.sendType != consts.sendTxType.InOneRequestQuickly){
-                    let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
-                    testCase.balanceBeforeExecution = (balanceBeforeExecution && balanceBeforeExecution.value) ? balanceBeforeExecution.value : 0  //todo 只是暂时为了保持兼容而保留，应该使用下面的balanceBeforeExecutionList
-                    testCase.balanceBeforeExecutionList.push(testCase.balanceBeforeExecution)
-                }
-
-                count ++
-                if(count == testCase.txParams.length){
-                    // logger.debug("balanceBeforeExecution:" + JSON.stringify(testCase.balanceBeforeExecution))
-                    let response = await framework.executeTxByTestCase(testCase)
-                    specialExecuteFunction(testCase, response, resolve)
-                }
-            }
-        })
-    },
-
-    executeTestCaseOfSendTx: function(testCase){
-        testCase.hasExecuted = true
-        return framework.executeTestCaseOfCommon(testCase, function(testCase, response, resolve){
-            framework.addSequenceAfterResponseSuccess(response, testCase)
-            // testCase.hasExecuted = true
-            testCase.actualResult.push(response)
-            resolve(testCase)
-        })
-    },
-
-    executeTestCaseOfSignTxAndSendRawTx: function(testCase){
-        testCase.hasExecuted = true
-        return framework.executeTestCaseOfCommon(testCase, function(testCase, responseOfSign, resolve){
-            testCase.actualResult.push(responseOfSign)
-            if(utility.isResponseStatusSuccess(responseOfSign)){
-                if(testCase.expectedResult.needPass){
-                    if(!testCase.subTestCases || testCase.subTestCases.length == 0){
-                        testCase.executionResult = false
-                        resolve(responseOfSign)
-                    }
-                    else{
-                        let rawTx = testCase.actualResult[0].result[0].result
-                        if(rawTx && rawTx.length > 0){
-                            let data = []
-                            data.push(rawTx)
-                            let testCaseOfSendRawTx = testCase.subTestCases[0]
-                            testCaseOfSendRawTx.txParams = data
-                            testCaseOfSendRawTx.hasExecuted = true
-                            framework.executeTestCaseOfCommonFunction(testCaseOfSendRawTx).then(function(responseOfSendRawTx){
-                                testCaseOfSendRawTx.actualResult.push(responseOfSendRawTx)
-                                framework.addSequenceAfterResponseSuccess(responseOfSendRawTx, testCase)
-                                resolve(responseOfSendRawTx)
-                            })
-                        }
-                        else{
-                            testCase.executionResult = false
-                            resolve(responseOfSign)
-                        }
-                    }
-                }
-                else{
-                    resolve(responseOfSign)
-                }
-            }
-            else{
-                resolve(responseOfSign)
-            }
-        })
-    },
-
-    //if send tx successfully, then sequence need plus 1
-    addSequenceAfterResponseSuccess: function(response, testCase){
-        let data = testCase.txParams[0]
-        let serverName = testCase.server.getName()
-        if(utility.isResponseStatusSuccess(response)){
-            framework.setSequence(serverName, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
-        }
-    },
-    //endregion
-
-    //region for get
-
-    executeTestCaseForGet: function(testCase){
-        testCase.hasExecuted = true
+    executeTestCaseForGet: function(action){
         return new Promise(async (resolve, reject) => {
-            framework.executeTxByTestCase(testCase).then(function(response){
-                // testCase.hasExecuted = true
-                testCase.actualResult.push(response)
-                resolve(testCase)
+            action.hasExecuted = true
+            framework.executeTxByTestCase(action).then(function(response){
+                action.actualResult = response
+                resolve(action)
             }, function (error) {
                 logger.debug(error)
                 expect(false).to.be.ok
+                reject(error)
             })
         })
+    },
+
+    executeTestCaseOfTx: function(action, beforeExecution, afterExecution){
+        return new Promise(async function(resolve){
+            let server = action.server
+            let totalCount = action.txParams.length
+            action.balanceBeforeExecutionList = []
+            action.hasExecuted = true
+
+            if(beforeExecution) await beforeExecution(action)
+
+            let sequence
+            for(let i = 0; i < totalCount; i++){
+                let data = action.txParams[i]
+                let from = data.from
+
+                // if(action.sendType &&
+                //     (action.sendType == consts.sendTxType.InOneRequestQuickly || action.sendType == consts.sendTxType.InOneRequest)
+                //     && i != 0){
+                //     }
+                if(totalCount > 0 && i != 0){
+                    sequence++
+                }else{
+                    sequence = await framework.getSequence(server, from)
+                    if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
+                        data.sequence = isNaN(sequence) ? 1 : sequence
+                    }
+                }
+                if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
+                    data.sequence = sequence
+                }
+
+                if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
+                    let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
+                    action.balanceBeforeExecutionList.push(balanceBeforeExecution)
+                }
+            }
+
+            // logger.debug("balanceBeforeExecution:" + JSON.stringify(action.balanceBeforeExecution))
+            let response = await framework.executeTxByTestCase(action)
+            framework.addSequenceAfterResponseSuccess(response, action)
+            action.actualResult = response
+
+            if(afterExecution) await afterExecution(action)
+
+            resolve(action)
+        })
+    },
+
+    executeTestCaseOfSendTx: function(action){
+        // let afterExecuteFunction = function(action, response, resolve){
+        //     framework.addSequenceAfterResponseSuccess(response, action)
+        //     action.actualResult = response
+        //     resolve(action)
+        // }
+        return framework.executeTestCaseOfTx(action, )
+    },
+
+    executeTestCaseOfSendRawTx: function(action){
+        let beforeExecution = function(action){
+            let signTxResults = action.signTxAction.actualResult.result
+            for(let i = 0; i < signTxResults.length; i++){
+                let signResult = signTxResults[i].result
+                let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
+                action.txParams.push(signTx)
+            }
+        }
+        return framework.executeTestCaseOfTx(action, beforeExecution)
+    },
+
+    //if send tx successfully, then sequence need plus 1
+    addSequenceAfterResponseSuccess: function(response, action){
+        let data = action.txParams[0]
+        if(utility.isResponseStatusSuccess(response)){
+            framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+        }
     },
 
     //endregion
@@ -405,21 +343,6 @@ module.exports = framework = {
         return testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
     },
 
-    //region execute the function which will NOT write block like jt_signTransaction
-
-    executeTestCaseOfCommonFunction: function(testCase){
-        testCase.hasExecuted = true
-        return new Promise(function(resolve){
-            framework.executeTxByTestCase(testCase).then(function(response){
-                // testCase.hasExecuted = true
-                testCase.actualResult.push(response)
-                resolve(response)
-            })
-        })
-    },
-
-    //endregion,
-
     //endregion
 
     //endregion
@@ -427,12 +350,8 @@ module.exports = framework = {
     //region 3. check test cases
 
     //region check send tx result
-    checkTestCaseOfSendTx: async function(testCase){
-        await framework.checkResponseOfTransfer(testCase, testCase.txParams)
-    },
-
-    checkResponseOfCommon: async function(testCase, txParams, checkFunction){
-        await framework.checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, 0)
+    checkTestCaseOfSendTx: async function(action){
+        await framework.checkResponseOfTx(action)
     },
 
     checkSingleResponseOfCommonOneByOne: async function(testCase, txParams, checkFunction, index){
@@ -528,8 +447,8 @@ module.exports = framework = {
         expect(result2.engine_result_message).to.equals(result1.engine_result_message)
     },
 
-    checkResponseOfTransfer: async function(testCase, txParams){
-        await framework.checkResponseOfCommon(testCase, txParams, async function(testCase, txParams, tx){
+    checkResponseOfTransfer1: async function(testCase, txParams){
+        await framework.checkResponseOfCommon1(testCase, txParams, async function(testCase, txParams, tx){
             let params = framework.findTxByFromAndSequence(txParams, tx.Account, tx.Sequence)
             // logger.debug('checkResponseOfTransfer: ' + tx.Sequence)
             await framework.compareActualTxWithTxParams(params, tx, testCase.server.mode)
@@ -544,6 +463,63 @@ module.exports = framework = {
                 }
             }
         })
+    },
+
+    checkResponseOfCommon: function(action){
+        framework.checkResponse(action.actualResult)
+        let params = action.txParams
+        let actualResults = action.actualResult.result
+        expect(actualResults.length).to.be.equals(params.length)
+    },
+
+    checkResponseOfTx: async function(action){
+        //common check, response
+        framework.checkResponseOfCommon(action)
+        expect(action.actualResult).to.be.jsonSchema(schema.SENDTX_SCHEMA)  //todo tx目前返回多个结果。以后查询也会返回多个结果，这个检查应加入framework.checkResponse
+
+        //every result
+        let params = (action.txFunctionName === consts.rpcFunctions.sendRawTx) ? action.signTxAction.txParams : action.txParams
+        let actualResults = action.actualResult.result
+        expect(actualResults.length).to.be.equals(params.length)
+
+        for(let i = 0; i < action.txParams.length; i++){
+            //result match param
+            let param = params[i]
+            let expectedResult = action.expectedResult[i]
+            let actualResult = actualResults[i]
+
+            if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
+                if(utility.isResponseStatusSuccess(actualResult)){
+                    continue
+                }
+            }
+
+            if(expectedResult.needPass){
+                if(actualResult && actualResult.result && utility.isHex(actualResult.result)){
+                    let hash = actualResult.result
+                    let tx = (await utility.getTxByHash(action.server, hash, 0)).result
+                    expect(tx.hash).to.be.equal(hash)
+                    await framework.compareParamAndTx(param, tx)
+                }
+                else{
+                    expect('Not a hash!').to.be.ok
+                }
+            }
+            else{
+                framework.checkResponseError(action, expectedResult, actualResult)
+            }
+
+            if(action.server.mode.restrictedLevel >= restrictedLevel.L5){
+                let expectedBalance = expectedResult.expectedBalance
+                if(expectedBalance){
+                    let server = action.server
+                    let from = param.from
+                    let symbol = param.symbol
+                    await framework.checkBalanceChange(server, from, symbol, expectedBalance)
+                }
+            }
+            action.testResult = true
+        }
     },
 
     findTxByFromAndSequence: function(txs, from, sequence){
@@ -666,25 +642,26 @@ module.exports = framework = {
     //endregion
 
     //region check sign and send raw tx result
-    checkTestCaseOfSignTxAndSendRawTx: async function(testCase){
-        //check sign result
-        let responseOfSendTx = testCase.actualResult[0]
-        framework.checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
-        if(testCase.expectedResult.needPass){
-            expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-            let signedTx = responseOfSendTx.result[0].result
-            expect(typeof(signedTx) === 'string').to.be.ok
-            expect(utility.isHex(signedTx)).to.be.ok
 
-            //check send raw tx result
-            let txParams = testCase.txParams
-            let testCaseOfSendRawTx = testCase.subTestCases[0]
-            await framework.checkResponseOfTransfer(testCaseOfSendRawTx, txParams)
-        }
-        else{
-            framework.checkResponseError(testCase, responseOfSendTx)
+    checkTestCaseOfSignTx: async function(action){
+        framework.checkResponseOfCommon(action)
+
+        //check sign result
+        let results = action.actualResult.result
+        for(let i = 0; i < results.length; i++){
+            let expectedResult = action.expectedResult[i]
+            let actualResult = results[i]
+            if(expectedResult.needPass){
+                let signedTx = actualResult.result
+                expect(typeof(signedTx) === 'string').to.be.ok
+                expect(utility.isHex(signedTx)).to.be.ok
+            }
+            else{
+                framework.checkResponseError(action, expectedResult, actualResult)
+            }
         }
     },
+
     //endregion
 
     //region common check system for sequence and ipfs test
@@ -708,8 +685,6 @@ module.exports = framework = {
 
     //region 4. test test cases
 
-    //region common
-
     testTestCases: function(server, describeTitle, testCases) {
         describeTitle = '【' + describeTitle + '】'
         let testMode = server.mode.testMode
@@ -726,26 +701,31 @@ module.exports = framework = {
 
     //region batch mode
 
-    testBatchTestCases: function(server, describeTitle, testCases){
+    testBatchTestCases: function(server, describeTitle, testScripts){
         describe(describeTitle, async function () {
 
             before(async function() {
-                await framework.execEachTestCase(testCases, 0)  //NOTICE!!! the execute method must RETURN a promise, then batch mode can work!!!
+                await framework.execEachTestScript(testScripts, 0)  //NOTICE!!! the execute method must RETURN a promise, then batch mode can work!!!
             })
 
-            testCases.forEach(async function(testCase){
-                it(testCase.title, async function () {
-                    // await testCase.checkFunction(testCase)
+            testScripts.forEach(async function(testScript){
+                it(testScript.title, async function () {
                     try{
-                        // logger.debug('===before checkFunction')
-                        // logger.debug('hasExecuted: ' + testCase.hasExecuted)
-                        framework.printTestCaseInfo(testCase)
-                        await testCase.checkFunction(testCase)
-                        // logger.debug('===after checkFunction')
-                        framework.afterTestFinish(testCase)
+                        let testResult = true
+                        for(let i = 0; i < testScript.actions.length; i++){
+                            let action = testScript.actions[i]
+                            // logger.debug('===before checkFunction')
+                            // logger.debug('hasExecuted: ' + testScript.hasExecuted)
+                            framework.printTestCaseInfo(action)
+                            await action.checkFunction(action)
+                            // logger.debug('===after checkFunction')
+                            if(!action.testResult) testResult = false
+                        }
+                        testScript.testResult = testResult
+                        framework.afterTestFinish(testScript)
                     }
                     catch(ex){
-                        framework.afterTestFinish(testCase)
+                        framework.afterTestFinish(testScript)
                         throw ex
                     }
                 })
@@ -753,16 +733,20 @@ module.exports = framework = {
         })
     },
 
-    execEachTestCase: async function(testCases, index){
-        if(index < testCases.length){
-            let testCase = testCases[index]
+    execEachTestScript: async function(testScripts, index){
+        if(index < testScripts.length){
+            let testScript = testScripts[index]
             // logger.debug("===1. index: " + index )
             // logger.debug('=== before executeFunction')
-            await testCase.executeFunction(testCase)
+            testScript.hasExecuted = true
+            for(let i = 0; i < testScript.actions.length; i++){
+                let action = testScript.actions[i]
+                await action.executeFunction(action)
+            }
             // logger.debug('=== after executeFunction')
             // logger.debug("===2. index: " + index )
             index++
-            await framework.execEachTestCase(testCases, index)
+            await framework.execEachTestScript(testScripts, index)
             // logger.debug("===3. index: " + index )
         }
     },
@@ -770,7 +754,7 @@ module.exports = framework = {
     //endregion
 
     //region single mode
-    testSingleTestCases: function(server, describeTitle, testCases) {
+    testSingletestScripts: function(server, describeTitle, testCases) {
         describe(describeTitle, async function () {
             testCases.forEach(async function(testCase){
                 it(testCase.title, async function () {
@@ -850,7 +834,7 @@ module.exports = framework = {
         logger.debug('---supportedServices: ' + JSON.stringify(testCase.supportedServices))
         logger.debug('---supportedInterfaces: ' + JSON.stringify(testCase.supportedInterfaces))
         logger.debug('---restrictedLevel: ' + JSON.stringify(testCase.restrictedLevel))
-        logger.debug('---hasExecuted: ' + testCase.hasExecuted)
+        // logger.debug('---hasExecuted: ' + testCase.hasExecuted)
         for(let i = 0; i < testCase.actualResult.length; i++){
             logger.debug('---result[' +i + ']: ' + JSON.stringify(testCase.actualResult[i]))    }
         if(testCase.subTestCases != null && testCase.subTestCases.length > 0) {
@@ -891,8 +875,6 @@ module.exports = framework = {
 
     //endregion
 
-    //endregion
-
     // region utility methods
 
     //region check balance change
@@ -918,11 +900,10 @@ module.exports = framework = {
 
     //region normal response check
 
-    compareTx: function(tx1, tx2){
+    compareTxs: function(tx1, tx2){
         expect(tx1.Account).to.be.equals(tx2.Account)
         expect(tx1.Destination).to.be.equals(tx2.Destination)
         expect(tx1.Fee).to.be.equals(tx2.Fee)
-        // expect(tx1.Amount).to.be.equals(tx2.Amount)
         expect(tx1.Amount.value).to.be.equals(tx2.Amount.value)
         expect(tx1.Amount.currency).to.be.equals(tx2.Amount.currency)
         expect(tx1.Amount.issuer).to.be.equals(tx2.Amount.issuer)
@@ -930,51 +911,96 @@ module.exports = framework = {
         expect(tx1.Sequence).to.be.equals(tx2.Sequence)
         expect(tx1.inLedger).to.be.equals(tx2.inLedger)
         expect(tx1.date).to.be.equals(tx2.date)
+        expect(tx1.hash).to.be.equals(tx2.hash)
+        expect(tx1.TransactionType).to.be.equals(tx2.TransactionType)
+        if(tx1.TransactionType == consts.rpcParamConsts.issueCoin){
+            expect(tx1.Name).to.be.equals(tx2.Name)
+            expect(tx1.Decimals).to.be.equals(Number(tx2.Decimals))
+            expect(tx1.TotalSupply.value).to.be.equals(tx2.TotalSupply.value)
+            expect(tx1.TotalSupply.currency).to.be.equals(tx2.TotalSupply.currency)
+            expect(tx1.TotalSupply.issuer).to.be.equals(tx2.TotalSupply.issuer)
+            expect(tx1.Flags).to.be.equals(tx2.Flags)
+        }
     },
 
-    checkResponse: function(isSuccess, value){
-        expect(value).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
+    compareParamAndTx: function(param, tx){
+        expect(tx.Account).to.be.equals(param.from)
+        expect(tx.Destination).to.be.equals(param.to)
+        expect(tx.Fee).to.be.equals(param.fee)
+        expect(tx.Sequence).to.be.equals(param.sequence)
+
+        //region check value
+        let paramValueObject = utility.parseShowValue(param.value)
+        if(paramValueObject.symbol == consts.default.nativeCoin){
+            if(param.value.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
+                expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount)
+                    * Math.pow(10, consts.default.nativeCoinDecimals))
+            }
+            else{
+                expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount))
+            }
+            expect(tx.Amount.issuer).to.be.equals(consts.default.issuer)
+        }
+        else{
+            expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount)
+                * Math.pow(10, consts.default.tokenDecimals))
+        }
+        expect(tx.Amount.currency).to.be.equals(paramValueObject.symbol)
+        //endregion
+
+        if(param.memos) expect(utility.compareMemos(param.memos, tx.Memos)).to.be.ok
+        if(param.type) expect(tx.TransactionType).to.be.equals(param.type)
+        if(param.type == consts.rpcParamConsts.issueCoin){
+            expect(tx.Name).to.be.equals(param.name)
+            expect(tx.Decimals).to.be.equals(Number(param.decimals))
+            expect(tx.TotalSupply.value).to.be.equals(param.total_supply)
+            expect(tx.TotalSupply.currency).to.be.equals(param.symbol)
+            expect(tx.TotalSupply.issuer).to.be.equals((param.local) ? param.from : consts.default.issuer)
+            expect(tx.Flags).to.be.equals(param.flags)
+        }
+    },
+
+    checkResponse: function(actualResult){
+        expect(actualResult).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
         // expect(value.status).to.equal(isSuccess ? status.success: status.error)
-        expect(utility.isResponseStatusSuccess(value)).to.equal(isSuccess)
+        // expect(utility.isResponseStatusSuccess(action.actualResult)).to.equal(isSuccess)
     },
 
     //region check response error
 
-    checkResponseError: function(testCase, response, expectedError){
+    checkResponseError: function(action, expectedResult, actualResult){
         if(NEED_CHECK_ExpectedResult
-            && testCase.server.mode.restrictedLevel >= restrictedLevel.L3){
-            let realExpectedError = expectedError ? expectedError : testCase.expectedResult.expectedError
-            framework.checkErrorResponse(response, realExpectedError)
+            && action.server.mode.restrictedLevel >= restrictedLevel.L3){
+            expect(action.actualResult).to.be.jsonSchema(schema.ERROR_SCHEMA)
+            framework.checkError(expectedResult.expectedError, actualResult)
         }
     },
 
-    checkErrorResponse: function(response, expectedError){
-        expect(response).to.be.jsonSchema(schema.ERROR_SCHEMA)
-        let realExpectedError = expectedError
-        if(response.result){
+    checkError: function(expectedError, actualError){
+        expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
+        if(actualError.result){  //if actualResult is the outside result
             let compoundError = framework.getError(1000)
-            expect(response.status).to.equals(compoundError.status)
-            expect(response.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
-            // expect(actualError.error).to.contains(expectedError.error)
-            let results = response.result
+            expect(actualError.status).to.equals(compoundError.status)
+            expect(actualError.type.toLowerCase()).to.equals(compoundError.type.toLowerCase())
+            let results = actualError.result
             if(results){
                 for(let i = 0; i < results.length; i++){
                     let result = results[i]
-                    framework.checkErrorResult(result, realExpectedError)
+                    framework.compareErrorResult(expectedError, result)
                 }
             }
         }
         else{
-            framework.checkErrorResult(response, realExpectedError)
+            framework.compareErrorResult(expectedError, actualError)
         }
     },
 
-    checkErrorResult: function(result, expectedError){
-        expect(result).to.be.jsonSchema(schema.ERROR_SCHEMA)
-        expect(result.status).to.equals(expectedError.status)
-        expect(result.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
-        expect(result.error.description).to.equals(expectedError.description)
-        expect(result.error.information).to.contains(expectedError.information)
+    compareErrorResult: function(expectedError, actualError){
+        expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
+        expect(actualError.status).to.equals(expectedError.status)
+        expect(actualError.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
+        expect(actualError.error.description).to.equals(expectedError.description)
+        expect(actualError.error.information).to.contains(expectedError.information)
     },
     //endregion
 

@@ -311,7 +311,7 @@ module.exports = tcsSubscribe = {
             let errors = messages.errors
             if(If_Check_Error){
                 expect(errors.length).to.be.least(1)
-                framework.checkErrorResponse(errors[0], action.expectedResult.expectedError)
+                framework.checkError(action.expectedResult.expectedError, errors[0])
                 // expect(errors[0].status).to.be.equals(action.expectedResult.expectedError.status)
                 // expect(errors[0].message).to.contains(action.expectedResult.expectedError.message)
                 // expect(errors[0].result).to.be.equals(action.expectedResult.expectedError.result)
@@ -3439,7 +3439,7 @@ module.exports = tcsSubscribe = {
             let errors = messages.errors
             if(If_Check_Error){
                 expect(errors.length).to.be.least(1)
-                framework.checkErrorResponse(errors[0], action.expectedResult.expectedError)
+                framework.checkError(action.expectedResult.expectedError, errors[0])
                 // expect(errors[0].status).to.be.equals(action.expectedResult.expectedError.status)
                 // expect(errors[0].type).to.be.equals(action.expectedResult.expectedError.type)
                 // expect(errors[0].error).to.contains(action.expectedResult.expectedError.error)

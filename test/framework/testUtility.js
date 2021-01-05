@@ -306,6 +306,7 @@ module.exports = testUtility = {
     //endregion
 
     //region issue token
+
     getDynamicTokenName: function(){
         let timeSeed = (_LastDynamicalTimeSeed) ? _LastDynamicalTimeSeed : Math.round(new Date().getTime()/1000)
         _LastDynamicalTimeSeed = ++timeSeed
@@ -320,7 +321,7 @@ module.exports = testUtility = {
         // return (!symbol || symbol == null || symbol == 'swt' || symbol == 'SWT') ? '' : ('/' + symbol + '/' + issuer)
         // return (!symbol || symbol == null) ? '' : ('/' + symbol + '/' + issuer)
         return (!symbol || symbol == null || symbol == ''
-        || ((symbol == 'swt' || symbol == 'SWT') && (!issuer || issuer == null || issuer == ''))) ? '' : ('/' + symbol + '/' + issuer)
+            || ((symbol == 'swt' || symbol == 'SWT') && (!issuer || issuer == null || issuer == ''))) ? '' : ('/' + symbol + '/' + issuer)
     },
 
     getFullCurrency: function(value, symbol, issuer){
@@ -370,6 +371,7 @@ module.exports = testUtility = {
             issuer: issuer,
         }
     },
+
     //endregion
 
     //region hex relative
@@ -379,30 +381,30 @@ module.exports = testUtility = {
     // ascii: QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW
     // base64: UW1VdVZmSnJRMm1iN0YyMjNmVWh2cGtRNmJqRkZNNEZhUEtuS0xMQldNRXBCVw==
 
-    hex2Utf8: function(hex){
-        return new Buffer.from(hex.toString(), 'hex').toString('utf8')
+    hex2Utf8: function(context){
+        return new Buffer.from(context.toString(), 'hex').toString('utf8')
     },
 
-    utf82Hex: function(hex){
-        return new Buffer.from(string, 'utf8').toString('hex')
+    utf82Hex: function(context){
+        return new Buffer.from(context, 'utf8').toString('hex')
     },
 
-    hex2Base64: function(hex){
+    hex2Base64: function(context){
         // return new Buffer.from(hex.toString(), 'hex').toString('utf8')
-        return new Buffer.from(hex.toString(), 'hex').toString('base64')
+        return new Buffer.from(context.toString(), 'hex').toString('base64')
     },
 
-    base642Hex: function(string){
+    base642Hex: function(context){
         // return new Buffer.from(string, 'utf8').toString('hex')
-        return new Buffer.from(string, 'base64').toString('hex')
+        return new Buffer.from(context, 'base64').toString('hex')
     },
 
-    hex2Ascii: function(hex){
-        return new Buffer.from(hex.toString(), 'hex').toString('ascii')
+    hex2Ascii: function(context){
+        return new Buffer.from(context.toString(), 'hex').toString('ascii')
     },
 
-    ascii2Hex: function(string){
-        return new Buffer.from(string, 'ascii').toString('hex')
+    ascii2Hex: function(context){
+        return new Buffer.from(context, 'ascii').toString('hex')
     },
 
     isHex: function(context){
@@ -568,9 +570,14 @@ module.exports = testUtility = {
 
     //region is response status success
     isResponseStatusSuccess: function(response){
-        if(!response)
+        // if(!response)
+        //     return false
+        // return !response.status || response.status == responseStatus.success
+
+        if(!response){
             return false
-        return !response.status || response.status == responseStatus.success
+        }
+        return response.error == undefined
     },
     //endregion
 
@@ -594,7 +601,7 @@ module.exports = testUtility = {
     },
 
     printTime: function(time){
-      return time.hour + ':' + time.minute + ':' + time.second
+        return time.hour + ':' + time.minute + ':' + time.second
     },
     //endregion
 
@@ -618,6 +625,7 @@ module.exports = testUtility = {
     //endregion
 
     //region get real value
+
     getRealValue: function(value){
         let index = value.indexOf('/' + consts.default.nativeCoin)
         if(index != -1){
@@ -631,6 +639,26 @@ module.exports = testUtility = {
     valueToAmount: function(value){
         return value * consts.swtConsts.oneSwt
     },
+
+    fullValueToAmount: async function(server, value){
+        let valueObject = testUtility.parseShowValue(value)
+        if(valueObject.currency == consts.default.nativeCoin){
+            return Number(valueObject.amount) * consts.swtConsts.oneSwt
+        }
+        else{
+            let response = await server.getResponse(server, consts.rpcFunctions.getCurrency, [])
+            let decimals = Number(response.result.Decimals)
+            return Number(valueObject.amount) * Math.pow(10, decimals)
+        }
+    },
+
+    amount2Value: function(value, symbol, issuer){
+        let currency = symbol.toUpperCase() === consts.default.nativeCoin
+            ? value
+            : value + '/' + symbol + '/' + issuer
+        return currency
+    },
+
     //endregion
 
     //region version
@@ -689,5 +717,25 @@ module.exports = testUtility = {
         return s
     },
 //endregion
+
+    //region common compare
+
+    compareMemos: function(paramMemos, txMemos){
+        if(paramMemos.length != txMemos.length){
+            return false
+        }
+        let result = true
+        for(let i = 0; i < paramMemos.length; i++){
+            let memo = paramMemos[i]
+            let hex = testUtility.utf82Hex(memo).toUpperCase()
+            if(hex !== txMemos[i].Memo.MemoData.toUpperCase()){
+                result = false
+            }
+        }
+        return result
+    },
+
+    //endregion
+
 }
 

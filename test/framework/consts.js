@@ -238,6 +238,11 @@ module.exports = consts = {
             "checksum": "bcc6a93d716c6b4916bf52f55df8fb591ab54965",
             "time": "20210103",
             "version": "v0.5.3-dev"
+        },
+        '20210105b':{
+            "checksum": "90245c2115345d5b23c28d32bd1c74b980dac99a",
+            "time": "20210105",
+            "version": "v0.5.3-dev"
         }
 
     },

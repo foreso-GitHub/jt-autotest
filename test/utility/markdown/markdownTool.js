@@ -214,7 +214,12 @@ module.exports = markdownTool = {
         let testCase
         if(tsCells.length == 3){
             testCase = {}
+            //<a name="FCJT_version_000010"></a>FCJT_version_000010
+            const mark4 = "</a>"
+            let codeStart = tsCells[0].indexOf(mark4) + mark4.length
             testCase.code = tsCells[0]
+                .substring(codeStart, tsCells[0].length)
+                .replace(new RegExp('<br>','g'), '')
             testCase.title = tsCells[1]
 
             // |**预置条件**`无`<br><br>**输入内容**`无参数`<br><br>**预期结果**`返回正确的版本号`|
