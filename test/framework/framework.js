@@ -47,7 +47,7 @@ module.exports = framework = {
 
     //region 1. create test cases
 
-    //region create old txParams
+    //region may need to be removed
 
     updateTokenInTestCaseParams: function(testCaseParams){
         let token = utility.getDynamicTokenName()
@@ -77,6 +77,52 @@ module.exports = framework = {
         testCase.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
         testCase.checks = []
         return testCase
+    },
+
+    createTestCaseByParams: function(testCaseParams){
+        return framework.createTestCase(testCaseParams.title, testCaseParams.server,
+            testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
+            testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expectedResult,
+            testCaseParams.restrictedLevel, testCaseParams.supportedServices, testCaseParams.supportedInterfaces)
+    },
+
+    //endregion
+
+    //region txParams
+
+    createTxParamsForTransfer: function(server){
+        return server.createTransferParams(server.mode.addresses.sender1.address, server.mode.addresses.sender1.secret, null,
+            server.mode.addresses.receiver1.address, '0.000015', '0.00001', ['autotest: transfer test'])
+    },
+
+    createTxParamsForIssueToken: function(server, account, token){
+        // 参考“发起底层币无效交易”的测试用例
+        // "flags":        float64(data.TxCoinMintable | data.TxCoinBurnable)
+        // TxCoinMintable  TransactionFlag = 0x00010000 (65536)
+        // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
+        // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
+        // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
+        // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
+        let tokenName = utility.getDynamicTokenName()
+        return server.createIssueTokenParams(account.address, account.secret, null,
+            tokenName.name, tokenName.symbol, token.decimals, token.total_supply, token.local, token.flags)
+    },
+
+    createTxParamsForTokenTransfer: function(server, account, symbol, issuer){
+        let tokenParams = server.createTransferParams(account.address, account.secret, null,
+            server.mode.addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
+        // tokenParams[0].symbol = symbol
+        // tokenParams[0].issuer = issuer
+        tokenParams[0].value = '1' + utility.getShowSymbol(symbol, issuer)
+        return tokenParams
+    },
+
+    // example
+    // {"jsonrpc":"2.0","id":7,"method":"jt_sendTransaction","params":[{"type":"IssueCoin","from":"jPdevNK8NeYSkg3TrWZa8eT6BrSp2oteUh","secret":"ssSLJReyitmAELQ3E3zYpZti1YuRe","name":"TestCoin1578886708","symbol":"5e1be634","decimals":8,"total_supply":"9876543210","local":false,"flags":65536,"fee":"10",
+    //   "sequence":5620	}]}
+    createTxParamsForMintToken: function(server, account, token, tokenName, tokenSymbol){
+        return server.createIssueTokenParams(account.address, account.secret, null,
+            tokenName, tokenSymbol, token.decimals, token.total_supply, token.local, token.flags)
     },
 
     //endregion
@@ -116,6 +162,7 @@ module.exports = framework = {
         testAction.expectedResult = expectedResult
         testAction.actualResult = []
         testAction.testResult = false
+        testAction.otherParams = {}
         return testAction
     },
 
@@ -158,56 +205,6 @@ module.exports = framework = {
         return testScript
     },
 
-    //endregion
-
-    //region txParams
-
-    createTestCaseByParams: function(testCaseParams){
-        return framework.createTestCase(testCaseParams.title, testCaseParams.server,
-            testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
-            testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expectedResult,
-            testCaseParams.restrictedLevel, testCaseParams.supportedServices, testCaseParams.supportedInterfaces)
-    },
-
-    createTxParamsForTransfer: function(server){
-        return server.createTransferParams(server.mode.addresses.sender1.address, server.mode.addresses.sender1.secret, null,
-            server.mode.addresses.receiver1.address, '0.000015', '0.00001', ['autotest: transfer test'])
-    },
-
-    createTxParamsForIssueToken: function(server, account, token){
-        // 参考“发起底层币无效交易”的测试用例
-        // "flags":        float64(data.TxCoinMintable | data.TxCoinBurnable)
-        // TxCoinMintable  TransactionFlag = 0x00010000 (65536)
-        // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
-        // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
-        // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
-        // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
-        let tokenName = utility.getDynamicTokenName()
-        return server.createIssueTokenParams(account.address, account.secret, null,
-            tokenName.name, tokenName.symbol, token.decimals, token.total_supply, token.local, token.flags)
-    },
-
-    createTxParamsForTokenTransfer: function(server, account, symbol, issuer){
-        let tokenParams = server.createTransferParams(account.address, account.secret, null,
-            server.mode.addresses.receiver1.address, '1', '0.00001', ['autotest: token test'])
-        // tokenParams[0].symbol = symbol
-        // tokenParams[0].issuer = issuer
-        tokenParams[0].value = '1' + utility.getShowSymbol(symbol, issuer)
-        return tokenParams
-    },
-
-    // example
-    // {"jsonrpc":"2.0","id":7,"method":"jt_sendTransaction","params":[{"type":"IssueCoin","from":"jPdevNK8NeYSkg3TrWZa8eT6BrSp2oteUh","secret":"ssSLJReyitmAELQ3E3zYpZti1YuRe","name":"TestCoin1578886708","symbol":"5e1be634","decimals":8,"total_supply":"9876543210","local":false,"flags":65536,"fee":"10",
-    //   "sequence":5620	}]}
-    createTxParamsForMintToken: function(server, account, token, tokenName, tokenSymbol){
-        return server.createIssueTokenParams(account.address, account.secret, null,
-            tokenName, tokenSymbol, token.decimals, token.total_supply, token.local, token.flags)
-    },
-
-    //endregion
-
-    //region change expected result for sendTx and signTx
-
     //当jt_sendTransaction和jt_signTransaction都通不过测试时
     changeExpectedResultWhenSignFail: function(testScript, expectedResult){
         testScript.actions[0].expectedResult = [expectedResult]
@@ -221,10 +218,6 @@ module.exports = framework = {
             testScript.actions[1].expectedResult = [expectedResult]
         }
     },
-
-    //endregion
-
-    //region common
 
     addTestScript: function(testScripts, testScript){
         if(framework.ifNeedExecuteOrCheck(testScript)){
@@ -469,21 +462,22 @@ module.exports = framework = {
             let actualResult = actualResults[i]
 
             if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
-                if(!action.signTxAction.expectedResult[0].needPass || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
+                if(!action.signTxAction.expectedResult[0].needPass
+                    || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
                     action.testResult = true
                     continue
                 }
             }
 
             if(expectedResult.needPass){
-                if(actualResult && actualResult.result && utility.isHex(actualResult.result)){
+                if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
                     let hash = actualResult.result
                     let tx = (await utility.getTxByHash(action.server, hash, 0)).result
                     expect(tx.hash).to.be.equal(hash)
                     await framework.compareParamAndTx(param, tx)
                 }
                 else{
-                    expect('Not a hash!').to.be.ok
+                    expect('Not a hash!').to.be.not.ok
                 }
             }
             else{
