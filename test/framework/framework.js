@@ -941,8 +941,8 @@ module.exports = framework = {
                 expect(tx.Amount.issuer).to.be.equals(consts.default.issuer)
             }
             else{
-                expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount)
-                    * Math.pow(10, consts.default.tokenDecimals))
+                expect(tx.Amount.value).to.be.equals((Number(paramValueObject.amount)
+                    * Math.pow(10, consts.default.tokenDecimals)).toFixed())
             }
             expect(tx.Amount.currency).to.be.equals(paramValueObject.symbol)
         }
