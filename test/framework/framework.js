@@ -45,6 +45,83 @@ module.exports = framework = {
 
     //region auto test framework
 
+    //region 0. init
+
+    init: function(){
+        framework.startWork()
+        framework.loadErrors()
+        framework.loadTestCases()
+    },
+
+    //region active server
+    activeServer: function(mode){
+        let server = mode.server
+        mode.server.init(mode)
+        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
+            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
+            mode.txs = utility.findChainData(chainDatas, mode.chainDataName)
+        }
+        return server
+    },
+
+    activeAllRpcServers: function(){
+        let servers = []
+
+        // servers.push(framework.activeServer(allModes[0]))
+        // servers.push(framework.activeServer(allModes[1]))
+        // servers.push(framework.activeServer(allModes[2]))
+        // servers.push(framework.activeServer(allModes[3]))
+        // servers.push(framework.activeServer(allModes[4]))
+
+        for(let i = 0; i < allModes.length; i++){
+            let mode = allModes[i]
+            if(mode.name.indexOf('rpc') != -1){
+                servers.push(framework.activeServer(mode))
+            }
+        }
+
+        return servers
+    },
+
+    createServers: function(allServers, count){
+        let servers = []
+        for(let i = 0; i < count; i++){
+            servers.push(allServers[i])
+        }
+        return servers
+    },
+
+    //endregion
+
+    //region load errors
+    loadErrors: function(){
+        let map = mdTool.errors2Map(errorsDoc)
+        framework.errors = map
+    },
+
+    getError: function(code, information){
+        let error = utility.deepClone(framework.errors.get(code))
+        if(information) {
+            error.information = information
+        }
+        return error
+    },
+    //endregion
+
+    //region load testCases
+    loadTestCases: function(){
+        let map = mdTool.testCases2Map(testCasesDoc)
+        framework.testCases = map
+    },
+
+    getTestCase: function(code){
+        let testCase = framework.testCases.get(code)
+        return testCase
+    },
+    //endregion
+
+    //endregion
+
     //region 1. create test cases
 
     //region may need to be removed
@@ -805,6 +882,7 @@ module.exports = framework = {
     // region utility methods
 
     //region check balance change
+
     //swt example:
     // { id: 38,
     //     jsonrpc: '2.0',
@@ -842,6 +920,7 @@ module.exports = framework = {
 
     //region normal response check
 
+    //region compare
     compareTxs: function(tx1, tx2){
         expect(tx1.Account).to.be.equals(tx2.Account)
         expect(tx1.Destination).to.be.equals(tx2.Destination)
@@ -916,6 +995,7 @@ module.exports = framework = {
         expect(txAmount.currency).to.be.equals(paramValueObject.symbol)
     },
 
+    //todo to be removed
     compareActualTxWithTxParams: function(txParams, tx, mode){
         return new Promise(function(resolve){
             expect(tx.Account).to.be.equals(txParams.from)
@@ -986,13 +1066,15 @@ module.exports = framework = {
         })
     },
 
+    //endregion
+
+    //region check response
+
     checkResponse: function(actualResult){
         expect(actualResult).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
         // expect(value.status).to.equal(isSuccess ? status.success: status.error)
         // expect(utility.isResponseStatusSuccess(action.actualResult)).to.equal(isSuccess)
     },
-
-    //region check response error
 
     checkResponseError: function(action, expectedResult, actualResult){
         if(NEED_CHECK_ExpectedResult
@@ -1028,6 +1110,7 @@ module.exports = framework = {
         expect(actualError.error.description).to.equals(expectedError.description)
         expect(actualError.error.information).to.contains(expectedError.information)
     },
+
     //endregion
 
     //endregion
@@ -1036,7 +1119,7 @@ module.exports = framework = {
 
     //region process sequence
 
-    //region getSequence v2
+    //region getSequence
     getSequence: function(server, from){
         return new Promise(function (resolve){
             // let key = from + '@' + server.getName()
@@ -1487,81 +1570,5 @@ module.exports = framework = {
 
     //endregion
 
-    //region init
-
-    init: function(){
-        framework.startWork()
-        framework.loadErrors()
-        framework.loadTestCases()
-    },
-
-    //region active server
-    activeServer: function(mode){
-        let server = mode.server
-        mode.server.init(mode)
-        if(mode.service == serviceType.newChain || mode.service == serviceType.oldChain){
-            mode.addresses = accountsDealer.getAddressesByMode(modeAccounts, mode)
-            mode.txs = utility.findChainData(chainDatas, mode.chainDataName)
-        }
-        return server
-    },
-
-    activeAllRpcServers: function(){
-        let servers = []
-
-        // servers.push(framework.activeServer(allModes[0]))
-        // servers.push(framework.activeServer(allModes[1]))
-        // servers.push(framework.activeServer(allModes[2]))
-        // servers.push(framework.activeServer(allModes[3]))
-        // servers.push(framework.activeServer(allModes[4]))
-
-        for(let i = 0; i < allModes.length; i++){
-            let mode = allModes[i]
-            if(mode.name.indexOf('rpc') != -1){
-                servers.push(framework.activeServer(mode))
-            }
-        }
-
-        return servers
-    },
-
-    createServers: function(allServers, count){
-        let servers = []
-        for(let i = 0; i < count; i++){
-            servers.push(allServers[i])
-        }
-        return servers
-    },
-
-    //endregion
-
-    //region load errors
-    loadErrors: function(){
-        let map = mdTool.errors2Map(errorsDoc)
-        framework.errors = map
-    },
-
-    getError: function(code, information){
-        let error = utility.deepClone(framework.errors.get(code))
-        if(information) {
-            error.information = information
-        }
-        return error
-    },
-    //endregion
-
-    //region load testCases
-    loadTestCases: function(){
-        let map = mdTool.testCases2Map(testCasesDoc)
-        framework.testCases = map
-    },
-
-    getTestCase: function(code){
-        let testCase = framework.testCases.get(code)
-        return testCase
-    },
-    //endregion
-
-    //endregion
 }
 

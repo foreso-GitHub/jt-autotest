@@ -81,112 +81,112 @@ module.exports = tcsSendAndSignTx = {
 
         //region test cases for basic transfer
 
-        // testCaseCode = 'FCJT_sendTransaction_000010'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000020'
-        // scriptCode = defaultScriptCode + '_1/SWT'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].value = "1/SWT"
-        //     if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000020'
-        // scriptCode = '000200_' + type + '_1/swt'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].value = "1/swt"
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 't find currency'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000020'
-        // scriptCode = '000300_' + type + '_1/Swt'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].value = "1/Swt"
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 't find currency'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000030'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].secret = null
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'No secret found for'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000030'
-        // scriptCode = '000200_' + type + '_错误的秘钥1'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].secret = '错误的秘钥'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'Unknown secret format'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000030'
-        // scriptCode = '000300_' + type + '_错误的秘钥2'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].secret = testScript.actions[0].txParams[0].secret + '1'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'Bad Base58 checksum'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000040'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].from = testScript.actions[0].txParams[0].from + '1'
-        //     testScript.actions[0].txParams[0].sequence = 1
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'Bad account address'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000050'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].to = testScript.actions[0].txParams[0].to + '1'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'Bad account address'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000060'
-        // scriptCode = defaultScriptCode + '_交易额超过发起钱包余额'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
-        //     let showValue = utility.getFullCurrency('12345678901' ,rawValue.symbol, rawValue.issuer)
-        //     testScript.actions[0].txParams[0].value = showValue
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
-        //             rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
-        //     framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000010'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000020'
+        scriptCode = defaultScriptCode + '_1/SWT'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = "1/SWT"
+            if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000020'
+        scriptCode = '000200_' + type + '_1/swt'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = "1/swt"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 't find currency'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000020'
+        scriptCode = '000300_' + type + '_1/Swt'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].value = "1/Swt"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 't find currency'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000030'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].secret = null
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'No secret found for'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000030'
+        scriptCode = '000200_' + type + '_错误的秘钥1'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].secret = '错误的秘钥'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Unknown secret format'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000030'
+        scriptCode = '000300_' + type + '_错误的秘钥2'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].secret = testScript.actions[0].txParams[0].secret + '1'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Bad Base58 checksum'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000040'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].from = testScript.actions[0].txParams[0].from + '1'
+            testScript.actions[0].txParams[0].sequence = 1
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Bad account address'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000050'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].to = testScript.actions[0].txParams[0].to + '1'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Bad account address'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000060'
+        scriptCode = defaultScriptCode + '_交易额超过发起钱包余额'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
+            let showValue = utility.getFullCurrency('12345678901' ,rawValue.symbol, rawValue.issuer)
+            testScript.actions[0].txParams[0].value = showValue
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
+                    rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         testCaseCode = 'FCJT_sendTransaction_000060'
         scriptCode = '000200_' + type + '_交易额超过最大值'
@@ -822,7 +822,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             if(tcsSendAndSignTx.canMint(testScript.actions[0].txParams[0].flags)){
-                testScript.actions[0].expectedResult[0].expectedBalance = '987654319900000006'
+                testScript.actions[0].expectedResult[0].expectedBalance = '987654319800000006'
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
