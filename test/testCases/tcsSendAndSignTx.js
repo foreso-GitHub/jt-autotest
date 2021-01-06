@@ -539,17 +539,21 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].expectedResult.expectedBalance = txParams[0].total_supply
+            testScript.actions[0].expectedResult.expectedBalance = testScript.actions[0].txParams[0].total_supply
             framework.addTestScript(testScripts, testScript)
         }
 
-        // testCaseParams.title = '0270\t发行' + testCaseParams.categoryName
-        // {
-        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-        //         testCaseParams.expectedResult.expectedBalance = txParams[0].total_supply
-        //     })
-        //     framework.addTestScript(testCases, testCase)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000271'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + '1'
+            let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
+            testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
+            testScript.actions[0].expectedResult.expectedBalance = testScript.actions[0].txParams[0].total_supply
+            framework.addTestScript(testScripts, testScript)
+        }
+
 
         // testCaseParams.title = '0271\t发行' + testCaseParams.categoryName + '_发行量是负数'
         // {
@@ -560,7 +564,7 @@ module.exports = tcsSendAndSignTx = {
         //     })
         //     framework.addTestScript(testCases, testCase)
         // }
-        //
+
         // testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
         // {
         //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
