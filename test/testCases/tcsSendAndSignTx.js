@@ -24,8 +24,6 @@ const NativeCoinTest = '原生币swt'
 
 module.exports = tcsSendAndSignTx = {
 
-    //region tx test case
-
     testForSendTxAndSignTx: function(server, describeTitle){
         describe(describeTitle, function (){
             let categoryName = ''
@@ -71,9 +69,154 @@ module.exports = tcsSendAndSignTx = {
         })
     },
 
+    //region test for tx
+
+    testForTransfer: function(server, categoryName, txFunctionName, txParams){
+        let testName = ''
+        let describeTitle = ''
+        let testScripts = []
+
+        testName = '测试基本交易'
+        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBasicTransaction(server, categoryName, txFunctionName, txParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        testName = '测试交易memo'
+        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        testName = '测试交易Fee'
+        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForTransactionWithFee(server, categoryName, txFunctionName, txParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+    },
+
+    testForIssueToken: function(server, categoryName, txFunctionName, account, configToken){
+        let testName = ''
+        let describeTitle = ''
+        let testScripts = []
+        let txParams = {}
+
+        //create token
+        testName = '测试创建token'
+        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        txParams = framework.createTxParamsForIssueToken(server, account, configToken)
+        testScripts = tcsSendAndSignTx.createTestScriptsForCreateToken(server, categoryName, txFunctionName, txParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //set token properties
+        let txParam = txParams[0]
+        let tokenName = txParam.name
+        let tokenSymbol = txParam.symbol
+        let issuer = txParam.local ? txParam.from : server.mode.addresses.defaultIssuer.address
+        logger.debug("===create token: " + tokenSymbol)
+
+        //token transfer
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+
+        //mint token
+        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn token
+        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn all
+        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+    },
+
+    testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
+        let testName = ''
+        let describeTitle = ''
+        let testScripts = []
+
+        let txParam = configToken
+        let tokenName = txParam.name
+        let tokenSymbol = txParam.symbol
+        let issuer = txParam.issuer
+
+        //token transfer
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+
+        //mint token
+        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn token
+        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+    },
+
+    testForIssueTokenInComplexMode: function(server, txFunctionName){
+        let account = server.mode.addresses.sender3
+
+        let configToken = token.config_normal
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_mintable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_burnable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_mint_burn
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_normal
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_mintable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_burnable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_mint_burn
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        // configToken = token.CNYT  //todo CNYT不存在了，确定后删除
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
+        //         server.mode.addresses.sender1, configToken)
+        // })
+
+    },
+
+    //endregion
+
     //region transfer tx
 
-    createTestCasesForBasicTransaction: function(server, type, txFunctionName, txParams){
+    createTestScriptsForBasicTransaction: function(server, type, txFunctionName, txParams){
         let testScripts = []
         let testCaseCode
         let defaultScriptCode = '000100_' + type
@@ -343,182 +486,213 @@ module.exports = tcsSendAndSignTx = {
         return testScripts
     },
 
-    createTestCasesForTransactionWithMemo: function(server, categoryName, txFunctionName, txParams){
-        let testCases = []
-        let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        if(txFunctionName == consts.rpcFunctions.sendTx) testCaseParams.supportedServices.push(serviceType.oldChain)
+    createTestScriptsForTransactionWithMemo: function(server, type, txFunctionName, txParams){
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100_' + type
+        let scriptCode
+        // if(txFunctionName == consts.rpcFunctions.sendTx) testCaseParams.supportedServices.push(serviceType.oldChain)
 
         //region test cases
-        testCaseParams.title = '0120\t发起带有效memo的交易_01: memo格式为："memos":["大家好"]'
+
+        testCaseCode = 'FCJT_sendTransaction_000120'
+        scriptCode = defaultScriptCode + '_memo格式为："memos":["大家好"]'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].memos = ["大家好"]
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = ["大家好"]
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0121\t发起带有效memo的交易_01: memo格式为奇数长度数字字串："memos":["12345"]'
+        testCaseCode = 'FCJT_sendTransaction_000120'
+        scriptCode = '000200_' + type + '_memo格式为奇数长度数字字串："memos":["12345"]'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].memos = ["12345"]
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = ["12345"]
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0122\t发起带有效memo的交易_01: memo格式为偶数长度数字字串："memos":["123456"]'
+        testCaseCode = 'FCJT_sendTransaction_000120'
+        scriptCode = '000300_' + type + '_memo格式为偶数长度数字字串："memos":["123456"]'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].memos = ["123456"]
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = ["123456"]
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0123\t发起带有效memo的交易_01: memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
+        testCaseCode = 'FCJT_sendTransaction_000120'
+        scriptCode = '000400_' + type + '_memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].memos = ["E5A4A7E5AEB6E5A5BDff"]
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = ["E5A4A7E5AEB6E5A5BDff"]
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0130\t发起带有效memo的交易_02: memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]'
+        testCaseCode = 'FCJT_sendTransaction_000130'
+        scriptCode = defaultScriptCode + '_memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = [{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0140\t发起带无效memo的交易_01: memo内容使整个交易内容超过900K'
+        let memos_1 = utility.createMemosWithSpecialLength(500 * Math.pow(2, 10))
+        let memos_2 = utility.createMemosWithSpecialLength(901 * Math.pow(2, 10))
+
+        testCaseCode = 'FCJT_sendTransaction_000140'
+        scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好900K'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                let memos = "E5A4A7E5AEB6E5A5BD"
-                for(let i = 0; i < 18; i++){
-                    memos += memos
-                }
-                testCaseParams.txParams[0].memos = memos
-                testCaseParams.restrictedLevel = restrictedLevel.L4
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'memos data error')
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+
+            testScript.actions[0].txParams[0].memos = memos_1
+            testScript.restrictedLevel = restrictedLevel.L5
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0150\t发起带无效memo的交易_02: memo内容使整个交易内容超过900K'
+        testCaseCode = 'FCJT_sendTransaction_000140'
+        scriptCode = '000200_' + type  + '_memo内容使整个交易内容超过900K'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                let memos = "E5A4A7E5AEB6E5A5BD"
-                for(let i = 0; i < 18; i++){
-                    memos += memos
-                }
-                testCaseParams.txParams[0].memos = {"type":"ok","format":"utf8","data":memos}
-                testCaseParams.restrictedLevel = restrictedLevel.L4
-                testCaseParams.expectedResult = framework.createExpecteResult(false, true, 'memos data error')
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = [memos_2]
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'memos data format error'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
+
+        testCaseCode = 'FCJT_sendTransaction_000150'
+        scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好900K'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+
+            testScript.actions[0].txParams[0].memos = [{"type":"ok","format":"utf8","data":memos_1[0]}]
+            testScript.restrictedLevel = restrictedLevel.L5
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000150'
+        scriptCode = '000200_' + type  + '_memo内容使整个交易内容超过900K'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].memos = [{"type":"ok","format":"utf8","data":memos_2[0]}]
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'Unsupported Variable Length encoding'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         // endregion
 
-        return testCases
+        return testScripts
     },
 
-    createTestCasesForTransactionWithFee: function(server, categoryName, txFunctionName, txParams){
-        let testCases = []
-        let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
+    createTestScriptsForTransactionWithFee: function(server, type, txFunctionName, txParams){
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100_' + type
+        let scriptCode
 
         //region test cases
-        testCaseParams.title = '0160\t发起带有效fee的交易_01: fee为默认值12'
+
+        testCaseCode = 'FCJT_sendTransaction_000160'
+        scriptCode = defaultScriptCode + '_fee为默认值10'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = server.mode.defaultFee
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = consts.default.fee.toString()
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0161\t发起带有效fee的交易_01: fee为null'
+        testCaseCode = 'FCJT_sendTransaction_000160'
+        scriptCode = '000200_' + type + '_fee为默认值10'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0170\t发起带有效fee的交易_02: fee比12小，但是足以发起成功的交易，fee=10'
+        testCaseCode = 'FCJT_sendTransaction_000170'
+        scriptCode = defaultScriptCode + '_fee比12小，但是足以发起成功的交易，fee=10'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "10"
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = "10"
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0180\t发起带有效fee的交易_03: fee比12大但小于钱包余额'
+        testCaseCode = 'FCJT_sendTransaction_000180'
+        scriptCode = defaultScriptCode + '_fee比12大但小于钱包余额'
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "110"
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = "20"
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0190\t发起带无效fee的交易_01: fee比12小（比如5），但是不足以发起成功的交易，fee=9'
+        testCaseCode = 'FCJT_sendTransaction_000190'
+        scriptCode = defaultScriptCode + '_fee比12小（比如5），但是不足以发起成功的交易，fee=9'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "9"
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(136, 'Insufficient balance to pay fee.'))
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = "9"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(136, 'Insufficient balance to pay fee.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0200\t发起带无效fee的交易_02: fee为0'
+        testCaseCode = 'FCJT_sendTransaction_000200'
+        scriptCode = defaultScriptCode + '_fee为0'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "0"
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(136, 'Insufficient balance to pay fee.'))
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = "0"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(136, 'Insufficient balance to pay fee.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0210\t发起带无效fee的交易_03: fee为大于0的小数，比如12.5、5.5'
+        testCaseCode = 'FCJT_sendTransaction_000210'
+        scriptCode = defaultScriptCode + '_fee为大于0的小数，比如12.5、5.5'
         {
-            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "12.5"
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'strconv.ParseUint'))
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = "12.5"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'strconv.ParseUint'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0220\t发起带无效fee的交易_04: fee为大于发起钱包' + categoryName + '余额的整数'
+        testCaseCode = 'FCJT_sendTransaction_000220'
+        scriptCode = defaultScriptCode + '_fee为大于发起钱包' + type + '余额的整数'
         {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = consts.default.maxAmount.toString()
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-394, 'Fee insufficient.'))
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = consts.default.maxAmount.toString()
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-394, 'Fee insufficient.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0230\t发起带无效fee的交易_05: fee为负数，比如-3.5、-555等'
+        testCaseCode = 'FCJT_sendTransaction_000230'
+        scriptCode = defaultScriptCode + '_fee为负数，比如-3.5、-555等'
         {
-            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = "-35"
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
-                //     'tecINSUFF_FEE Insufficient balance to pay fee')
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'strconv.ParseUint'))
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = "-35"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'strconv.ParseUint'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0240\t发起带无效fee的交易_06: fee为数字'
+        testCaseCode = 'FCJT_sendTransaction_000230'
+        scriptCode = defaultScriptCode + '_fee为负数，比如-3.5、-555等'
         {
-            let testCase = framework.createTestCaseWhenSignFailForTransfer(testCaseParams, function(){
-                testCaseParams.txParams[0].fee = 35
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'strconv.ParseUint'))
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].fee = 35
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'strconv.ParseUint'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
+
         //endregion
 
-        return testCases
+        return testScripts
     },
 
     //endregion
@@ -1011,151 +1185,6 @@ module.exports = tcsSendAndSignTx = {
         return testScripts
     },
 
-    //endregion
-
-    //endregion
-
-    //region test for tx
-    testForTransfer: function(server, categoryName, txFunctionName, txParams){
-        let testName = ''
-        let describeTitle = ''
-        let testScripts = []
-
-        testName = '测试基本交易'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestCasesForBasicTransaction(server, categoryName, txFunctionName, txParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        // testName = '测试交易memo'
-        // describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        // testScripts = tcsSendAndSignTx.createTestCasesForTransactionWithMemo(server, categoryName, txFunctionName, txParams)
-        // framework.testTestScripts(server, describeTitle, testScripts)
-        //
-        // testName = '测试交易Fee'
-        // describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        // testScripts = tcsSendAndSignTx.createTestCasesForTransactionWithFee(server, categoryName, txFunctionName, txParams)
-        // framework.testTestScripts(server, describeTitle, testScripts)
-    },
-
-    testForIssueToken: function(server, categoryName, txFunctionName, account, configToken){
-        let testName = ''
-        let describeTitle = ''
-        let testScripts = []
-        let txParams = {}
-
-        //create token
-        testName = '测试创建token'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        txParams = framework.createTxParamsForIssueToken(server, account, configToken)
-        testScripts = tcsSendAndSignTx.createTestScriptsForCreateToken(server, categoryName, txFunctionName, txParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //set token properties
-        let txParam = txParams[0]
-        let tokenName = txParam.name
-        let tokenSymbol = txParam.symbol
-        let issuer = txParam.local ? txParam.from : server.mode.addresses.defaultIssuer.address
-        logger.debug("===create token: " + tokenSymbol)
-
-        //token transfer
-        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
-
-        //mint token
-        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn all
-        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-    },
-
-    testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
-        let testName = ''
-        let describeTitle = ''
-        let testScripts = []
-
-        let txParam = configToken
-        let tokenName = txParam.name
-        let tokenSymbol = txParam.symbol
-        let issuer = txParam.issuer
-
-        //token transfer
-        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
-
-        //mint token
-        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-    },
-
-    testForIssueTokenInComplexMode: function(server, txFunctionName){
-        let account = server.mode.addresses.sender3
-
-        let configToken = token.config_normal
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_mintable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_burnable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_mint_burn
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_normal
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_mintable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_burnable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_mint_burn
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        // configToken = token.CNYT  //todo CNYT不存在了，确定后删除
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
-        //         server.mode.addresses.sender1, configToken)
-        // })
-
-    },
     //endregion
 
     //region mintable and burnable

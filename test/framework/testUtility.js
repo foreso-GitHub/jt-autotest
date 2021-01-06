@@ -736,11 +736,22 @@ module.exports = testUtility = {
         }
         let result = true
         for(let i = 0; i < paramMemos.length; i++){
-            let memo = paramMemos[i]
+            let memo = paramMemos[i].data ? paramMemos[i].data : paramMemos[i]
             let hex = testUtility.utf82Hex(memo).toUpperCase()
             if(hex !== txMemos[i].Memo.MemoData.toUpperCase()){
                 result = false
             }
+            if(paramMemos[i].type) {
+                if (txMemos[i].Memo.MemoType.toUpperCase() != testUtility.utf82Hex(paramMemos[i].type).toUpperCase()){
+                    result = false
+                }
+            }
+            if(paramMemos[i].format) {
+                if (txMemos[i].Memo.MemoFormat.toUpperCase() != testUtility.utf82Hex(paramMemos[i].format).toUpperCase()){
+                    result = false
+                }
+            }
+
         }
         return result
     },

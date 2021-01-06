@@ -222,7 +222,7 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
-                tcsGetVersion.testForGetVersion(server, '测试jt_version')
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
