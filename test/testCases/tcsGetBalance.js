@@ -131,7 +131,7 @@ module.exports = tcsGetBalance = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsGetBalance.checkGetBalance,
             expectedResult,
             restrictedLevel.L2,

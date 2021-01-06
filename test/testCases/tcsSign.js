@@ -105,7 +105,7 @@ module.exports = tcsSign = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsSign.checkSign,
             expectedResult,
             restrictedLevel.L2,

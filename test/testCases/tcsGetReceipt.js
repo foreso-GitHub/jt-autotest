@@ -72,7 +72,7 @@ module.exports = tcsGetReceipt = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsGetReceipt.checkTransactionReceipt,
             expectedResult,
             restrictedLevel.L2,

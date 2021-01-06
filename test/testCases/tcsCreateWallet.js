@@ -141,7 +141,7 @@ module.exports = tcsCreateWallet = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsCreateWallet.checkCreateWallet,
             expectedResult,
             restrictedLevel.L2,

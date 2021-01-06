@@ -446,8 +446,8 @@ module.exports = tcsPressureSendTx = {
         for(let i = 0; i < testCount; i++){
             let txParams = framework.createTxParamsForTransfer(server)
             let txFunctionName = consts.rpcFunctions.sendTx
-            let executeFunction = framework.executeTestCaseOfSendTx
-            let checkFunction = framework.checkTestCaseOfSendTx
+            let executeFunction = framework.executeTestActionOfSendTx
+            let checkFunction = framework.checkTestActionOfSendTx
             let expectedResult = framework.createExpecteResult(true)
             let testCase = framework.createTestCase('0010\t发起' + categoryName + '有效交易_' + (i + 1), server,
                 txFunctionName, txParams, null,

@@ -196,7 +196,7 @@ module.exports = tcsGetBlock = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsGetBlock.checkBlock,
             expectedResult,
             restrictedLevel.L2,

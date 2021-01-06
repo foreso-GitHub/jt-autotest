@@ -124,7 +124,7 @@ module.exports = tcsGetAccount = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsGetAccount.checkGetAccount,
             expectedResult,
             restrictedLevel.L2,

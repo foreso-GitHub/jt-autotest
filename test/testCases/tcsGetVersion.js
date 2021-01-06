@@ -82,7 +82,7 @@ module.exports = tcsGetVersion = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
         let action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [],
-            framework.executeTestCaseForGet, tcsGetVersion.checkGetVersion, {needPass:true})
+            framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, {needPass:true})
         testScript.actions.push(action)
         return testScript
     },

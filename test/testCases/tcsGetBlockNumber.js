@@ -65,7 +65,7 @@ module.exports = tcsGetBlockNumber = {
                 consts.rpcFunctions.getBlockNumber,
                 null,
                 null,
-                framework.executeTestCaseForGet,
+                framework.executeTestActionForGet,
                 this.checkBlockNumber,
                 null,
                 restrictedLevel.L2,

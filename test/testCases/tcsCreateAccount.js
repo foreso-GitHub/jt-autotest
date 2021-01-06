@@ -67,7 +67,7 @@ module.exports = tcsCreateAccount = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsCreateAccount.checkCreateAccount,
             expectedResult,
             restrictedLevel.L2,

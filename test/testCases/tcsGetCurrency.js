@@ -138,7 +138,7 @@ module.exports = tcsGetCurrency = {
             functionName,
             txParams,
             null,
-            framework.executeTestCaseForGet,
+            framework.executeTestActionForGet,
             tcsGetCurrency.checkGetCurrency,
             expectedResult,
             restrictedLevel.L2,
