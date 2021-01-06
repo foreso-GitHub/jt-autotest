@@ -270,6 +270,7 @@ module.exports = consts = {
         nativeCoinDecimals: 6,
         tokenDecimals: 8,
         maxAmount: 90000000000,
+        fee: 10
         // maxAmount: Math.pow(2, 63),
         // maxAmount:9223372036854775000,  //其實應該是9223372036854775807，2的63次方，但這樣nodejs會自動進位爲9223372036854776000，溢出了。
     },

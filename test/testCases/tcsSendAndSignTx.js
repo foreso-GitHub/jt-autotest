@@ -36,35 +36,35 @@ module.exports = tcsSendAndSignTx = {
 
             categoryName = NativeCoinTest
 
-            txFunctionName = consts.rpcFunctions.sendTx
-            txParams = framework.createTxParamsForTransfer(server)
-            describe(categoryName + '测试：' + txFunctionName, async function () {
-                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            })
-
-            txFunctionName = consts.rpcFunctions.signTx
-            txParams = framework.createTxParamsForTransfer(server)
-            describe(categoryName + '测试：' + txFunctionName, async function () {
-                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            })
+            // txFunctionName = consts.rpcFunctions.sendTx
+            // txParams = framework.createTxParamsForTransfer(server)
+            // describe(categoryName + '测试：' + txFunctionName, async function () {
+            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            // })
+            //
+            // txFunctionName = consts.rpcFunctions.signTx
+            // txParams = framework.createTxParamsForTransfer(server)
+            // describe(categoryName + '测试：' + txFunctionName, async function () {
+            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            // })
 
             //endregion
 
             //region token test
 
-            // if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
-            //
-            //     txFunctionName = consts.rpcFunctions.sendTx
-            //     describe('代币测试：' + txFunctionName, async function () {
-            //         tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
-            //     })
-            //
-            //     txFunctionName = consts.rpcFunctions.signTx
-            //     describe('代币测试：' + txFunctionName, async function () {
-            //         tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
-            //     })
-            //
-            // }
+            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
+
+                txFunctionName = consts.rpcFunctions.sendTx
+                describe('代币测试：' + txFunctionName, async function () {
+                    tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
+                })
+
+                txFunctionName = consts.rpcFunctions.signTx
+                describe('代币测试：' + txFunctionName, async function () {
+                    tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
+                })
+
+            }
 
             //endregion
 
@@ -519,238 +519,252 @@ module.exports = tcsSendAndSignTx = {
 
     //region issue token tx
 
-    createTestCasesForCreateToken: function(server, categoryName, txFunctionName, txParams){
-        let testCases = []
-        let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
-        testCaseParams.restrictedLevel = restrictedLevel.L3
-        // let chainData = utility.findChainData(chainDatas, server.mode.chainDataName)
-        // let existedSymbol = chainData.tx_token.Amount.currency
+    createTestCasesForCreateToken: function(server, type, txFunctionName, txParams){
+        // let testCases = []
+        // let testCaseParams = framework.createTestCaseParams(server, categoryName, txFunctionName, txParams)
+        // testCaseParams.restrictedLevel = restrictedLevel.L3
+        // // let chainData = utility.findChainData(chainDatas, server.mode.chainDataName)
+        // // let existedSymbol = chainData.tx_token.Amount.currency
+        // let existToken = server.mode.coins[4]
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100_' + type
+        let scriptCode
         let existToken = server.mode.coins[4]
 
         //region test cases
 
-        testCaseParams.title = '0270\t发行' + testCaseParams.categoryName
+        testCaseCode = 'FCJT_sendTransaction_000270'
+        scriptCode = defaultScriptCode
         {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-                testCaseParams.expectedResult.expectedBalance = txParams[0].total_supply
-            })
-            framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].expectedResult.expectedBalance = txParams[0].total_supply
+            framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseParams.title = '0271\t发行' + testCaseParams.categoryName + '_发行量是负数'
-        {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].total_supply = "-10000"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
+        // testCaseParams.title = '0270\t发行' + testCaseParams.categoryName
+        // {
+        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+        //         testCaseParams.expectedResult.expectedBalance = txParams[0].total_supply
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
 
-        testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].type = "issuecoin"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'error type issuecoin'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0300\t发行' + testCaseParams.categoryName + '_无效的from参数'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].from = "from.address"
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284, 'sequence must be positive integer'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_有效的name参数:很长的字符串，正好256字节'
-        {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(256)[0]
-                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
-                //     'failed to submit transaction')
-                testCaseParams.expectedResult = framework.createExpecteResult(true, true,
-                    '')
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0311\t发行' + testCaseParams.categoryName + '_无效的name参数:很长的字符串，超过256字节'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(257)[0]
-                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
-                //     'failed to submit transaction')
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'The length of the name should be <= 256'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0312\t发行' + testCaseParams.categoryName + '_有效的name参数:被已有代币使用过的name'
-        {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].name = existToken.name
-                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
-                // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
-                //         //     'failed to submit transaction')
-                testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:长度超过12字节'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(5)
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_有效的symbol参数:长度正好12字节'
-        {
-            let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function() {
-                testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(4)
-                testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                let root = server.mode.addresses.rootAccount
-                testCaseParams.txParams[0].from = root.address
-                testCaseParams.txParams[0].secret = root.secret
-                testCaseParams.txParams[0].symbol = existToken.symbol
-                testCaseParams.txParams[0].local = true
-                testCaseParams.txParams[0].flag = consts.flags.normal
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'invalid parameter flag'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:字符串'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].decimals = "config.decimals"
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0331\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].decimals = -8
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0332\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数字符串'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].decimals = '-8'
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0333\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].decimals = 11.64
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0334\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数字符串'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].decimals = '11.64'
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:非数字字符串'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].total_supply = "config.total_supply"
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'total_supply must be integer type'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0341\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].total_supply = -10000000
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'total_supply must be integer type'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数字符串'
-        {
-            let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].total_supply = '-10000000'
-                testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0343\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].total_supply = 10000.12345678
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'total_supply must be integer type'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
-
-        testCaseParams.title = '0344\t发行' + testCaseParams.categoryName + '_有效的total_supply参数:小数字符串'
-        {
-            let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
-                framework.updateTokenInTestCaseParams(testCaseParams)
-                testCaseParams.txParams[0].total_supply = '10000.12345678'
-                testCaseParams.expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'total_supply must be integer type'))
-            })
-            framework.addTestScript(testCases, testCase)
-        }
+        // testCaseParams.title = '0271\t发行' + testCaseParams.categoryName + '_发行量是负数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].total_supply = "-10000"
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0290\t发行' + testCaseParams.categoryName + '_无效的type参数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].type = "issuecoin"
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-278, 'error type issuecoin'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0300\t发行' + testCaseParams.categoryName + '_无效的from参数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].from = "from.address"
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-284, 'sequence must be positive integer'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0310\t发行' + testCaseParams.categoryName + '_有效的name参数:很长的字符串，正好256字节'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
+        //         testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(256)[0]
+        //         testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
+        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
+        //         //     'failed to submit transaction')
+        //         testCaseParams.expectedResult = framework.createExpecteResult(true, true,
+        //             '')
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0311\t发行' + testCaseParams.categoryName + '_无效的name参数:很长的字符串，超过256字节'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         testCaseParams.txParams[0].name = utility.createMemosWithSpecialLength(257)[0]
+        //         testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
+        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
+        //         //     'failed to submit transaction')
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'The length of the name should be <= 256'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0312\t发行' + testCaseParams.categoryName + '_有效的name参数:被已有代币使用过的name'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+        //         testCaseParams.txParams[0].name = existToken.name
+        //         testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol
+        //         // testCaseParams.expectedResult = framework.createExpecteResult(false, false,
+        //         //         //     'failed to submit transaction')
+        //         testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0320\t发行' + testCaseParams.categoryName + '_无效的symbol参数:长度超过12字节'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(5)
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0321\t发行' + testCaseParams.categoryName + '_有效的symbol参数:长度正好12字节'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function() {
+        //         testCaseParams.txParams[0].symbol = utility.getDynamicTokenName().symbol + utility.createMemosWithSpecialLength(4)
+        //         testCaseParams.expectedResult = framework.createExpecteResult(true, true, '')
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0322\t发行' + testCaseParams.categoryName + '_无效的symbol参数:被已有代币使用过的symbol'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         let root = server.mode.addresses.rootAccount
+        //         testCaseParams.txParams[0].from = root.address
+        //         testCaseParams.txParams[0].secret = root.secret
+        //         testCaseParams.txParams[0].symbol = existToken.symbol
+        //         testCaseParams.txParams[0].local = true
+        //         testCaseParams.txParams[0].flag = consts.flags.normal
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'invalid parameter flag'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0330\t发行' + testCaseParams.categoryName + '_无效的decimals参数:字符串'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].decimals = "config.decimals"
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0331\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].decimals = -8
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0332\t发行' + testCaseParams.categoryName + '_无效的decimals参数:负数字符串'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].decimals = '-8'
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0333\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].decimals = 11.64
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0334\t发行' + testCaseParams.categoryName + '_无效的decimals参数:小数字符串'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].decimals = '11.64'
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0340\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:非数字字符串'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].total_supply = "config.total_supply"
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'total_supply must be integer type'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0341\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].total_supply = -10000000
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'total_supply must be integer type'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0342\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:负数字符串'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].total_supply = '-10000000'
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false, framework.getError(-175, 'No permission issue.'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0343\t发行' + testCaseParams.categoryName + '_无效的total_supply参数:小数'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].total_supply = 10000.12345678
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'total_supply must be integer type'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // testCaseParams.title = '0344\t发行' + testCaseParams.categoryName + '_有效的total_supply参数:小数字符串'
+        // {
+        //     let testCase = framework.createTestCaseWhenSignFailForIssueToken(testCaseParams, function(){
+        //         framework.updateTokenInTestCaseParams(testCaseParams)
+        //         testCaseParams.txParams[0].total_supply = '10000.12345678'
+        //         testCaseParams.expectedResult = framework.createExpecteResult(false,
+        //             framework.getError(-278, 'total_supply must be integer type'))
+        //     })
+        //     framework.addTestScript(testCases, testCase)
+        // }
 
         //endregion
 
-        return testCases
+        return testScripts
     },
 
     createTestCasesForMintToken: function(server, categoryName, txFunctionName, txParams){
@@ -991,10 +1005,7 @@ module.exports = tcsSendAndSignTx = {
         testCases = tcsSendAndSignTx.createTestCasesForCreateToken(server, categoryName, txFunctionName, txParams)
         framework.testTestCases(server, describeTitle, testCases)
 
-        //set created token properties
-        // let tokenName = testCases[0].txParams[0].name
-        // let tokenSymbol = testCases[0].txParams[0].symbol
-        // let issuer = testCases[0].txParams[0].local ? testCases[0].txParams[0].from : addresses.defaultIssuer.address
+        //set token properties
         let txParam = txParams[0]
         let tokenName = txParam.name
         let tokenSymbol = txParam.symbol
@@ -1002,20 +1013,20 @@ module.exports = tcsSendAndSignTx = {
         logger.debug("===create token: " + tokenSymbol)
 
         //token transfer
-        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+        // let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        // describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        // tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
-        //mint token
-        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testCases = tcsSendAndSignTx.createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestCases(server, describeTitle, testCases)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testCases = tcsSendAndSignTx.createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestCases(server, describeTitle, testCases)
+        // //mint token
+        // let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        // describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        // testCases = tcsSendAndSignTx.createTestCasesForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        // framework.testTestCases(server, describeTitle, testCases)
+        //
+        // //burn token
+        // describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        // testCases = tcsSendAndSignTx.createTestCasesForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        // framework.testTestCases(server, describeTitle, testCases)
     },
 
     testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
@@ -1053,40 +1064,40 @@ module.exports = tcsSendAndSignTx = {
             tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
         })
 
-        configToken = token.config_mintable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_burnable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_mint_burn
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_normal
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_mintable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_burnable
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
-
-        configToken = token.config_issuer_mint_burn
-        describe(configToken.testName + '测试：' + txFunctionName, async function () {
-            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        })
+        // configToken = token.config_mintable
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
+        //
+        // configToken = token.config_burnable
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
+        //
+        // configToken = token.config_mint_burn
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
+        //
+        // configToken = token.config_issuer_normal
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
+        //
+        // configToken = token.config_issuer_mintable
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
+        //
+        // configToken = token.config_issuer_burnable
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
+        //
+        // configToken = token.config_issuer_mint_burn
+        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
+        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        // })
 
         // configToken = token.CNYT  //todo CNYT不存在了，确定后删除
         // describe(configToken.testName + '测试：' + txFunctionName, async function () {

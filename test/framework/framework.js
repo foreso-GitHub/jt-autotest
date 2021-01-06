@@ -47,7 +47,7 @@ module.exports = framework = {
 
     //region 1. create test cases
 
-    //region create txParams
+    //region create old txParams
 
     updateTokenInTestCaseParams: function(testCaseParams){
         let token = utility.getDynamicTokenName()
@@ -79,10 +79,11 @@ module.exports = framework = {
         return testCase
     },
 
-    //region refactor
+    //endregion
 
-    createTestScript: function(server, testCaseCode, scriptCode, actions,
-                               restrictedLv, supportedServices, supportedInterfaces){
+    //region create testScript and testAction
+
+    createTestScript: function(server, testCaseCode, scriptCode, actions, restrictedLv, supportedServices, supportedInterfaces){
         let testScript = {}
         testScript.type = "it"
         let testCase = framework.getTestCase(testCaseCode)
@@ -181,7 +182,6 @@ module.exports = framework = {
         // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
         // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
         // "local":true 表示发的是带issuer的币，类似这种100/CNY/jGr9kAJ1grFwK4FtQmYMm5MRnLzm93CV9C
-
         let tokenName = utility.getDynamicTokenName()
         return server.createIssueTokenParams(account.address, account.secret, null,
             tokenName.name, tokenName.symbol, token.decimals, token.total_supply, token.local, token.flags)
@@ -206,14 +206,6 @@ module.exports = framework = {
 
     //endregion
 
-    createExpecteResult: function(needPass, expectedError){
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.expectedError = expectedError
-        return expectedResult
-    },
-    //endregion
-
     //region change expected result for sendTx and signTx
 
     //当jt_sendTransaction和jt_signTransaction都通不过测试时
@@ -233,6 +225,7 @@ module.exports = framework = {
     //endregion
 
     //region common
+
     addTestScript: function(testScripts, testScript){
         if(framework.ifNeedExecuteOrCheck(testScript)){
             testScripts.push(testScript)
@@ -241,13 +234,20 @@ module.exports = framework = {
             // logger.debug(_FullTestCaseList.length)
         }
     },
+
+    createExpecteResult: function(needPass, expectedError){
+        let expectedResult = {}
+        expectedResult.needPass = needPass
+        expectedResult.expectedError = expectedError
+        return expectedResult
+    },
+
     //endregion
 
     //endregion
 
     //region 2. execute test cases
 
-    //region for send
     executeTestCaseForGet: function(action){
         return new Promise(async (resolve, reject) => {
             action.hasExecuted = true
@@ -338,16 +338,10 @@ module.exports = framework = {
         }
     },
 
-    //endregion
-
-    //region common execute
-
     executeTxByTestCase: function(testCase){
         logger.debug(testCase.title)
         return testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
     },
-
-    //endregion
 
     //endregion
 
@@ -475,7 +469,7 @@ module.exports = framework = {
             let actualResult = actualResults[i]
 
             if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
-                if(utility.isResponseStatusSuccess(actualResult)){
+                if(!action.signTxAction.expectedResult[0].needPass || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
                     action.testResult = true
                     continue
                 }
@@ -763,7 +757,8 @@ module.exports = framework = {
 
     //endregion
 
-    //region after test
+    //region common
+
     afterTestFinish: function(testScript){
         if(framework.checkIfAllTestHasBeenExecuted(_FullTestCaseList)){
             framework.closeTest(testScript)
@@ -793,29 +788,6 @@ module.exports = framework = {
 
         return result
     },
-
-    startWork: function(){
-        //region ===record start time===
-        logger.info("======Start testing!======")
-        START = new Date()
-        END = new Date()
-        logger.info("Start time: " + START.toTimeString())
-        //endregion
-    },
-
-    closeTest: function(testCase){
-        //region ===record start time===
-        logger.info("======End testing!======")
-        END = new Date()
-        logger.info("Start time: " + START.toTimeString())
-        logger.info("End time: " + END.toTimeString())
-        let time = utility.duration2Time(START, END)
-        logger.info("Consume time: " + (END - START) / 1000 + 's, equals to ' + utility.printTime(time) + '!')
-        logger.info('Closing server ...')
-        testCase.server.close()
-        //endregion
-    },
-    //endregion
 
     printTestScript: function(testScript){
         logger.debug('---script title: ' + testScript.title)      //important logger
@@ -859,6 +831,42 @@ module.exports = framework = {
             return true
         }
     },
+
+    startWork: function(){
+        //region ===record start time===
+        logger.info("======Start testing!======")
+        START = new Date()
+        END = new Date()
+        logger.info("Start time: " + START.toTimeString())
+        //endregion
+    },
+
+    stoptWork: function(testScript){
+        //region ===record stop time===
+        if(testScript){
+            logger.info("---Test script done!")
+        }
+        else{
+            logger.info("======End testing!======")
+        }
+
+        END = new Date()
+        logger.info("Start time: " + START.toTimeString())
+        logger.info("End time: " + END.toTimeString())
+        let time = utility.duration2Time(START, END)
+        logger.info("Consume time: " + (END - START) / 1000 + 's, equals to ' + utility.printTime(time) + '!')
+        logger.info('Closing server ...')
+        //endregion
+    },
+
+    closeTest: function(testScript){
+        testScript.server.close()
+        framework.stoptWork(testScript)
+    },
+
+
+
+    //endregion
 
     //endregion
 
@@ -915,27 +923,29 @@ module.exports = framework = {
     compareParamAndTx: function(param, tx){
         expect(tx.Account).to.be.equals(param.from)
         expect(tx.Destination).to.be.equals(param.to)
-        expect(tx.Fee).to.be.equals(param.fee)
+        expect(tx.Fee).to.be.equals(param.fee ? param.fee : consts.default.fee.toString())
         expect(tx.Sequence).to.be.equals(param.sequence)
 
         //region check value
-        let paramValueObject = utility.parseShowValue(param.value)
-        if(paramValueObject.symbol == consts.default.nativeCoin){
-            if(param.value.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
-                expect(tx.Amount.value).to.be.equals(
-                    (Number(paramValueObject.amount) * Math.pow(10, consts.default.nativeCoinDecimals)).toFixed(0)
-                )
+        if(tx.Amount){
+            let paramValueObject = utility.parseShowValue(param.value)
+            if(paramValueObject.symbol == consts.default.nativeCoin){
+                if(param.value.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
+                    expect(tx.Amount.value).to.be.equals(
+                        (Number(paramValueObject.amount) * Math.pow(10, consts.default.nativeCoinDecimals)).toFixed(0)
+                    )
+                }
+                else{
+                    expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount))
+                }
+                expect(tx.Amount.issuer).to.be.equals(consts.default.issuer)
             }
             else{
-                expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount))
+                expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount)
+                    * Math.pow(10, consts.default.tokenDecimals))
             }
-            expect(tx.Amount.issuer).to.be.equals(consts.default.issuer)
+            expect(tx.Amount.currency).to.be.equals(paramValueObject.symbol)
         }
-        else{
-            expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount)
-                * Math.pow(10, consts.default.tokenDecimals))
-        }
-        expect(tx.Amount.currency).to.be.equals(paramValueObject.symbol)
         //endregion
 
         if(param.memos) expect(utility.compareMemos(param.memos, tx.Memos)).to.be.ok
@@ -999,29 +1009,6 @@ module.exports = framework = {
     //region common functions
 
     //region process sequence
-
-    //region getSequence v1
-    // getSequence: function(server, from){
-    //     return new Promise(function (resolve){
-    //         // let key = from + '@' + server.getName()
-    //         let key = from
-    //         if(_SequenceMap.has(key)){
-    //             logger.debug("===get sequence from map:" + _SequenceMap.get(key))
-    //             resolve(_SequenceMap.get(key))
-    //         }
-    //         else{
-    //             Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-    //                 let sequence = Number(accountInfo.result.Sequence)
-    //                 framework.setSequence(server.getName(), from, sequence)
-    //                 logger.debug("===get sequence from accountInfo:" + JSON.stringify(accountInfo))
-    //                 resolve(sequence)
-    //             }).catch(function (error){
-    //                 logger.debug("Error!!! " + error)
-    //             })
-    //         }
-    //     })
-    // },
-    //endregion
 
     //region getSequence v2
     getSequence: function(server, from){
