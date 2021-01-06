@@ -48,7 +48,7 @@ module.exports = tcsCreateAccount = {
         testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForCreateAccount: function(server, title, nickName, needPass, expectedError){

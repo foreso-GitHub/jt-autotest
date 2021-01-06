@@ -27,43 +27,43 @@ module.exports = tcsIpfs = {
             let testCases
 
             testCases = tcsIpfs.testForNodeInfo(server)
-            framework.testTestCases(server, consts.ipfsFunctions.getNodeInfo, testCases)
+            framework.testTestScripts(server, consts.ipfsFunctions.getNodeInfo, testCases)
 
             // testCases = tcsIpfs.testForUploadData(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.uploadData, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.uploadData, testCases)
             //
             // testCases = tcsIpfs.testForDownloadData(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.downloadData, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.downloadData, testCases)
             //
             // testCases = tcsIpfs.testForRemoveData(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.removeData, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.removeData, testCases)
             //
             // testCases = tcsIpfs.testForPinData(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.pinData, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.pinData, testCases)
             //
             // testCases = tcsIpfs.testForUnpinData(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.unpinData, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.unpinData, testCases)
             //
             // testCases = tcsIpfs.testForUploadFile(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.uploadFile, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.uploadFile, testCases)
             //
             // testCases = tcsIpfs.testForDownloadFile(server)
-            // framework.testTestCases(server, consts.ipfsFunctions.downloadFile, testCases)
+            // framework.testTestScripts(server, consts.ipfsFunctions.downloadFile, testCases)
             //
             // testCases = tcsIpfs.testForFullProcess(server)
-            // framework.testTestCases(server, 'ipfs全流程测试', testCases)
+            // framework.testTestScripts(server, 'ipfs全流程测试', testCases)
             //
             // testCases = tcsIpfs.pressureTestForUploadData(server)
-            // framework.testTestCases(server, 'ipfs上传压力测试，多个case', testCases)
+            // framework.testTestScripts(server, 'ipfs上传压力测试，多个case', testCases)
             //
             // testCases = tcsIpfs.pressureTestForUploadDataInOneCase(server)
-            // framework.testTestCases(server, 'ipfs上传压力测试，单个case', testCases)
+            // framework.testTestScripts(server, 'ipfs上传压力测试，单个case', testCases)
             //
             // testCases = tcsIpfs.pressureTestForFullProcess(server)
-            // framework.testTestCases(server, 'ipfs全流程压力测试，多个case', testCases)
+            // framework.testTestScripts(server, 'ipfs全流程压力测试，多个case', testCases)
             //
             // testCases = tcsIpfs.pressureTestForFullProcessInOneCase(server)
-            // framework.testTestCases(server, 'ipfs全流程压力测试，单个case', testCases)
+            // framework.testTestScripts(server, 'ipfs全流程压力测试，单个case', testCases)
         })
     },
 

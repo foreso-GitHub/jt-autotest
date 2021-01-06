@@ -300,7 +300,12 @@ module.exports = framework = {
 
             // logger.debug("balanceBeforeExecution:" + JSON.stringify(action.balanceBeforeExecution))
             let response = await framework.executeTxByTestCase(action)
-            framework.addSequenceAfterResponseSuccess(response, action)
+            if(action.txFunctionName == consts.rpcFunctions.sendTx){
+                framework.addSequenceAfterResponseSuccess(response, action)
+            }
+            else if(action.txFunctionName == consts.rpcFunctions.sendRawTx){
+                framework.addSequenceAfterResponseSuccess(response, action.signTxAction) //因为sequence在signTxAction里面
+            }
             action.actualResult = response
 
             if(afterExecution) await afterExecution(action)
@@ -310,11 +315,6 @@ module.exports = framework = {
     },
 
     executeTestCaseOfSendTx: function(action){
-        // let afterExecuteFunction = function(action, response, resolve){
-        //     framework.addSequenceAfterResponseSuccess(response, action)
-        //     action.actualResult = response
-        //     resolve(action)
-        // }
         return framework.executeTestCaseOfTx(action, )
     },
 
@@ -657,14 +657,14 @@ module.exports = framework = {
 
     //region 4. test test cases
 
-    testTestCases: function(server, describeTitle, testCases) {
+    testTestScripts: function(server, describeTitle, testScripts) {
         describeTitle = '【' + describeTitle + '】'
         let testMode = server.mode.testMode
         if(!testMode || testMode == testModeEnums.batchMode){
-            framework.testOnBatchMode(server, describeTitle, testCases)
+            framework.testOnBatchMode(server, describeTitle, testScripts)
         }
         else if (testMode == testModeEnums.singleMode) {
-            framework.testOnSingleMode(server, describeTitle, testCases)
+            framework.testOnSingleMode(server, describeTitle, testScripts)
         }
         else{
             logger.debug("No special test mode!")
@@ -766,16 +766,16 @@ module.exports = framework = {
         framework.printTestScript(testScript)
     },
 
-    checkIfAllTestHasBeenExecuted: function(testCases){
+    checkIfAllTestHasBeenExecuted: function(testScripts){
         let result = true
         // let hasExecutedCount = 0
         // let clearCount = 0
         // let clearList = []
-        testCases.forEach((testCase)=>{
-            if(!testCase.hasExecuted){
+        testScripts.forEach((testScript)=>{
+            if(!testScript.hasExecuted){
                 result = false
                 // clearCount++
-                // clearList.push(testCase)
+                // clearList.push(testScript)
             }
             else{
                 // hasExecutedCount++

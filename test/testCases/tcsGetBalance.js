@@ -101,7 +101,7 @@ module.exports = tcsGetBalance = {
         testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetBalance: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){

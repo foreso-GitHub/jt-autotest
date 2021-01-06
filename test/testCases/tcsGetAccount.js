@@ -93,7 +93,7 @@ module.exports = tcsGetAccount = {
         testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetAccount: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){

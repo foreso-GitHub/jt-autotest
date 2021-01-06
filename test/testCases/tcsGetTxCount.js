@@ -47,7 +47,7 @@ module.exports = tcsGetTxCount = {
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     testForGetBlockTransactionCountByNumber: function(server, describeTitle){
@@ -82,7 +82,7 @@ module.exports = tcsGetTxCount = {
         testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetBlockTransactionCount: function(server, title, functionName, hashOrNumber, needPass, expectedError){
@@ -138,7 +138,7 @@ module.exports = tcsGetTxCount = {
         tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, tag)
         // tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_区块参数:100', from, to, 100)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     testGroupForGetTransactionCount: function(server, describeTitle, from, to, tag){
@@ -230,7 +230,7 @@ module.exports = tcsGetTxCount = {
             testCases.push(testCase)
         }
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetTransactionCount: function(server, title, addressOrName, tag, needSendTx, needPass, expectedError){

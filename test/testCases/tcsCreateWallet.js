@@ -123,7 +123,7 @@ module.exports = tcsCreateWallet = {
         framework.addTestScript(testCases, testCase)
         //endregion
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForCreateWallet: function(server, title, type, needPass, expectedError){

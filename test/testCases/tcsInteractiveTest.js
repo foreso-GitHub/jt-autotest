@@ -113,7 +113,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestScript(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币', testCases)
+            framework.testTestScripts(server, '发送底层币/代币的交互性测试：底层币', testCases)
 
             //endregion
 
@@ -182,7 +182,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestScript(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：代币', testCases)
+            framework.testTestScripts(server, '发送底层币/代币的交互性测试：代币', testCases)
 
             //endregion
 
@@ -293,7 +293,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestScript(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币混合', testCases)
+            framework.testTestScripts(server, '发送底层币/代币的交互性测试：底层币、代币混合', testCases)
 
             testCases = []
 
@@ -339,7 +339,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestScript(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币混合', testCases)
+            framework.testTestScripts(server, '发送底层币/代币的交互性测试：底层币混合', testCases)
 
             testCases = []
 
@@ -385,7 +385,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestScript(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：代币混合', testCases)
+            framework.testTestScripts(server, '发送底层币/代币的交互性测试：代币混合', testCases)
 
             testCases = []
 
@@ -431,7 +431,7 @@ module.exports = tcsInteractiveTest = {
                 framework.addTestScript(testCases, testCase)
             }
 
-            framework.testTestCases(server, '发送底层币/代币的交互性测试：底层币、代币同时混合', testCases)
+            framework.testTestScripts(server, '发送底层币/代币的交互性测试：底层币、代币同时混合', testCases)
             //endregion
 
             // 恢复原先的testMode

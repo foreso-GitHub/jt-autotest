@@ -109,7 +109,7 @@ module.exports = tcsGetCurrency = {
                 localCoin.symbol, localCoin.issuer + 'a', tag, needPass, expectedError)
             framework.addTestScript(testCases, testCase)
 
-            framework.testTestCases(server, describeTitle, testCases)
+            framework.testTestScripts(server, describeTitle, testCases)
         })
     },
 

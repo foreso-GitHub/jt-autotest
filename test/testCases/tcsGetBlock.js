@@ -26,14 +26,14 @@ module.exports = tcsGetBlock = {
         let functionName = consts.rpcFunctions.getBlockByNumber
         let blockNumber = server.mode.txs.block.blockNumber
         let testCases = tcsGetBlock.createTestCasesForGetBlock(server, functionName, blockNumber)
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     testForGetBlockByHash: function(server, describeTitle){
         let functionName = consts.rpcFunctions.getBlockByHash
         let blockHash = server.mode.txs.block.blockHash
         let testCases = tcsGetBlock.createTestCasesForGetBlock(server, functionName, blockHash)
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createTestCasesForGetBlock: function(server, functionName, numberOrHash){

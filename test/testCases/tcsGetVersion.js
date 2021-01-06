@@ -68,7 +68,7 @@ module.exports = tcsGetVersion = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        framework.testTestCases(server, describeTitle, testScripts)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     createTestScript: function(server, testCaseCode, scriptCode){

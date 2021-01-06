@@ -486,7 +486,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_订阅block', testCases)
+        framework.testTestScripts(server, describeTitle + '_订阅block', testCases)
 
         //endregion
 
@@ -606,7 +606,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_订阅tx', testCases)
+        framework.testTestScripts(server, describeTitle + '_订阅tx', testCases)
 
         //endregion
 
@@ -693,7 +693,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_无效订阅', testCases)
+        framework.testTestScripts(server, describeTitle + '_无效订阅', testCases)
 
         //endregion
 
@@ -755,7 +755,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_多个订阅', testCases)
+        framework.testTestScripts(server, describeTitle + '_多个订阅', testCases)
 
         //endregion
 
@@ -1043,7 +1043,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_订阅token', testCases)
+        framework.testTestScripts(server, describeTitle + '_订阅token', testCases)
 
         //endregion
 
@@ -1238,7 +1238,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_订阅account', testCases)
+        framework.testTestScripts(server, describeTitle + '_订阅account', testCases)
 
         //endregion
 
@@ -1711,7 +1711,7 @@ module.exports = tcsSubscribe = {
         }
         //endregion
 
-        framework.testTestCases(server, describeTitle + '_订阅发币', testCases)
+        framework.testTestScripts(server, describeTitle + '_订阅发币', testCases)
 
         //endregion
 
@@ -1957,7 +1957,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_混合订阅', testCases)
+        framework.testTestScripts(server, describeTitle + '_混合订阅', testCases)
 
         //endregion
 
@@ -2071,7 +2071,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_退订block', testCases)
+        framework.testTestScripts(server, describeTitle + '_退订block', testCases)
 
         //endregion
 
@@ -2195,7 +2195,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_退订tx', testCases)
+        framework.testTestScripts(server, describeTitle + '_退订tx', testCases)
 
         //endregion
 
@@ -2331,7 +2331,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_退订失败', testCases)
+        framework.testTestScripts(server, describeTitle + '_退订失败', testCases)
 
         //endregion
 
@@ -2486,7 +2486,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_退订token', testCases)
+        framework.testTestScripts(server, describeTitle + '_退订token', testCases)
 
         //endregion
 
@@ -2586,7 +2586,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_退订account', testCases)
+        framework.testTestScripts(server, describeTitle + '_退订account', testCases)
 
         //endregion
 
@@ -2727,7 +2727,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_退订all', testCases)
+        framework.testTestScripts(server, describeTitle + '_退订all', testCases)
 
         //endregion
 
@@ -2987,7 +2987,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_列表normal', testCases)
+        framework.testTestScripts(server, describeTitle + '_列表normal', testCases)
 
         //endregion
 
@@ -3411,7 +3411,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle + '_列表mixed', testCases)
+        framework.testTestScripts(server, describeTitle + '_列表mixed', testCases)
 
         //endregion
     },

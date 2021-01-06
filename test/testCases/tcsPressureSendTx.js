@@ -49,11 +49,11 @@ module.exports = tcsPressureSendTx = {
     testSequenceByFunction: function(server, describeTitle, txFunctionName){
         let categoryName = describeTitle + txFunctionName
         let testCasesList = tcsPressureSendTx.createTestCasesForSequenceTest(server, txFunctionName)
-        framework.testTestCases(server, categoryName + '基本测试', testCasesList[0])
-        framework.testTestCases(server, categoryName + '无效参数测试1', testCasesList[1])
-        framework.testTestCases(server, categoryName + '无效参数测试2', testCasesList[2])
-        framework.testTestCases(server, categoryName + '多交易测试1', testCasesList[3])
-        framework.testTestCases(server, categoryName + '多交易测试2', testCasesList[4])
+        framework.testTestScripts(server, categoryName + '基本测试', testCasesList[0])
+        framework.testTestScripts(server, categoryName + '无效参数测试1', testCasesList[1])
+        framework.testTestScripts(server, categoryName + '无效参数测试2', testCasesList[2])
+        framework.testTestScripts(server, categoryName + '多交易测试1', testCasesList[3])
+        framework.testTestScripts(server, categoryName + '多交易测试2', testCasesList[4])
     },
 
     createTestCasesForSequenceTest: function(server, txFunctionName){
@@ -429,15 +429,15 @@ module.exports = tcsPressureSendTx = {
 
             categoryName = '原生币swt压力测试，分多个case执行'
             testCases = tcsPressureSendTx.createTestCasesForPressureTest(server, categoryName, testRound)
-            framework.testTestCases(server, categoryName, testCases)
+            framework.testTestScripts(server, categoryName, testCases)
 
             categoryName = '原生币swt压力测试，jt_sendTransaction，在一个内case执行'
             testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.sendTx, testRound)
-            framework.testTestCases(server, categoryName, testCases)
+            framework.testTestScripts(server, categoryName, testCases)
 
             categoryName = '原生币swt压力测试，jt_signTransaction，在一个内case执行'
             testCases = tcsPressureSendTx.createTestCasesForPressureTestInOneCase(server,  consts.rpcFunctions.signTx, testRound)
-            framework.testTestCases(server, categoryName, testCases)
+            framework.testTestScripts(server, categoryName, testCases)
         })
     },
 
@@ -611,7 +611,7 @@ module.exports = tcsPressureSendTx = {
         //endregion
 
         testCases = tcsPressureSendTx.createTestCaseForPurePressureTest(server,  accountParams)
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createTestCaseForPurePressureTest: function(server, accountParams){
@@ -790,7 +790,7 @@ module.exports = tcsPressureSendTx = {
             testCase.checkFunction = framework.checkSubCasesWithoutResponse
         }
         framework.addTestScript(testCases, testCase)
-        framework.testTestCases(server, describeTitle + '， 数量： ' + testCase.otherParams.totalCount, testCases)
+        framework.testTestScripts(server, describeTitle + '， 数量： ' + testCase.otherParams.totalCount, testCases)
     },
 
     //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.
@@ -1014,7 +1014,7 @@ module.exports = tcsPressureSendTx = {
         subTitles = titles.slice(5, 10)
         testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestByOneAccount(server, subTitles, allServers,
             addresses, value, fee, memos, txFunction, caseRestrictedLevel, testCount))
-        framework.testTestCases(server, describeTitle + '同一账户向节点连续发送交易, memos长度为' + memosLength, testCases)
+        framework.testTestScripts(server, describeTitle + '同一账户向节点连续发送交易, memos长度为' + memosLength, testCases)
         //endregion
 
         //region 0060	不同账户向同一节点连续发送交易（sendTx, 不带memo）测试性能上限
@@ -1027,7 +1027,7 @@ module.exports = tcsPressureSendTx = {
         subTitles = titles.slice(15, 20)
         testCases = testCases.concat(tcsPressureSendTx.testForPerformanceTestBySeveralAccounts(server, subTitles, allServers,
             addresses, value, fee, memos, txFunction, caseRestrictedLevel, testCount))
-        framework.testTestCases(server, describeTitle + '不同账户向节点连续发送交易, memos长度为' + memosLength, testCases)
+        framework.testTestScripts(server, describeTitle + '不同账户向节点连续发送交易, memos长度为' + memosLength, testCases)
         //endregion
     },
 

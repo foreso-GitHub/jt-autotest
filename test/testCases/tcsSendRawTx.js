@@ -230,7 +230,7 @@ module.exports = tcsSendRawTx = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createFailRawTxs: function(failRawTx, count){
@@ -366,11 +366,11 @@ module.exports = tcsSendRawTx = {
                     caseRestrictedLevel, subCaseFunctionParams)
                 testCases = []
                 framework.addTestScript(testCases, testCase)
-                framework.testTestCases(runServer, describeTitle + "_" + (i + 1), testCases)
+                framework.testTestScripts(runServer, describeTitle + "_" + (i + 1), testCases)
             }
         }
 
-        // framework.testTestCases(server, describeTitle, testCases)
+        // framework.testTestScripts(server, describeTitle, testCases)
     },
 
     executeForPerformanceBySendRawTxs: async function(testCase){

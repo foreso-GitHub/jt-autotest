@@ -61,7 +61,7 @@ module.exports = tcsBugInjection = {
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestScript(testCases, testCase)
 
-            framework.testTestCases(server, describeTitle + '_网络丢包测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestScripts(server, describeTitle + '_网络丢包测试', testCases)  //node operation will conflict.  so one case, one test.
 
             //endregion
 
@@ -85,7 +85,7 @@ module.exports = tcsBugInjection = {
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestScript(testCases, testCase)
 
-            framework.testTestCases(server, describeTitle + '_网络包重复测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestScripts(server, describeTitle + '_网络包重复测试', testCases)  //node operation will conflict.  so one case, one test.
 
             //endregion
 
@@ -109,7 +109,7 @@ module.exports = tcsBugInjection = {
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestScript(testCases, testCase)
 
-            framework.testTestCases(server, describeTitle + '_网络包损坏测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestScripts(server, describeTitle + '_网络包损坏测试', testCases)  //node operation will conflict.  so one case, one test.
 
             //endregion
 
@@ -134,7 +134,7 @@ module.exports = tcsBugInjection = {
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestScript(testCases, testCase)
 
-            framework.testTestCases(server, describeTitle + '_网络包乱序测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestScripts(server, describeTitle + '_网络包乱序测试', testCases)  //node operation will conflict.  so one case, one test.
 
             //endregion
 
@@ -161,7 +161,7 @@ module.exports = tcsBugInjection = {
             testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, otherParams)
             framework.addTestScript(testCases, testCase)
 
-            framework.testTestCases(server, describeTitle + '_网络延时测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestScripts(server, describeTitle + '_网络延时测试', testCases)  //node operation will conflict.  so one case, one test.
 
             //endregion
 
@@ -175,7 +175,7 @@ module.exports = tcsBugInjection = {
             otherParams.execNodeCount = 1
             testCase = tcsBugInjection.createTestCase(server, title, otherParams)
             framework.addTestScript(testCases, testCase)
-            framework.testTestCases(server, describeTitle + '_断网测试', testCases)  //node operation will conflict.  so one case, one test.
+            framework.testTestScripts(server, describeTitle + '_断网测试', testCases)  //node operation will conflict.  so one case, one test.
 
             for(let i = 1; i <= 5; i++){
                 testCases = []
@@ -186,7 +186,7 @@ module.exports = tcsBugInjection = {
                 testCase = tcsBugInjection.createTestCase(server, title, otherParams)
                 testCase.restrictedLevel = restrictedLevel.L3
                 framework.addTestScript(testCases, testCase)
-                framework.testTestCases(server, describeTitle + '_断网测试_' + title, testCases)  //node operation will conflict.  so one case, one test.
+                framework.testTestScripts(server, describeTitle + '_断网测试_' + title, testCases)  //node operation will conflict.  so one case, one test.
             }
 
             //endregion

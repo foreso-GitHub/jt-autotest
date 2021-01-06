@@ -41,7 +41,7 @@ module.exports = tcsSendTxInOneRequest = {
         testCases.push(testCase)
         //endregion
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     testForSendTxsFast: function(server, describeTitle, txCount){
@@ -63,7 +63,7 @@ module.exports = tcsSendTxInOneRequest = {
         testCases.push(testCase)
         //endregion
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     checkForSendTxsFast: function(testCase){

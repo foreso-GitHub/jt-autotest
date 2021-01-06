@@ -76,7 +76,7 @@ module.exports = tcsGetTx = {
         testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetTransaction: function(server, title, hash, needPass, expectedError){
@@ -256,7 +256,7 @@ module.exports = tcsGetTx = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetTransactionByIndex: function(server, title, hash, from, index, needPass, expectedError){
@@ -365,7 +365,7 @@ module.exports = tcsGetTx = {
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     testForGetTransactionByBlockNumberAndIndex: function(server, describeTitle){
@@ -444,7 +444,7 @@ module.exports = tcsGetTx = {
         testCase.supportedServices = [serviceType.newChain,]
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
 
     createSingleTestCaseForGetTransactionByBlockAndIndex: function(server, title, functionName,

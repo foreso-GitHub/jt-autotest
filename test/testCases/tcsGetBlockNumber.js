@@ -74,7 +74,7 @@ module.exports = tcsGetBlockNumber = {
             )
         }
         framework.addTestScript(testCases, testCase)
-        framework.testTestCases(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testCases)
     },
     
     checkBlockNumber: function(testCase){
