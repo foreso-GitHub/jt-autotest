@@ -307,21 +307,26 @@ module.exports = framework = {
         })
     },
 
+    //region send
+
     executeTestActionOfSendTx: function(action){
         return framework.executeTestActionOfTx(action, )
     },
 
-    executeTestActionOfSendRawTx: function(action){
-        let beforeExecution = function(action){
-            let signTxResults = action.signTxAction.actualResult.result
-            for(let i = 0; i < signTxResults.length; i++){
-                let signResult = signTxResults[i].result
-                let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
-                action.txParams.push(signTx)
-            }
+    beforeSendRawTx: function(action){
+        let signTxResults = action.signTxAction.actualResult.result
+        for(let i = 0; i < signTxResults.length; i++){
+            let signResult = signTxResults[i].result
+            let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
+            action.txParams.push(signTx)
         }
-        return framework.executeTestActionOfTx(action, beforeExecution)
     },
+
+    executeTestActionOfSendRawTx: function(action){
+        return framework.executeTestActionOfTx(action, framework.beforeSendRawTx)
+    },
+
+    //endregion
 
     //if send tx successfully, then sequence need plus 1
     addSequenceAfterResponseSuccess: function(response, action){
@@ -396,6 +401,21 @@ module.exports = framework = {
                     let tx = (await utility.getTxByHash(action.server, hash, 0)).result
                     expect(tx.hash).to.be.equal(hash)
                     await framework.compareParamAndTx(param, tx)
+
+                    // if(action.server.mode.restrictedLevel >= restrictedLevel.L5)
+                    {
+                        let expectedBalance =
+                            (action.txFunctionName === consts.rpcFunctions.sendRawTx)
+                            ? action.signTxAction.expectedResult[i].expectedBalance
+                            : expectedResult.expectedBalance
+                        if(expectedBalance != undefined){
+                            let server = action.server
+                            let from = param.from
+                            let symbol = param.symbol
+                            let issuer = param.local ? from : consts.default.issuer
+                            await framework.checkBalanceChange(server, from, symbol, issuer, expectedBalance)
+                        }
+                    }
                 }
                 else{
                     expect('Not a hash!').to.be.not.ok
@@ -405,15 +425,6 @@ module.exports = framework = {
                 framework.checkResponseError(action, expectedResult, actualResult)
             }
 
-            if(action.server.mode.restrictedLevel >= restrictedLevel.L5){
-                let expectedBalance = expectedResult.expectedBalance
-                if(expectedBalance){
-                    let server = action.server
-                    let from = param.from
-                    let symbol = param.symbol
-                    await framework.checkBalanceChange(server, from, symbol, expectedBalance)
-                }
-            }
             action.testResult = true
         }
     },
@@ -800,17 +811,32 @@ module.exports = framework = {
     //     result: { balance: '1798498811047' },
     //   status: 'success' }
     //token example:
-    checkBalanceChange: async function(server, from, symbol, expectedBalance){
-        if(symbol){ //token
-            let balance = (await server.getBalance(server, from, symbol)).value
-            expect(Number(balance.value)).to.be.equal(Number(expectedBalance))
-            return balance
+    checkBalanceChange: async function(server, from, symbol, issuer, expectedBalance){
+        let balanceResponse = await server.responseBalance(server, from, symbol, issuer)
+        let balance = balanceResponse.result.balance
+        let actualValue = balance.value
+        let paramValueObject = utility.parseShowValue(expectedBalance)
+        let expectedValue
+
+        if(!symbol || symbol == consts.default.nativeCoin){
+            if(expectedBalance.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
+                expectedValue = (Number(paramValueObject.amount) * Math.pow(10, consts.default.nativeCoinDecimals)).toFixed()
+            }
+            else{
+                expectedValue = paramValueObject.amount.toString()
+            }
         }
-        else{ //swt
-            let balance = (await server.getBalance(server, from)).value
-            expect(Number(balance)).to.be.equal(Number(expectedBalance))
-            return balance
+        else{
+            if(expectedBalance.indexOf(symbol) != -1){
+                expectedValue = (Number(paramValueObject.amount) * Math.pow(10, consts.default.tokenDecimals)).toFixed()
+            }
+            else{
+                expectedValue = paramValueObject.amount.toString()
+            }
         }
+
+        logger.debug('---checkBalanceChange, balance: ' + actualValue + ' | expectedBalance: ' + expectedValue)
+        expect(actualValue).to.be.equal(expectedValue)
     },
     //endregion
 
@@ -847,23 +873,7 @@ module.exports = framework = {
 
         //region check value
         if(tx.Amount){
-            let paramValueObject = utility.parseShowValue(param.value)
-            if(paramValueObject.symbol == consts.default.nativeCoin){
-                if(param.value.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
-                    expect(tx.Amount.value).to.be.equals(
-                        (Number(paramValueObject.amount) * Math.pow(10, consts.default.nativeCoinDecimals)).toFixed(0)
-                    )
-                }
-                else{
-                    expect(Number(tx.Amount.value)).to.be.equals(Number(paramValueObject.amount))
-                }
-                expect(tx.Amount.issuer).to.be.equals(consts.default.issuer)
-            }
-            else{
-                expect(tx.Amount.value).to.be.equals((Number(paramValueObject.amount)
-                    * Math.pow(10, consts.default.tokenDecimals)).toFixed())
-            }
-            expect(tx.Amount.currency).to.be.equals(paramValueObject.symbol)
+            framework.compareValueByParamAndTx(param.value, tx.Amount)
         }
         //endregion
 
@@ -884,6 +894,26 @@ module.exports = framework = {
             expect(tx.TotalSupply.issuer).to.be.equals((param.local) ? param.from : consts.default.issuer)
             // expect(tx.Flags).to.be.equals(param.flags)  //todo need restore after bug fixing
         }
+    },
+
+    compareValueByParamAndTx(paramValue, txAmount){
+        let paramValueObject = utility.parseShowValue(paramValue)
+        if(paramValueObject.symbol == consts.default.nativeCoin){
+            if(paramValue.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
+                expect(txAmount.value).to.be.equals(
+                    (Number(paramValueObject.amount) * Math.pow(10, consts.default.nativeCoinDecimals)).toFixed(0)
+                )
+            }
+            else{
+                expect(Number(txAmount.value)).to.be.equals(Number(paramValueObject.amount))
+            }
+            expect(txAmount.issuer).to.be.equals(consts.default.issuer)
+        }
+        else{
+            expect(txAmount.value).to.be.equals((Number(paramValueObject.amount)
+                * Math.pow(10, consts.default.tokenDecimals)).toFixed())
+        }
+        expect(txAmount.currency).to.be.equals(paramValueObject.symbol)
     },
 
     compareActualTxWithTxParams: function(txParams, tx, mode){

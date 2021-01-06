@@ -60,8 +60,8 @@ function baseInterface() {
     //endregion
 
     //region balance
-    baseInterface.prototype.getBalance = async function (server, address, symbol) {
-        let response = await this.responseBalance(server, address, symbol)
+    baseInterface.prototype.getBalance = async function (server, address, symbol, issuer) {
+        let response = await this.responseBalance(server, address, symbol, issuer)
         let balance = response.result ? response.result.balance : null
         return balance
     }
@@ -70,10 +70,11 @@ function baseInterface() {
         return response.result.balance
     }
 
-    baseInterface.prototype.responseBalance = function (server, address, symbol, tag) {
+    baseInterface.prototype.responseBalance = function (server, address, symbol, issuer, tag) {
         let params = []
         params.push(address)
         if(symbol) params.push(symbol)
+        if(issuer) params.push(issuer)
         if(tag) params.push(tag)
         return this.getResponse(server, consts.rpcFunctions.getBalance, params)
     }

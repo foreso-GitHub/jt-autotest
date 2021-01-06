@@ -36,17 +36,17 @@ module.exports = tcsSendAndSignTx = {
 
             categoryName = NativeCoinTest
 
-            // txFunctionName = consts.rpcFunctions.sendTx
-            // txParams = framework.createTxParamsForTransfer(server)
-            // describe(categoryName + '测试：' + txFunctionName, async function () {
-            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            // })
-            //
-            // txFunctionName = consts.rpcFunctions.signTx
-            // txParams = framework.createTxParamsForTransfer(server)
-            // describe(categoryName + '测试：' + txFunctionName, async function () {
-            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            // })
+            txFunctionName = consts.rpcFunctions.sendTx
+            txParams = framework.createTxParamsForTransfer(server)
+            describe(categoryName + '测试：' + txFunctionName, async function () {
+                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            })
+
+            txFunctionName = consts.rpcFunctions.signTx
+            txParams = framework.createTxParamsForTransfer(server)
+            describe(categoryName + '测试：' + txFunctionName, async function () {
+                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            })
 
             //endregion
 
@@ -540,268 +540,268 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].expectedResult.expectedBalance = testScript.actions[0].txParams[0].total_supply
+            testScript.actions[0].expectedResult[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
             framework.addTestScript(testScripts, testScript)
         }
 
-        // testCaseCode = 'FCJT_sendTransaction_000270'
-        // scriptCode = '000200_' + type + '_发行量是负数'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].total_supply = '-1234567890'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-175, 'No permission issue.'))
-        //     framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000271'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
-        //     testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
-        //     testScript.actions[0].expectedResult.expectedBalance = testScript.actions[0].txParams[0].total_supply
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000272'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals) + 1)
-        //     testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'error total_supply'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000273'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
-        //     testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/NullCoin'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'currency in total_supply is not matched with symbol,'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000290'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].type = "issuecoin"
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'error type issuecoin'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000300'
-        // scriptCode = defaultScriptCode
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].from = "from.address"
-        //     testScript.actions[0].txParams[0].sequence = "1"
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-284, 'sequence must be positive integer'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000310'
-        // scriptCode = defaultScriptCode + '_无效的name参数:很长的字符串，超过256字节'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].name = utility.createMemosWithSpecialLength(257)[0]
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'The length of the name should be <= 256'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000310'
-        // scriptCode = '000200_' + type + '_有效的name参数:很长的字符串，正好256字节'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].name = utility.createMemosWithSpecialLength(256)[0]
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000310'
-        // scriptCode = '000300_' + type + '_有效的name参数:被已有代币使用过的name'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].name = existToken.name
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000320'
-        // scriptCode = defaultScriptCode + '_无效的symbol参数:长度超过12字节'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + utility.createMemosWithSpecialLength(5)
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000320'
-        // scriptCode = '000200_' + type + '_无效的symbol参数:被已有代币使用过的symbol'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     let root = server.mode.addresses.rootAccount
-        //     testScript.actions[0].txParams[0].from = root.address
-        //     testScript.actions[0].txParams[0].secret = root.secret
-        //     testScript.actions[0].txParams[0].symbol = existToken.symbol
-        //     testScript.actions[0].txParams[0].local = true
-        //     testScript.actions[0].txParams[0].flag = consts.flags.normal
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'invalid parameter flag'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000320'
-        // scriptCode = '000300_' + type + '_有效的symbol参数:长度正好12字节'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + utility.createMemosWithSpecialLength(4)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000330'
-        // scriptCode = defaultScriptCode + '_无效的decimals参数:字符串'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].decimals = "config.decimals"
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000330'
-        // scriptCode = '000200_' + type + '_无效的decimals参数:负数'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].decimals = -8
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000330'
-        // scriptCode = '000300_' + type + '_无效的decimals参数:负数字符串'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].decimals = '-8'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000330'
-        // scriptCode = '000400_' + type + '_无效的decimals参数:小数'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].decimals = 11.64
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000330'
-        // scriptCode = '000500_' + type + '_无效的decimals参数:小数字符串'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].decimals = '11.64'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000340'
-        // scriptCode = defaultScriptCode + '_无效的total_supply参数:非数字字符串'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].total_supply = "config.total_supply"
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'total_supply must be integer type'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000340'
-        // scriptCode = '000200_' + type + '_无效的total_supply参数:负数'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].total_supply = -10000000
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'total_supply must be integer type'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000340'
-        // scriptCode = '000300_' + type + '_无效的total_supply参数:负数字符串'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].total_supply = '-10000000'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-175, 'No permission issue.'))
-        //     framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000340'
-        // scriptCode = '000400_' + type + '_无效的total_supply参数:小数'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].total_supply = 10000.12345678
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'total_supply must be integer type'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // testCaseCode = 'FCJT_sendTransaction_000340'
-        // scriptCode = '000500_' + type + '_有效的total_supply参数:小数字符串'
-        // {
-        //     let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-        //     testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-        //     testScript.actions[0].txParams[0].total_supply = '10000.12345678'
-        //     let expectedResult = framework.createExpecteResult(false,
-        //         framework.getError(-278, 'total_supply must be integer type'))
-        //     framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000270'
+        scriptCode = '000200_' + type + '_发行量是负数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = '-1234567890'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-175, 'No permission issue.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000271'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
+            testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
+            testScript.actions[0].expectedResult[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000272'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals) + 1)
+            testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error total_supply'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000273'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
+            testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/NullCoin'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'currency in total_supply is not matched with symbol,'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000290'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].type = "issuecoin"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error type issuecoin'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000300'
+        scriptCode = defaultScriptCode
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].from = "from.address"
+            testScript.actions[0].txParams[0].sequence = "1"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-284, 'sequence must be positive integer'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000310'
+        scriptCode = defaultScriptCode + '_无效的name参数:很长的字符串，超过256字节'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].name = utility.createMemosWithSpecialLength(257)[0]
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'The length of the name should be <= 256'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000310'
+        scriptCode = '000200_' + type + '_有效的name参数:很长的字符串，正好256字节'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].name = utility.createMemosWithSpecialLength(256)[0]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000310'
+        scriptCode = '000300_' + type + '_有效的name参数:被已有代币使用过的name'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].name = existToken.name
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000320'
+        scriptCode = defaultScriptCode + '_无效的symbol参数:长度超过12字节'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + utility.createMemosWithSpecialLength(5)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000320'
+        scriptCode = '000200_' + type + '_无效的symbol参数:被已有代币使用过的symbol'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let root = server.mode.addresses.rootAccount
+            testScript.actions[0].txParams[0].from = root.address
+            testScript.actions[0].txParams[0].secret = root.secret
+            testScript.actions[0].txParams[0].symbol = existToken.symbol
+            testScript.actions[0].txParams[0].local = true
+            testScript.actions[0].txParams[0].flag = consts.flags.normal
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'invalid parameter flag'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000320'
+        scriptCode = '000300_' + type + '_有效的symbol参数:长度正好12字节'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + utility.createMemosWithSpecialLength(4)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000330'
+        scriptCode = defaultScriptCode + '_无效的decimals参数:字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].decimals = "config.decimals"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000330'
+        scriptCode = '000200_' + type + '_无效的decimals参数:负数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].decimals = -8
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000330'
+        scriptCode = '000300_' + type + '_无效的decimals参数:负数字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].decimals = '-8'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000330'
+        scriptCode = '000400_' + type + '_无效的decimals参数:小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].decimals = 11.64
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000330'
+        scriptCode = '000500_' + type + '_无效的decimals参数:小数字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].decimals = '11.64'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000340'
+        scriptCode = defaultScriptCode + '_无效的total_supply参数:非数字字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = "config.total_supply"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'total_supply must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000340'
+        scriptCode = '000200_' + type + '_无效的total_supply参数:负数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = -10000000
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'total_supply must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000340'
+        scriptCode = '000300_' + type + '_无效的total_supply参数:负数字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = '-10000000'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-175, 'No permission issue.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000340'
+        scriptCode = '000400_' + type + '_无效的total_supply参数:小数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = 10000.12345678
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'total_supply must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000340'
+        scriptCode = '000500_' + type + '_有效的total_supply参数:小数字符串'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = '10000.12345678'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'total_supply must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         //endregion
 
@@ -820,7 +820,15 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].expectedResult.expectedBalance = testScript.actions[0].txParams[0].total_supply
+            testScript.actions[0].txParams[0].total_supply = '9'
+            if(tcsSendAndSignTx.canMint(testScript.actions[0].txParams[0].flags)){
+                testScript.actions[0].expectedResult[0].expectedBalance = '987654319900000006'
+            }
+            else{
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-175, 'No permission issue.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -969,41 +977,34 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        //endregion
+
+        return testScripts
+    },
+
+    createTestScriptsForBurnAll: function(server, type, txFunctionName, txParams){
+
+        let testScripts = []
+        let testCaseCode
+        let scriptCode
+
+        //region test cases
+
         testCaseCode = 'FCJT_sendTransaction_000380'
         scriptCode = '000500_' + type + '_销毁所有'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                testScript.actions[0].txParams[0].total_supply =
-                    testScript.actions[0].txParams[0].flags == consts.flags.burnable ? '-987654318899999988' : '-987654318899999997'
-                testScript.actions[0].expectedResult[0].expectedBalance = 0
-            }
-            else{
-                testScript.actions[0].txParams[0].total_supply = '-49382716041'
+            testScript.actions[0].executeFunction = tcsSendAndSignTx.executeBurnAllOfSendTx
+            if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
                 let expectedResult = framework.createExpecteResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
+            else{
+                testScript.actions[0].expectedResult[0].expectedBalance = '0'
+            }
             framework.addTestScript(testScripts, testScript)
         }
-
-        // testCaseParams.title = '0381_0004\t销毁所有' + testCaseParams.categoryName
-        // {
-        //     let testCase = tcsSendAndSignTx.canBurn(testCaseParams.txParams[0].flags) ?
-        //         framework.createTestCaseWhenSignPassAndSendRawTxPassForIssueToken(testCaseParams, function(){
-        //             // testCaseParams.txParams[0].total_supply =  '-987654319900000000'
-        //             testCaseParams.txParams[0].total_supply =
-        //                 testCaseParams.txParams[0].flags == consts.flags.burnable ? '-987654318899999988' : '-987654318899999997'
-        //             testCaseParams.expectedResult = framework.createExpecteResult(true)
-        //             testCaseParams.expectedResult.expectedBalance = 0
-        //         })
-        //         :
-        //         framework.createTestCaseWhenSignPassButSendRawTxFailForIssueToken(testCaseParams, function(){
-        //             testCaseParams.txParams[0].total_supply =  '-49382716041'
-        //             testCaseParams.expectedResult = framework.createExpecteResult(false,  framework.getError(-175, 'No permission issue.'))
-        //         })
-        //     framework.addTestScript(testCases, testCase)
-        // }
 
         //endregion
 
@@ -1057,9 +1058,9 @@ module.exports = tcsSendAndSignTx = {
         logger.debug("===create token: " + tokenSymbol)
 
         //token transfer
-        // let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        // describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        // tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
         //mint token
         let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
@@ -1067,9 +1068,14 @@ module.exports = tcsSendAndSignTx = {
         testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestScripts(server, describeTitle, testScripts)
 
-        // //burn token
+        //burn token
         describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
         testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn all
+        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
@@ -1103,45 +1109,45 @@ module.exports = tcsSendAndSignTx = {
     testForIssueTokenInComplexMode: function(server, txFunctionName){
         let account = server.mode.addresses.sender3
 
-        // let configToken = token.config_normal
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
-        //
-        // configToken = token.config_mintable
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
-        //
-        // configToken = token.config_burnable
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
+        let configToken = token.config_normal
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_mintable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_burnable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
 
         configToken = token.config_mint_burn
         describe(configToken.testName + '测试：' + txFunctionName, async function () {
             tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
         })
 
-        // configToken = token.config_issuer_normal
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
-        //
-        // configToken = token.config_issuer_mintable
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
-        //
-        // configToken = token.config_issuer_burnable
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
-        //
-        // configToken = token.config_issuer_mint_burn
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
-        // })
+        configToken = token.config_issuer_normal
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_mintable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_burnable
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
+
+        configToken = token.config_issuer_mint_burn
+        describe(configToken.testName + '测试：' + txFunctionName, async function () {
+            tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
+        })
 
         // configToken = token.CNYT  //todo CNYT不存在了，确定后删除
         // describe(configToken.testName + '测试：' + txFunctionName, async function () {
@@ -1175,6 +1181,17 @@ module.exports = tcsSendAndSignTx = {
             return true
         }
         return false
+    },
+
+    beforeBurnAll: async function(action){
+        let param = action.txParams[0]
+        let balanceResponse = await action.server.responseBalance(action.server, param.from, param.symbol,
+            param.local ? param.from : consts.default.issuer)
+        action.txParams[0].total_supply = '-' + balanceResponse.result.balance.value.toString()
+    },
+
+    executeBurnAllOfSendTx: function(action){
+        return framework.executeTestActionOfTx(action, tcsSendAndSignTx.beforeBurnAll)
     },
 
     //endregion
