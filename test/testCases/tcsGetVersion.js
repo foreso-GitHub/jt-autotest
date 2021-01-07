@@ -55,7 +55,7 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['123']
-            testScript.actions[0].expectedResult = {needPass: false, expetedError: {}}
+            testScript.actions[0].expectedResults = [{needPass: false, expetedError: {}}]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -64,7 +64,7 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['abc']
-            testScript.actions[0].expectedResult = {needPass: false, expetedError: {}}
+            testScript.actions[0].expectedResults = [{needPass: false, expetedError: {}}]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -82,13 +82,13 @@ module.exports = tcsGetVersion = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
         let action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [],
-            framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, {needPass:true})
+            framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, [{needPass:true}])
         testScript.actions.push(action)
         return testScript
     },
 
     checkGetVersion: function(action){
-        let expectedResult = action.expectedResult
+        let expectedResult = action.expectedResults[0]
         let actualResult = action.actualResult
         framework.checkResponse(actualResult)
         if(expectedResult.needPass){
