@@ -222,17 +222,23 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
-                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 100)
 
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
                 //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
 
             })

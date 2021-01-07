@@ -376,7 +376,7 @@ const RESPONSE_SCHEMA = {
     required: [
         "id",
         "jsonrpc",
-        // "result",
+        "result",
         // "type",
         // "status",
     ],
