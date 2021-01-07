@@ -1141,7 +1141,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult
             if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
                 expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-386, 'Fund insufficient.'))
+                    framework.getError(-228, 'Insufficient total supply to burn.'))
             }
             else{
                 expectedResult = framework.createExpecteResult(false,

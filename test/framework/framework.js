@@ -219,23 +219,6 @@ module.exports = framework = {
         return testAction
     },
 
-    //todo remove?
-    createFailedSignTxAction: function(testScript, txFunctionName, actualResult){
-        let testAction = {}
-        testAction.testScript = testScript
-        testAction.server = testScript.server
-        testAction.txFunctionName = txFunctionName
-        testAction.txParams = null
-        testAction.executeFunction = null
-        testAction.checkFunction = null
-        testAction.expectedResults = null
-        testAction.actualResult = actualResult
-        testAction.testResult = true
-        testAction.hasExecuted = true
-        testAction.otherParams = {}
-        return testAction
-    },
-
     createTestScriptForTx: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
 
         let testScript = framework.createTestScript(
@@ -410,14 +393,6 @@ module.exports = framework = {
     //endregion
 
     //if send tx successfully, then sequence need plus 1
-    // addSequenceAfterResponseSuccess: function(response, action){
-    //     let data = action.txParams[0]
-    //     if(utility.isResponseStatusSuccess(response)){
-    //         framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
-    //     }
-    // },
-
-    //if send tx successfully, then sequence need plus 1
     addSequenceAfterResponseSuccess: function(action){
         if(action.txFunctionName == consts.rpcFunctions.sendTx || action.txFunctionName == consts.rpcFunctions.sendRawTx){
             let results = action.actualResult.result
@@ -516,9 +491,6 @@ module.exports = framework = {
                     // if(action.server.mode.restrictedLevel >= restrictedLevel.L5)
                     {
                         let expectedBalance = expectedResult.expectedBalance
-                            // (action.txFunctionName === consts.rpcFunctions.sendRawTx)
-                            // ? action.signTxAction.expectedResults[i].expectedBalance
-                            // : expectedResult.expectedBalance
                         if(expectedBalance != undefined){
                             let server = action.server
                             let from = param.from
@@ -1005,7 +977,7 @@ module.exports = framework = {
             }
             expect(tx.TotalSupply.currency).to.be.equals(param.symbol)
             expect(tx.TotalSupply.issuer).to.be.equals((param.local) ? param.from : consts.default.issuer)
-            // expect(tx.Flags).to.be.equals(param.flags)  //todo need restore after bug fixing
+            expect(tx.Flags).to.be.equals(param.flags)  //todo need restore after bug fixing
         }
     },
 

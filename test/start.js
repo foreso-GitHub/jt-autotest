@@ -224,7 +224,7 @@ describe('Jingtum测试', function() {
 
 
 
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
@@ -236,9 +236,9 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
-                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-
-                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                //
+                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
 
             })
