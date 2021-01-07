@@ -351,27 +351,28 @@ module.exports = framework = {
             let sequence
             for(let i = 0; i < totalCount; i++){
                 let data = action.txParams[i]
-
-                if(!data.sequence){
-                    // if(i != 0 && action.sendType &&
-                    //     (action.sendType == consts.sendTxType.InOneRequestQuickly
-                    //     || action.sendType == consts.sendTxType.InOneRequest)){
-                    if(totalCount > 1 && i != 0){
-                        sequence++
-                    }else{
-                        sequence = await framework.getSequence(server, data.from)
-                        if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
-                            data.sequence = isNaN(sequence) ? 1 : sequence
+                if(data){
+                    if(!data.sequence){
+                        // if(i != 0 && action.sendType &&
+                        //     (action.sendType == consts.sendTxType.InOneRequestQuickly
+                        //     || action.sendType == consts.sendTxType.InOneRequest)){
+                        if(totalCount > 1 && i != 0){
+                            sequence++
+                        }else{
+                            sequence = await framework.getSequence(server, data.from)
+                            if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
+                                data.sequence = isNaN(sequence) ? 1 : sequence
+                            }
+                        }
+                        if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
+                            data.sequence = sequence
                         }
                     }
-                    if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
-                        data.sequence = sequence
-                    }
-                }
 
-                if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
-                    let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
-                    action.balanceBeforeExecutionList.push(balanceBeforeExecution)
+                    if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
+                        let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
+                        action.balanceBeforeExecutionList.push(balanceBeforeExecution)
+                    }
                 }
             }
 
@@ -505,15 +506,6 @@ module.exports = framework = {
             let param = params[i]
             let expectedResult = action.expectedResults[i]
             let actualResult = actualResults[i]
-
-            // if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
-            //     if(!action.signTxAction.expectedResults[0].needPass
-            //         || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
-            //         action.testResult = true
-            //         continue
-            //     }
-            // }
-
             if(expectedResult.needPass){
                 if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
                     let hash = actualResult.result
@@ -543,7 +535,6 @@ module.exports = framework = {
             else{
                 framework.checkResponseError(action, expectedResult, actualResult)
             }
-
             action.testResult = true
         }
     },
