@@ -714,7 +714,7 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].expectedResult[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
+            testScript.actions[0].expectedResults[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -737,7 +737,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
             testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
-            testScript.actions[0].expectedResult[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
+            testScript.actions[0].expectedResults[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -996,7 +996,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             if(tcsSendAndSignTx.canMint(testScript.actions[0].txParams[0].flags)){
-                testScript.actions[0].expectedResult[0].expectedBalance = '987654319800000006'
+                testScript.actions[0].expectedResults[0].expectedBalance = '987654319800000006'
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
@@ -1175,7 +1175,7 @@ module.exports = tcsSendAndSignTx = {
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
             else{
-                testScript.actions[0].expectedResult[0].expectedBalance = '0'
+                testScript.actions[0].expectedResults[0].expectedBalance = '0'
             }
             framework.addTestScript(testScripts, testScript)
         }

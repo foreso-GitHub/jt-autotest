@@ -131,36 +131,6 @@ module.exports = framework = {
 
     //region may need to be removed
 
-    updateTokenInTestCaseParams: function(testCaseParams){
-        let token = utility.getDynamicTokenName()
-        testCaseParams.txParams[0].symbol = token.symbol
-        testCaseParams.txParams[0].name = token.name
-    },
-
-    createTestCase: function(title, server, txFunctionName, txParams, otherParams, executeFunction, checkFunction, expectedResult,
-                            restrictedLv, supportedServices, supportedInterfaces){
-        let testCase = {}
-        testCase.type = "it"
-        if(title) testCase.title = title
-        if(server) testCase.server = server
-        if(txFunctionName) testCase.txFunctionName = txFunctionName
-        if(txParams) {
-            testCase.originalTxParams = txParams
-            testCase.txParams = utility.deepClone(txParams)
-        }
-        if(otherParams) testCase.otherParams = otherParams
-        if(executeFunction) testCase.executeFunction = executeFunction
-        if(checkFunction) testCase.checkFunction = checkFunction
-        if(expectedResult) testCase.expectedResult = expectedResult
-        testCase.hasExecuted = false
-        testCase.actualResult = []
-        testCase.restrictedLevel = (restrictedLv != null) ? restrictedLv : restrictedLevel.L2
-        testCase.supportedServices = (supportedServices) ? utility.cloneArray(supportedServices) : []
-        testCase.supportedInterfaces = (supportedInterfaces) ? utility.cloneArray(supportedInterfaces) : []
-        testCase.checks = []
-        return testCase
-    },
-
     createTestCaseByParams: function(testCaseParams){
         return framework.createTestCase(testCaseParams.title, testCaseParams.server,
             testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
@@ -230,7 +200,7 @@ module.exports = framework = {
         return testScript
     },
 
-    createTestAction: function(testScript, txFunctionName, txParams, executeFunction, checkFunction, expectedResult){
+    createTestAction: function(testScript, txFunctionName, txParams, executeFunction, checkFunction, expectedResults){
         let testAction = {}
         testAction.testScript = testScript
         testAction.server = testScript.server
@@ -241,14 +211,15 @@ module.exports = framework = {
         }
         testAction.executeFunction = executeFunction
         testAction.checkFunction = checkFunction
-        testAction.expectedResult = expectedResult
-        testAction.actualResult = []
+        testAction.expectedResults = expectedResults
+        testAction.actualResult = null
         testAction.testResult = false
         testAction.hasExecuted = false
         testAction.otherParams = {}
         return testAction
     },
 
+    //todo remove?
     createFailedSignTxAction: function(testScript, txFunctionName, actualResult){
         let testAction = {}
         testAction.testScript = testScript
@@ -257,7 +228,7 @@ module.exports = framework = {
         testAction.txParams = null
         testAction.executeFunction = null
         testAction.checkFunction = null
-        testAction.expectedResult = null
+        testAction.expectedResults = null
         testAction.actualResult = actualResult
         testAction.testResult = true
         testAction.hasExecuted = true
@@ -294,7 +265,7 @@ module.exports = framework = {
                 framework.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 [{needPass: true}])
-            sendRawTxAction.signTxAction = signTxAction
+            framework.addSignTxAction(sendRawTxAction, signTxAction)
             testScript.actions.push(sendRawTxAction)
         }
         else if(txFunctionName === consts.rpcFunctions.sendRawTx){
@@ -307,11 +278,18 @@ module.exports = framework = {
         return testScript
     },
 
+    addSignTxAction: function(sendRawTxAction, signTxAction){
+        if(!sendRawTxAction.signTxActions) sendRawTxAction.signTxActions = []
+        if(!sendRawTxAction.signTxParams) sendRawTxAction.signTxParams = []
+        sendRawTxAction.signTxActions.push(signTxAction)
+        sendRawTxAction.signTxParams = sendRawTxAction.signTxParams.concat(signTxAction.txParams)
+    },
+
     //当jt_sendTransaction和jt_signTransaction都通不过测试时
     changeExpectedResultWhenSignFail: function(testScript, expectedResult){
-        testScript.actions[0].expectedResult = [expectedResult]
+        testScript.actions[0].expectedResults = [expectedResult]
         if(testScript.actions[0].txFunctionName === consts.rpcFunctions.signTx){
-            testScript.actions[1].expectedResult = [framework.createExpecteResult(false,
+            testScript.actions[1].expectedResults = [framework.createExpecteResult(false,
                 framework.getError(-278, 'empty raw transaction'))]  //when signTx fail, sendRawTx will send empty string.
         }
     },
@@ -319,9 +297,9 @@ module.exports = framework = {
     //当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
     changeExpectedResultWhenSignPassButSendRawTxFail: function(testScript, expectedResult){
         if(testScript.actions[0].txFunctionName === consts.rpcFunctions.sendTx){
-            testScript.actions[0].expectedResult = [expectedResult]
+            testScript.actions[0].expectedResults = [expectedResult]
         }else{
-            testScript.actions[1].expectedResult = [expectedResult]
+            testScript.actions[1].expectedResults = [expectedResult]
         }
     },
 
@@ -397,18 +375,10 @@ module.exports = framework = {
                 }
             }
 
-            // logger.debug("balanceBeforeExecution:" + JSON.stringify(action.balanceBeforeExecution))
             let response = await framework.executeTxByTestAction(action)
-            if(action.txFunctionName == consts.rpcFunctions.sendTx){
-                framework.addSequenceAfterResponseSuccess(response, action)
-            }
-            else if(action.txFunctionName == consts.rpcFunctions.sendRawTx){
-                framework.addSequenceAfterResponseSuccess(response, action.signTxAction) //因为sequence在signTxAction里面
-            }
             action.actualResult = response
-
+            framework.addSequenceAfterResponseSuccess(action)
             if(afterExecution) await afterExecution(action)
-
             resolve(action)
         })
     },
@@ -420,11 +390,13 @@ module.exports = framework = {
     },
 
     beforeSendRawTx: function(action){
-        let signTxResults = action.signTxAction.actualResult.result
-        for(let i = 0; i < signTxResults.length; i++){
-            let signResult = signTxResults[i].result
-            let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
-            action.txParams.push(signTx)
+        for(let j = 0; j < action.signTxActions.length; j++){
+            let signTxResults = action.signTxActions[j].actualResult.result
+            for(let i = 0; i < signTxResults.length; i++){
+                let signResult = signTxResults[i].result
+                let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
+                action.txParams.push(signTx)
+            }
         }
     },
 
@@ -435,16 +407,36 @@ module.exports = framework = {
     //endregion
 
     //if send tx successfully, then sequence need plus 1
-    addSequenceAfterResponseSuccess: function(response, action){
-        let data = action.txParams[0]
-        if(utility.isResponseStatusSuccess(response)){
-            framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+    // addSequenceAfterResponseSuccess: function(response, action){
+    //     let data = action.txParams[0]
+    //     if(utility.isResponseStatusSuccess(response)){
+    //         framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+    //     }
+    // },
+
+    //if send tx successfully, then sequence need plus 1
+    addSequenceAfterResponseSuccess: function(action){
+        if(action.txFunctionName == consts.rpcFunctions.sendTx || action.txFunctionName == consts.rpcFunctions.sendRawTx){
+            let results = action.actualResult.result
+            let lastSuccessIndex = -1
+            for(let i = results.length - 1; i >= 0; i--){
+                if(utility.isResponseStatusSuccess(results[i])){
+                    lastSuccessIndex = i
+                    i = -1
+                }
+            }
+            if(lastSuccessIndex >= 0){
+                let data = action.txFunctionName == consts.rpcFunctions.sendRawTx
+                    ? action.signTxParams[lastSuccessIndex]
+                    : action.txParams[lastSuccessIndex]
+                framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+            }
         }
     },
 
-    executeTxByTestAction: function(testCase){
-        logger.debug(testCase.title)
-        return testCase.server.getResponse(testCase.server, testCase.txFunctionName, testCase.txParams)
+    executeTxByTestAction: function(testAction){
+        logger.debug(testAction.title)
+        return testAction.server.getResponse(testAction.server, testAction.txFunctionName, testAction.txParams)
     },
 
     //endregion
@@ -459,7 +451,7 @@ module.exports = framework = {
         //check sign result
         let results = action.actualResult.result
         for(let i = 0; i < results.length; i++){
-            let expectedResult = action.expectedResult[i]
+            let expectedResult = action.expectedResults[i]
             let actualResult = results[i]
             if(expectedResult.needPass){
                 let signedTx = actualResult.result
@@ -483,18 +475,34 @@ module.exports = framework = {
         expect(action.actualResult).to.be.jsonSchema(schema.SENDTX_SCHEMA)  //todo tx目前返回多个结果。以后查询也会返回多个结果，这个检查应加入framework.checkResponse
 
         //every result
-        let params = (action.txFunctionName === consts.rpcFunctions.sendRawTx) ? action.signTxAction.txParams : action.txParams
+        let params = []
+        let k = 0
+        if(action.txFunctionName === consts.rpcFunctions.sendRawTx){
+            for(let i = 0; i < action.signTxActions.length; i++){
+                let signTxAction = action.signTxActions[i]
+                params = params.concat(signTxAction.txParams)
+                for(let j = 0; j < signTxAction.expectedResults.length; j++){
+                    if(signTxAction.expectedResults[j].expectedBalance != undefined){
+                        action.expectedResults[k].expectedBalance = signTxAction.expectedResults[j].expectedBalance
+                    }
+                    k++
+                }
+            }
+        }
+        else{
+            params = action.txParams
+        }
         let actualResults = action.actualResult.result
         expect(actualResults.length).to.be.equals(params.length)
 
         for(let i = 0; i < action.txParams.length; i++){
             //result match param
             let param = params[i]
-            let expectedResult = action.expectedResult[i]
+            let expectedResult = action.expectedResults[i]
             let actualResult = actualResults[i]
 
             // if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
-            //     if(!action.signTxAction.expectedResult[0].needPass
+            //     if(!action.signTxAction.expectedResults[0].needPass
             //         || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
             //         action.testResult = true
             //         continue
@@ -510,10 +518,10 @@ module.exports = framework = {
 
                     // if(action.server.mode.restrictedLevel >= restrictedLevel.L5)
                     {
-                        let expectedBalance =
-                            (action.txFunctionName === consts.rpcFunctions.sendRawTx)
-                            ? action.signTxAction.expectedResult[i].expectedBalance
-                            : expectedResult.expectedBalance
+                        let expectedBalance = expectedResult.expectedBalance
+                            // (action.txFunctionName === consts.rpcFunctions.sendRawTx)
+                            // ? action.signTxAction.expectedResults[i].expectedBalance
+                            // : expectedResult.expectedBalance
                         if(expectedBalance != undefined){
                             let server = action.server
                             let from = param.from
