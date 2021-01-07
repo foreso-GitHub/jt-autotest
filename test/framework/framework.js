@@ -359,10 +359,15 @@ module.exports = framework = {
                 }
             }
 
+            // let balance = await action.server.responseBalance(action.server, action.txParams[0].from, action.txParams[0].symbol, action.txParams[0].issuer)
+            // logger.debug("===here: " + action.txParams[0].symbol + JSON.stringify(balance))
+
             let response = await framework.executeTxByTestAction(action)
             action.actualResult = response
             framework.addSequenceAfterResponseSuccess(action)
+
             if(afterExecution) await afterExecution(action)
+
             resolve(action)
         })
     },

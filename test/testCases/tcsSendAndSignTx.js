@@ -996,7 +996,8 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             if(tcsSendAndSignTx.canMint(testScript.actions[0].txParams[0].flags)){
-                testScript.actions[0].expectedResults[0].expectedBalance = '987654319800000006'
+                // testScript.actions[0].expectedResults[0].expectedBalance = '987654319800000006'
+                testScript.actions[0].expectedResults[0].expectedBalance = '987654318900000006'
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
