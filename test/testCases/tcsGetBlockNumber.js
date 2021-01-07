@@ -23,63 +23,62 @@ module.exports = tcsGetBlockNumber = {
     //region blockNumber test case
     
     testForGetBlockNumber: function(server, describeTitle) {
-        let testCases = []
-        let testCase = {}
-    
-        let title = '0010\t查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求'
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+
+        testCaseCode = 'FCJT_blockNumber_000010'
+        scriptCode = defaultScriptCode + '_查询最新区块号'
         {
-            testCase = framework.createTestCase(
-                title,
-                server,
-                consts.rpcFunctions.getBlockNumber,
-                null,
-                null,
-                function (testCase) {  //execute function
-                    testCase.hasExecuted = true
-                    return tcsGetBlockNumber.get2BlockNumber(server).then(function (compareResult) {
-                        // testCase.hasExecuted = true
-                        testCase.actualResult.push(compareResult)
-                    }, function (error) {
-                        logger.debug(error)
-                        expect(false).to.be.ok
-                    })
-                },
-                function (testCase) {  //check function
-                    let value = testCase.actualResult[0]
-                    expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
-                    expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
-                },
-                null,
-                restrictedLevel.L2,
-                [serviceType.newChain, serviceType.oldChain],
-                [],//[interfaceType.rpc, interfaceType.websocket]
-            )
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            framework.addTestScript(testScripts, testScript)
         }
-        framework.addTestScript(testCases, testCase)
-    
-        title = '0010\t查询最新区块号'
+
+        testCaseCode = 'FCJT_blockNumber_000010'
+        scriptCode = '000200' + '_查询最新区块号：发起查询请求，等待5秒或10秒（同步时间），再次发起查询请求'
         {
-            testCase = framework.createTestCase(
-                title,
-                server,
-                consts.rpcFunctions.getBlockNumber,
-                null,
-                null,
-                framework.executeTestActionForGet,
-                this.checkBlockNumber,
-                null,
-                restrictedLevel.L2,
-                [serviceType.newChain, serviceType.oldChain],
-                [],//[interfaceType.rpc, interfaceType.websocket]
-            )
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].executeFunction = function (action) {  //execute function
+                action.hasExecuted = true
+                return tcsGetBlockNumber.get2BlockNumber(server).then(function (compareResult) {
+                    // testCase.hasExecuted = true
+                    action.actualResult = compareResult
+                }, function (error) {
+                    logger.debug(error)
+                    expect(false).to.be.ok
+                })
+            }
+            testScript.actions[0].checkFunction = function (action) {  //check function
+                let value = action.actualResult
+                expect(value.blockNumber2 - value.blockNumber1).to.be.most(2)
+                expect(value.blockNumber2 - value.blockNumber1).to.be.least(1)
+            }
+            framework.addTestScript(testScripts, testScript)
         }
-        framework.addTestScript(testCases, testCase)
-        framework.testTestScripts(server, describeTitle, testCases)
+
+        framework.testTestScripts(server, describeTitle, testScripts)
+    },
+
+    createTestScript: function(server, testCaseCode, scriptCode){
+        let testScript = framework.createTestScript(
+            server,
+            testCaseCode,
+            scriptCode,
+            [],
+            restrictedLevel.L2,
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+        let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockNumber, [],
+            framework.executeTestActionForGet, tcsGetBlockNumber.checkBlockNumber, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
     },
     
-    checkBlockNumber: function(testCase){
-        let response = testCase.actualResult[0]
-        framework.checkResponse(true, response)
+    checkBlockNumber: function(action){
+        let response = action.actualResult
+        framework.checkResponse(response)
         expect(response.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
         expect(response.result).to.be.above(10)
     },

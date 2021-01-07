@@ -202,7 +202,7 @@ module.exports = tcsIpfs = {
     checkNodeInfo: function(testCase, check){
         let needPass = check.expectedResult.needPass
         let response = check.actualResult
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             expect(response).to.be.jsonSchema(schema.NODEINFO_SCHEMA)
             let max = response.result.max
@@ -464,7 +464,7 @@ module.exports = tcsIpfs = {
     checkUploadData: function(testCase, check){
         let needPass = check.expectedResult.needPass
         let response = check.actualResult
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             expect(response).to.be.jsonSchema(schema.UPLOAD_DATA_SCHEMA)
             //check size
@@ -598,7 +598,7 @@ module.exports = tcsIpfs = {
     checkDownloadData: function(testCase, check){
         let needPass = check.expectedResult.needPass
         let response = check.actualResult
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             expect(response).to.be.jsonSchema(schema.DOWNLOAD_DATA_SCHEMA)
             //compare data
@@ -764,7 +764,7 @@ module.exports = tcsIpfs = {
     checkRemoveData: function(testCase, check){
         let needPass = check.expectedResult.needPass
         let response = check.actualResult
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             expect(response).to.be.jsonSchema(schema.REMOVE_DATA_SCHEMA)
             //compare data
@@ -1103,7 +1103,7 @@ module.exports = tcsIpfs = {
     checkUploadFile: function(testCase, check){
         let needPass = check.expectedResult.needPass
         let response = check.actualResult
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             expect(response).to.be.jsonSchema(schema.UPLOAD_FILE_SCHEMA)
             let rawFileName = testCase.txParams
@@ -1178,7 +1178,7 @@ module.exports = tcsIpfs = {
     checkDownloadFile: function(testCase, check){
         let needPass = check.expectedResult.needPass
         let response = check.actualResult
-        // framework.checkResponse(needPass, response)  //download file response is not json
+        // framework.checkResponse(response)  //download file response is not json
         if(needPass){
             expect(response).to.be.jsonSchema(schema.DOWNLOAD_FILE_SCHEMA)
             //compare data

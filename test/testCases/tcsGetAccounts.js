@@ -49,9 +49,9 @@ module.exports = tcsGetAccounts = {
     },
 
     checkGetAccounts: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
             let accounts = response.result

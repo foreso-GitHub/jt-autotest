@@ -111,9 +111,9 @@ module.exports = tcsGetTx = {
     },
 
     checkTransaction: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             // let hash = testCase.txParams[0]
             let hash = testCase.checkParams.hash
@@ -292,9 +292,9 @@ module.exports = tcsGetTx = {
     },
 
     checkTransactionByIndex: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             let from = testCase.txParams[0]
             let index = testCase.txParams[1]
@@ -477,9 +477,9 @@ module.exports = tcsGetTx = {
     },
 
     checkTransactionByBlockHashAndIndex: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             let tx1 = testCase.server.mode.txs.tx1
             framework.compareTx(response.result, tx1)

@@ -113,9 +113,9 @@ module.exports = tcsGetTxCount = {
     },
 
     checkBlockTransactionCount: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             let txCount = testCase.server.mode.txs.block.txCountInBlock
             expect(txCount).to.equal(response.result)
@@ -280,9 +280,9 @@ module.exports = tcsGetTxCount = {
     },
 
     checkGetTransactionCount: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             // let txCount = 1
             // expect(response.result).to.equal(txCount)

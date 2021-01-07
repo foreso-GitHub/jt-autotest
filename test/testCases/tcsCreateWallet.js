@@ -153,10 +153,10 @@ module.exports = tcsCreateWallet = {
     },
 
     checkCreateWallet: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
         let type = testCase.txParams[0]
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             let account = response.result[0]
             expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)

@@ -208,9 +208,9 @@ module.exports = tcsGetBlock = {
     },
 
     checkBlock: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
             let functionName = testCase.txFunctionName

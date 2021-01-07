@@ -79,9 +79,9 @@ module.exports = tcsCreateAccount = {
     },
 
     checkCreateAccount: function(testCase){
-        let response = testCase.actualResult[0]
+        let response = action.actualResult
         let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(needPass, response)
+        framework.checkResponse(response)
         if(needPass){
             let account = response.result[0]
             let nickName = testCase.txParams[0]
