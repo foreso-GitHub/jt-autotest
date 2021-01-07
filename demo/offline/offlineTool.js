@@ -14,7 +14,7 @@ async function run(){
         from:'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh',
         secret:'snoPBjXtMeMyMHUVTgbuqAfg1SUTb',
         to:'jBAFWRUGRuWdT5R2tAZA49oytnQ3KXeQYH',
-        sequence:'965',
+        sequence:'714',
         memos:[],
         id:'1',
     })

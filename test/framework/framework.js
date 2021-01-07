@@ -40,6 +40,11 @@ module.exports = framework = {
     // 执行模式：
     // Batch: 数组中所有的TestScript都执行完后再检查，好处是节省时间
     // Single: 数组中所有的TestScript都一个个单独执行，执行一个就检查一个，时间消耗比较高
+    // TestScript包含多个action，每个action是一个rpc的request，顺序执行
+
+    //sendRawTx
+    // 在sendRawTx的action中，有signTxActions，这样可以把前置的signTx的action的执行结果（signedTx）作为参数引用
+    // 等离线的签名功能完成，可以不再关联signTxActions，直接本地签名，生成signedTx todo
 
     //endregion
 
@@ -239,6 +244,23 @@ module.exports = framework = {
         testAction.expectedResult = expectedResult
         testAction.actualResult = []
         testAction.testResult = false
+        testAction.hasExecuted = false
+        testAction.otherParams = {}
+        return testAction
+    },
+
+    createFailedSignTxAction: function(testScript, txFunctionName, actualResult){
+        let testAction = {}
+        testAction.testScript = testScript
+        testAction.server = testScript.server
+        testAction.txFunctionName = txFunctionName
+        testAction.txParams = null
+        testAction.executeFunction = null
+        testAction.checkFunction = null
+        testAction.expectedResult = null
+        testAction.actualResult = actualResult
+        testAction.testResult = true
+        testAction.hasExecuted = true
         testAction.otherParams = {}
         return testAction
     },
@@ -275,6 +297,9 @@ module.exports = framework = {
             sendRawTxAction.signTxAction = signTxAction
             testScript.actions.push(sendRawTxAction)
         }
+        else if(txFunctionName === consts.rpcFunctions.sendRawTx){
+            //do nothing
+        }
         else{
             throw new Error('txFunctionName doesn\'t exist!')
         }
@@ -285,6 +310,10 @@ module.exports = framework = {
     //当jt_sendTransaction和jt_signTransaction都通不过测试时
     changeExpectedResultWhenSignFail: function(testScript, expectedResult){
         testScript.actions[0].expectedResult = [expectedResult]
+        if(testScript.actions[0].txFunctionName === consts.rpcFunctions.signTx){
+            testScript.actions[1].expectedResult = [framework.createExpecteResult(false,
+                framework.getError(-278, 'empty raw transaction'))]  //when signTx fail, sendRawTx will send empty string.
+        }
     },
 
     //当jt_signTransaction，sign可以通过，但sendRawTx会出错的情况的处理：这时sendRawTx的期望出错结果和jt_sendTransaction的期望出错结果一致。
@@ -464,13 +493,13 @@ module.exports = framework = {
             let expectedResult = action.expectedResult[i]
             let actualResult = actualResults[i]
 
-            if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
-                if(!action.signTxAction.expectedResult[0].needPass
-                    || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
-                    action.testResult = true
-                    continue
-                }
-            }
+            // if(action.txFunctionName === consts.rpcFunctions.sendRawTx){  //if sign tx fail, no check here
+            //     if(!action.signTxAction.expectedResult[0].needPass
+            //         || !utility.isResponseStatusSuccess(action.signTxAction.actualResult)){
+            //         action.testResult = true
+            //         continue
+            //     }
+            // }
 
             if(expectedResult.needPass){
                 if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
@@ -653,7 +682,7 @@ module.exports = framework = {
     checkTestCaseOneByOne: async function(testCase, index){
         let check = testCase.checks[index]
         if(check.title) logger.debug('Checking ' + check.title + ' ...')
-        await check.checkFunction(testCase, check)
+        if(check.checkFunction) await check.checkFunction(testCase, check)
         if(check.title) logger.debug('Check ' + check.title + ' done!')
         index++
         if(index < testCase.checks.length) {
@@ -697,7 +726,7 @@ module.exports = framework = {
                             let action = testScript.actions[i]
                             // logger.debug('===before checkFunction')
                             // logger.debug('hasExecuted: ' + testScript.hasExecuted)
-                            await action.checkFunction(action)
+                            if(action.checkFunction) await action.checkFunction(action)
                             // logger.debug('===after checkFunction')
                             if(action.testResult != undefined && !action.testResult) {
                                 testResult = false
@@ -724,7 +753,7 @@ module.exports = framework = {
             testScript.hasExecuted = true
             for(let i = 0; i < testScript.actions.length; i++){
                 let action = testScript.actions[i]
-                await action.executeFunction(action)
+                if(action.executeFunction) await action.executeFunction(action)
             }
             // logger.debug('=== after executeFunction')
             // logger.debug("===2. index: " + index )
@@ -746,8 +775,8 @@ module.exports = framework = {
                         let testResult = true
                         for(let i = 0; i < testScript.actions.length; i++){
                             let action = testScript.actions[i]
-                            await action.executeFunction(action)
-                            await action.checkFunction(action)
+                            if(action.executeFunction) await action.executeFunction(action)
+                            if(action.checkFunction) await action.checkFunction(action)
                             if(action.testResult != undefined && !action.testResult) {
                                 testResult = false
                             }

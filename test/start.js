@@ -226,6 +226,8 @@ describe('Jingtum测试', function() {
 
                 tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
 
             })
         })
