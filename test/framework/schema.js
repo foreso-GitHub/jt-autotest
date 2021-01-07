@@ -613,7 +613,7 @@ const SENDTX_SCHEMA = {
     required: [
         "id",
         "jsonrpc",
-        "result",
+        // "result",
         // "status",
     ],
     properties: {

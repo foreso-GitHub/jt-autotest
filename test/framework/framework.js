@@ -390,12 +390,14 @@ module.exports = framework = {
     },
 
     beforeSendRawTx: function(action){
-        for(let j = 0; j < action.signTxActions.length; j++){
-            let signTxResults = action.signTxActions[j].actualResult.result
-            for(let i = 0; i < signTxResults.length; i++){
-                let signResult = signTxResults[i].result
-                let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
-                action.txParams.push(signTx)
+        if(action.signTxActions){
+            for(let j = 0; j < action.signTxActions.length; j++){
+                let signTxResults = action.signTxActions[j].actualResult.result
+                for(let i = 0; i < signTxResults.length; i++){
+                    let signResult = signTxResults[i].result
+                    let signTx = utility.isResponseStatusSuccess(signResult) ? signResult : ''  //如果sign失败，用空字符串做signTx
+                    action.txParams.push(signTx)
+                }
             }
         }
     },
@@ -418,18 +420,20 @@ module.exports = framework = {
     addSequenceAfterResponseSuccess: function(action){
         if(action.txFunctionName == consts.rpcFunctions.sendTx || action.txFunctionName == consts.rpcFunctions.sendRawTx){
             let results = action.actualResult.result
-            let lastSuccessIndex = -1
-            for(let i = results.length - 1; i >= 0; i--){
-                if(utility.isResponseStatusSuccess(results[i])){
-                    lastSuccessIndex = i
-                    i = -1
+            if(results){
+                let lastSuccessIndex = -1
+                for(let i = results.length - 1; i >= 0; i--){
+                    if(utility.isResponseStatusSuccess(results[i])){
+                        lastSuccessIndex = i
+                        i = -1
+                    }
                 }
-            }
-            if(lastSuccessIndex >= 0){
-                let data = action.txFunctionName == consts.rpcFunctions.sendRawTx
-                    ? action.signTxParams[lastSuccessIndex]
-                    : action.txParams[lastSuccessIndex]
-                framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+                if(lastSuccessIndex >= 0){
+                    let data = action.txFunctionName == consts.rpcFunctions.sendRawTx
+                        ? action.signTxParams[lastSuccessIndex]
+                        : action.txParams[lastSuccessIndex]
+                    framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
+                }
             }
         }
     },
@@ -477,7 +481,7 @@ module.exports = framework = {
         //every result
         let params = []
         let k = 0
-        if(action.txFunctionName === consts.rpcFunctions.sendRawTx){
+        if(action.txFunctionName === consts.rpcFunctions.sendRawTx && action.signTxActions){
             for(let i = 0; i < action.signTxActions.length; i++){
                 let signTxAction = action.signTxActions[i]
                 params = params.concat(signTxAction.txParams)
@@ -493,7 +497,8 @@ module.exports = framework = {
             params = action.txParams
         }
         let actualResults = action.actualResult.result
-        expect(actualResults.length).to.be.equals(params.length)
+        let actualLength = actualResults ? actualResults.length : 0
+        expect(actualLength).to.be.equals(params.length)
 
         for(let i = 0; i < action.txParams.length; i++){
             //result match param
@@ -547,7 +552,8 @@ module.exports = framework = {
         framework.checkResponse(action.actualResult)
         let params = action.txParams
         let actualResults = action.actualResult.result
-        expect(actualResults.length).to.be.equals(params.length)
+        let actualLength = actualResults ? actualResults.length : 0
+        expect(actualLength).to.be.equals(params.length)
     },
 
     // checkSingleResponseOfCommonOneByOne: async function(testCase, txParams, checkFunction, index){
