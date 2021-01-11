@@ -117,6 +117,16 @@ module.exports = framework = {
     loadTestCases: function(){
         let map = mdTool.testCases2Map(testCasesDoc)
         framework.testCases = map
+        framework.testCases.set('UNK_UNKNOWN_000000',
+            {
+                "code":"UNK_UNKNOWN_000000",
+                "title":"未知的测试",
+                "precondition":"",
+                "input":"",
+                "expectedOutput":"",
+                "scripts":[]
+            }
+        )
     },
 
     getTestCase: function(code){
