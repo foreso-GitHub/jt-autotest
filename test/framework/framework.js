@@ -362,10 +362,10 @@ module.exports = framework = {
                         }
                     }
 
-                    if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
-                        let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
-                        action.balanceBeforeExecutionList.push(balanceBeforeExecution)
-                    }
+                    // if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
+                    //     let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
+                    //     action.balanceBeforeExecutionList.push(balanceBeforeExecution)
+                    // }
                 }
             }
 
@@ -477,8 +477,8 @@ module.exports = framework = {
                 let signTxAction = action.signTxActions[i]
                 params = params.concat(signTxAction.txParams)
                 for(let j = 0; j < signTxAction.expectedResults.length; j++){
-                    if(signTxAction.expectedResults[j].expectedBalance != undefined){
-                        action.expectedResults[k].expectedBalance = signTxAction.expectedResults[j].expectedBalance
+                    if(signTxAction.expectedResults[j].expectedBalances != undefined){
+                        action.expectedResults[k].expectedBalances = signTxAction.expectedResults[j].expectedBalances
                     }
                     k++
                 }
@@ -505,13 +505,16 @@ module.exports = framework = {
 
                     // if(action.server.mode.restrictedLevel >= restrictedLevel.L5)
                     {
-                        let expectedBalance = expectedResult.expectedBalance
-                        if(expectedBalance != undefined){
-                            let server = action.server
-                            let from = param.from
-                            let symbol = param.symbol
-                            let issuer = param.local ? from : consts.default.issuer
-                            await framework.checkBalanceChange(server, from, symbol, issuer, expectedBalance)
+                        let expectedBalances = expectedResult.expectedBalances
+                        if(expectedBalances != undefined){
+                            for(let j = 0; j < expectedBalances.length; j++){
+                                let expectedBalance = expectedBalances[j]
+                                let server = action.server
+                                let from = expectedBalance.address
+                                let symbol = expectedBalance.symbol
+                                let issuer = expectedBalance.issuer
+                                await framework.checkBalanceChange(server, from, symbol, issuer, expectedBalance.value)
+                            }
                         }
                     }
                 }
@@ -911,6 +914,7 @@ module.exports = framework = {
     //   status: 'success' }
     //token example:
     checkBalanceChange: async function(server, from, symbol, issuer, expectedBalance){
+        expectedBalance = expectedBalance.toString()
         let balanceResponse = await server.responseBalance(server, from, symbol, issuer)
         let balance = balanceResponse.result.balance
         let actualValue = balance.value

@@ -539,7 +539,7 @@ module.exports = tcsSendAndSignTx = {
         let memos_2 = utility.createMemosWithSpecialLength(901 * Math.pow(2, 10))
 
         testCaseCode = 'FCJT_sendTransaction_000140'
-        scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好900K'
+        scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好500K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
 
@@ -560,7 +560,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_000150'
-        scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好900K'
+        scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好500K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
 
@@ -707,6 +707,10 @@ module.exports = tcsSendAndSignTx = {
         let scriptCode
         let symbolPostFix = 0
         let existToken = server.mode.coins[4]
+        let from = txParams[0].from
+        let total_supply = txParams[0].total_supply
+        let symbol = txParams[0].symbol
+        let issuer = txParams[0].local ? txParams[0].from : consts.default.issuer
 
         //region test cases
 
@@ -714,7 +718,8 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].expectedResults[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
+            testScript.actions[0].expectedResults[0].expectedBalances =
+                [{address: from, value: total_supply, symbol: symbol, issuer: issuer}]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -737,7 +742,8 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
             testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
-            testScript.actions[0].expectedResults[0].expectedBalance = testScript.actions[0].txParams[0].total_supply
+            testScript.actions[0].expectedResults[0].expectedBalances =
+                [{address: from, value: total_supply, symbol: symbol, issuer: issuer}]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -996,8 +1002,9 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             if(tcsSendAndSignTx.canMint(testScript.actions[0].txParams[0].flags)){
-                // testScript.actions[0].expectedResults[0].expectedBalance = '987654319800000006'
-                testScript.actions[0].expectedResults[0].expectedBalance = '987654318900000006'
+                testScript.actions[0].expectedResults[0].expectedBalances =
+                    [{address: txParams[0].from, value: '987654318900000006', symbol: txParams[0].symbol,
+                    issuer: txParams[0].local ? txParams[0].from : consts.default.issuer}]
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
@@ -1176,7 +1183,9 @@ module.exports = tcsSendAndSignTx = {
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
             else{
-                testScript.actions[0].expectedResults[0].expectedBalance = '0'
+                testScript.actions[0].expectedResults[0].expectedBalances =
+                    [{address: txParams[0].from, value: '0', symbol: txParams[0].symbol,
+                        issuer: txParams[0].local ? txParams[0].from : consts.default.issuer}]
             }
             framework.addTestScript(testScripts, testScript)
         }

@@ -27,7 +27,7 @@ module.exports = tcsSendTxInOneRequest = {
         let scriptCode
 
         testCaseCode = 'UNK_UNKNOWN_000000'
-        scriptCode = '000100_一个请求执行' + txCount + '个交易'
+        scriptCode = '000100_tcsSendTxInOneRequest_一个请求执行' + txCount + '个交易'
         let txParams = framework.createTxParamsForTransfer(server)
         let txTemplate = txParams[0]
         let expectResults = []

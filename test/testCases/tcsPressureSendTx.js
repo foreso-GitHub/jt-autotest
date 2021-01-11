@@ -48,376 +48,470 @@ module.exports = tcsPressureSendTx = {
 
     testSequenceByFunction: function(server, describeTitle, txFunctionName){
         let categoryName = describeTitle + txFunctionName
-        let testCasesList = tcsPressureSendTx.createTestCasesForSequenceTest(server, txFunctionName)
-        framework.testTestScripts(server, categoryName + '基本测试', testCasesList[0])
-        framework.testTestScripts(server, categoryName + '无效参数测试1', testCasesList[1])
-        framework.testTestScripts(server, categoryName + '无效参数测试2', testCasesList[2])
-        framework.testTestScripts(server, categoryName + '多交易测试1', testCasesList[3])
-        framework.testTestScripts(server, categoryName + '多交易测试2', testCasesList[4])
+        let testScripts = tcsPressureSendTx.createTestScriptsForSequenceTest(server, txFunctionName)
+        framework.testTestScripts(server, categoryName, testScripts)
+        // framework.testTestScripts(server, categoryName + '无效参数测试1', testScriptsList[1])
+        // framework.testTestScripts(server, categoryName + '无效参数测试2', testScriptsList[2])
+        // framework.testTestScripts(server, categoryName + '多交易测试1', testScriptsList[3])
+        // framework.testTestScripts(server, categoryName + '多交易测试2', testScriptsList[4])
     },
 
-    createTestCasesForSequenceTest: function(server, txFunctionName){
-        let testCasesList = []
-        let testCases = []
-        let testCase = {}
-        let title
-        let value = '0.000001'
-        // let fee = '0.00001'
-        let valueInAmount = server.mode.service == serviceType.newChain ? value : value * consts.swtConsts.oneSwt
-        let fee = server.mode.defaultFee
+    createTestScriptsForSequenceTest: function(server, txFunctionName){
+        let testScripts = []
+        let testCaseCode
+        let scriptCode
 
-        title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
+        let value = '0.00002'
+        let fee = '0.00001'
+        // let valueInAmount = server.mode.service == serviceType.newChain ? value : value * consts.swtConsts.oneSwt
+        // let fee = server.mode.defaultFee
+
+        testCaseCode = 'FCJT_sendTransaction_000630'
+        scriptCode = '000100_' + txFunctionName
         {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value)
-            testCase.executeFunction = function(testCase){
-                return new Promise(async function(resolve){
-                    testCase.hasExecuted = true
-                    testCase.checks = []
-                    let server = testCase.server
-                    let data = testCase.txParams[0]
-                    let from = data.from
-
-                    //record balance before transfer
-                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-
-                    //get sequence
-                    let currentSequence = await framework.getSequence(server, from)
-                    data.sequence = isNaN(currentSequence) ? 1 : currentSequence
-
-                    //transfer
-                    let expectedResult = framework.createExpecteResult(true)
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-
-                    //wait transfer result written in block
-                    // await utility.timeout(server.mode.defaultBlockTime + 2000)
-                    // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
-                    // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                    if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-                        let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                    }
-                    else{
-                        // let hash = result.result.hash
-                        // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                        await utility.timeout(server.mode.defaultBlockTime + 2000)
-                    }
-
-                    //record balance after transfer
-                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
-                    // logger.debug('===from_balance_1: ' + from_balance_1)
-                    // logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
-                    // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
-                    // logger.debug('===check_2: ' + JSON.stringify(check_2))
-
-                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-                    let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
-
-                    resolve(testCase)
-                })
-            }
-            framework.addTestScript(testCases, testCase)
+            let testScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee)
+            testScript.actions[0].executeFunction = tcsPressureSendTx.executeFor000630
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
-            '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence2, server.mode.addresses.sequence_r_1, value)
-            testCase.executeFunction = function(testCase){
-                return new Promise(async function(resolve){
-                    testCase.hasExecuted = true
-                    testCase.checks = []
-                    let server = testCase.server
-                    let data = testCase.txParams[0]
-                    let from = data.from
+        // title = '0630\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+1'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
+        //         server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value)
+        //     testCase.executeFunction = function(testCase){
+        //         return new Promise(async function(resolve){
+        //             testCase.hasExecuted = true
+        //             testCase.checks = []
+        //             let server = testCase.server
+        //             let data = testCase.txParams[0]
+        //             let from = data.from
+        //
+        //             //record balance before transfer
+        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //
+        //             //get sequence
+        //             let currentSequence = await framework.getSequence(server, from)
+        //             data.sequence = isNaN(currentSequence) ? 1 : currentSequence
+        //
+        //             //transfer
+        //             let expectedResult = framework.createExpecteResult(true)
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //
+        //             //wait transfer result written in block
+        //             // await utility.timeout(server.mode.defaultBlockTime + 2000)
+        //             // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
+        //             // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //             if(testCase.server.mode.service == serviceType.newChain){
+        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
+        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //             }
+        //             else{
+        //                 // let hash = result.result.hash
+        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //                 await utility.timeout(server.mode.defaultBlockTime + 2000)
+        //             }
+        //
+        //             //record balance after transfer
+        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
+        //             // logger.debug('===from_balance_1: ' + from_balance_1)
+        //             // logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
+        //             // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
+        //             // logger.debug('===check_2: ' + JSON.stringify(check_2))
+        //
+        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //             let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
+        //
+        //             resolve(testCase)
+        //         })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
 
-                    //record balance before transfer
-                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        // title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
+        //     '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence2, server.mode.addresses.sequence_r_1, value)
+        //     testCase.executeFunction = function(testCase){
+        //         return new Promise(async function(resolve){
+        //             testCase.hasExecuted = true
+        //             testCase.checks = []
+        //             let server = testCase.server
+        //             let data = testCase.txParams[0]
+        //             let from = data.from
+        //
+        //             //record balance before transfer
+        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //
+        //             //get sequence
+        //             let currentSequence = await framework.getSequence(server, from)
+        //             currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+        //             data.sequence = currentSequence + 1
+        //
+        //             //transfer n+2 tx
+        //             let expectedResult = framework.createExpecteResult(true)
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //
+        //             //wait transfer result written in block
+        //             await utility.timeout(server.mode.defaultBlockTime + 2000)
+        //
+        //             //balance should not change
+        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let from_balance_expected = Number(from_balance_1)
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, no change', from_balance_expected, from_balance_2)
+        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //             let to_balance_expected = Number(to_balance_1)
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, no change', to_balance_expected, to_balance_2)
+        //
+        //             //transfer n+1 tx
+        //             expectedResult = framework.createExpecteResult(true)
+        //             data.sequence = currentSequence
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 2
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
+        //             if(testCase.server.mode.service == serviceType.newChain){
+        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
+        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //             }
+        //             else{
+        //                 // let hash = result.result.hash
+        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //                 await utility.timeout(server.mode.defaultBlockTime * 3 + 2000)
+        //             }
+        //
+        //             // balance should change now
+        //             from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 3
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
+        //             to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //             to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 3
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, need change', to_balance_expected, to_balance_2)
+        //
+        //             resolve(testCase)
+        //         })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        // testCasesList.push(testCases)
+        // testCases = []
+        //
+        // title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
+        //     let signTxExpectedResult = framework.createExpecteResult(true)
+        //     let expectedError = framework.getError(-284)
+        //     expectedError.information = 'Malformed: Sequence is not in the past.'
+        //     let sendTxExpectedResult = framework.createExpecteResult(false, expectedError)
+        //     testCase.executeFunction = function(testCase){
+        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+        //             function(txParams, currentSequence){
+        //                 txParams.sequence = 1
+        //             })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
+        //     let expectedError = framework.getError(-284)
+        //     expectedError.information = 'sequence must be positive integer'
+        //     let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
+        //     let sendTxExpectedResult = signTxExpectedResult
+        //     testCase.executeFunction = function(testCase){
+        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+        //             function(txParams, currentSequence){
+        //                 txParams.sequence = 0.5
+        //             })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        // testCasesList.push(testCases)
+        // testCases = []
+        //
+        // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
+        //     let expectedError = framework.getError(-284)
+        //     expectedError.information = 'sequence must be positive integer'
+        //     let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
+        //     let sendTxExpectedResult = signTxExpectedResult
+        //     testCase.executeFunction = function(testCase){
+        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+        //             function(txParams, currentSequence){
+        //                 txParams.sequence = -1
+        //             })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        //
+        // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
+        //     let expectedError = framework.getError(-284)
+        //     expectedError.information = 'sequence must be positive integer'
+        //     let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
+        //     let sendTxExpectedResult = signTxExpectedResult
+        //     testCase.executeFunction = function(testCase){
+        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
+        //             function(txParams, currentSequence){
+        //                 txParams.sequence = 'abcdefgijklmnopq'
+        //             })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        // testCasesList.push(testCases)
+        // testCases = []
+        //
+        // title = '0670	同时发起多个交易时指定sequence_01:假设发起钱包的sequence已经到了n，同时发起m个交易，' +
+        //     '指定每个交易的sequence分别为n+1、n+2、…、n+m'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence4, server.mode.addresses.sequence_r_1, value)
+        //     testCase.executeFunction = function(testCase){
+        //         return new Promise(async function(resolve){
+        //             testCase.hasExecuted = true
+        //             testCase.checks = []
+        //             let server = testCase.server
+        //             let data = testCase.txParams[0]
+        //             let from = data.from
+        //
+        //             //record balance before transfer
+        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //
+        //             //transfer
+        //             let currentSequence = await framework.getSequence(server, from)
+        //             currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+        //             let expectedResult = framework.createExpecteResult(true)
+        //             data.sequence = currentSequence
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 1
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 2
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 3
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 4
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //
+        //             //wait transfer result written in block
+        //             if(testCase.server.mode.service == serviceType.newChain){
+        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
+        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //             }
+        //             else{
+        //                 // let hash = result.result.hash
+        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //                 await utility.timeout(server.mode.defaultBlockTime + 2000)
+        //             }
+        //
+        //             //record balance after transfer
+        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 5
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
+        //
+        //
+        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //             let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 5
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
+        //
+        //             resolve(testCase)
+        //         })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        // testCasesList.push(testCases)
+        // testCases = []
+        //
+        // title = '0680\t同时发起多个交易时指定sequence_02:假设发起钱包的sequence已经到了n，' +
+        //     '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
+        // {
+        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
+        //         server.mode.addresses.sequence5, server.mode.addresses.sequence_r_1, value)
+        //     testCase.executeFunction = function(testCase){
+        //         return new Promise(async function(resolve){
+        //             testCase.hasExecuted = true
+        //             testCase.checks = []
+        //             let server = testCase.server
+        //             let data = testCase.txParams[0]
+        //             let from = data.from
+        //             let check = {}
+        //
+        //             //record balance before transfer
+        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //
+        //             //transfer n+2 tx
+        //             let currentSequence = await framework.getSequence(server, from)
+        //             currentSequence = isNaN(currentSequence) ? 1 : currentSequence
+        //             let expectedResult = framework.createExpecteResult(true)
+        //             data.sequence = currentSequence + 1
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 3
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 5
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 7
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //
+        //             //wait transfer result written in block
+        //             await utility.timeout(server.mode.defaultBlockTime + 2000)
+        //
+        //             //balance should not change
+        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             let from_balance_expected = Number(from_balance_1)
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
+        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //             let to_balance_expected = Number(to_balance_1)
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
+        //
+        //             //transfer n+1 tx
+        //             data.sequence = currentSequence
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 2
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 4
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 6
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+        //             data.sequence = currentSequence + 8
+        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)   //NOTICE:  the last transfer must be right sequence, cannot be future sequnce!
+        //             // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
+        //             if(testCase.server.mode.service == serviceType.newChain){
+        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
+        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //             }
+        //             else{
+        //                 // let hash = result.result.hash
+        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+        //                 await utility.timeout(server.mode.defaultBlockTime * 3 + 2000)
+        //             }
+        //
+        //             // balance should change now
+        //             from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+        //             from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 9
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
+        //             to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+        //             to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 9
+        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
+        //
+        //             resolve(testCase)
+        //         })
+        //     }
+        //     framework.addTestScript(testCases, testCase)
+        // }
+        // testCasesList.push(testCases)
+        // testCases = []
 
-                    //get sequence
-                    let currentSequence = await framework.getSequence(server, from)
-                    currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-                    data.sequence = currentSequence + 1
-
-                    //transfer n+2 tx
-                    let expectedResult = framework.createExpecteResult(true)
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-
-                    //wait transfer result written in block
-                    await utility.timeout(server.mode.defaultBlockTime + 2000)
-
-                    //balance should not change
-                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let from_balance_expected = Number(from_balance_1)
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, no change', from_balance_expected, from_balance_2)
-                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-                    let to_balance_expected = Number(to_balance_1)
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, no change', to_balance_expected, to_balance_2)
-
-                    //transfer n+1 tx
-                    expectedResult = framework.createExpecteResult(true)
-                    data.sequence = currentSequence
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 2
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
-                    if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-                        let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                    }
-                    else{
-                        // let hash = result.result.hash
-                        // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                        await utility.timeout(server.mode.defaultBlockTime * 3 + 2000)
-                    }
-
-                    // balance should change now
-                    from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 3
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-                    to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-                    to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 3
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, need change', to_balance_expected, to_balance_2)
-
-                    resolve(testCase)
-                })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-        testCasesList.push(testCases)
-        testCases = []
-
-        title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let signTxExpectedResult = framework.createExpecteResult(true)
-            let expectedError = framework.getError(-284)
-            expectedError.information = 'Malformed: Sequence is not in the past.'
-            let sendTxExpectedResult = framework.createExpecteResult(false, expectedError)
-            testCase.executeFunction = function(testCase){
-                return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-                    function(txParams, currentSequence){
-                        txParams.sequence = 1
-                    })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-
-        title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let expectedError = framework.getError(-284)
-            expectedError.information = 'sequence must be positive integer'
-            let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
-            let sendTxExpectedResult = signTxExpectedResult
-            testCase.executeFunction = function(testCase){
-                return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-                    function(txParams, currentSequence){
-                        txParams.sequence = 0.5
-                    })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-        testCasesList.push(testCases)
-        testCases = []
-
-        title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let expectedError = framework.getError(-284)
-            expectedError.information = 'sequence must be positive integer'
-            let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
-            let sendTxExpectedResult = signTxExpectedResult
-            testCase.executeFunction = function(testCase){
-                return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-                    function(txParams, currentSequence){
-                        txParams.sequence = -1
-                    })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-
-        title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-            let expectedError = framework.getError(-284)
-            expectedError.information = 'sequence must be positive integer'
-            let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
-            let sendTxExpectedResult = signTxExpectedResult
-            testCase.executeFunction = function(testCase){
-                return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-                    function(txParams, currentSequence){
-                        txParams.sequence = 'abcdefgijklmnopq'
-                    })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-        testCasesList.push(testCases)
-        testCases = []
-
-        title = '0670	同时发起多个交易时指定sequence_01:假设发起钱包的sequence已经到了n，同时发起m个交易，' +
-            '指定每个交易的sequence分别为n+1、n+2、…、n+m'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence4, server.mode.addresses.sequence_r_1, value)
-            testCase.executeFunction = function(testCase){
-                return new Promise(async function(resolve){
-                    testCase.hasExecuted = true
-                    testCase.checks = []
-                    let server = testCase.server
-                    let data = testCase.txParams[0]
-                    let from = data.from
-
-                    //record balance before transfer
-                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-
-                    //transfer
-                    let currentSequence = await framework.getSequence(server, from)
-                    currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-                    let expectedResult = framework.createExpecteResult(true)
-                    data.sequence = currentSequence
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 1
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 2
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 3
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 4
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-
-                    //wait transfer result written in block
-                    if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-                        let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                    }
-                    else{
-                        // let hash = result.result.hash
-                        // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                        await utility.timeout(server.mode.defaultBlockTime + 2000)
-                    }
-
-                    //record balance after transfer
-                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 5
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
-
-
-                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-                    let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 5
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
-
-                    resolve(testCase)
-                })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-        testCasesList.push(testCases)
-        testCases = []
-
-        title = '0680\t同时发起多个交易时指定sequence_02:假设发起钱包的sequence已经到了n，' +
-            '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
-        {
-            testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-                server.mode.addresses.sequence5, server.mode.addresses.sequence_r_1, value)
-            testCase.executeFunction = function(testCase){
-                return new Promise(async function(resolve){
-                    testCase.hasExecuted = true
-                    testCase.checks = []
-                    let server = testCase.server
-                    let data = testCase.txParams[0]
-                    let from = data.from
-                    let check = {}
-
-                    //record balance before transfer
-                    let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-
-                    //transfer n+2 tx
-                    let currentSequence = await framework.getSequence(server, from)
-                    currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-                    let expectedResult = framework.createExpecteResult(true)
-                    data.sequence = currentSequence + 1
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 3
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 5
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 7
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-
-                    //wait transfer result written in block
-                    await utility.timeout(server.mode.defaultBlockTime + 2000)
-
-                    //balance should not change
-                    let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    let from_balance_expected = Number(from_balance_1)
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
-                    let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-                    let to_balance_expected = Number(to_balance_1)
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
-
-                    //transfer n+1 tx
-                    data.sequence = currentSequence
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 2
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 4
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 6
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-                    data.sequence = currentSequence + 8
-                    await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)   //NOTICE:  the last transfer must be right sequence, cannot be future sequnce!
-                    // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
-                    if(testCase.server.mode.service == serviceType.newChain){
-                        let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-                        let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                    }
-                    else{
-                        // let hash = result.result.hash
-                        // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-                        await utility.timeout(server.mode.defaultBlockTime * 3 + 2000)
-                    }
-
-                    // balance should change now
-                    from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-                    from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 9
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-                    to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-                    to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 9
-                    tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
-
-                    resolve(testCase)
-                })
-            }
-            framework.addTestScript(testCases, testCase)
-        }
-        testCasesList.push(testCases)
-        testCases = []
-
-        return testCasesList
+        return testScripts
     },
 
-    createTestCaseForSequenceTest: function(server, title, txFunctionName, sender, receiver, value, fee){
+    createTestScriptForSequenceTest: function(server, testCaseCode, scriptCode, txFunctionName, sender, receiver, value, fee){
         let txParams = server.createTransferParams(sender.address, sender.secret, null,
             receiver.address, value, fee, ['autotest: sequence test'])
-        let testCase = framework.createTestCase(title, server,
-            txFunctionName, txParams, null,
-            null, framework.checkTestCase, null,
-            restrictedLevel.L2, [serviceType.newChain, serviceType.oldChain])
-        return testCase
+        let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+        return testScript
     },
+
+    //region functions
+
+    beforeExecuteSequenceTest: async function(action){
+        // action.expectedResults[0].expectedBalance
+        let server = action.server
+        let from = action.txParams[0].from
+        let to = action.txParams[0].to
+        let value = action.txParams[0].value
+        let fee = action.txParams[0].fee
+
+        let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
+        let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
+        let from_balance_expected = Number(from_balance) - Number(value) - Number(fee)
+        let to_balance_expected = Number(to_balance) + Number(value)
+
+        // action.expectedResults[0].expectedBalances = from_balance_expected
+
+        let expected_from_balance = {address: from, value: from_balance_expected}
+        let expected_to_balance = {address: to, value: to_balance_expected}
+        action.expectedResults[0].expectedBalances = []
+        action.expectedResults[0].expectedBalances.push(expected_from_balance)
+        action.expectedResults[0].expectedBalances.push(expected_to_balance)
+    },
+
+    afterExecuteSequenceTest: async function(action){
+        let time = action.timeoutAfterExecution ? action.timeoutAfterExecution : 0
+        await utility.timeout(time)
+    },
+
+    executeFor000630: function(action){
+        return framework.executeTestActionOfTx(action,
+            tcsPressureSendTx.beforeExecuteSequenceTest,
+            tcsPressureSendTx.afterExecuteSequenceTest)
+    },
+
+    // executeFor000630_2: function(action){
+    //     return new Promise(async function(resolve){
+    //         testCase.hasExecuted = true
+    //         testCase.checks = []
+    //         let server = testCase.server
+    //         let data = testCase.txParams[0]
+    //         let from = data.from
+    //
+    //         //record balance before transfer
+    //         let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+    //         let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+    //
+    //         //get sequence
+    //         let currentSequence = await framework.getSequence(server, from)
+    //         data.sequence = isNaN(currentSequence) ? 1 : currentSequence
+    //
+    //         //transfer
+    //         let expectedResult = framework.createExpecteResult(true)
+    //         await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
+    //
+    //         //wait transfer result written in block
+    //         // await utility.timeout(server.mode.defaultBlockTime + 2000)
+    //         // let hash = _CurrentService == serviceType.newChain ? result.result[0] : result.result.hash
+    //         // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+    //         if(testCase.server.mode.service == serviceType.newChain){
+    //             let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
+    //             let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+    //         }
+    //         else{
+    //             // let hash = result.result.hash
+    //             // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
+    //             await utility.timeout(server.mode.defaultBlockTime + 2000)
+    //         }
+    //
+    //         //record balance after transfer
+    //         let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
+    //         let from_balance_expected = Number(from_balance_1) - Number(server.valueToAmount(valueInAmount)) - Number(fee) //Number(server.valueToAmount(fee))
+    //         tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
+    //         // logger.debug('===from_balance_1: ' + from_balance_1)
+    //         // logger.debug('===valueInAmount: ' + Number(server.valueToAmount(valueInAmount)))
+    //         // logger.debug('===fee: ' + Number(server.valueToAmount(fee)))
+    //         // logger.debug('===check_2: ' + JSON.stringify(check_2))
+    //
+    //         let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
+    //         let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount))
+    //         tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
+    //
+    //         resolve(testCase)
+    //     })
+    // },
+
+    //endregion
 
     // endregion
 
