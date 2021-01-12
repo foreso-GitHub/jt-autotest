@@ -424,7 +424,7 @@ module.exports = framework = {
                 }
                 if(lastSuccessIndex >= 0){
                     let data = action.txFunctionName == consts.rpcFunctions.sendRawTx
-                        ? action.signTxParams[lastSuccessIndex]
+                        ? action.bindData ? action.bindData.txParams[lastSuccessIndex] : action.signTxParams[lastSuccessIndex]  //todo 考虑合并bindData和signTxParams功能
                         : action.txParams[lastSuccessIndex]
                     framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
                 }
@@ -523,9 +523,6 @@ module.exports = framework = {
                                 }
                             }
                         }
-
-                        //more checks which can be customized
-                        if(action.moreChecks) await action.moreChecks(action)
                     }
                     else{
                         expect('Not a hash!').to.be.not.ok
@@ -537,6 +534,9 @@ module.exports = framework = {
             }
             action.testResult = true
         }
+
+        //more checks which can be customized
+        if(action.moreChecks) await action.moreChecks(action)
     },
 
     checkResponseOfCommon: function(action){

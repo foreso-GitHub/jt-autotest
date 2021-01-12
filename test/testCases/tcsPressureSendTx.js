@@ -42,7 +42,7 @@ module.exports = tcsPressureSendTx = {
     //region sequence test
 
     testForSequenceTest: function(server, describeTitle){
-        // tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
+        tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
         tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
     },
 
@@ -63,168 +63,91 @@ module.exports = tcsPressureSendTx = {
 
         let value = '0.00002'
         let fee = '0.00001'
-        // let valueInAmount = server.mode.service == serviceType.newChain ? value : value * consts.swtConsts.oneSwt
-        // let fee = server.mode.defaultFee
 
-        // testCaseCode = 'FCJT_sendTransaction_000630'
-        // {
-        //     let testScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
-        //         server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee)
-        //     testScript.actions[0].plusValueTimes = 1 //only change value for 1 time
-        //     testScript.actions[0].beforeExecution = tcsPressureSendTx.beforeExecute000630
-        //     testScript.actions[0].afterExecution = tcsPressureSendTx.fillBalances
-        //     testScript.actions[0].moreChecks = tcsPressureSendTx.checkBalances
-        //     framework.addTestScript(testScripts, testScript)
-        // }
+        testCaseCode = 'FCJT_sendTransaction_000630'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                    server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee, false)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         testCaseCode = 'FCJT_sendTransaction_000640'
         {
-            let signAction_1st
-            let sendAction_1st
-            let signAction_2nd
-            let sendAction_2nd
-            let testScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
-                server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee)
-
-            let tempScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee)
 
             if(txFunctionName == consts.rpcFunctions.sendTx){
-                sendAction_1st = testScript.actions[0]
-
-                sendAction_2nd = tempScript.actions[0]
-                sendAction_2nd.testScript = testScript
-                testScript.actions.push(sendAction_2nd)
-
-                sendAction_1st.sequenceOffset = 1
-                sendAction_1st.beforeExecution = tcsPressureSendTx.beforeExecute000640_send
-                sendAction_2nd.sequenceOffset = 0
-                sendAction_2nd.beforeExecution = tcsPressureSendTx.beforeExecute000640_send
+                testScript.actions[0].bindData.sequenceStart = 1  //sequence + 1
+                testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+                testScript.actions[1].bindData.sequenceStart = 0  //right sequence
+                testScript.actions[1].bindData.plusValueTimes = 2 // value should change 2 times
             }
-            else if (txFunctionName == consts.rpcFunctions.signTx) {
-
-                signAction_1st = testScript.actions[0]
-                sendAction_1st = testScript.actions[1]
-
-                signAction_2nd = tempScript.actions[0]
-                signAction_2nd.testScript = testScript
-                testScript.actions.push(signAction_2nd)
-
-                sendAction_2nd = tempScript.actions[1]
-                sendAction_2nd.testScript = testScript
-                testScript.actions.push(sendAction_2nd)
-
-                signAction_1st.sequenceOffset = 1
-                signAction_1st.beforeExecution = tcsPressureSendTx.changeSequence
-
-                sendAction_1st.beforeExecution = tcsPressureSendTx.beforeExecute000640_sendRaw
-                sendAction_1st.expectedResults[0].needCheckTx = false  //do not check tx because this tx is not in block yet
-
-                signAction_2nd.sequenceOffset = 0
-                signAction_2nd.beforeExecution = tcsPressureSendTx.changeSequence
-
-                sendAction_2nd.beforeExecution = tcsPressureSendTx.beforeExecute000640_sendRaw
+            else if(txFunctionName == consts.rpcFunctions.signTx){
+                testScript.actions[0].bindData.sequenceStart = 1  //sequence + 1
+                testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+                testScript.actions[2].bindData.sequenceStart = 0  //right sequence
+                testScript.actions[2].bindData.plusValueTimes = 2 // value should change 2 times
             }
-
-            sendAction_1st.plusValueTimes = 0 // value has not changed yet
-            sendAction_1st.afterExecution = tcsPressureSendTx.fillBalances
-            sendAction_1st.moreChecks = tcsPressureSendTx.checkBalances
-
-            sendAction_2nd.plusValueTimes = 2 // change value for 2 time
-            sendAction_2nd.afterExecution = tcsPressureSendTx.fillBalances
-            sendAction_2nd.moreChecks = tcsPressureSendTx.checkBalances
 
             framework.addTestScript(testScripts, testScript)
         }
 
+        testCaseCode = 'FCJT_sendTransaction_000650'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee, false)
 
-        // title = '0640\t有效的sequence参数_01: 假设发起钱包的sequence已经到了n，发起交易时，指定sequence为n+2;返回交易哈希，' +
-        //     '但是余额并没有变化；此时再发起一个sequence为n+1的交易，n+2的交易再被真正记录到链上'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence2, server.mode.addresses.sequence_r_1, value)
-        //     testCase.executeFunction = function(testCase){
-        //         return new Promise(async function(resolve){
-        //             testCase.hasExecuted = true
-        //             testCase.checks = []
-        //             let server = testCase.server
-        //             let data = testCase.txParams[0]
-        //             let from = data.from
-        //
-        //             //record balance before transfer
-        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //
-        //             //get sequence
-        //             let currentSequence = await framework.getSequence(server, from)
-        //             currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-        //             data.sequence = currentSequence + 1
-        //
-        //             //transfer n+2 tx
-        //             let expectedResult = framework.createExpecteResult(true)
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //
-        //             //wait transfer result written in block
-        //             await utility.timeout(server.mode.defaultBlockTime + 2000)
-        //
-        //             //balance should not change
-        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             let from_balance_expected = Number(from_balance_1)
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, no change', from_balance_expected, from_balance_2)
-        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //             let to_balance_expected = Number(to_balance_1)
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, no change', to_balance_expected, to_balance_2)
-        //
-        //             //transfer n+1 tx
-        //             expectedResult = framework.createExpecteResult(true)
-        //             data.sequence = currentSequence
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 2
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
-        //             if(testCase.server.mode.service == serviceType.newChain){
-        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-        //             }
-        //             else{
-        //                 // let hash = result.result.hash
-        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-        //                 await utility.timeout(server.mode.defaultBlockTime * 3 + 2000)
-        //             }
-        //
-        //             // balance should change now
-        //             from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 3
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-        //             to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //             to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 3
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance, need change', to_balance_expected, to_balance_2)
-        //
-        //             resolve(testCase)
-        //         })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        // testCasesList.push(testCases)
-        // testCases = []
+            testScript.actions[0].bindData.txParams[0].sequence = 1  //set sequence as 1
+            testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-198, 'The exact transaction was already in this ledger.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
 
-        // title = '0650\t无效的sequence参数_01：假设发起钱包的sequence已经到了n，发起交易时，指定sequence为大于0且小于n的整数'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-        //     let signTxExpectedResult = framework.createExpecteResult(true)
-        //     let expectedError = framework.getError(-284)
-        //     expectedError.information = 'Malformed: Sequence is not in the past.'
-        //     let sendTxExpectedResult = framework.createExpecteResult(false, expectedError)
-        //     testCase.executeFunction = function(testCase){
-        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-        //             function(txParams, currentSequence){
-        //                 txParams.sequence = 1
-        //             })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        //
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000670'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence4, server.mode.addresses.sequence_r_4, value, fee, false)
+            let txCount = 5
+            let sendOrSignAction = testScript.actions[0]
+            let sendRawAction = testScript.actions[1]
+            tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
+            sendOrSignAction.bindData.sequenceStart = 0
+            sendOrSignAction.bindData.plusValueTimes = txCount  //change value for 5 times
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000680'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence5, server.mode.addresses.sequence_r_5, value, fee, true)
+            let txCount = 5
+            let sendOrSignAction = testScript.actions[0]
+            let sendRawAction = testScript.actions[1]
+            tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
+            sendOrSignAction.bindData.sequenceStart = 1
+            sendOrSignAction.bindData.sequenceOffset = 2
+            sendOrSignAction.bindData.plusValueTimes = 0
+
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                sendOrSignAction = testScript.actions[1]
+                sendRawAction = null
+            }
+            else if (txFunctionName == consts.rpcFunctions.signTx){
+                sendOrSignAction = testScript.actions[2]
+                sendRawAction = testScript.actions[3]
+            }
+            tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
+            sendOrSignAction.bindData.sequenceStart = 0
+            sendOrSignAction.bindData.sequenceOffset = 2
+            sendOrSignAction.bindData.plusValueTimes = txCount * 2  //change value for 10 times
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
         // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
         // {
         //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
@@ -279,293 +202,78 @@ module.exports = tcsPressureSendTx = {
         // }
         // testCasesList.push(testCases)
         // testCases = []
-        //
-        // title = '0670	同时发起多个交易时指定sequence_01:假设发起钱包的sequence已经到了n，同时发起m个交易，' +
-        //     '指定每个交易的sequence分别为n+1、n+2、…、n+m'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence4, server.mode.addresses.sequence_r_1, value)
-        //     testCase.executeFunction = function(testCase){
-        //         return new Promise(async function(resolve){
-        //             testCase.hasExecuted = true
-        //             testCase.checks = []
-        //             let server = testCase.server
-        //             let data = testCase.txParams[0]
-        //             let from = data.from
-        //
-        //             //record balance before transfer
-        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //
-        //             //transfer
-        //             let currentSequence = await framework.getSequence(server, from)
-        //             currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-        //             let expectedResult = framework.createExpecteResult(true)
-        //             data.sequence = currentSequence
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 1
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 2
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 3
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 4
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //
-        //             //wait transfer result written in block
-        //             if(testCase.server.mode.service == serviceType.newChain){
-        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-        //             }
-        //             else{
-        //                 // let hash = result.result.hash
-        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-        //                 await utility.timeout(server.mode.defaultBlockTime + 2000)
-        //             }
-        //
-        //             //record balance after transfer
-        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             let from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 5
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance', from_balance_expected, from_balance_2)
-        //
-        //
-        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //             let to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 5
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance', to_balance_expected, to_balance_2)
-        //
-        //             resolve(testCase)
-        //         })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        // testCasesList.push(testCases)
-        // testCases = []
-        //
-        // title = '0680\t同时发起多个交易时指定sequence_02:假设发起钱包的sequence已经到了n，' +
-        //     '同时发起m个交易，指定每个交易的sequence分别为n+1、n+3、n+5、…、n+2m-1'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence5, server.mode.addresses.sequence_r_1, value)
-        //     testCase.executeFunction = function(testCase){
-        //         return new Promise(async function(resolve){
-        //             testCase.hasExecuted = true
-        //             testCase.checks = []
-        //             let server = testCase.server
-        //             let data = testCase.txParams[0]
-        //             let from = data.from
-        //             let check = {}
-        //
-        //             //record balance before transfer
-        //             let from_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             let to_balance_1 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //
-        //             //transfer n+2 tx
-        //             let currentSequence = await framework.getSequence(server, from)
-        //             currentSequence = isNaN(currentSequence) ? 1 : currentSequence
-        //             let expectedResult = framework.createExpecteResult(true)
-        //             data.sequence = currentSequence + 1
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 3
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 5
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 7
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //
-        //             //wait transfer result written in block
-        //             await utility.timeout(server.mode.defaultBlockTime + 2000)
-        //
-        //             //balance should not change
-        //             let from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             let from_balance_expected = Number(from_balance_1)
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance check, no change', from_balance_expected, from_balance_2)
-        //             let to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //             let to_balance_expected = Number(to_balance_1)
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, no change', to_balance_expected, to_balance_2)
-        //
-        //             //transfer n+1 tx
-        //             data.sequence = currentSequence
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 2
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 4
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 6
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)
-        //             data.sequence = currentSequence + 8
-        //             await tcsPressureSendTx.executeTransfer(testCase, expectedResult, expectedResult)   //NOTICE:  the last transfer must be right sequence, cannot be future sequnce!
-        //             // await utility.timeout(server.mode.defaultBlockTime * (server.mode.service == serviceType.oldChain ? 3 : 1) + 1000)
-        //             if(testCase.server.mode.service == serviceType.newChain){
-        //                 let hash = testCase.actualResult[testCase.actualResult.length - 1].result[0].result
-        //                 let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-        //             }
-        //             else{
-        //                 // let hash = result.result.hash
-        //                 // let tx = await utility.getTxByHash(server, hash, 0)  //do not work in swtclib
-        //                 await utility.timeout(server.mode.defaultBlockTime * 3 + 2000)
-        //             }
-        //
-        //             // balance should change now
-        //             from_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.from, data.symbol)
-        //             from_balance_expected = Number(from_balance_1) - (Number(server.valueToAmount(valueInAmount)) + Number(fee)) * 9
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'from address balance, need change', from_balance_expected, from_balance_2)
-        //             to_balance_2 = await tcsPressureSendTx.getBalanceValue(server, data.to, data.symbol)
-        //             to_balance_expected = Number(to_balance_1) + Number(server.valueToAmount(valueInAmount)) * 9
-        //             tcsPressureSendTx.addBalanceCheck(testCase, 'to address balance check, need change', to_balance_expected, to_balance_2)
-        //
-        //             resolve(testCase)
-        //         })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        // testCasesList.push(testCases)
-        // testCases = []
 
         return testScripts
     },
 
-    createTestScriptForSequenceTest: function(server, testCaseCode, scriptCode, txFunctionName, sender, receiver, value, fee){
+    createTestScript: function(server, testCaseCode, scriptCode, txFunctionName, sender, receiver, value, fee, hasOneMoreActionSet){
+
+        let sendOrSignAction_1st
+        let sendRawAction_1st
+        let sendOrSignAction_2nd
+        let sendRawAction_2nd
+
         let txParams = server.createTransferParams(sender.address, sender.secret, null,
             receiver.address, value, fee, ['autotest: sequence test'])
-        let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+        let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams) //fisrt send set
+        sendOrSignAction_1st = testScript.actions[0]
+        sendRawAction_1st = testScript.actions[1]
+        tcsPressureSendTx.updateSendOrSignActionSet(sendOrSignAction_1st, sendRawAction_1st)
+        sendOrSignAction_1st.bindData.sequenceStart = 0
+        sendOrSignAction_1st.bindData.plusValueTimes = 1 // value has not changed yet
+
+        if(hasOneMoreActionSet == undefined || hasOneMoreActionSet == true){
+            if (sendRawAction_1st != undefined){
+                sendRawAction_1st.expectedResults[0].needCheckTx = false
+            }
+
+            framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)  //second send set
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                sendOrSignAction_2nd = testScript.actions[1]
+            }
+            else if (txFunctionName == consts.rpcFunctions.signTx){
+                sendOrSignAction_2nd = testScript.actions[2]
+                sendRawAction_2nd = testScript.actions[3]
+            }
+            tcsPressureSendTx.updateSendOrSignActionSet(sendOrSignAction_2nd, sendRawAction_2nd)
+            sendOrSignAction_2nd.bindData.sequenceStart = 0
+            sendOrSignAction_2nd.bindData.plusValueTimes = 1 //change value again
+        }
+
         return testScript
     },
 
-    //region functions
+    updateSendOrSignActionSet: function(sendOrSignAction, sendRawAction){
+        sendOrSignAction.bindData = {}  //sign and sendraw can share data here
+        sendOrSignAction.bindData.txParams = sendOrSignAction.txParams
 
-    createSendAction: function(testScript, txFunctionName, txParams){
-        framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)
+        if(sendRawAction == undefined){
+            sendOrSignAction.beforeExecution = tcsPressureSendTx.beforeExecuteSendTx
+            sendOrSignAction.afterExecution = tcsPressureSendTx.fillBalances
+            sendOrSignAction.moreChecks = tcsPressureSendTx.checkBalances
+        }
+        else {
+            sendOrSignAction.beforeExecution = tcsPressureSendTx.changeSequence
+            sendRawAction.bindData = sendOrSignAction.bindData
+            sendRawAction.beforeExecution = tcsPressureSendTx.beforeExecute000640_sendRaw
+            sendRawAction.afterExecution = tcsPressureSendTx.fillBalances
+            sendRawAction.moreChecks = tcsPressureSendTx.checkBalances
+        }
     },
 
-    //region common
-
-    fillBalances: async function(action){
-        let server = action.server
-        await utility.timeout(server.mode.defaultBlockTime + 2000)
-        await tcsPressureSendTx.fillActualBalance(server, action.expectedResults[0].balanceChecks[0])
-        await tcsPressureSendTx.fillActualBalance(server, action.expectedResults[0].balanceChecks[1])
-    },
-
-    checkBalances: function(action){
-        let checks = action.expectedResults[0].balanceChecks
-        if(checks != undefined){
-            for(let i = 0; i < checks.length; i++){
-                let check = checks[i]
-                let expectedBalance = Number(check.expectedBalance)
-                let actualBalance = Number(check.actualBalance)
-                logger.debug('balance checking [' + i + ']: ' + expectedBalance + ' | ' + actualBalance)
-                expect(actualBalance).to.be.equal(expectedBalance)
+    cloneTxSettings: function(sendOrSignAction, sendRawAction, txCount){
+        let txParam = sendOrSignAction.txParams[0]
+        let expectedResult = sendOrSignAction.expectedResults[0]
+        for(let i = 0; i < txCount - 1; i++){
+            sendOrSignAction.txParams.push(utility.deepClone(txParam))
+            sendOrSignAction.expectedResults.push(utility.deepClone(expectedResult))
+            if(sendRawAction){
+                sendRawAction.expectedResults.push(utility.deepClone(expectedResult))
             }
         }
     },
 
-    restoreBalances: async function(action){
-        let rawAction = action
-        if(rawAction.txFunctionName == consts.rpcFunctions.sendRawTx) {
-            action = rawAction.signTxActions[0]
-        }
-        let server = action.server
-        let from = action.txParams[0].from
-        let to = action.txParams[0].to
-        let value = action.txParams[0].value
-        let fee = action.txParams[0].fee
-        let plusTimes = rawAction.plusValueTimes
-
-        let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
-        let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
-        let from_balance_expected = Number(from_balance) - (Number(value) + Number(fee)) * plusTimes
-        let to_balance_expected = Number(to_balance) + Number(value) * plusTimes
-
-        let from_check = {address: from, expectedBalance: from_balance_expected}
-        let to_check = {address: to, expectedBalance: to_balance_expected}
-        rawAction.expectedResults[0].balanceChecks = []
-        rawAction.expectedResults[0].balanceChecks.push(from_check)
-        rawAction.expectedResults[0].balanceChecks.push(to_check)
-    },
-
-    changeSequence: async function(action){
-        let server = action.server
-        let from = action.txParams[0].from
-        let currentSequence = await utility.getSequence(server, from)
-        action.txParams[0].sequence = currentSequence + action.sequenceOffset
-    },
-
-    //endregion
-
-    //region 000630
-
-    beforeExecute000630: async function(action){
-
-        // let server = action.server
-        // let from = action.txParams[0].from
-        // let to = action.txParams[0].to
-        // let value = action.txParams[0].value
-        // let fee = action.txParams[0].fee
-        // let plusTimes = action.plusTimes
-        //
-        // let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
-        // let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
-        // let from_balance_expected = Number(from_balance) - (Number(value) + Number(fee)) * plusTimes
-        // let to_balance_expected = Number(to_balance) + Number(value) * plusTimes
-        //
-        // let from_check = {address: from, expectedBalance: from_balance_expected}
-        // let to_check = {address: to, expectedBalance: to_balance_expected}
-        // action.expectedResults[0].balanceChecks = []
-        // action.expectedResults[0].balanceChecks.push(from_check)
-        // action.expectedResults[0].balanceChecks.push(to_check)
-
-        await tcsPressureSendTx.restoreBalances(action)
-    },
-
-    //endregion
-
-    //region 000640
-
-    // beforeExecute000640_1st_sign: async function(action){
-    //     //sequence + 1
-    //     let server = action.server
-    //     let from = action.txParams[0].from
-    //     let currentSequence = await utility.getSequence(server, from)
-    //     action.txParams[0].sequence = currentSequence + 1
-    // },
-
-    // beforeExecute000640_1st_sendRaw: async function(action){
-    //     // let server = action.server
-    //     // let from = action.txParams[0].from
-    //     // let to = action.txParams[0].to
-    //     //
-    //     // let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
-    //     // let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
-    //     // let from_check = {address: from, expectedBalance: from_balance}
-    //     // let to_check = {address: to, expectedBalance: to_balance}
-    //     // action.expectedResults[0].balanceChecks = []
-    //     // action.expectedResults[0].balanceChecks.push(from_check)
-    //     // action.expectedResults[0].balanceChecks.push(to_check)
-    //
-    //     await tcsPressureSendTx.restoreBalances(action)
-    //     return framework.executeTestActionOfSendRawTx(action)
-    // },
-
-    // beforeExecute000640_2nd_sign: async function(action){
-    //     let server = action.server
-    //     let from = action.txParams[0].from
-    //     let currentSequence = await utility.getSequence(server, from)
-    //     action.txParams[0].sequence = currentSequence
-    // },
-
-    beforeExecute000640_send: async function(action){
-        await tcsPressureSendTx.changeSequence(action)
-        await tcsPressureSendTx.restoreBalances(action)
-    },
-
-    beforeExecute000640_sendRaw: async function(action){
-        await tcsPressureSendTx.restoreBalances(action)
-        await framework.beforeSendRawTx(action)
-    },
-
-    //endregion
-
-    //region balance
+    //region functions
 
     getBalanceValue: async function(server, from){
         let balance = await server.getBalance(server, from,)
@@ -577,7 +285,70 @@ module.exports = tcsPressureSendTx = {
         balanceCheck.actualBalance = await tcsPressureSendTx.getBalanceValue(server, from)
     },
 
-    //endregion
+    fillBalances: async function(action){
+        let server = action.server
+        await utility.timeout(server.mode.defaultBlockTime + 2000)
+        await tcsPressureSendTx.fillActualBalance(server, action.bindData.balanceChecks[0])
+        await tcsPressureSendTx.fillActualBalance(server, action.bindData.balanceChecks[1])
+    },
+
+    checkBalances: function(action){
+        let checks = action.bindData.balanceChecks
+        if(checks != undefined){
+            for(let i = 0; i < checks.length; i++){
+                let check = checks[i]
+                let expectedBalance = Number(check.expectedBalance)
+                let actualBalance = Number(check.actualBalance)
+                logger.debug('balance checking [' + i + '] [' + check.sequence + ']: ' + expectedBalance + ' | ' + actualBalance)
+                expect(actualBalance).to.be.equal(expectedBalance)
+            }
+        }
+    },
+
+    restoreBalances: async function(action){
+        let server = action.server
+        let from = action.bindData.txParams[0].from
+        let to = action.bindData.txParams[0].to
+        let value = action.bindData.txParams[0].value
+        let fee = action.bindData.txParams[0].fee
+        let plusTimes = action.bindData.plusValueTimes
+        let sequence = action.bindData.txParams[0].sequence
+
+        let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
+        let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
+        let from_balance_expected = Number(from_balance) - (Number(value) + Number(fee)) * plusTimes
+        let to_balance_expected = Number(to_balance) + Number(value) * plusTimes
+
+        let from_check = {address: from, sequence:sequence, expectedBalance: from_balance_expected}
+        let to_check = {address: to, sequence:sequence, expectedBalance: to_balance_expected}
+        action.bindData.balanceChecks = []
+        action.bindData.balanceChecks.push(from_check)
+        action.bindData.balanceChecks.push(to_check)
+    },
+
+    changeSequence: async function(action){
+        let server = action.server
+        let from = action.bindData.txParams[0].from
+        let currentSequence = await utility.getSequence(server, from)
+        let offset = action.bindData.sequenceOffset ? action.bindData.sequenceOffset : 1
+
+        for(let i = 0; i < action.bindData.txParams.length; i++){
+            let txParam = action.bindData.txParams[i]
+            if(!txParam.sequence){
+                txParam.sequence = currentSequence + action.bindData.sequenceStart + i * offset
+            }
+        }
+    },
+
+    beforeExecuteSendTx: async function(action){
+        await tcsPressureSendTx.changeSequence(action)
+        await tcsPressureSendTx.restoreBalances(action)
+    },
+
+    beforeExecute000640_sendRaw: async function(action){
+        await tcsPressureSendTx.restoreBalances(action)
+        await framework.beforeSendRawTx(action)
+    },
 
     //endregion
 
