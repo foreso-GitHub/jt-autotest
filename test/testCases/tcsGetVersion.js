@@ -55,7 +55,8 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['123']
-            testScript.actions[0].expectedResults = [{needPass: false, expetedError: {}}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -64,7 +65,8 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['abc']
-            testScript.actions[0].expectedResults = [{needPass: false, expetedError: {}}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
             framework.addTestScript(testScripts, testScript)
         }
 

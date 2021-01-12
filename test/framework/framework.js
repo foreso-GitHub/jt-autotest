@@ -338,8 +338,10 @@ module.exports = framework = {
             let totalCount = action.txParams.length
             action.balanceBeforeExecutionList = []
             action.hasExecuted = true
+            if(beforeExecution) action.beforeExecution = beforeExecution
+            if(afterExecution) action.afterExecution = afterExecution
 
-            if(beforeExecution) await beforeExecution(action)
+            if(action.beforeExecution) await action.beforeExecution(action)
 
             let sequence
             for(let i = 0; i < totalCount; i++){
@@ -376,7 +378,7 @@ module.exports = framework = {
             action.actualResult = response
             framework.addSequenceAfterResponseSuccess(action)
 
-            if(afterExecution) await afterExecution(action)
+            if(action.afterExecution) await action.afterExecution(action)
 
             resolve(action)
         })
@@ -464,7 +466,8 @@ module.exports = framework = {
         await framework.checkResponseOfTx(action)
     },
 
-    checkResponseOfTx: async function(action){
+    checkResponseOfTx: async function(action, moreChecks){
+        if(moreChecks) action.moreChecks = moreChecks
         //common check, response
         framework.checkResponseOfCommon(action)
         expect(action.actualResult).to.be.jsonSchema(schema.SENDTX_SCHEMA)  //todo tx目前返回多个结果。以后查询也会返回多个结果，这个检查应加入framework.checkResponse
@@ -497,29 +500,34 @@ module.exports = framework = {
             let expectedResult = action.expectedResults[i]
             let actualResult = actualResults[i]
             if(expectedResult.needPass){
-                if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
-                    let hash = actualResult.result
-                    let tx = (await utility.getTxByHash(action.server, hash, 0)).result
-                    expect(tx.hash).to.be.equal(hash)
-                    await framework.compareParamAndTx(param, tx)
+                if(expectedResult.needCheckTx == undefined || expectedResult.needCheckTx){
+                    if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
+                        let hash = actualResult.result
+                        let tx = (await utility.getTxByHash(action.server, hash, 0)).result
+                        expect(tx.hash).to.be.equal(hash)
+                        await framework.compareParamAndTx(param, tx)
 
-                    // if(action.server.mode.restrictedLevel >= restrictedLevel.L5)
-                    {
-                        let expectedBalances = expectedResult.expectedBalances
-                        if(expectedBalances != undefined){
-                            for(let j = 0; j < expectedBalances.length; j++){
-                                let expectedBalance = expectedBalances[j]
-                                let server = action.server
-                                let from = expectedBalance.address
-                                let symbol = expectedBalance.symbol
-                                let issuer = expectedBalance.issuer
-                                await framework.checkBalanceChange(server, from, symbol, issuer, expectedBalance.value)
+                        // if(action.server.mode.restrictedLevel >= restrictedLevel.L5)
+                        {
+                            let expectedBalances = expectedResult.expectedBalances
+                            if(expectedBalances != undefined){
+                                for(let j = 0; j < expectedBalances.length; j++){
+                                    let expectedBalance = expectedBalances[j]
+                                    let server = action.server
+                                    let from = expectedBalance.address
+                                    let symbol = expectedBalance.symbol
+                                    let issuer = expectedBalance.issuer
+                                    await framework.checkBalanceChange(server, from, symbol, issuer, expectedBalance.value)
+                                }
                             }
                         }
+
+                        //more checks which can be customized
+                        if(action.moreChecks) await action.moreChecks(action)
                     }
-                }
-                else{
-                    expect('Not a hash!').to.be.not.ok
+                    else{
+                        expect('Not a hash!').to.be.not.ok
+                    }
                 }
             }
             else{
@@ -642,29 +650,6 @@ module.exports = framework = {
     //     else{
     //         return 0
     //     }
-    // },
-
-    // checkTestCaseOfMintOrBurn: async function(testCase){
-    //     await framework.checkResponseOfCommon(testCase, testCase.txParams, async function(testCase, txParams, tx){
-    //         let params = txParams[0]
-    //         let balanceAfterExecution = (await testCase.server.getBalance(testCase.server, params.from, params.symbol)).value
-    //         testCase.balanceAfterExecution = balanceAfterExecution
-    //         let oldBalance = framework.getBalanceValue(testCase.balanceBeforeExecution)
-    //         let newBalance = balanceAfterExecution
-    //         if(params.type === consts.rpcParamConsts.issueCoin){
-    //             expect(newBalance).to.be.equals(newBalance + Number(params.total_supply))
-    //         }
-    //         else{
-    //             expect(newBalance).to.be.equals(newBalance + Number(params.value))
-    //         }
-    //
-    //         logger.debug("balanceAfterExecution:" + JSON.stringify(testCase))
-    //         logger.debug("balanceAfterExecution, symbol:" + params.symbol)
-    //         logger.debug("balanceAfterExecution:" + JSON.stringify(balanceAfterExecution))
-    //
-    //         expect(false).to.be.ok
-    //         // expect(true).to.be.ok
-    //     })
     // },
 
     //endregion

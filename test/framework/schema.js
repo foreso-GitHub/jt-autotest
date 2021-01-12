@@ -376,7 +376,7 @@ const RESPONSE_SCHEMA = {
     required: [
         "id",
         "jsonrpc",
-        "result",
+        "result",  //todo: need restore when get functions support compound result
         // "type",
         // "status",
     ],

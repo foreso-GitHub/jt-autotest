@@ -758,5 +758,15 @@ module.exports = testUtility = {
 
     //endregion
 
+    //region sequence
+
+    getSequence: async function(server, from){
+        let currentSequence = (await server.responseGetAccount(server, from, )).result.Sequence
+        let sequence = isNaN(currentSequence) ? -1 : currentSequence
+        return sequence
+    },
+
+    //endregion
+
 }
 
