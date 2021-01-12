@@ -241,6 +241,12 @@ module.exports = framework = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
 
+        framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)
+
+        return testScript
+    },
+
+    pushTestActionForSendAndSign: function(testScript, txFunctionName, txParams){
         if(txFunctionName === consts.rpcFunctions.sendTx) {
             let sendTxAction = framework.createTestAction(testScript, txFunctionName, txParams,
                 framework.executeTestActionOfSendTx,
@@ -255,9 +261,10 @@ module.exports = framework = {
                 [{needPass: true}])
             testScript.actions.push(signTxAction)
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [],
-                framework.executeTestActionOfSendRawTx,
+                framework.executeTestActionOfSendTx,
                 framework.checkTestActionOfSendTx,
                 [{needPass: true}])
+            sendRawTxAction.beforeExecution = framework.beforeSendRawTx
             framework.addSignTxAction(sendRawTxAction, signTxAction)
             testScript.actions.push(sendRawTxAction)
         }
@@ -267,8 +274,6 @@ module.exports = framework = {
         else{
             throw new Error('txFunctionName doesn\'t exist!')
         }
-
-        return testScript
     },
 
     addSignTxAction: function(sendRawTxAction, signTxAction){
@@ -403,10 +408,6 @@ module.exports = framework = {
         }
     },
 
-    executeTestActionOfSendRawTx: function(action){
-        return framework.executeTestActionOfTx(action, framework.beforeSendRawTx)
-    },
-
     //endregion
 
     //if send tx successfully, then sequence need plus 1
@@ -432,7 +433,8 @@ module.exports = framework = {
     },
 
     executeTxByTestAction: function(testAction){
-        logger.debug(testAction.title)
+        logger.debug('---TestScript title: ' + testAction.testScript.title)
+        logger.debug('---TestAction tx params: ' + JSON.stringify(testAction.txParams))
         return testAction.server.getResponse(testAction.server, testAction.txFunctionName, testAction.txParams)
     },
 

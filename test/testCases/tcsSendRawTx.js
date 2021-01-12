@@ -138,7 +138,7 @@ module.exports = tcsSendRawTx = {
             let failTx = _FailRawTx_EmptyRawTx
             let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
-                framework.executeTestActionOfSendRawTx,
+                tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 expectedResults)
             // framework.addSignTxAction(sendRawTxAction, signTxAction)
@@ -153,7 +153,7 @@ module.exports = tcsSendRawTx = {
             // let failTx = _FailRawTx_EmptyRawTx
             // let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [],
-                framework.executeTestActionOfSendRawTx,
+                tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 [{"neePass": false}])
             // framework.addSignTxAction(sendRawTxAction, signTxAction)
@@ -168,7 +168,7 @@ module.exports = tcsSendRawTx = {
             let failTx = _FailRawTx_WrongFormat_1
             let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
-                framework.executeTestActionOfSendRawTx,
+                tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 expectedResults)
             testScript.actions.push(sendRawTxAction)
@@ -182,7 +182,7 @@ module.exports = tcsSendRawTx = {
             let failTx = _FailRawTx_WrongFormat_2
             let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
-                framework.executeTestActionOfSendRawTx,
+                tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 expectedResults)
             testScript.actions.push(sendRawTxAction)
@@ -196,7 +196,7 @@ module.exports = tcsSendRawTx = {
             let failTx = _FailRawTx_WrongFormat_3
             let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
-                framework.executeTestActionOfSendRawTx,
+                tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 expectedResults)
             testScript.actions.push(sendRawTxAction)
@@ -210,7 +210,7 @@ module.exports = tcsSendRawTx = {
             let failTx = _FailRawTx_WrongFormat_4
             let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
-                framework.executeTestActionOfSendRawTx,
+                tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
                 expectedResults)
             testScript.actions.push(sendRawTxAction)
@@ -315,7 +315,7 @@ module.exports = tcsSendRawTx = {
         testScript.actions.push(signTxAction)
 
         let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [],
-            framework.executeTestActionOfSendRawTx,
+            tcsSendRawTx.executeTestActionOfSendRawTx,
             framework.checkTestActionOfSendTx,
             expectedResults)
         framework.addSignTxAction(sendRawTxAction, signTxAction)
@@ -338,6 +338,12 @@ module.exports = tcsSendRawTx = {
             failTxs.push(failTx)
         }
         return failTxs
+    },
+
+    executeTestActionOfSendRawTx: function(action){
+        action.beforeExecution = framework.beforeSendRawTx
+        return framework.executeTestActionOfTx(action, )
+        // return framework.executeTestActionOfTx(action, framework.beforeSendRawTx)
     },
 
     //endregion

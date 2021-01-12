@@ -226,11 +226,11 @@ describe('Jingtum测试', function() {
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 100)
 
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
                 //

@@ -42,11 +42,8 @@ module.exports = tcsPressureSendTx = {
     //region sequence test
 
     testForSequenceTest: function(server, describeTitle){
-        let testMode = server.mode.testMode
-        server.mode.testMode = testMode.singleMode
-        tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
+        // tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
         tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
-        server.mode.testMode = testMode
     },
 
     testSequenceByFunction: function(server, describeTitle, txFunctionName){
@@ -73,6 +70,7 @@ module.exports = tcsPressureSendTx = {
         // {
         //     let testScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
         //         server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee)
+        //     testScript.actions[0].plusValueTimes = 1 //only change value for 1 time
         //     testScript.actions[0].beforeExecution = tcsPressureSendTx.beforeExecute000630
         //     testScript.actions[0].afterExecution = tcsPressureSendTx.fillBalances
         //     testScript.actions[0].moreChecks = tcsPressureSendTx.checkBalances
@@ -81,21 +79,60 @@ module.exports = tcsPressureSendTx = {
 
         testCaseCode = 'FCJT_sendTransaction_000640'
         {
+            let signAction_1st
+            let sendAction_1st
+            let signAction_2nd
+            let sendAction_2nd
             let testScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee)
-            testScript.actions[0].beforeExecution = tcsPressureSendTx.beforeExecute000640_action0
-            testScript.actions[0].afterExecution = tcsPressureSendTx.fillBalances
-            testScript.actions[0].moreChecks = tcsPressureSendTx.checkBalances
-            testScript.actions[0].expectedResults[0].needCheckTx = false  //do not check tx because this tx is not in block yet
 
             let tempScript = tcsPressureSendTx.createTestScriptForSequenceTest(server, testCaseCode, scriptCode, txFunctionName,
-                server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee)  //to create the second action
-            let action1 = tempScript.actions[0]
-            action1.beforeExecution = tcsPressureSendTx.beforeExecute000640_action1
-            action1.afterExecution = tcsPressureSendTx.fillBalances
-            action1.moreChecks = tcsPressureSendTx.checkBalances
-            action1.testScript = testScript
-            testScript.actions.push(action1)
+                server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee)
+
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                sendAction_1st = testScript.actions[0]
+
+                sendAction_2nd = tempScript.actions[0]
+                sendAction_2nd.testScript = testScript
+                testScript.actions.push(sendAction_2nd)
+
+                sendAction_1st.sequenceOffset = 1
+                sendAction_1st.beforeExecution = tcsPressureSendTx.beforeExecute000640_send
+                sendAction_2nd.sequenceOffset = 0
+                sendAction_2nd.beforeExecution = tcsPressureSendTx.beforeExecute000640_send
+            }
+            else if (txFunctionName == consts.rpcFunctions.signTx) {
+
+                signAction_1st = testScript.actions[0]
+                sendAction_1st = testScript.actions[1]
+
+                signAction_2nd = tempScript.actions[0]
+                signAction_2nd.testScript = testScript
+                testScript.actions.push(signAction_2nd)
+
+                sendAction_2nd = tempScript.actions[1]
+                sendAction_2nd.testScript = testScript
+                testScript.actions.push(sendAction_2nd)
+
+                signAction_1st.sequenceOffset = 1
+                signAction_1st.beforeExecution = tcsPressureSendTx.changeSequence
+
+                sendAction_1st.beforeExecution = tcsPressureSendTx.beforeExecute000640_sendRaw
+                sendAction_1st.expectedResults[0].needCheckTx = false  //do not check tx because this tx is not in block yet
+
+                signAction_2nd.sequenceOffset = 0
+                signAction_2nd.beforeExecution = tcsPressureSendTx.changeSequence
+
+                sendAction_2nd.beforeExecution = tcsPressureSendTx.beforeExecute000640_sendRaw
+            }
+
+            sendAction_1st.plusValueTimes = 0 // value has not changed yet
+            sendAction_1st.afterExecution = tcsPressureSendTx.fillBalances
+            sendAction_1st.moreChecks = tcsPressureSendTx.checkBalances
+
+            sendAction_2nd.plusValueTimes = 2 // change value for 2 time
+            sendAction_2nd.afterExecution = tcsPressureSendTx.fillBalances
+            sendAction_2nd.moreChecks = tcsPressureSendTx.checkBalances
 
             framework.addTestScript(testScripts, testScript)
         }
@@ -396,6 +433,10 @@ module.exports = tcsPressureSendTx = {
 
     //region functions
 
+    createSendAction: function(testScript, txFunctionName, txParams){
+        framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)
+    },
+
     //region common
 
     fillBalances: async function(action){
@@ -418,59 +459,109 @@ module.exports = tcsPressureSendTx = {
         }
     },
 
-    //endregion
-
-    //region 000630
-
-    beforeExecute000630: async function(action){
+    restoreBalances: async function(action){
+        let rawAction = action
+        if(rawAction.txFunctionName == consts.rpcFunctions.sendRawTx) {
+            action = rawAction.signTxActions[0]
+        }
         let server = action.server
         let from = action.txParams[0].from
         let to = action.txParams[0].to
         let value = action.txParams[0].value
         let fee = action.txParams[0].fee
+        let plusTimes = rawAction.plusValueTimes
 
         let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
         let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
-        let from_balance_expected = Number(from_balance) - Number(value) - Number(fee)
-        let to_balance_expected = Number(to_balance) + Number(value)
+        let from_balance_expected = Number(from_balance) - (Number(value) + Number(fee)) * plusTimes
+        let to_balance_expected = Number(to_balance) + Number(value) * plusTimes
 
         let from_check = {address: from, expectedBalance: from_balance_expected}
         let to_check = {address: to, expectedBalance: to_balance_expected}
-        action.expectedResults[0].balanceChecks = []
-        action.expectedResults[0].balanceChecks.push(from_check)
-        action.expectedResults[0].balanceChecks.push(to_check)
+        rawAction.expectedResults[0].balanceChecks = []
+        rawAction.expectedResults[0].balanceChecks.push(from_check)
+        rawAction.expectedResults[0].balanceChecks.push(to_check)
+    },
+
+    changeSequence: async function(action){
+        let server = action.server
+        let from = action.txParams[0].from
+        let currentSequence = await utility.getSequence(server, from)
+        action.txParams[0].sequence = currentSequence + action.sequenceOffset
+    },
+
+    //endregion
+
+    //region 000630
+
+    beforeExecute000630: async function(action){
+
+        // let server = action.server
+        // let from = action.txParams[0].from
+        // let to = action.txParams[0].to
+        // let value = action.txParams[0].value
+        // let fee = action.txParams[0].fee
+        // let plusTimes = action.plusTimes
+        //
+        // let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
+        // let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
+        // let from_balance_expected = Number(from_balance) - (Number(value) + Number(fee)) * plusTimes
+        // let to_balance_expected = Number(to_balance) + Number(value) * plusTimes
+        //
+        // let from_check = {address: from, expectedBalance: from_balance_expected}
+        // let to_check = {address: to, expectedBalance: to_balance_expected}
+        // action.expectedResults[0].balanceChecks = []
+        // action.expectedResults[0].balanceChecks.push(from_check)
+        // action.expectedResults[0].balanceChecks.push(to_check)
+
+        await tcsPressureSendTx.restoreBalances(action)
     },
 
     //endregion
 
     //region 000640
 
-    beforeExecute000640_action0: async function(action){
-        let server = action.server
-        let from = action.txParams[0].from
-        let to = action.txParams[0].to
+    // beforeExecute000640_1st_sign: async function(action){
+    //     //sequence + 1
+    //     let server = action.server
+    //     let from = action.txParams[0].from
+    //     let currentSequence = await utility.getSequence(server, from)
+    //     action.txParams[0].sequence = currentSequence + 1
+    // },
 
-        let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
-        let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
-        let from_check = {address: from, expectedBalance: from_balance}
-        let to_check = {address: to, expectedBalance: to_balance}
-        action.expectedResults[0].balanceChecks = []
-        action.expectedResults[0].balanceChecks.push(from_check)
-        action.expectedResults[0].balanceChecks.push(to_check)
+    // beforeExecute000640_1st_sendRaw: async function(action){
+    //     // let server = action.server
+    //     // let from = action.txParams[0].from
+    //     // let to = action.txParams[0].to
+    //     //
+    //     // let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
+    //     // let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
+    //     // let from_check = {address: from, expectedBalance: from_balance}
+    //     // let to_check = {address: to, expectedBalance: to_balance}
+    //     // action.expectedResults[0].balanceChecks = []
+    //     // action.expectedResults[0].balanceChecks.push(from_check)
+    //     // action.expectedResults[0].balanceChecks.push(to_check)
+    //
+    //     await tcsPressureSendTx.restoreBalances(action)
+    //     return framework.executeTestActionOfSendRawTx(action)
+    // },
 
-        let currentSequence = await utility.getSequence(server, from)
-        action.txParams[0].sequence = currentSequence + 1
+    // beforeExecute000640_2nd_sign: async function(action){
+    //     let server = action.server
+    //     let from = action.txParams[0].from
+    //     let currentSequence = await utility.getSequence(server, from)
+    //     action.txParams[0].sequence = currentSequence
+    // },
+
+    beforeExecute000640_send: async function(action){
+        await tcsPressureSendTx.changeSequence(action)
+        await tcsPressureSendTx.restoreBalances(action)
     },
 
-    beforeExecute000640_action1: async function(action){
-        await tcsPressureSendTx.beforeExecute000630(action)
-        let server = action.server
-        let from = action.txParams[0].from
-
-        let currentSequence = await utility.getSequence(server, from)
-        action.txParams[0].sequence = currentSequence
+    beforeExecute000640_sendRaw: async function(action){
+        await tcsPressureSendTx.restoreBalances(action)
+        await framework.beforeSendRawTx(action)
     },
-
 
     //endregion
 
@@ -491,6 +582,15 @@ module.exports = tcsPressureSendTx = {
     //endregion
 
     // endregion
+
+
+
+
+
+
+
+
+
 
     //region pressure test
     testForPressureTest: function(server, describeTitle, testRound){
