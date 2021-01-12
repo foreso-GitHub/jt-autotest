@@ -158,7 +158,13 @@ module.exports = tcsPressureSendTx = {
                 server.mode.addresses.sequence4, server.mode.addresses.sequence_r_4, value, fee, false)
             let txCount = 5
             let sendOrSignAction = testScript.actions[0]
-            let sendRawAction = testScript.actions[1]
+            let sendRawAction
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                sendRawAction = null
+            }
+            else if (txFunctionName == consts.rpcFunctions.signTx){
+                sendRawAction = testScript.actions[1]
+            }
             tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
             sendOrSignAction.bindData.sequenceStart = 0
             sendOrSignAction.bindData.plusValueTimes = txCount  //change value for 5 times
@@ -172,7 +178,13 @@ module.exports = tcsPressureSendTx = {
                 server.mode.addresses.sequence5, server.mode.addresses.sequence_r_5, value, fee, true)
             let txCount = 5
             let sendOrSignAction = testScript.actions[0]
-            let sendRawAction = testScript.actions[1]
+            let sendRawAction
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                sendRawAction = null
+            }
+            else if (txFunctionName == consts.rpcFunctions.signTx){
+                sendRawAction = testScript.actions[1]
+            }
             tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
             sendOrSignAction.bindData.sequenceStart = 1
             sendOrSignAction.bindData.sequenceOffset = 2
