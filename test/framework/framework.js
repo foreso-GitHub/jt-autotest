@@ -424,8 +424,7 @@ module.exports = framework = {
                 }
                 if(lastSuccessIndex >= 0){
                     let data = action.txFunctionName == consts.rpcFunctions.sendRawTx
-                        ? action.bindData ? action.bindData.txParams[lastSuccessIndex] : action.signTxParams[lastSuccessIndex]  //todo 考虑合并bindData和signTxParams功能
-                        : action.txParams[lastSuccessIndex]
+                        ? action.signTxParams[lastSuccessIndex] : action.txParams[lastSuccessIndex]
                     framework.setSequence(null, data.from, data.sequence + 1)  //if send tx successfully, then sequence need plus 1
                 }
             }
@@ -983,7 +982,7 @@ module.exports = framework = {
             }
             expect(tx.TotalSupply.currency).to.be.equals(param.symbol)
             expect(tx.TotalSupply.issuer).to.be.equals((param.local) ? param.from : consts.default.issuer)
-            expect(tx.Flags).to.be.equals(param.flags)  //todo need restore after bug fixing
+            expect(tx.Flags).to.be.equals(param.flags)
         }
     },
 
@@ -1024,7 +1023,7 @@ module.exports = framework = {
                 expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
                 expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
                 expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : mode.addresses.defaultIssuer.address)
-                if(mode.restrictedLevel >= restrictedLevel.L5) expect(tx.Flags).to.be.equals(txParams.flags)  //todo need restore
+                expect(tx.Flags).to.be.equals(txParams.flags)
             }
             else{
                 let realValue = utility.parseShowValue(txParams.value)

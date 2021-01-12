@@ -50,10 +50,6 @@ module.exports = tcsPressureSendTx = {
         let categoryName = describeTitle + txFunctionName
         let testScripts = tcsPressureSendTx.createTestScriptsForSequenceTest(server, txFunctionName)
         framework.testTestScripts(server, categoryName, testScripts)
-        // framework.testTestScripts(server, categoryName + '无效参数测试1', testScriptsList[1])
-        // framework.testTestScripts(server, categoryName + '无效参数测试2', testScriptsList[2])
-        // framework.testTestScripts(server, categoryName + '多交易测试1', testScriptsList[3])
-        // framework.testTestScripts(server, categoryName + '多交易测试2', testScriptsList[4])
     },
 
     createTestScriptsForSequenceTest: function(server, txFunctionName){
@@ -95,10 +91,11 @@ module.exports = tcsPressureSendTx = {
         testCaseCode = 'FCJT_sendTransaction_000650'
         {
             let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
-                server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee, false)
+                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
 
             testScript.actions[0].bindData.txParams[0].sequence = 1  //set sequence as 1
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+            testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-198, 'The exact transaction was already in this ledger.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
@@ -106,7 +103,56 @@ module.exports = tcsPressureSendTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testCaseCode = 'FCJT_sendTransaction_000660'
+        scriptCode = '000100_' + txFunctionName + '_sequence为小数'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
+
+            testScript.actions[0].bindData.txParams[0].sequence = 0.5  //set sequence as 0.5
+            testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+            testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-284, 'sequence must be positive integer'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000660'
+        scriptCode = '000200_' + txFunctionName + '_sequence为负数'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
+
+            testScript.actions[0].bindData.txParams[0].sequence = -2  //set sequence as -2
+            testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+            testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-284, 'sequence must be positive integer'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_000660'
+        scriptCode = '000300_' + txFunctionName + '_sequence为字符串'
+        {
+            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
+
+            testScript.actions[0].bindData.txParams[0].sequence = '1234'  //set sequence as '1234'
+            testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
+            testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-284, 'sequence must be positive integer'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
         testCaseCode = 'FCJT_sendTransaction_000670'
+        scriptCode = '000100_' + txFunctionName
         {
             let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence4, server.mode.addresses.sequence_r_4, value, fee, false)
@@ -147,61 +193,6 @@ module.exports = tcsPressureSendTx = {
 
             framework.addTestScript(testScripts, testScript)
         }
-
-        // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：小数'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-        //     let expectedError = framework.getError(-284)
-        //     expectedError.information = 'sequence must be positive integer'
-        //     let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
-        //     let sendTxExpectedResult = signTxExpectedResult
-        //     testCase.executeFunction = function(testCase){
-        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-        //             function(txParams, currentSequence){
-        //                 txParams.sequence = 0.5
-        //             })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        // testCasesList.push(testCases)
-        // testCases = []
-        //
-        // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：负数'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-        //     let expectedError = framework.getError(-284)
-        //     expectedError.information = 'sequence must be positive integer'
-        //     let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
-        //     let sendTxExpectedResult = signTxExpectedResult
-        //     testCase.executeFunction = function(testCase){
-        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-        //             function(txParams, currentSequence){
-        //                 txParams.sequence = -1
-        //             })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        //
-        // title = '0660\t无效的sequence参数_02：指定sequence为正整数之外的其他值：字符串'
-        // {
-        //     testCase = tcsPressureSendTx.createTestCaseForSequenceTest(server, title, txFunctionName,
-        //         server.mode.addresses.sequence3, server.mode.addresses.sequence_r_1, value)
-        //     let expectedError = framework.getError(-284)
-        //     expectedError.information = 'sequence must be positive integer'
-        //     let signTxExpectedResult = framework.createExpecteResult(false, expectedError)
-        //     let sendTxExpectedResult = signTxExpectedResult
-        //     testCase.executeFunction = function(testCase){
-        //         return tcsPressureSendTx.executeTransferFailWithSpecialSequence(testCase, sendTxExpectedResult, signTxExpectedResult,
-        //             function(txParams, currentSequence){
-        //                 txParams.sequence = 'abcdefgijklmnopq'
-        //             })
-        //     }
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        // testCasesList.push(testCases)
-        // testCases = []
 
         return testScripts
     },
@@ -244,8 +235,9 @@ module.exports = tcsPressureSendTx = {
     },
 
     updateSendOrSignActionSet: function(sendOrSignAction, sendRawAction){
-        sendOrSignAction.bindData = {}  //sign and sendraw can share data here
+        sendOrSignAction.bindData = {}  //sign and sendraw can share data in bindData.  only works in sequence test.
         sendOrSignAction.bindData.txParams = sendOrSignAction.txParams
+        sendOrSignAction.bindData.timeoutAfterSend = sendOrSignAction.server.mode.defaultBlockTime + 2000
 
         if(sendRawAction == undefined){
             sendOrSignAction.beforeExecution = tcsPressureSendTx.beforeExecuteSendTx
@@ -265,10 +257,12 @@ module.exports = tcsPressureSendTx = {
         let txParam = sendOrSignAction.txParams[0]
         let expectedResult = sendOrSignAction.expectedResults[0]
         for(let i = 0; i < txCount - 1; i++){
-            sendOrSignAction.txParams.push(utility.deepClone(txParam))
+            let newTxParam = utility.deepClone(txParam)
+            sendOrSignAction.txParams.push(newTxParam)
             sendOrSignAction.expectedResults.push(utility.deepClone(expectedResult))
             if(sendRawAction){
                 sendRawAction.expectedResults.push(utility.deepClone(expectedResult))
+                sendRawAction.signTxParams.push(newTxParam)
             }
         }
     },
@@ -287,7 +281,7 @@ module.exports = tcsPressureSendTx = {
 
     fillBalances: async function(action){
         let server = action.server
-        await utility.timeout(server.mode.defaultBlockTime + 2000)
+        await utility.timeout(action.bindData.timeoutAfterSend)
         await tcsPressureSendTx.fillActualBalance(server, action.bindData.balanceChecks[0])
         await tcsPressureSendTx.fillActualBalance(server, action.bindData.balanceChecks[1])
     },
