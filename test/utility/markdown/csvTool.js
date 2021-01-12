@@ -33,13 +33,15 @@ module.exports = csvTool = {
     convertToTestCases: function(table){
         let testCases = []
         for(let i = 1; i < table.length - 1; i++){
+            // let startColumn = 0
+            let startColumn = 2
             let row = table[i]
             let testCase = {}
-            testCase.code = csvTool.clean(row[2])
-            testCase.title = csvTool.clean(row[3])
-            testCase.precondition = csvTool.clean(row[4])
-            testCase.input = csvTool.clean(row[5])
-            testCase.expectedOutput = csvTool.clean(row[6])
+            testCase.code = csvTool.clean(row[startColumn++])
+            testCase.title = csvTool.clean(row[startColumn++])
+            testCase.precondition = csvTool.clean(row[startColumn++])
+            testCase.input = csvTool.clean(row[startColumn++])
+            testCase.expectedOutput = csvTool.clean(row[startColumn++])
             if(testCase.code && testCase.code.length > 0 && testCase.code.indexOf('用例编号（新）') == -1){
                 testCases.push(testCase)
             }

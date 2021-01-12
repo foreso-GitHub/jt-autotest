@@ -348,7 +348,6 @@ module.exports = markdownTool = {
     //region csv2Md
 
     csv2Md: async function (csvPath, mdPath){
-
         let testCases = await markdownTool.csv2TestCases(csvPath)
         let group = markdownTool.groupTestCases(testCases)
         await markdownTool.group2MdFiles(group, mdPath)

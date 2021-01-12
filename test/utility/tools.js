@@ -144,8 +144,8 @@ async function compare(){
 //region testcases
 
 async function csv2Md(){
-    let csvPath = '.\\test\\utility\\markdown\\csv\\20201231'
-    let mdPath = '.\\test\\utility\\markdown\\md\\20201231'
+    let csvPath = '.\\test\\utility\\markdown\\csv\\20210112\\work\\'
+    let mdPath = '.\\test\\utility\\markdown\\md\\20210112\\work\\'
     await markdownTool.csv2Md(csvPath, mdPath)
 }
 
