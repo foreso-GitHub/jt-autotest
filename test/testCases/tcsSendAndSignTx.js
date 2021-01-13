@@ -34,17 +34,17 @@ module.exports = tcsSendAndSignTx = {
 
             categoryName = NativeCoinTest
 
-            // txFunctionName = consts.rpcFunctions.sendTx
-            // txParams = framework.createTxParamsForTransfer(server)
-            // describe(categoryName + '测试：' + txFunctionName, async function () {
-            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            // })
-            //
-            // txFunctionName = consts.rpcFunctions.signTx
-            // txParams = framework.createTxParamsForTransfer(server)
-            // describe(categoryName + '测试：' + txFunctionName, async function () {
-            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            // })
+            txFunctionName = consts.rpcFunctions.sendTx
+            txParams = framework.createTxParamsForTransfer(server)
+            describe(categoryName + '测试：' + txFunctionName, async function () {
+                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            })
+
+            txFunctionName = consts.rpcFunctions.signTx
+            txParams = framework.createTxParamsForTransfer(server)
+            describe(categoryName + '测试：' + txFunctionName, async function () {
+                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            })
 
             //endregion
 
@@ -112,16 +112,16 @@ module.exports = tcsSendAndSignTx = {
         let issuer = txParam.local ? txParam.from : server.mode.addresses.defaultIssuer.address
         logger.debug("===create token: " + tokenSymbol)
 
-        // //token transfer
-        // let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        // describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        // tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+        //token transfer
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
         // //mint token
         let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        // describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        // testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        // framework.testTestScripts(server, describeTitle, testScripts)
+        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
 
         //burn token
         describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
@@ -1120,11 +1120,12 @@ module.exports = tcsSendAndSignTx = {
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].txParams[0].total_supply = '9'
-            if(tcsSendAndSignTx.canMint(testScript.actions[0].txParams[0].flags)){
+            let param = testScript.actions[0].txParams[0]
+            param.total_supply = '9'
+            if(tcsSendAndSignTx.canMint(param.flags)){
                 testScript.actions[0].expectedResults[0].expectedBalances =
-                    [{address: txParams[0].from, value: '987654318900000006', symbol: txParams[0].symbol,
-                    issuer: txParams[0].local ? txParams[0].from : consts.default.issuer}]
+                    [{address: param.from, value: param.flags == consts.flags.mintable ? '987654328950000007' : '987654328950000006', symbol: param.symbol,
+                    issuer: param.local ? param.from : consts.default.issuer}]
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
@@ -1197,7 +1198,7 @@ module.exports = tcsSendAndSignTx = {
             param.total_supply = '100.5/' + param.symbol
             if(tcsSendAndSignTx.canMint(param.flags)){
                 testScript.actions[0].expectedResults[0].expectedBalances =
-                    [{address: param.from, value: '987654318900000006', symbol: param.symbol, issuer: issuer}]
+                    [{address: param.from, value: param.flags == consts.flags.mintable ? '987654328950000007' : '987654328950000006', symbol: param.symbol, issuer: issuer}]
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
@@ -1264,7 +1265,8 @@ module.exports = tcsSendAndSignTx = {
             param.flags = consts.flags.mintable
             if(type == consts.coinTypes.local_mintable || type == consts.coinTypes.global_mintable){
                 testScript.actions[0].expectedResults[0].expectedBalances =
-                    [{address: param.from, value: '987654318900000006', symbol: param.symbol, issuer: issuer}]
+                    [{address: param.from, value: (type == consts.coinTypes.local_mintable || type == consts.coinTypes.global_mintable)
+                            ? '987654328950000007' : '987654328950000006', symbol: param.symbol, issuer: issuer}]
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
