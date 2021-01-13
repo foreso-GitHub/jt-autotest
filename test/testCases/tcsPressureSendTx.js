@@ -97,7 +97,7 @@ module.exports = tcsPressureSendTx = {
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-198, 'The exact transaction was already in this ledger.'))
+                framework.getError(-284, 'Malformed: Sequence is not in the past.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
 
             framework.addTestScript(testScripts, testScript)
