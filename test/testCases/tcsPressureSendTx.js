@@ -559,7 +559,7 @@ module.exports = tcsPressureSendTx = {
         //endregion
 
         testCases = tcsPressureSendTx.createTestCaseForPurePressureTest(server,  accountParams)
-        framework.testTestScripts(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     createTestCaseForPurePressureTest: function(server, accountParams){

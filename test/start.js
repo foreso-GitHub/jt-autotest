@@ -244,15 +244,19 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
+                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
                 //endregion
 
-                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
 
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
+
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
                 //
                 // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
+                // tcsSign.testForSign(server, '测试jt_sign')
 
 
             })

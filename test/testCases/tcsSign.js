@@ -88,7 +88,7 @@ module.exports = tcsSign = {
             framework.addTestScript(testCases, testCase)
         }
 
-        framework.testTestScripts(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     createSingleTestCase: function(server, title, txParams, expectedSignedTxs, needPass, expectedError){

@@ -384,7 +384,7 @@ module.exports = tcsSendRawTx = {
             }
         }
 
-        // framework.testTestScripts(server, describeTitle, testCases)
+        // framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     executeForPerformanceBySendRawTxs: async function(testCase){

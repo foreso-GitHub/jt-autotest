@@ -22,69 +22,78 @@ module.exports = tcsCreateAccount = {
 
     //region create account
     testForCreateAccount: function(server, describeTitle){
-        let testCases = []
 
-        let title = '0010\t创建有效的账户'
-        let nickName = utility.getDynamicTokenName().symbol
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
 
-        title = '0020_0001\t创建无效的账户:重复的名字'
-        nickName = server.mode.addresses.balanceAccount.nickName
-        needPass = false
-        expectedError = framework.getError(-191, 'the nickname already exists')
-        testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createAccount_000010'
+        scriptCode = defaultScriptCode + '_创建有效的账户'
+        {
+            let nickName = utility.getDynamicTokenName().symbol
+            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickName)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020_0002\t创建无效的账户:超过长度的字符串数字'
-        nickName = utility.getDynamicTokenName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-        needPass = false
-        expectedError = framework.getError(-278, 'the length of the nickname must be in the range (0,256]')
-        testCase = tcsCreateAccount.createSingleTestCaseForCreateAccount(server, title, nickName, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createAccount_000020'
+        scriptCode = defaultScriptCode + '_创建无效的账户，重复的名字'
+        {
+            let nickName = server.mode.addresses.balanceAccount.nickName
+            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickName)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-191, 'the nickname already exists'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        framework.testTestScripts(server, describeTitle, testCases)
+        testCaseCode = 'FCJT_createAccount_000020'
+        scriptCode = '000200' + '_创建无效的账户，超过长度的字符串数字'
+        {
+            let nickName = utility.getDynamicTokenName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+                + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
+            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickName)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'the length of the nickname must be in the range (0,256]'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        framework.testTestScripts(server, describeTitle, testScripts)
+
     },
 
-    createSingleTestCaseForCreateAccount: function(server, title, nickName, needPass, expectedError){
+    createTestScript: function(server, testCaseCode, scriptCode, nickName,){
 
         let functionName = consts.rpcFunctions.createAccount
         let txParams = []
         txParams.push(nickName)
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
 
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsCreateAccount.checkCreateAccount,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain],
+            [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsCreateAccount.checkCreateWallet, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        return testCase
     },
 
-    checkCreateAccount: function(testCase){
+    checkCreateAccount: function(action){
         let response = action.actualResult
-        let needPass = testCase.expectedResult.needPass
+        let needPass = action.expectedResults[0].needPass
         framework.checkResponse(response)
         if(needPass){
             let account = response.result[0]
-            let nickName = testCase.txParams[0]
+            let nickName = action.txParams[0]
             expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
             expect(account.address).to.match(/^j/)
             expect(account.secret).to.match(/^s/)

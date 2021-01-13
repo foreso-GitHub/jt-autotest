@@ -45,7 +45,7 @@ module.exports = tcsGetAccounts = {
         )
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestScripts(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     checkGetAccounts: function(testCase){

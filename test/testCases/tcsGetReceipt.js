@@ -52,7 +52,7 @@ module.exports = tcsGetReceipt = {
         testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
         framework.addTestScript(testCases, testCase)
 
-        framework.testTestScripts(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     createSingleTestCaseForGetTransactionReceipt: function(server, title, hash, needPass, expectedError){
