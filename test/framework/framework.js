@@ -194,6 +194,7 @@ module.exports = framework = {
     createTestScript: function(server, testCaseCode, scriptCode, actions, restrictedLv, supportedServices, supportedInterfaces){
         let testScript = {}
         testScript.type = "it"
+        testScript.testCaseCode = testCaseCode
         let testCase = framework.getTestCase(testCaseCode)
         testScript.testCase = testCase
         testCase.scripts.push(testScript)

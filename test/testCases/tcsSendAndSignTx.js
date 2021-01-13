@@ -50,19 +50,19 @@ module.exports = tcsSendAndSignTx = {
 
             //region token test
 
-            // if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
-            //
-            //     txFunctionName = consts.rpcFunctions.sendTx
-            //     describe('代币测试：' + txFunctionName, async function () {
-            //         tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
-            //     })
-            //
-            //     txFunctionName = consts.rpcFunctions.signTx
-            //     describe('代币测试：' + txFunctionName, async function () {
-            //         tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
-            //     })
-            //
-            // }
+            if(server.mode.service == serviceType.newChain && server.mode.restrictedLevel >= restrictedLevel.L3){
+
+                txFunctionName = consts.rpcFunctions.sendTx
+                describe('代币测试：' + txFunctionName, async function () {
+                    tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
+                })
+
+                txFunctionName = consts.rpcFunctions.signTx
+                describe('代币测试：' + txFunctionName, async function () {
+                    tcsSendAndSignTx.testForIssueTokenInComplexMode(server, txFunctionName)
+                })
+
+            }
 
             //endregion
 
@@ -117,21 +117,21 @@ module.exports = tcsSendAndSignTx = {
         describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
         tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
-        //mint token
-        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn all
-        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
+        // //mint token
+        // let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        // describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        // testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        // framework.testTestScripts(server, describeTitle, testScripts)
+        //
+        // //burn token
+        // describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        // testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        // framework.testTestScripts(server, describeTitle, testScripts)
+        //
+        // //burn all
+        // describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        // testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
+        // framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
@@ -225,6 +225,7 @@ module.exports = tcsSendAndSignTx = {
         //region test cases for basic transfer
 
         testCaseCode = 'FCJT_sendTransaction_010010'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -232,6 +233,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_1/SWT'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -240,6 +242,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_1/swt'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -251,6 +254,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_1/Swt'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -262,6 +266,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -273,6 +278,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_错误的秘钥1'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -284,6 +290,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_错误的秘钥2'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -295,6 +302,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010040'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -307,6 +315,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010050'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -318,6 +327,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010060'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_交易额超过发起钱包余额'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -332,6 +342,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010060'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_交易额超过最大值'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -352,6 +363,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -365,6 +377,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010080'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_交易额为空'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -376,6 +389,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010080'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_交易额为字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -387,6 +401,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_不带currency，交易额为小于1(最小数额)的正小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -398,6 +413,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_带currency，交易额为小于1的正小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -412,6 +428,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_带currency，交易额为小于最小数额的正小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -430,6 +447,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_不带currency，交易额为大于1(最小数额)的小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -441,6 +459,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_带currency，交易额为大于1的小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -455,6 +474,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_带currency，交易额为10.000001/SWT或者10.00000001/Coin'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -469,6 +489,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010110'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_交易额为负小数：-0.1、-1.23等'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -496,6 +517,7 @@ module.exports = tcsSendAndSignTx = {
         //region test cases
 
         testCaseCode = 'FCJT_sendTransaction_010310'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_memo格式为："memos":["大家好"]'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -504,6 +526,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010310'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_memo格式为奇数长度数字字串："memos":["12345"]'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -512,6 +535,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010310'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_memo格式为偶数长度数字字串："memos":["123456"]'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -520,6 +544,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010310'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000400_' + type + '_memo格式为字串："memos":["E5A4A7E5AEB6E5A5BDff"]'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -528,6 +553,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010320'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_memo格式为： "memos":[{"type":"ok","format":"utf8","data":"E5A4A7E5AEB6E5A5BD"}]'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -540,6 +566,7 @@ module.exports = tcsSendAndSignTx = {
         let memos_901k = utility.createMemosWithSpecialLength(901 * Math.pow(2, 10))
 
         testCaseCode = 'FCJT_sendTransaction_010330'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好900K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -549,6 +576,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010330'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type  + '_memo内容使整个交易内容超过900K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -560,6 +588,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010330'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type  + '_memo内容使整个交易内容正好10K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -569,6 +598,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010340'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_memo内容使整个交易内容正好900K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -579,6 +609,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010340'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type  + '_memo内容使整个交易内容超过900K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -590,6 +621,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010340'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type  + '_memo内容使整个交易内容正好10K'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -612,6 +644,7 @@ module.exports = tcsSendAndSignTx = {
         //region test cases
 
         testCaseCode = 'FCJT_sendTransaction_010510'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee为默认值10'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -620,6 +653,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010510'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_fee为默认值10'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -627,6 +661,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010520'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee比12小，但是足以发起成功的交易，fee=10'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -635,6 +670,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010530'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee比12大但小于钱包余额'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -643,6 +679,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010540'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee比10小（比如5），但是不足以发起成功的交易，fee=9'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -654,6 +691,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010550'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee为0'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -665,6 +703,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010560'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee为大于0的小数，比如12.5、5.5'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -676,6 +715,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010570'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee为大于发起钱包' + type + '余额的整数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -687,6 +727,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010580'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee为负数，比如-3.5、-555等'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -698,6 +739,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010590'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_fee为字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -709,6 +751,7 @@ module.exports = tcsSendAndSignTx = {
         }
 
         testCaseCode = 'FCJT_sendTransaction_010590'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_fee为数字'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -743,7 +786,8 @@ module.exports = tcsSendAndSignTx = {
 
         //region test cases
 
-        testCaseCode = 'FCJT_sendTransaction_000270'
+        testCaseCode = 'FCJT_sendTransaction_021010'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -752,20 +796,9 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000270'
-        scriptCode = '000200_' + type + '_发行量是负数'
-        {
-            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-            testScript.actions[0].txParams[0].total_supply = '-1234567890'
-            let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-175, 'No permission issue.'))
-            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
-            framework.addTestScript(testScripts, testScript)
-        }
-
-        testCaseCode = 'FCJT_sendTransaction_000271'
-        scriptCode = defaultScriptCode
+        testCaseCode = 'FCJT_sendTransaction_021020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + type + '_发行量为正小数，小数位数小于等于decimals'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
@@ -776,8 +809,9 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000272'
-        scriptCode = defaultScriptCode
+        testCaseCode = 'FCJT_sendTransaction_021030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + type + '_发行量为正小数，小数位数大于decimals'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
@@ -789,8 +823,22 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000273'
-        scriptCode = defaultScriptCode
+        testCaseCode = 'FCJT_sendTransaction_021040'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000200_' + type + '_发行量是负数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = '-1234567890'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-175, 'No permission issue.'))
+            framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_021050'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + type + 'total_supply格式与symbol不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
@@ -802,20 +850,9 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000290'
-        scriptCode = defaultScriptCode
-        {
-            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
-            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
-            testScript.actions[0].txParams[0].type = "issuecoin"
-            let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'error type issuecoin'))
-            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
-            framework.addTestScript(testScripts, testScript)
-        }
-
-        testCaseCode = 'FCJT_sendTransaction_000300'
-        scriptCode = defaultScriptCode
+        testCaseCode = 'FCJT_sendTransaction_021060'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + type + 'from参数为一个不存在的账户'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
@@ -827,7 +864,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000310'
+        testCaseCode = 'FCJT_sendTransaction_021070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_无效的name参数:很长的字符串，超过256字节'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -839,7 +877,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000310'
+        testCaseCode = 'FCJT_sendTransaction_021070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_有效的name参数:很长的字符串，正好256字节'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -848,7 +887,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000310'
+        testCaseCode = 'FCJT_sendTransaction_021070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_有效的name参数:被已有代币使用过的name'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -857,7 +897,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000320'
+        testCaseCode = 'FCJT_sendTransaction_021080'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_无效的symbol参数:长度超过12字节'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -868,7 +909,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000320'
+        testCaseCode = 'FCJT_sendTransaction_021080'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_无效的symbol参数:被已有代币使用过的symbol'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -884,7 +926,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000320'
+        testCaseCode = 'FCJT_sendTransaction_021080'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_有效的symbol参数:长度正好12字节'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -892,7 +935,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000330'
+        testCaseCode = 'FCJT_sendTransaction_021090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_无效的decimals参数:字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -904,7 +948,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000330'
+        testCaseCode = 'FCJT_sendTransaction_021090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_无效的decimals参数:负数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -916,7 +961,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000330'
+        testCaseCode = 'FCJT_sendTransaction_021090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_无效的decimals参数:负数字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -928,7 +974,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000330'
+        testCaseCode = 'FCJT_sendTransaction_021090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000400_' + type + '_无效的decimals参数:小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -940,7 +987,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000330'
+        testCaseCode = 'FCJT_sendTransaction_021090'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000500_' + type + '_无效的decimals参数:小数字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -952,7 +1000,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000340'
+        testCaseCode = 'FCJT_sendTransaction_021100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_无效的total_supply参数:非数字字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -964,7 +1013,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000340'
+        testCaseCode = 'FCJT_sendTransaction_021100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_无效的total_supply参数:负数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -976,7 +1026,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000340'
+        testCaseCode = 'FCJT_sendTransaction_021100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_无效的total_supply参数:负数字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -988,7 +1039,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000340'
+        testCaseCode = 'FCJT_sendTransaction_021100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000400_' + type + '_无效的total_supply参数:小数'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1000,7 +1052,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000340'
+        testCaseCode = 'FCJT_sendTransaction_021100'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000500_' + type + '_有效的total_supply参数:小数字符串'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1008,6 +1061,42 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].total_supply = '10000.12345678'
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'total_supply must be integer type'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_021110'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000100_' + type + '_total_supply正好900兆'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = '9000000000000000000'
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_021110'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000200_' + type + '_total_supply超过900兆'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].total_supply = '9000000000000000001'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error total_supply, out of range'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_021120'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + type + '_type参数为非IssueCoin'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
+            testScript.actions[0].txParams[0].type = "issuecoin"
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error type issuecoin'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -1261,6 +1350,52 @@ module.exports = tcsSendAndSignTx = {
     executeBurnAllOfSendTx: function(action){
         return framework.executeTestActionOfTx(action, tcsSendAndSignTx.beforeBurnAll)
     },
+
+    //endregion
+
+    //region process test case code
+
+    createTestScriptForTx: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
+
+    },
+
+    processTestCaseCode: function(testCaseCode, coinType){
+        let prefix = 'FCJT_sendTransaction_02'
+        if(coinType == consts.coinTypes.global_normal){
+            prefix = 'FCJT_sendTransaction_02'
+        }
+        else if(coinType == consts.coinTypes.global_mintable){
+            prefix = 'FCJT_sendTransaction_03'
+        }
+        else if(coinType == consts.coinTypes.global_burnable){
+            prefix = 'FCJT_sendTransaction_04'
+        }
+        else if(coinType == consts.coinTypes.global_both){
+            prefix = 'FCJT_sendTransaction_05'
+        }
+        else if(coinType == consts.coinTypes.local_normal){
+            prefix = 'FCJT_sendTransaction_06'
+        }
+        else if(coinType == consts.coinTypes.local_mintable){
+            prefix = 'FCJT_sendTransaction_07'
+        }
+        else if(coinType == consts.coinTypes.local_burnable){
+            prefix = 'FCJT_sendTransaction_08'
+        }
+        else if(coinType == consts.coinTypes.local_both){
+            prefix = 'FCJT_sendTransaction_09'
+        }
+        else{
+            prefix = 'FCJT_sendTransaction_01'
+            // throw Error('No such coin type! ' + coinType)
+        }
+
+        let newCode = testCaseCode
+            .replace('FCJT_sendTransaction_01', prefix)
+            .replace('FCJT_sendTransaction_02', prefix)
+
+        return newCode
+    }
 
     //endregion
 

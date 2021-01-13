@@ -584,7 +584,7 @@ let data = {
 
 let token = {
     config_normal:{
-        testName: "不可增发不可销毁的全局代币",
+        testName: consts.coinTypes.global_normal,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -595,7 +595,7 @@ let token = {
         fee: "10",
     },
     config_mintable:{
-        testName: "可增发的全局代币",
+        testName: consts.coinTypes.global_mintable,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -606,7 +606,7 @@ let token = {
         fee: "10",
     },
     config_burnable:{
-        testName: "可销毁的全局代币",
+        testName: consts.coinTypes.global_burnable,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -617,7 +617,7 @@ let token = {
         fee: "10",
     },
     config_mint_burn:{
-        testName: "既可增发又可销毁的全局代币",
+        testName: consts.coinTypes.global_both,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -628,7 +628,7 @@ let token = {
         fee: "10",
     },
     config_issuer_normal:{
-        testName: "不可增发不可销毁的本地代币",
+        testName: consts.coinTypes.local_normal,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -639,7 +639,7 @@ let token = {
         fee: "10",
     },
     config_issuer_mintable:{
-        testName: "可增发的本地代币",
+        testName: consts.coinTypes.local_mintable,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -650,7 +650,7 @@ let token = {
         fee: "10",
     },
     config_issuer_burnable:{
-        testName: "可销毁的本地代币",
+        testName: consts.coinTypes.local_burnable,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",
@@ -661,7 +661,7 @@ let token = {
         fee: "10",
     },
     config_issuer_mint_burn:{
-        testName: "既可增发又可销毁的本地代币",
+        testName: consts.coinTypes.local_both,
         type: "IssueCoin",
         name: "TestCoin",
         symbol: "TC",

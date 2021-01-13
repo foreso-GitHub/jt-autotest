@@ -136,6 +136,19 @@ module.exports = consts = {
     },
     //endregion
 
+    //region coin type
+    coinTypes:{
+        global_normal: "不可增发不可销毁的全局代币",
+        global_mintable: "可增发的全局代币",
+        global_burnable: "可销毁的全局代币",
+        global_both: "既可增发又可销毁的全局代币",
+        local_normal: "不可增发不可销毁的本地代币",
+        local_mintable: "可增发的本地代币",
+        local_burnable: "可销毁的本地代币",
+        local_both: "既可增发又可销毁的本地代币",
+    },
+    //endregion
+
     //region versions
     versions:{
         '20201105': 'v0.5.1-dev',
