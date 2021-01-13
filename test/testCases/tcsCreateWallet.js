@@ -22,141 +22,195 @@ module.exports = tcsCreateWallet = {
 
     //region create account
     testForCreateWallet: function(server, describeTitle){
-        let testCases = []
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+        let functionName = consts.rpcFunctions.createWallet
 
         //region 参数为空
-        let title = '0010\t创建账户-参数为空'
-        let needPass = true
-        let expectedError = {"error":"unknown key type","status":-191,"type":"tefCREATED"}
-        let type
-        let testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+
+        testCaseCode = 'FCJT_createWallet_000010'
+        scriptCode = defaultScriptCode + '_参数为空'
+        {
+            let type
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         //endregion
 
         //region ECDSA
-        title = '0020\t创建账户-参数为ECDSA'
-        type = consts.walletTypes.ECDSA
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
 
-        title = '0021\t创建账户-参数为ecdsa'
-        type = 'ecdsa'
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000020'
+        scriptCode = defaultScriptCode + '_参数为ECDSA'
+        {
+            let type = consts.walletTypes.ECDSA
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0022\t创建账户-参数为Ecdsa'
-        type = 'Ecdsa'
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000020'
+        scriptCode = '000200' + '_参数为ecdsa'
+        {
+            let type = 'ecdsa'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_createWallet_000020'
+        scriptCode = '000300' + '_参数为Ecdsa'
+        {
+            let type = 'Ecdsa'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         //endregion
 
         //region Ed25519
-        title = '0020\t创建账户-参数为ECDSA'
-        type = consts.walletTypes.Ed25519
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
 
-        title = '0021\t创建账户-参数为ed25519'
-        type = 'ed25519'
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000030'
+        scriptCode = defaultScriptCode + '_参数为Ed25519'
+        {
+            let type = consts.walletTypes.Ed25519
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0022\t创建账户-参数为ED25519'
-        type = 'ED25519'
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000030'
+        scriptCode = '000200' + '_参数为ed25519'
+        {
+            let type = 'ed25519'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_createWallet_000030'
+        scriptCode = '000300' + '_参数为ED25519'
+        {
+            let type = 'ED25519'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         //endregion
 
         //region SM2
-        title = '0020\t创建账户-参数为SM2'
-        type = consts.walletTypes.SM2
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
 
-        title = '0021\t创建账户-参数为sm2'
-        type = 'sm2'
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000040'
+        scriptCode = defaultScriptCode + '_参数为SM2'
+        {
+            let type = consts.walletTypes.SM2
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0022\t创建账户-参数为Sm2'
-        type = 'Sm2'
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000040'
+        scriptCode = '000200' + '_参数为sm2'
+        {
+            let type = 'sm2'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_createWallet_000040'
+        scriptCode = '000300' + '_参数为Sm2'
+        {
+            let type = 'Sm2'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         //endregion
 
         //region 无效的参数
 
-        title = '0050\t创建账户-无效的参数: 数字'
-        type = 123123
-        needPass = false
-        expectedError = framework.getError(-269, 'key type is not string')
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000050'
+        scriptCode = defaultScriptCode + '_无效的参数,数字'
+        {
+            let type = 123123
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'key type is not string'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0051\t创建账户-无效的参数: 非ECDSA/Ed25519/SM2'
-        type = "123123"
-        needPass = false
-        expectedError = framework.getError(-191, 'unknown key type')
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000050'
+        scriptCode = '000200' + '_无效的参数,非ECDSA/Ed25519/SM2'
+        {
+            let type = '123123'
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'unknown key type'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0052\t创建账户-无效的参数: 空格'
-        type = "   "
-        needPass = false
-        expectedError = framework.getError(-191, 'unknown key type')
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000050'
+        scriptCode = '000300' + '_无效的参数,空格'
+        {
+            let type = "   "
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'unknown key type'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0053\t创建账户-无效的参数: 空格SM2'
-        type = "  SM2"
-        needPass = false
-        expectedError = framework.getError(-191, 'unknown key type')
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000050'
+        scriptCode = '000400' + '_无效的参数,空格SM2'
+        {
+            let type = "  SM2"
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'unknown key type'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0054\t创建账户-参数为""'
-        type = ''
-        needPass = false
-        expectedError = framework.getError(-191, 'unknown key type')
-        testCase = tcsCreateWallet.createSingleTestCaseForCreateWallet(server, title, type, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_createWallet_000050'
+        scriptCode = '000500' + '_无效的参数,""'
+        {
+            let type = ""
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'unknown key type'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         //endregion
 
-        framework.testTestScripts(server, describeTitle, testCases)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForCreateWallet: function(server, title, type, needPass, expectedError){
-
-        let functionName = consts.rpcFunctions.createWallet
+    createTestScript: function(server, testCaseCode, scriptCode, functionName, type){
         let txParams = []
         if(type != undefined) txParams.push(type)
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.expectedError = expectedError
 
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsCreateWallet.checkCreateWallet,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain],
+            [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-
-        return testCase
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsCreateWallet.checkCreateWallet, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
     },
 
-    checkCreateWallet: function(testCase){
+    checkCreateWallet: function(action){
         let response = action.actualResult
-        let needPass = testCase.expectedResult.needPass
-        let type = testCase.txParams[0]
-        framework.checkResponse(response)
+        let needPass = action.expectedResults[0].needPass
+        let type = action.txParams[0]
+        framework.checkGetResponse(response)
         if(needPass){
             let account = response.result[0]
             expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
@@ -170,7 +224,7 @@ module.exports = tcsCreateWallet = {
             }
         }
         else{
-            framework.checkResponseError(testCase, response, testCase.expectedResult.expectedError)
+            framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
     //endregion

@@ -96,7 +96,7 @@ module.exports = tcsGetReceipt = {
             expect(to).to.be.equals(testCase.server.mode.txs.tx1.Destination)
         }
         else{
-            framework.checkResponseError(testCase, response)
+            framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
 

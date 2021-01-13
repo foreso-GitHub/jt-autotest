@@ -184,6 +184,8 @@ describe('Jingtum测试', function() {
 
             describe('debug testing', async function () {
 
+                //region test1
+
                 // this.timeout(480000*100)
                 // tcsPressureSendTx.testForFastPerformance(server,
                 //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
@@ -222,7 +224,9 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
+                //endregion
 
+                //region done
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
@@ -236,9 +240,19 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
-                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                //
+                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
-                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+                //endregion
+
+                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+                //
+                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+                //
+                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
 
 
             })

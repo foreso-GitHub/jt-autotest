@@ -151,7 +151,7 @@ module.exports = tcsGetBalance = {
             expect(Number(response.result.balance.value)).to.be.above(0)
         }
         else{
-            framework.checkResponseError(testCase, response)
+            framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
 
