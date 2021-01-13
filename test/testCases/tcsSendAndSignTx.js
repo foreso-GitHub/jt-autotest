@@ -34,17 +34,17 @@ module.exports = tcsSendAndSignTx = {
 
             categoryName = NativeCoinTest
 
-            txFunctionName = consts.rpcFunctions.sendTx
-            txParams = framework.createTxParamsForTransfer(server)
-            describe(categoryName + '测试：' + txFunctionName, async function () {
-                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            })
-
-            txFunctionName = consts.rpcFunctions.signTx
-            txParams = framework.createTxParamsForTransfer(server)
-            describe(categoryName + '测试：' + txFunctionName, async function () {
-                tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
-            })
+            // txFunctionName = consts.rpcFunctions.sendTx
+            // txParams = framework.createTxParamsForTransfer(server)
+            // describe(categoryName + '测试：' + txFunctionName, async function () {
+            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            // })
+            //
+            // txFunctionName = consts.rpcFunctions.signTx
+            // txParams = framework.createTxParamsForTransfer(server)
+            // describe(categoryName + '测试：' + txFunctionName, async function () {
+            //     tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, txParams)
+            // })
 
             //endregion
 
@@ -112,26 +112,26 @@ module.exports = tcsSendAndSignTx = {
         let issuer = txParam.local ? txParam.from : server.mode.addresses.defaultIssuer.address
         logger.debug("===create token: " + tokenSymbol)
 
-        //token transfer
-        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+        // //token transfer
+        // let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        // describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        // tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
 
         // //mint token
-        // let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
         // describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
         // testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
         // framework.testTestScripts(server, describeTitle, testScripts)
-        //
-        // //burn token
-        // describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        // testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        // framework.testTestScripts(server, describeTitle, testScripts)
-        //
-        // //burn all
-        // describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        // testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
-        // framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn token
+        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn all
+        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
@@ -1114,7 +1114,9 @@ module.exports = tcsSendAndSignTx = {
         let scriptCode
 
         //region test cases
-        testCaseCode = 'FCJT_sendTransaction_000370'
+
+        testCaseCode = 'FCJT_sendTransaction_022010'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1132,31 +1134,34 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000371'
+        testCaseCode = 'FCJT_sendTransaction_022020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_decimal不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             testScript.actions[0].txParams[0].decimals = '9'
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'The transaction is ill-formed.'))
+                framework.getError(-278, 'Invalid.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000371'
+        testCaseCode = 'FCJT_sendTransaction_022020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_name不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             testScript.actions[0].txParams[0].name = 'TestCoin_StrangeName'
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'The transaction is ill-formed.'))
+                framework.getError(-278, 'Invalid.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000371'
+        testCaseCode = 'FCJT_sendTransaction_022020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_非法flag'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1168,7 +1173,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000371'
+        testCaseCode = 'FCJT_sendTransaction_022020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000400_' + type + '_flag不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1178,6 +1184,93 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-278, 'invalid parameter flag'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_022030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + '_格式为100.5/USD，小数位数小于等于decimals'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let param = testScript.actions[0].txParams[0]
+            let issuer = param.local ? param.from : consts.default.issuer
+            param.total_supply = '100.5/' + param.symbol
+            if(tcsSendAndSignTx.canMint(param.flags)){
+                testScript.actions[0].expectedResults[0].expectedBalances =
+                    [{address: param.from, value: '987654318900000006', symbol: param.symbol, issuer: issuer}]
+            }
+            else{
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-175, 'No permission issue.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_022040'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + '_格式为100.5/USD，小数位数大于decimals'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let param = testScript.actions[0].txParams[0]
+            param.total_supply = '100.000000005/' + param.symbol
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error total_supply'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_022050'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + '_symbol不一致'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let param = testScript.actions[0].txParams[0]
+            param.total_supply = '1/nosymbol'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'currency in total_supply is not matched with symbol'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_022060'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + '_增发量可使代币总量超过900兆'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let param = testScript.actions[0].txParams[0]
+            param.total_supply = '9000000000000000000'
+            if(param.flags != consts.flags.normal){
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-385, 'Cannot exceed the maximum total supply number.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
+            else{
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-175, 'No permission issue.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_022070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + '_flags为增发参数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            let param = testScript.actions[0].txParams[0]
+            let issuer = param.local ? param.from : consts.default.issuer
+            param.total_supply = '1'
+            param.flags = consts.flags.mintable
+            if(type == consts.coinTypes.local_mintable || type == consts.coinTypes.global_mintable){
+                testScript.actions[0].expectedResults[0].expectedBalances =
+                    [{address: param.from, value: '987654318900000006', symbol: param.symbol, issuer: issuer}]
+            }
+            else{
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-277, 'The transaction has an invalid flag.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -1195,7 +1288,8 @@ module.exports = tcsSendAndSignTx = {
 
         //region test cases
 
-        testCaseCode = 'FCJT_sendTransaction_000380'
+        testCaseCode = 'FCJT_sendTransaction_023010'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_销毁代币'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1208,7 +1302,22 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000380'
+        testCaseCode = 'FCJT_sendTransaction_023020'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = defaultScriptCode + '_销毁代币,格式是"-100/USD"'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].total_supply = '-9/' + testScript.actions[0].txParams[0].symbol
+            if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-175, 'No permission issue.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_023030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000200_' + type + '_销毁代币:decimal不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1217,7 +1326,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult
             if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
                 expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'The transaction is ill-formed.'))
+                    framework.getError(-278, 'Invalid.'))
             }
             else{
                 expectedResult = framework.createExpecteResult(false,
@@ -1227,7 +1336,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000380'
+        testCaseCode = 'FCJT_sendTransaction_023030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000300_' + type + '_销毁代币:name不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1236,7 +1346,7 @@ module.exports = tcsSendAndSignTx = {
             let expectedResult
             if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
                 expectedResult = framework.createExpecteResult(false,
-                    framework.getError(-278, 'The transaction is ill-formed.'))
+                    framework.getError(-278, 'Invalid.'))
             }
             else{
                 expectedResult = framework.createExpecteResult(false,
@@ -1246,7 +1356,8 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000380'
+        testCaseCode = 'FCJT_sendTransaction_023030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = '000400_' + type + '_销毁代币:flag不一致'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1258,7 +1369,49 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        testCaseCode = 'FCJT_sendTransaction_000420'
+        testCaseCode = 'FCJT_sendTransaction_023040'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000100_' + type + '_销毁代币:小数位数小于等于decimals'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].total_supply = '-9.00000001/' + testScript.actions[0].txParams[0].symbol
+            let expectedResult
+            if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
+                expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-175, 'No permission issue.'))
+                framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
+            }
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_023050'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000100_' + type + '_销毁代币:小数位数小于等于decimals'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].total_supply = '-9.000000001/' + testScript.actions[0].txParams[0].symbol
+            let expectedResult
+            expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error total_supply'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_023060'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000100_' + type + '_销毁代币:symbol不一致'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].total_supply = '-9/nosymbol'
+            let expectedResult
+            expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'currency in total_supply is not matched with symbol'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_023070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_无效地销毁：销毁数量大于发行数量'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -1277,6 +1430,19 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testCaseCode = 'FCJT_sendTransaction_023080'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000200_' + type + '_销毁代币:无效的type参数'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].total_supply = '-9'
+            testScript.actions[0].txParams[0].type = 'issuecoin'
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-278, 'error type issuecoin'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         //endregion
 
         return testScripts
@@ -1290,8 +1456,9 @@ module.exports = tcsSendAndSignTx = {
 
         //region test cases
 
-        testCaseCode = 'FCJT_sendTransaction_000380'
-        scriptCode = '000500_' + type + '_销毁所有'
+        testCaseCode = 'FCJT_sendTransaction_023070'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000200_' + type + '_销毁所有'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].executeFunction = tcsSendAndSignTx.executeBurnAllOfSendTx
@@ -1360,7 +1527,7 @@ module.exports = tcsSendAndSignTx = {
     },
 
     processTestCaseCode: function(testCaseCode, coinType){
-        let prefix = 'FCJT_sendTransaction_02'
+        let prefix
         if(coinType == consts.coinTypes.global_normal){
             prefix = 'FCJT_sendTransaction_02'
         }

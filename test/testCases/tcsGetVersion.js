@@ -92,7 +92,7 @@ module.exports = tcsGetVersion = {
     checkGetVersion: function(action){
         let expectedResult = action.expectedResults[0]
         let actualResult = action.actualResult
-        framework.checkResponse(actualResult)
+        framework.checkGetResponse(actualResult)
         if(expectedResult.needPass){
             let version = actualResult.result
             if(utility.isJSON(version)){

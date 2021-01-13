@@ -976,7 +976,7 @@ module.exports = framework = {
             let symbolStart = param.total_supply.indexOf('/')
             if(symbolStart != -1){
                 let paramTotalSupply = Number(param.total_supply.substring(0, symbolStart)) * Math.pow(10, Number(param.decimals))
-                expect(tx.TotalSupply.value).to.be.equals(paramTotalSupply.toString())
+                expect(tx.TotalSupply.value).to.be.equals(paramTotalSupply.toFixed())
             }
             else{
                 expect(tx.TotalSupply.value).to.be.equals(param.total_supply)
@@ -1086,6 +1086,10 @@ module.exports = framework = {
         expect(actualResult).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
         // expect(value.status).to.equal(isSuccess ? status.success: status.error)
         // expect(utility.isResponseStatusSuccess(action.actualResult)).to.equal(isSuccess)
+    },
+
+    checkGetResponse: function(actualResult){
+        expect(actualResult).to.be.jsonSchema(schema.GET_RESPONSE_SCHEMA)
     },
 
     checkResponseError: function(action, expectedResult, actualResult){
