@@ -92,75 +92,6 @@ module.exports = tcsSendAndSignTx = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    testForIssueToken: function(server, categoryName, txFunctionName, account, configToken){
-        let testName = ''
-        let describeTitle = ''
-        let testScripts = []
-        let txParams = {}
-
-        //create token
-        testName = '测试创建token'
-        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        txParams = framework.createTxParamsForIssueToken(server, account, configToken)
-        testScripts = tcsSendAndSignTx.createTestScriptsForCreateToken(server, categoryName, txFunctionName, txParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //set token properties
-        let txParam = txParams[0]
-        let tokenName = txParam.name
-        let tokenSymbol = txParam.symbol
-        let issuer = txParam.local ? txParam.from : server.mode.addresses.defaultIssuer.address
-        logger.debug("===create token: " + tokenSymbol)
-
-        //token transfer
-        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
-
-        // //mint token
-        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn all
-        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-    },
-
-    testForGlobalToken: function(server, categoryName, txFunctionName, account, configToken){
-        let testName = ''
-        let describeTitle = ''
-        let testScripts = []
-
-        let txParam = configToken
-        let tokenName = txParam.name
-        let tokenSymbol = txParam.symbol
-        let issuer = txParam.issuer
-
-        //token transfer
-        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
-        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
-        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
-
-        //mint token
-        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
-        describeTitle = '测试增发-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-
-        //burn token
-        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
-        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
-        framework.testTestScripts(server, describeTitle, testScripts)
-    },
-
     testForIssueTokenInComplexMode: function(server, txFunctionName){
         let account = server.mode.addresses.sender3
 
@@ -204,12 +135,53 @@ module.exports = tcsSendAndSignTx = {
             tcsSendAndSignTx.testForIssueToken(server, configToken.testName, txFunctionName, account, configToken)
         })
 
-        // configToken = token.CNYT  //todo CNYT不存在了，确定后删除
-        // describe(configToken.testName + '测试：' + txFunctionName, async function () {
-        //     tcsSendAndSignTx.testForGlobalToken(server, configToken.testName, txFunctionName,
-        //         server.mode.addresses.sender1, configToken)
-        // })
+    },
 
+    testForIssueToken: function(server, categoryName, txFunctionName, account, configToken){
+        let testName = ''
+        let describeTitle = ''
+        let testScripts = []
+        let txParams = {}
+
+        //create token
+        testName = '测试创建token'
+        describeTitle = testName + '-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        txParams = framework.createTxParamsForIssueToken(server, account, configToken)
+        testScripts = tcsSendAndSignTx.createTestScriptsForCreateToken(server, categoryName, txFunctionName, txParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //set token properties
+        let txParam = txParams[0]
+        let tokenName = txParam.name
+        let tokenSymbol = txParam.symbol
+        let issuer = txParam.local ? txParam.from : server.mode.addresses.defaultIssuer.address
+        logger.debug("===create token: " + tokenSymbol)
+
+        //token transfer
+        let transferTxParams = framework.createTxParamsForTokenTransfer(server, account, tokenSymbol, issuer)
+        describeTitle = '测试基本交易-[币种:' + transferTxParams[0].symbol + '] [方式:' + txFunctionName + ']'
+        tcsSendAndSignTx.testForTransfer(server, categoryName, txFunctionName, transferTxParams)
+
+        // //mint token
+        let mintTxParams = framework.createTxParamsForMintToken(server, account, configToken, tokenName, tokenSymbol)
+        let testScriptsList = tcsSendAndSignTx.createTestScriptsForMintToken(server, categoryName, txFunctionName, mintTxParams)
+        //分成3部分，分別完成成功的增發交易，互相不干擾結果
+        describeTitle = '测试增发1-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        framework.testTestScripts(server, describeTitle, testScriptsList[0])
+        describeTitle = '测试增发2-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        framework.testTestScripts(server, describeTitle, testScriptsList[1])
+        describeTitle = '测试增发3-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        framework.testTestScripts(server, describeTitle, testScriptsList[2])
+
+        //burn token
+        describeTitle = '测试销毁-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnToken(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
+
+        //burn all
+        describeTitle = '测试销毁所有代币-[币种:' + categoryName + '] [方式:' + txFunctionName + ']'
+        testScripts = tcsSendAndSignTx.createTestScriptsForBurnAll(server, categoryName, txFunctionName, mintTxParams)
+        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     //endregion
@@ -654,7 +626,7 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseCode = 'FCJT_sendTransaction_010510'
         testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
-        scriptCode = '000200_' + type + '_fee为默认值10'
+        scriptCode = '000200_' + type + '_不设fee,默认值10'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             framework.addTestScript(testScripts, testScript)
@@ -1108,12 +1080,15 @@ module.exports = tcsSendAndSignTx = {
 
     createTestScriptsForMintToken: function(server, type, txFunctionName, txParams){
 
+        let testScriptsList = []
         let testScripts = []
         let testCaseCode
         let defaultScriptCode = '000100_' + type
         let scriptCode
 
         //region test cases
+
+        //region list 1
 
         testCaseCode = 'FCJT_sendTransaction_022010'
         testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
@@ -1124,7 +1099,7 @@ module.exports = tcsSendAndSignTx = {
             param.total_supply = '9'
             if(tcsSendAndSignTx.canMint(param.flags)){
                 testScript.actions[0].expectedResults[0].expectedBalances =
-                    [{address: param.from, value: param.flags == consts.flags.mintable ? '987654328950000007' : '987654328950000006', symbol: param.symbol,
+                    [{address: param.from, value: '987654318900000006', symbol: param.symbol,
                     issuer: param.local ? param.from : consts.default.issuer}]
             }
             else{
@@ -1188,6 +1163,14 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testScriptsList.push(testScripts)
+
+        //endregion
+
+        //region list 2
+
+        testScripts = []
+
         testCaseCode = 'FCJT_sendTransaction_022030'
         testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_格式为100.5/USD，小数位数小于等于decimals'
@@ -1198,7 +1181,7 @@ module.exports = tcsSendAndSignTx = {
             param.total_supply = '100.5/' + param.symbol
             if(tcsSendAndSignTx.canMint(param.flags)){
                 testScript.actions[0].expectedResults[0].expectedBalances =
-                    [{address: param.from, value: param.flags == consts.flags.mintable ? '987654328950000007' : '987654328950000006', symbol: param.symbol, issuer: issuer}]
+                    [{address: param.from, value: '987654328950000006', symbol: param.symbol, issuer: issuer}]
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
@@ -1254,6 +1237,14 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testScriptsList.push(testScripts)
+
+        //endregion
+
+        //region list 3
+
+        testScripts = []
+
         testCaseCode = 'FCJT_sendTransaction_022070'
         testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
         scriptCode = defaultScriptCode + '_flags为增发参数'
@@ -1265,8 +1256,7 @@ module.exports = tcsSendAndSignTx = {
             param.flags = consts.flags.mintable
             if(type == consts.coinTypes.local_mintable || type == consts.coinTypes.global_mintable){
                 testScript.actions[0].expectedResults[0].expectedBalances =
-                    [{address: param.from, value: (type == consts.coinTypes.local_mintable || type == consts.coinTypes.global_mintable)
-                            ? '987654328950000007' : '987654328950000006', symbol: param.symbol, issuer: issuer}]
+                    [{address: param.from, value: '987654328950000007', symbol: param.symbol, issuer: issuer}]
             }
             else{
                 let expectedResult = framework.createExpecteResult(false,
@@ -1276,9 +1266,13 @@ module.exports = tcsSendAndSignTx = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testScriptsList.push(testScripts)
+
         //endregion
 
-        return testScripts
+        //endregion
+
+        return testScriptsList
     },
 
     createTestScriptsForBurnToken: function(server, type, txFunctionName, txParams){
