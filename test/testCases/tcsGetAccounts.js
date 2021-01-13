@@ -22,36 +22,50 @@ module.exports = tcsGetAccounts = {
 
     //region get accounts
     testForGetAccounts: function(server, describeTitle){
-        let testCases = []
 
-        let title = '0010\tjt_accounts'
+        let testScripts = []
+        let testCaseCode
+        let scriptCode
+
         let functionName = consts.rpcFunctions.getAccounts
-        let txParams = []
-        let expectedResult = {}
-        expectedResult.needPass = true
 
-        let testCase = framework.createTestCase(
-            title,
-            server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetAccounts.checkGetAccounts,
-            expectedResult,
-            restrictedLevel.L2,
-            [serviceType.newChain, ],
-            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-        )
-        framework.addTestScript(testCases, testCase)
+
+        testCaseCode = 'FCJT_accounts_000010'
+        scriptCode = '000100'
+        {
+            let testScript = tcsGetAccounts.createTestScript(server, testCaseCode, scriptCode, )
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    checkGetAccounts: function(testCase){
+    createTestScript: function(server, testCaseCode, scriptCode, ){
+
+        let functionName = consts.rpcFunctions.getAccounts
+        let txParams = []
+
+        let testScript = framework.createTestScript(
+            server,
+            testCaseCode,
+            scriptCode,
+            [],
+            restrictedLevel.L2,
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetAccounts.checkGetAccounts, [{needPass:true}])
+        testScript.actions.push(action)
+
+        return testScript
+
+    },
+
+    checkGetAccounts: function(action){
         let response = action.actualResult
-        let needPass = testCase.expectedResult.needPass
-        framework.checkResponse(response)
+        let needPass = action.expectedResults[0].needPass
+        framework.checkGetResponse(response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
             let accounts = response.result
@@ -61,9 +75,10 @@ module.exports = tcsGetAccounts = {
             expect(accounts).to.be.contains(rootAccount)
         }
         else{
-            framework.checkResponseError(testCase, response.message, testCase.expectedResult.expectedError)
+            framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
-//endregion
+
+    //endregion
 
 }
