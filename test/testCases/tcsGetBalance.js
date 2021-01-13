@@ -144,7 +144,7 @@ module.exports = tcsGetBalance = {
 
     checkGetBalance: function(testCase){
         let response = action.actualResult
-        let needPass = testCase.expectedResult.needPass
+        let needPass = action.expectedResults[0].needPass
         framework.checkResponse(response)
         if(needPass){
             expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)

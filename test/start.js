@@ -248,17 +248,16 @@ describe('Jingtum测试', function() {
 
                 // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
 
+                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
                 //endregion
-
-
-
 
 
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
 
-                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
 
-                // tcsSign.testForSign(server, '测试jt_sign')
+
+                tcsSign.testForSign(server, '测试jt_sign')
 
 
             })

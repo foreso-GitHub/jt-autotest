@@ -85,7 +85,7 @@ module.exports = tcsGetReceipt = {
 
     checkTransactionReceipt: function(testCase){
         let response = action.actualResult
-        let needPass = testCase.expectedResult.needPass
+        let needPass = action.expectedResults[0].needPass
         framework.checkResponse(response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema

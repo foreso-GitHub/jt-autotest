@@ -151,7 +151,7 @@ module.exports = tcsGetCurrency = {
 
     checkGetCurrency: function(testCase){
         let response = action.actualResult
-        let needPass = testCase.expectedResult.needPass
+        let needPass = action.expectedResults[0].needPass
         framework.checkResponse(response)
         if(needPass){
             expect(response.result.TotalSupply.currency).to.equals(testCase.txParams[0])
