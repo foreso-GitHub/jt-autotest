@@ -36,7 +36,7 @@ module.exports = tcsGetBlock = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScriptsForGetBlock: function(server, functionName, numberOrHash){
+    createTestScriptsForGetBlock: function(server, functionName, numberOrHash, tag){
         let testScripts = []
         let testCaseCodePrefix = (functionName === consts.rpcFunctions.getBlockByNumber)
             ? 'FCJT_getBlockByNumber_' : 'FCJT_getBlockByHash_'
@@ -44,10 +44,9 @@ module.exports = tcsGetBlock = {
         let defaultScriptCode = '000100'
         let scriptCode
         let showFullTx = true
-        let tag
 
         testCaseCode = testCaseCodePrefix + '000010'
-        scriptCode = defaultScriptCode
+        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为ture' + (tag ? '_' + tag : '')
         {
             showFullTx = true
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
@@ -55,146 +54,110 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000020'
-        scriptCode = defaultScriptCode
+        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为false' + (tag ? '_' + tag : '')
         {
             showFullTx = false
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
             framework.addTestScript(testScripts, testScript)
         }
 
-        // testNumber = '0020'
-        // showFullTx = true
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // testCase.supportedServices.push(serviceType.oldChain)
-        // framework.addTestScript(testCases, testCase)
-        //
-        // if(functionName == consts.rpcFunctions.getBlockByNumber){
-        //     testNumber = '0030'
-        //     numberOrHash = 'earliest'
-        //     showFullTx = true
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.restrictedLevel = restrictedLevel.L4
-        //     framework.addTestScript(testCases, testCase)
-        //
-        //     testNumber = '0040'
-        //     numberOrHash = 'earliest'
-        //     showFullTx = false
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.restrictedLevel = restrictedLevel.L4
-        //     framework.addTestScript(testCases, testCase)
-        //
-        //     testNumber = '0050'
-        //     numberOrHash = 'latest'
-        //     showFullTx = true
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.restrictedLevel = restrictedLevel.L4
-        //     framework.addTestScript(testCases, testCase)
-        //
-        //     testNumber = '0060'
-        //     numberOrHash = 'latest'
-        //     showFullTx = false
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.restrictedLevel = restrictedLevel.L4
-        //     framework.addTestScript(testCases, testCase)
-        //
-        //     testNumber = '0090'
-        //     numberOrHash = 'pending'
-        //     showFullTx = true
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.restrictedLevel = restrictedLevel.L4
-        //     framework.addTestScript(testCases, testCase)
-        //
-        //     testNumber = '0100'
-        //     numberOrHash = 'pending'
-        //     showFullTx = false
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.restrictedLevel = restrictedLevel.L4
-        //     framework.addTestScript(testCases, testCase)
-        // }
-        //
-        // testNumber = '0110_0001'
-        // {
-        //     numberOrHash = validNumberOrHash
-        //     showFullTx = 'wrwerwre'
-        //     needPass = false
-        //     expectedError = framework.getError(-269, 'full is not boolean')
-        //     testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        //     testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是字符串'
-        //     testCase.supportedServices.push(serviceType.oldChain)
-        //     framework.addTestScript(testCases, testCase)
-        // }
+        testCaseCode = testCaseCodePrefix + '000030'
+        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为字符串' + (tag ? '_' + tag : '')
+        {
+            showFullTx = 'wrwerwre'
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'full is not boolean'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        // testNumber = '0110_0002'
-        // numberOrHash = validNumberOrHash
-        // showFullTx = 123123
-        // needPass = false
-        // expectedError = framework.getError(-269, 'full is not boolean')
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是数字'
-        // testCase.supportedServices.push(serviceType.oldChain)
-        // framework.addTestScript(testCases, testCase)
-        //
-        // testNumber = '0110_0003'
-        // numberOrHash = validNumberOrHash
-        // showFullTx = null
-        // needPass = false
-        // expectedError = framework.getError(-269, 'full is null')
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // testCase.title = testNumber + '\t有效区块编号，无效Boolean参数：showFullTx是空值'
-        // testCase.supportedServices.push(serviceType.oldChain)
-        // framework.addTestScript(testCases, testCase)
-        //
-        // testNumber = '0120_0001'
-        // numberOrHash = '9990000000'
-        // showFullTx = false
-        // needPass = false
-        // expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
-        //     ? framework.getError(140, 'value out of range')
-        //     : framework.getError(-269, 'NewHash256: Wrong length')
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // // testCase.supportedServices.push(serviceType.oldChain)  //old chain not support huge block number, it will cause test hook more than 20s
-        // framework.addTestScript(testCases, testCase)
-        //
-        // testNumber = '0120_0002'
-        // numberOrHash = '99900000'
-        // showFullTx = false
-        // needPass = false
-        // expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
-        //     ? framework.getError(140, 't find block')
-        //     : framework.getError(-269, 'NewHash256: Wrong length')
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
-        // framework.addTestScript(testCases, testCase)
-        //
-        // testNumber = '0120_0003'
-        // numberOrHash = '-1000'
-        // showFullTx = false
-        // needPass = false
-        // expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
-        //     ? framework.getError(140, 'invalid syntax')
-        //     : framework.getError(-269, 'encoding/hex: invalid byte')
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
-        // framework.addTestScript(testCases, testCase)
-        //
-        // testNumber = '0120_0004'
-        // numberOrHash = 'abcdefg'
-        // showFullTx = false
-        // needPass = false
-        // expectedError = (functionName == consts.rpcFunctions.getBlockByNumber)
-        //     ? framework.getError(140, 'invalid syntax')
-        //     : framework.getError(-269, 'encoding/hex: invalid byte')
-        // testCase = tcsGetBlock.createSingleTestCaseForGetBlockByNumber(server, testNumber, functionName, numberOrHash, showFullTx, needPass, expectedError)
-        // if(functionName == consts.rpcFunctions.getBlockByNumber) testCase.supportedServices.push(serviceType.oldChain)
-        // framework.addTestScript(testCases, testCase)
+        testCaseCode = testCaseCodePrefix + '000030'
+        scriptCode = '000200' + '_有效区块编号或哈希，showFullTx为数字' + (tag ? '_' + tag : '')
+        {
+            showFullTx = 123123
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'full is not boolean'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = testCaseCodePrefix + '000030'
+        scriptCode = '000300' + '_有效区块编号或哈希，showFullTx为null' + (tag ? '_' + tag : '')
+        {
+            showFullTx = null
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'full is null'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = testCaseCodePrefix + '000040'
+        scriptCode = defaultScriptCode + '_无效区块编号或哈希9990000000，' + (tag ? '_' + tag : '')
+        {
+            numberOrHash = '9990000000'
+            showFullTx = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                functionName == consts.rpcFunctions.getBlockByNumber
+                    ? framework.getError(140, 'value out of range')
+                    : framework.getError(-269, 'NewHash256: Wrong length') )
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = testCaseCodePrefix + '000040'
+        scriptCode = '000200' + '_无效区块编号或哈希99900000，' + (tag ? '_' + tag : '')
+        {
+            numberOrHash = '99900000'
+            showFullTx = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                functionName == consts.rpcFunctions.getBlockByNumber
+                    ? framework.getError(140, 't find block')
+                    : framework.getError(-269, 'NewHash256: Wrong length') )
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = testCaseCodePrefix + '000040'
+        scriptCode = '000300' + '_无效区块编号或哈希-100，' + (tag ? '_' + tag : '')
+        {
+            numberOrHash = '-100'
+            showFullTx = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                functionName == consts.rpcFunctions.getBlockByNumber
+                    ? framework.getError(140, 'invalid syntax')
+                    : framework.getError(-269, 'encoding/hex: invalid byte') )
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = testCaseCodePrefix + '000040'
+        scriptCode = '000400' + '_无效区块编号或哈希abcdefg，' + (tag ? '_' + tag : '')
+        {
+            numberOrHash = 'abcdefg'
+            showFullTx = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                functionName == consts.rpcFunctions.getBlockByNumber
+                    ? framework.getError(140, 'invalid syntax')
+                    : framework.getError(-269, 'encoding/hex: invalid byte') )
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         return testScripts
+
     },
 
     createTestScript: function(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag){
         let txParams = []
         txParams.push(numberOrHash)
-        if(showFullTx != undefined) txParams.push(showFullTx)
+        txParams.push(showFullTx)
         if(tag) txParams.push(tag)
 
         let testScript = framework.createTestScript(
@@ -216,7 +179,7 @@ module.exports = tcsGetBlock = {
         let response = action.actualResult
         let expectedResult = action.expectedResults[0]
         let needPass = expectedResult.needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
             expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
             let functionName = action.txFunctionName
@@ -232,10 +195,10 @@ module.exports = tcsGetBlock = {
             }
         }
         else{
-            framework.checkResponseError(action, response, action.expectedResult.expectedError)
+            framework.checkResponseError(action, expectedResult, response)
         }
     },
 
-//endregion
+    //endregion
 
 }

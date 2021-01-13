@@ -237,8 +237,8 @@ describe('Jingtum测试', function() {
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
                 tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
 
 
             })
