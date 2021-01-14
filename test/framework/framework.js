@@ -306,6 +306,10 @@ module.exports = framework = {
         testScript.actions[0].expectedResults = [expectedResult]
     },
 
+    addExpectedResult: function(testScript, expectedResult){
+        testScript.actions[0].expectedResults.push(expectedResult)
+    },
+
     addTestScript: function(testScripts, testScript){
         if(framework.ifNeedExecuteOrCheck(testScript)){
             testScripts.push(testScript)
