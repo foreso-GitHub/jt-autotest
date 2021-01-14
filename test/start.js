@@ -230,28 +230,28 @@ describe('Jingtum测试', function() {
                 //region done
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-                //
-                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-                //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 100)
-                //
+
+                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 100)
+
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
-                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-                //
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-                //
-                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
-                //
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
-                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-                //
-                // tcsSign.testForSign(server, '测试jt_sign')
+                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
+                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
+                tcsSign.testForSign(server, '测试jt_sign')
 
                 //endregion
 

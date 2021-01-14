@@ -25,6 +25,9 @@ const HASH_LENGTH = 64
 const IPFS_HASH_LENGTH = 46
 let _SequenceMap = new HashMap()
 let _FullTestCaseList = []
+let _temp_SkippedTestCases = []
+let _temp_FailedTestCases = []
+let _temp_PassedTestCases = []
 let accountsDealer = new AccountsDealer()
 let START
 let END
@@ -1183,7 +1186,27 @@ module.exports = framework = {
         }
 
         let testCasesStatistics = framework.groupTestCases(statTestCases)
+        _temp_SkippedTestCases = []
+        _temp_FailedTestCases = []
+        _temp_PassedTestCases = []
         framework.countNode(testCasesStatistics)
+        framework.clearTestDatas(testCasesStatistics)
+        if(true){
+            // testCasesStatistics.skippedTestCases.name = 'Skipped Test Cases'
+            // testCasesStatistics.skippedTestCases = framework.groupTestCases(_temp_SkippedTestCases)
+            // testCasesStatistics.skippedTestCases.count = _temp_SkippedTestCases.length
+
+            testCasesStatistics.failedTestCases.name = 'Failed Test Cases'
+            testCasesStatistics.failedTestCases = framework.groupTestCases(_temp_FailedTestCases)
+            testCasesStatistics.failedTestCases.count = _temp_FailedTestCases.length
+
+            // testCasesStatistics.passedTestCases.name = 'Passed Test Cases'
+            // testCasesStatistics.passedTestCases = framework.groupTestCases(_temp_PassedTestCases)
+            // testCasesStatistics.passedTestCases.count = _temp_PassedTestCases.length
+            //
+            // delete testCasesStatistics.skippedTestCases
+            // delete testCasesStatistics.passedTestCases
+        }
 
         let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
         let resultFile = 'tcsStat'
@@ -1197,6 +1220,7 @@ module.exports = framework = {
 
     washTestCaseData: function(testCase){
         let newTestCase = {}
+        newTestCase.type = 'TestCase'
         newTestCase.code = testCase.code
         newTestCase.title = testCase.title
         newTestCase.precodition = testCase.precodition
@@ -1213,6 +1237,7 @@ module.exports = framework = {
 
     washScriptData: function(object){
         let newObject = {}
+        newObject.type = 'TestScript'
         newObject.scriptCode = object.scriptCode
         newObject.testCaseCode = object.testCaseCode
         newObject.title = object.title
@@ -1228,24 +1253,77 @@ module.exports = framework = {
 
     washActionData: function(object){
         let newObject = {}
+        newObject.type = 'TestAction'
         newObject.txFunctionName = object.txFunctionName
-        newObject.txParams = utility.deepClone(object.txParams)
-        for(let i = 0; i < newObject.txParams.length; i++){
-            let txParam = newObject.txParams[i]
-            if(txParam.memos){
-                for(let j = 0; j < txParam.memos.length; j++){
-                    if(txParam.memos[j].length > 1000){
-                        txParam.memos[j] = 'This memo is too big to record!'
-                    }
-                }
-            }
-        }
-        newObject.expectedResults = object.expectedResults
-        newObject.actualResult = object.actualResult
+
+        //region not add txParams and results because the data is too large.
+
+        // newObject.txParams = utility.deepClone(object.txParams)
+        // for(let i = 0; i < newObject.txParams.length; i++){
+        //     let txParam = newObject.txParams[i]
+        //     if(txParam != undefined && txParam.memos){
+        //         for(let j = 0; j < txParam.memos.length; j++){
+        //             if(txParam.memos[j].length > 1000){
+        //                 txParam.memos[j] = 'This memo is too big to record!'
+        //             }
+        //         }
+        //     }
+        // }
+        // newObject.expectedResults = object.expectedResults
+        // newObject.actualResult = object.actualResult
+
+        //endregion
+
         newObject.testData = {}
         newObject.testData.hasExecuted = object.hasExecuted
         newObject.testData.testResult = object.testResult
         return newObject
+    },
+
+    clearTestDatas: function(root){
+        // delete root.testDatas
+        delete root.testData.hasExecuted
+        delete root.testData.testResult
+        framework.clearTestDatasInArray(root.nodes)
+        framework.moveTestData(root)
+    },
+
+    clearTestDatasInArray: function(array){
+        for(let i = 0; i < array.length; i++){
+            let node = array[i]
+            if(node.type == 'TestCategory'){
+                // delete node.testDatas
+                delete node.testData.hasExecuted
+                delete node.testData.testResult
+                if(node.nodes){
+                    framework.clearTestDatasInArray(node.nodes)
+                }
+                else{
+                    framework.clearTestDatasInArray(node.testCases)
+                }
+            }
+            else{
+                // delete node.testDatas
+                if(node.type == 'TestCase'){
+                    framework.clearTestDatasInArray(node.scripts)
+                }
+                else if(node.type == 'TestScript'){
+                    framework.clearTestDatasInArray(node.actions)
+                }
+            }
+            framework.moveTestData(node)
+        }
+    },
+
+    moveTestData: function(node){
+        node.totalCount = node.testData.totalCount
+        node.executedCount = node.testData.executedCount
+        node.passedCount = node.testData.passedCount
+        node.executedRate = node.testData.executedRate
+        node.passedRate = node.testData.passedRate
+        if(node.testData.hasExecuted) node.hasExecuted = node.testData.hasExecuted
+        if(node.testData.testResult) node.testResult = node.testData.testResult
+        delete node.testData
     },
 
     //endregion
@@ -1273,7 +1351,7 @@ module.exports = framework = {
             if(subGroup == undefined){
                 subGroup = []
                 group.set(prefix, subGroup)
-                testCaseTree.push({groupName: prefix, level: level, testCases: subGroup})
+                testCaseTree.push({groupName: prefix, type: 'TestCategory', level: level, testCases: subGroup})
             }
             subGroup.push(testCases[i])
         }
@@ -1310,54 +1388,92 @@ module.exports = framework = {
             for(let i = 0; i < node.testCases.length; i++){
                 framework.countTestCase(node.testCases[i])
             }
-            node.testDataByTestCases = framework.countByArray(node.testCases)
-            node.testData = node.testDataByTestCases
+            let testDataByTestCases = framework.countByArray(node.testCases)
+            testDataByTestCases.name = 'Test Data By TestCases'
+            node.testData = testDataByTestCases
 
-            node.testDataByActions = framework.collectSubTestData(node.testCases, 0)
-            node.testDataByScripts = framework.collectSubTestData(node.testCases, 1)
+            let testDataByActions = framework.collectSubTestData(node.testCases, 0)
+            let testDataByScripts = framework.collectSubTestData(node.testCases, 1)
             node.testDatas = []
-            node.testDatas.push(node.testDataByActions)
-            node.testDatas.push(node.testDataByScripts)
-            node.testDatas.push(node.testDataByTestCases)
+            node.testDatas.push(testDataByActions)
+            node.testDatas.push(testDataByScripts)
+            node.testDatas.push(testDataByTestCases)
         }
         else{
             for(let i = 0; i < node.nodes.length; i++){
                 framework.countNode(node.nodes[i])
             }
-            node.testDataByActions = framework.collectSubTestData(node.nodes, 0)
-            node.testDataByScripts = framework.collectSubTestData(node.nodes, 1)
-            node.testDataByTestCases = framework.collectSubTestData(node.nodes, 2)
-            node.testData = node.testDataByTestCases
+            let testDataByActions = framework.collectSubTestData(node.nodes, 0)
+            let testDataByScripts = framework.collectSubTestData(node.nodes, 1)
+            let testDataByTestCases = framework.collectSubTestData(node.nodes, 2)
+            node.testData = testDataByTestCases
             node.testDatas = []
-            node.testDatas.push(node.testDataByActions)
-            node.testDatas.push(node.testDataByScripts)
-            node.testDatas.push(node.testDataByTestCases)
+            node.testDatas.push(testDataByActions)
+            node.testDatas.push(testDataByScripts)
+            node.testDatas.push(testDataByTestCases)
         }
     },
 
-    countSubNode: function(subNodes){
+    countTestCase: function(testCase){
+        for(let i = 0; i < testCase.scripts.length; i++){
+            framework.countScript(testCase.scripts[i])
+        }
+        let testDataByScripts = framework.countByArray(testCase.scripts)
+        testDataByScripts.name = 'Test Data By Scripts'
+        testCase.testData = testDataByScripts
+
+        if(testCase.testData.hasExecuted){
+            if(testCase.testData.testResult){
+                _temp_PassedTestCases.push(testCase)
+            }
+            else{
+                _temp_FailedTestCases.push(testCase)
+            }
+        }
+        else{
+            _temp_SkippedTestCases.push(testCase)
+        }
+
+        let testDataByActions = framework.collectSubTestData(testCase.scripts, 0)
+        testDataByActions.name = 'Test Data By Actions'
+        testCase.testDatas = []
+        testCase.testDatas.push(testDataByActions)
+        testCase.testDatas.push(testDataByScripts)
+    },
+
+    countScript: function(script){
+        let testDataByActions = framework.countByArray(script.actions)
+        testDataByActions.name = 'Test Data By Actions'
+        script.testData = testDataByActions
+
+        script.testDatas = []
+        script.testDatas.push(testDataByActions)
+    },
+
+    countByArray: function(array){
         let testData = {}
         testData = {}
-        testData.totalCount = 0
+        testData.totalCount = array.length
         testData.executedCount = 0
         testData.passedCount = 0
 
-        for(let i = 0; i < subNodes.length; i++){
-            let subNode = subNodes[i]
-            testData.totalCount += subNode.testData.totalCount
-            testData.executedCount += subNode.testData.executedCount
-            testData.passedCount += subNode.testData.passedCount
-            delete subNode.testData.hasExecuted
-            delete subNode.testData.testResult
+        for(let i = 0; i < array.length; i++){
+            let item = array[i]
+            if(item.testData.hasExecuted) testData.executedCount++
+            if(item.testData.testResult) testData.passedCount++
         }
 
         if(testData.totalCount > 0){
-            testData.executeRate = utility.getPercentageRate(testData.executedCount, testData.totalCount)
-            testData.passRate = utility.getPercentageRate(testData.passedCount, testData.totalCount)
+            testData.hasExecuted = testData.executedCount == testData.totalCount
+            testData.testResult = testData.passedCount ==  testData.totalCount
+            testData.executedRate = utility.getPercentageRate(testData.executedCount, testData.totalCount)
+            testData.passedRate = utility.getPercentageRate(testData.passedCount, testData.executedCount)
         }
         else{
-            testData.executeRate = utility.getPercentageRate(0, 1)
-            testData.passRate = utility.getPercentageRate(0, 1)
+            testData.hasExecuted = false
+            testData.testResult = false
+            testData.executedRate = utility.getPercentageRate(0, 1)
+            testData.passedRate = utility.getPercentageRate(0, 1)
         }
 
         return testData
@@ -1381,62 +1497,22 @@ module.exports = framework = {
         }
 
         if(testData.totalCount > 0){
-            testData.executeRate = utility.getPercentageRate(testData.executedCount, testData.totalCount)
-            testData.passRate = utility.getPercentageRate(testData.passedCount, testData.totalCount)
+            testData.executedRate = utility.getPercentageRate(testData.executedCount, testData.totalCount)
+            testData.passedRate = utility.getPercentageRate(testData.passedCount, testData.executedCount)
         }
         else{
-            testData.executeRate = utility.getPercentageRate(0, 1)
-            testData.passRate = utility.getPercentageRate(0, 1)
+            testData.executedRate = utility.getPercentageRate(0, 1)
+            testData.passedRate = utility.getPercentageRate(0, 1)
         }
 
-        return testData
-    },
-
-    countTestCase: function(testCase){
-        for(let i = 0; i < testCase.scripts.length; i++){
-            framework.countScript(testCase.scripts[i])
+        if(index == 0){
+            testData.name = 'Test Data By Actions'
         }
-        testCase.testDataByScripts = framework.countByArray(testCase.scripts)
-        testCase.testData = testCase.testDataByScripts
-
-        testCase.testDataByActions = framework.collectSubTestData(testCase.scripts, 0)
-        testCase.testDatas = []
-        testCase.testDatas.push(testCase.testDataByActions)
-        testCase.testDatas.push(testCase.testDataByScripts)
-    },
-
-    countScript: function(script){
-        script.testDataByActions = framework.countByArray(script.actions)
-        script.testData = script.testDataByActions
-
-        script.testDatas = []
-        script.testDatas.push(script.testDataByActions)
-    },
-
-    countByArray: function(array){
-        let testData = {}
-        testData = {}
-        testData.totalCount = array.length
-        testData.executedCount = 0
-        testData.passedCount = 0
-
-        for(let i = 0; i < array.length; i++){
-            let item = array[i]
-            if(item.testData.hasExecuted) testData.executedCount++
-            if(item.testData.testResult) testData.passedCount++
+        else if(index == 1){
+            testData.name = 'Test Data By Scripts'
         }
-
-        if(testData.totalCount > 0){
-            testData.hasExecuted = testData.executedCount == testData.totalCount
-            testData.testResult = testData.passedCount ==  testData.totalCount
-            testData.executeRate = utility.getPercentageRate(testData.executedCount, testData.totalCount)
-            testData.passRate = utility.getPercentageRate(testData.passedCount, testData.totalCount)
-        }
-        else{
-            testData.hasExecuted = false
-            testData.testResult = false
-            testData.executeRate = utility.getPercentageRate(0, 1)
-            testData.passRate = utility.getPercentageRate(0, 1)
+        else if(index == 2){
+            testData.name = 'Test Data By TestCases'
         }
 
         return testData
@@ -1448,7 +1524,7 @@ module.exports = framework = {
 
     // endregion
 
-    //region execute and check for batch sub cases
+    //region execute and check for batch sub cases, maybe need remove
 
     createSubCasesParams: function(server, account1, account2, currency, txFunction, createSubCasesFunction){
         let subCaseFunctionParams = {}
