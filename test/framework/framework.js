@@ -1088,12 +1088,11 @@ module.exports = framework = {
 
     checkResponse: function(actualResult){
         expect(actualResult).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
-        // expect(value.status).to.equal(isSuccess ? status.success: status.error)
-        // expect(utility.isResponseStatusSuccess(action.actualResult)).to.equal(isSuccess)
     },
 
     checkGetResponse: function(actualResult){  //todo 需要并入checkResponse当get功能返回值都有result
         expect(actualResult).to.be.jsonSchema(schema.GET_RESPONSE_SCHEMA)
+        // framework.checkResponse(actualResult)
     },
 
     checkResponseError: function(action, expectedResult, actualResult){

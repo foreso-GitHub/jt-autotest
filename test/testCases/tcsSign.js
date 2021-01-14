@@ -210,7 +210,7 @@ module.exports = tcsSign = {
     checkSign: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
+        framework.checkResponse(response)
         if(needPass){
             let signedTxs = action.expectedSignedTxs
             let results = response.result
