@@ -771,6 +771,7 @@ module.exports = testUtility = {
     //region percentage rate
 
     getPercentageRate: function(value1, value2){
+        if(value2 == 0) return '0.00%'
         return ((value1 / value2) * 100).toFixed(2) + '%'
     },
 

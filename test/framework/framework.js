@@ -1192,20 +1192,17 @@ module.exports = framework = {
         framework.countNode(testCasesStatistics)
         framework.clearTestDatas(testCasesStatistics)
         if(true){
-            // testCasesStatistics.skippedTestCases.name = 'Skipped Test Cases'
             // testCasesStatistics.skippedTestCases = framework.groupTestCases(_temp_SkippedTestCases)
+            // testCasesStatistics.skippedTestCases.name = 'Skipped Test Cases'
             // testCasesStatistics.skippedTestCases.count = _temp_SkippedTestCases.length
 
-            testCasesStatistics.failedTestCases.name = 'Failed Test Cases'
             testCasesStatistics.failedTestCases = framework.groupTestCases(_temp_FailedTestCases)
+            testCasesStatistics.failedTestCases.name = 'Failed Test Cases'
             testCasesStatistics.failedTestCases.count = _temp_FailedTestCases.length
 
-            // testCasesStatistics.passedTestCases.name = 'Passed Test Cases'
             // testCasesStatistics.passedTestCases = framework.groupTestCases(_temp_PassedTestCases)
+            // testCasesStatistics.passedTestCases.name = 'Passed Test Cases'
             // testCasesStatistics.passedTestCases.count = _temp_PassedTestCases.length
-            //
-            // delete testCasesStatistics.skippedTestCases
-            // delete testCasesStatistics.passedTestCases
         }
 
         let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
@@ -1227,7 +1224,6 @@ module.exports = framework = {
         newTestCase.input = testCase.input
         newTestCase.expectedOutput = testCase.expectedOutput
         newTestCase.scripts = []
-        newTestCase.actions = []
         for(let i = 0; i < testCase.scripts.length; i++){
             let script = framework.washScriptData(testCase.scripts[i])
             newTestCase.scripts.push(script)
@@ -1277,6 +1273,12 @@ module.exports = framework = {
         newObject.testData = {}
         newObject.testData.hasExecuted = object.hasExecuted
         newObject.testData.testResult = object.testResult
+
+        if(newObject.testData.testResult != undefined && !newObject.testData.testResult){
+            newObject.expectedResults = object.expectedResults
+            newObject.actualResult = object.actualResult
+        }
+
         return newObject
     },
 
