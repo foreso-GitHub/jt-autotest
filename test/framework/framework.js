@@ -1177,26 +1177,43 @@ module.exports = framework = {
 
     //region test cases statistics
 
-    statTestCases: function(){
-
+    statistics: async function(){
         let allTestCases = framework.testCases.values()
-        let statTestCases = []
+        let washedTestCases = []
         for(let i = 0; i < allTestCases.length; i++){
-            statTestCases.push(framework.washTestCaseData(allTestCases[i]))
+            washedTestCases.push(framework.washTestCaseData(allTestCases[i]))
         }
 
-        let testCasesStatistics = framework.groupTestCases(statTestCases)
+        let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
+        let resultFile = 'washedTestCases'
+        await utility.saveJsonFile(resultsPath, resultFile, washedTestCases)
+
+        framework.statTestCases(washedTestCases)
+    },
+
+    loadWashedTestCases: async function(){
+        let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
+        let resultFile = 'washedTestCases_2021-01-14_a.json'
+        let washedTestCases = await utility.loadJsonFile(resultsPath + resultFile, )
+        framework.statTestCases(washedTestCases)
+    },
+
+    statTestCases: function(washedTestCases){
+
+        let testCasesStatistics = framework.groupTestCases(washedTestCases)
         _temp_SkippedTestCases = []
         _temp_FailedTestCases = []
         _temp_PassedTestCases = []
         framework.countNode(testCasesStatistics)
         framework.clearTestDatas(testCasesStatistics)
         if(true){
-            // testCasesStatistics.skippedTestCases = framework.groupTestCases(_temp_SkippedTestCases)
-            // testCasesStatistics.skippedTestCases.name = 'Skipped Test Cases'
-            // testCasesStatistics.skippedTestCases.count = _temp_SkippedTestCases.length
+            testCasesStatistics.skippedTestCases = framework.groupTestCases(_temp_SkippedTestCases)
+            // testCasesStatistics.skippedTestCases = utility.deepClone(_temp_SkippedTestCases)
+            testCasesStatistics.skippedTestCases.name = 'Skipped Test Cases'
+            testCasesStatistics.skippedTestCases.count = _temp_SkippedTestCases.length
 
-            testCasesStatistics.failedTestCases = framework.groupTestCases(_temp_FailedTestCases)
+            // testCasesStatistics.failedTestCases = framework.groupTestCases(_temp_FailedTestCases)
+            testCasesStatistics.failedTestCases = utility.deepClone(_temp_FailedTestCases)
             testCasesStatistics.failedTestCases.name = 'Failed Test Cases'
             testCasesStatistics.failedTestCases.count = _temp_FailedTestCases.length
 
@@ -1318,13 +1335,19 @@ module.exports = framework = {
     },
 
     moveTestData: function(node){
-        node.totalCount = node.testData.totalCount
-        node.executedCount = node.testData.executedCount
-        node.passedCount = node.testData.passedCount
-        node.executedRate = node.testData.executedRate
-        node.passedRate = node.testData.passedRate
-        if(node.testData.hasExecuted) node.hasExecuted = node.testData.hasExecuted
-        if(node.testData.testResult) node.testResult = node.testData.testResult
+        if(node.type == 'TestCategory' || node.type == 'TestCase'){
+            node.totalCount = node.testData.totalCount
+            node.executedCount = node.testData.executedCount
+            node.passedCount = node.testData.passedCount
+            node.executedRate = node.testData.executedRate
+            node.passedRate = node.testData.passedRate
+        }
+
+        if(node.type == 'TestCase' || node.type == 'TestScript' || node.type == 'TestAction'){
+            if(node.testData.hasExecuted) node.hasExecuted = node.testData.hasExecuted
+            if(node.testData.testResult) node.testResult = node.testData.testResult
+        }
+
         delete node.testData
     },
 
@@ -1335,6 +1358,7 @@ module.exports = framework = {
     groupTestCases: function(testCases){
         let testCaseTree = {}
         testCaseTree.name = 'Test Cases Statistics'
+        testCaseTree.type = 'TestCategory'
         testCaseTree.nodes = framework.groupTestCasesByLevel(testCases, 1)
         for(let i = 0; i < testCaseTree.nodes.length; i++){
             let lv1_node = testCaseTree.nodes[i]
