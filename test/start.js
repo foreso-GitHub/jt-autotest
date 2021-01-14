@@ -78,6 +78,7 @@ describe('Jingtum测试', function() {
             })
 
             after(async function() {
+                framework.statTestCases()
                 framework.stoptWork()
             })
 
@@ -236,8 +237,8 @@ describe('Jingtum测试', function() {
                 //
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
-                //
+                tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
                 //
                 // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')

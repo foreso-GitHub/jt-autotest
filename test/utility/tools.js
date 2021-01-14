@@ -129,7 +129,7 @@ async function compare(){
 
     let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
     let file1 = path + '\\baselines\\base-mochawesome-report-20201231a-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20210113b-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20210114a-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 

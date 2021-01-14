@@ -700,18 +700,14 @@ module.exports = framework = {
             testScripts.forEach(async function(testScript){
                 it(testScript.title, async function () {
                     try{
-                        let testResult = true
                         for(let i = 0; i < testScript.actions.length; i++){
                             let action = testScript.actions[i]
                             // logger.debug('===before checkFunction')
                             // logger.debug('hasExecuted: ' + testScript.hasExecuted)
                             if(action.checkFunction) await action.checkFunction(action)
+                            action.testResult = true
                             // logger.debug('===after checkFunction')
-                            if(action.testResult != undefined && !action.testResult) {
-                                testResult = false
-                            }
                         }
-                        testScript.testResult = testResult
                         framework.afterTestFinish(testScript)
                     }
                     catch(ex){
@@ -751,16 +747,12 @@ module.exports = framework = {
             testScripts.forEach(async function(testScript){
                 it(testScript.title, async function () {
                     try{
-                        let testResult = true
                         for(let i = 0; i < testScript.actions.length; i++){
                             let action = testScript.actions[i]
                             if(action.executeFunction) await action.executeFunction(action)
                             if(action.checkFunction) await action.checkFunction(action)
-                            if(action.testResult != undefined && !action.testResult) {
-                                testResult = false
-                            }
+                            action.testResult = true
                         }
-                        testScript.testResult = testResult
                         framework.afterTestFinish(testScript)
                     }
                     catch(ex){
@@ -780,6 +772,16 @@ module.exports = framework = {
         if(framework.checkIfAllTestHasBeenExecuted(_FullTestCaseList)){
             framework.closeTest(testScript)
         }
+
+        let testResult = true
+        for(let i = 0; i < testScript.actions.length; i++){
+            let action = testScript.actions[i]
+            if(action.testResult != undefined && !action.testResult) {
+                testResult = false
+            }
+        }
+        testScript.testResult = testResult
+
         framework.printTestScript(testScript)
     },
 
@@ -1167,6 +1169,177 @@ module.exports = framework = {
             resolve(blocksInfo)
         })
     },
+
+    //endregion
+
+    //region test cases statistics
+
+    statTestCases: function(){
+
+        let allTestCases = framework.testCases.values()
+        let statTestCases = []
+        for(let i = 0; i < allTestCases.length; i++){
+            statTestCases.push(framework.clearTestCaseData(allTestCases[i]))
+        }
+
+        let testCasesStatistics = framework.groupTestCases(statTestCases)
+
+        let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
+        let resultFile = 'tcsStat'
+        utility.saveJsonFile(resultsPath, resultFile, testCasesStatistics)
+
+        return testCasesStatistics
+
+    },
+
+    //region clear data
+
+    clearTestCaseData: function(testCase){
+        let newTestCase = {}
+        newTestCase.code = testCase.code
+        newTestCase.title = testCase.title
+        newTestCase.precodition = testCase.precodition
+        newTestCase.input = testCase.input
+        newTestCase.expectedOutput = testCase.expectedOutput
+        newTestCase.scripts = []
+        newTestCase.executedScriptCount = 0
+        newTestCase.passedScriptCount = 0
+        for(let i = 0; i < testCase.scripts.length; i++){
+            let script = framework.clearScriptData(testCase.scripts[i])
+            newTestCase.scripts.push(script)
+            if(script.hasExecuted) newTestCase.executedScriptCount++
+            if(script.testResult) newTestCase.passedScriptCount++
+        }
+        if(newTestCase.scripts.length > 0){
+            newTestCase.hasExecuted = newTestCase.executedScriptCount ==  testCase.scripts.length
+            newTestCase.testResult = newTestCase.passedScriptCount ==  testCase.scripts.length
+            newTestCase.executeRate = utility.getPercentageRate(newTestCase.executedScriptCount, testCase.scripts.length)
+            newTestCase.passRate = utility.getPercentageRate(newTestCase.passedScriptCount, testCase.scripts.length)
+        }
+        else{
+            newTestCase.hasExecuted = false
+            newTestCase.testResult = false
+            newTestCase.executeRate = utility.getPercentageRate(0, 1)
+            newTestCase.passRate = utility.getPercentageRate(0, 1)
+        }
+        return newTestCase
+    },
+
+    clearScriptData: function(object){
+        let newObject = {}
+        newObject.scriptCode = object.scriptCode
+        newObject.testCaseCode = object.testCaseCode
+        newObject.title = object.title
+        newObject.hasExecuted = object.hasExecuted
+        newObject.testResult = object.testResult
+        newObject.actions = []
+        newObject.executedActionCount = 0
+        newObject.passedActionCount = 0
+        for(let i = 0; i < object.actions.length; i++){
+            let action = framework.clearActionData(object.actions[i])
+            newObject.actions.push(action)
+            if(action.hasExecuted) newObject.executedActionCount++
+            if(action.testResult) newObject.passedActionCount++
+        }
+        return newObject
+    },
+
+    clearActionData: function(object){
+        let newObject = {}
+        newObject.txFunctionName = object.txFunctionName
+        newObject.txParams = object.txParams
+        newObject.expectedResults = object.expectedResults
+        newObject.actualResults = object.actualResults
+        newObject.hasExecuted = object.hasExecuted
+        newObject.testResult = object.testResult
+        return newObject
+    },
+
+    //endregion
+
+    //region group
+
+    groupTestCases: function(testCases){
+        let testCaseTree = {}
+        testCaseTree.name = 'Test Cases Statistics'
+        testCaseTree.nodes = framework.groupTestCasesByLevel(testCases, 1)
+        for(let i = 0; i < testCaseTree.nodes.length; i++){
+            let lv1_node = testCaseTree.nodes[i]
+            lv1_node.nodes = framework.groupTestCasesByLevel(lv1_node.testCases, 2)
+            lv1_node.testCases = null
+        }
+        framework.countTestCases(testCaseTree)
+        return testCaseTree
+    },
+
+    groupTestCasesByLevel: function(testCases, level){
+        let testCaseTree = []
+        let group = new HashMap()
+        for(let i = 0; i< testCases.length; i++){
+            let prefix = framework.getPrefix(testCases[i].code, level)
+            let subGroup = group.get(prefix)
+            if(subGroup == undefined){
+                subGroup = []
+                group.set(prefix, subGroup)
+                testCaseTree.push({groupName: prefix, level: level, testCases: subGroup})
+            }
+            subGroup.push(testCases[i])
+        }
+        return testCaseTree
+    },
+
+    getPrefix: function(code, level){
+        let phases = code.split('_')
+
+        if(level > 3 || level <1){
+            console.log('getPrefix error: wrong level')
+            return null
+        }
+
+        if(level == 1){
+            return phases[0]
+        }
+        else if(level == 2){
+            return phases[0] + '_' + phases[1]
+        }
+        else if(level == 3){
+            return phases[0] + '_' + phases[1] + '_' + phases[2]
+        }
+
+        return null
+    },
+
+    countTestCases: function(node){
+        if(!node.nodes){
+            let testCases = node.testCases
+            node.executedCount = 0
+            node.passedCount = 0
+            node.testCaseCount = node.testCases.length
+            for(let i = 0; i < testCases.length; i++){
+                let testCase = testCases[i]
+                if(testCase.hasExecuted) node.executedCount++
+                if(testCase.testResult) node.passedCount++
+            }
+        }
+        else{
+            node.executedCount = 0
+            node.passedCount = 0
+            node.testCaseCount = 0
+            for(let i = 0; i < node.nodes.length; i++){
+                let result = framework.countTestCases(node.nodes[i])
+                node.executedCount += result.executedCount
+                node.passedCount += result.passedCount
+                node.testCaseCount += result.testCaseCount
+            }
+        }
+
+        node.executeRate = utility.getPercentageRate(node.executedCount, node.testCaseCount)
+        node.passRate = utility.getPercentageRate(node.passedCount, node.testCaseCount)
+
+        return {executedCount: node.executedCount, passedCount: node.passedCount, testCaseCount: node.testCaseCount,}
+    },
+
+    //endregion
 
     //endregion
 

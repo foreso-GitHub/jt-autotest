@@ -107,7 +107,6 @@ module.exports = tcsGetVersion = {
         else{
             framework.checkResponseError(action, expectedResult, actualResult)
         }
-        action.testResult = true
     },
 //endregion
 
