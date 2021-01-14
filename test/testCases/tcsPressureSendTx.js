@@ -1269,7 +1269,7 @@ module.exports = tcsPressureSendTx = {
                 let tx = responseOfGetTx.result
                 expect(tx.hash).to.be.equal(hash)
                 let params = testCase.txParams[0]
-                await framework.compareActualTxWithTxParams(params, tx, server.mode)
+                await framework.compareParamAndTx(params, tx)
             }
             else{
                 let expectedResult = check.expectedResult
@@ -1286,7 +1286,7 @@ module.exports = tcsPressureSendTx = {
                 let tx = responseOfGetTx.result
                 expect(tx.hash).to.be.equal(hash)
                 let params = testCase.txParams[0]
-                await framework.compareActualTxWithTxParams(params, tx, server.mode)
+                await framework.compareParamAndTx(params, tx)
             }
             else{
                 let expectedResult = testCase.expectedResult.expectedError

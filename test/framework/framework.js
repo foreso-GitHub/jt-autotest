@@ -139,17 +139,6 @@ module.exports = framework = {
 
     //region 1. create test cases
 
-    //region may need to be removed
-
-    createTestCaseByParams: function(testCaseParams){
-        return framework.createTestCase(testCaseParams.title, testCaseParams.server,
-            testCaseParams.txFunctionName, testCaseParams.txParams, testCaseParams.otherParams,
-            testCaseParams.executeFunction, testCaseParams.checkFunction, testCaseParams.expectedResult,
-            testCaseParams.restrictedLevel, testCaseParams.supportedServices, testCaseParams.supportedInterfaces)
-    },
-
-    //endregion
-
     //region txParams
 
     createTxParamsForTransfer: function(server){
@@ -995,7 +984,7 @@ module.exports = framework = {
         }
     },
 
-    compareValueByParamAndTx(paramValue, txAmount){
+    compareValueByParamAndTx: function(paramValue, txAmount){
         let paramValueObject = utility.parseShowValue(paramValue)
         if(paramValueObject.symbol == consts.default.nativeCoin){
             if(paramValue.indexOf(consts.default.nativeCoin) != -1){ //contains "SWT"
@@ -1013,77 +1002,6 @@ module.exports = framework = {
                 * Math.pow(10, consts.default.tokenDecimals)).toFixed())
         }
         expect(txAmount.currency).to.be.equals(paramValueObject.symbol)
-    },
-
-    //todo to be removed
-    compareActualTxWithTxParams: function(txParams, tx, mode){
-        return new Promise(function(resolve){
-            expect(tx.Account).to.be.equals(txParams.from)
-            expect(tx.Destination).to.be.equals(txParams.to)
-
-            let expectedFee = (mode.service == serviceType.oldChain) ?
-                mode.defaultFee : ((txParams.fee) ? txParams.fee : mode.defaultFee)
-            expect(tx.Fee).to.be.equals(expectedFee.toString())
-
-            //check value
-            if(txParams.type == consts.rpcParamConsts.issueCoin){
-                expect(tx.Name).to.be.equals(txParams.name)
-                expect(tx.Decimals).to.be.equals(Number(txParams.decimals))
-                expect(tx.TotalSupply.value).to.be.equals(txParams.total_supply)
-                expect(tx.TotalSupply.currency).to.be.equals(txParams.symbol)
-                expect(tx.TotalSupply.issuer).to.be.equals((txParams.local) ? txParams.from : mode.addresses.defaultIssuer.address)
-                expect(tx.Flags).to.be.equals(txParams.flags)
-            }
-            else{
-                let realValue = utility.parseShowValue(txParams.value)
-                // if(realValue.symbol != consts.default.nativeCoin){
-                //     expect(tx.Amount.currency).to.be.equals(realValue.symbol)
-                //     expect(tx.Amount.value + "/" + tx.Amount.currency + "/" + tx.Amount.issuer).to.be.equals(txParams.value)
-                // }else{
-                //     let expectedValue = (mode.service == serviceType.oldChain) ?
-                //         utility.valueToAmount(Number(txParams.value)) : utility.getRealValue(txParams.value)
-                //     expect(Number(tx.Amount)).to.be.equals(expectedValue)
-                // }
-
-                if(mode.service == serviceType.oldChain){
-                    expect(Number(tx.Amount)).to.be.equals(utility.valueToAmount(Number(txParams.value)))
-                }
-                else{
-                    expect(tx.Amount.currency).to.be.equals(realValue.symbol)
-                    if(realValue.symbol == consts.default.nativeCoin){
-                        if(txParams.value.indexOf(consts.default.nativeCoin) != -1){//expected '1000000' to equal '1/SWT'
-                            expect(tx.Amount.value).to.be.equals((realValue.amount * consts.swtConsts.oneSwt).toFixed(0))
-                        }
-                        else{
-                            expect(tx.Amount.value).to.be.equals(txParams.value)
-                        }
-                    }
-                    else{
-                        expect(tx.Amount.value).to.be.equals((realValue.amount * Math.pow(10, consts.default.tokenDecimals)).toFixed(0))
-                    }
-                }
-            }
-            //check memos, only in new chain
-            if(txParams.memos != null){
-                let memos = tx.Memos
-                let expectedMemos = txParams.memos
-                for(let i = 0; i < expectedMemos.length; i++){
-                    let expectedMemo = expectedMemos[i]
-                    if(typeof expectedMemo == "string"){
-                        expect(utility.hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo)
-                    }
-                    else if(expectedMemo.data){
-                        expect(utility.hex2Utf8(memos[i].Memo.MemoData)).to.be.equals(expectedMemo.data)
-                    }
-                    else{
-                        expect(false).to.be.ok
-                    }
-                    //todo need check type and format also. need make type, format, data of memo function clear with weijia.
-                }
-            }
-            // expect(false).to.be.ok
-            resolve("done!")
-        })
     },
 
     //endregion
@@ -1138,8 +1056,6 @@ module.exports = framework = {
 
     //endregion
 
-    //region common functions
-
     //region process sequence
 
     //region getSequence
@@ -1191,6 +1107,66 @@ module.exports = framework = {
     //endregion
 
     //endregion
+
+    //region blocks info
+
+    getBlocksInfo: async function(server, startBlockNumber, endBlockNumber){
+        return new Promise(async (resolve, reject) => {
+            let blockTime = server.mode.defaultBlockTime / 1000
+            let blockTpsInfoList = []
+            let blockWhichHasTxList = []
+            for(let i = startBlockNumber; i <= endBlockNumber; i++){
+                let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
+                let block = blockResponse.result
+                let blockTpsInfo = {}
+                blockTpsInfo.blockNumber = block.ledger_index
+                blockTpsInfo.txCount = block.transactions ? block.transactions.length : 0
+                blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
+                blockTpsInfoList.push(blockTpsInfo)
+                if(blockTpsInfo.txCount > 0){
+                    blockWhichHasTxList.push(blockTpsInfo)
+                }
+                logger.debug("=== block " + i + " done!")
+            }
+
+            let txCountInBlocks = 0
+            let maxBlock = null
+            let maxCount = -1
+            for(let blockTpsInfo of blockTpsInfoList){
+                if(blockTpsInfo.txCount > 0){
+                    logger.info('------ block tps status ------')
+                    logger.info("blockNumber: " + blockTpsInfo.blockNumber)
+                    logger.info("txCount: " + blockTpsInfo.txCount)
+                    logger.info("tps: " + blockTpsInfo.tps)
+                    txCountInBlocks += blockTpsInfo.txCount
+                    if(blockTpsInfo.txCount > maxCount){
+                        maxCount = blockTpsInfo.txCount
+                        maxBlock = blockTpsInfo
+                    }
+                }
+            }
+
+            let blockCount = endBlockNumber - startBlockNumber + 1
+            let tps = txCountInBlocks / blockCount / blockTime
+            logger.info("======== tps status ========")
+            logger.info("Start BlockNumber: " + startBlockNumber)
+            logger.info("End BlockNumber: " + endBlockNumber)
+            logger.info("Block Count: " + blockCount)
+            logger.info("Tx Count: " + txCountInBlocks)
+            logger.info("Block Tps: " + tps)
+            logger.info("Max Count Block: " + (maxBlock == null ? -1 : maxBlock.blockNumber))
+            logger.info("Max Count : " + maxCount)
+
+            let blockWhichHasTxCount = blockWhichHasTxList.length
+            logger.info("Tx Block Count: " + blockWhichHasTxCount)
+            logger.info("Tx Block Average Tps: " + txCountInBlocks / blockWhichHasTxCount / blockTime)
+
+            let blocksInfo = {}
+            blocksInfo.blockTpsInfoList = blockTpsInfoList
+            blocksInfo.txBlockCount = blockCount
+            resolve(blocksInfo)
+        })
+    },
 
     //endregion
 
@@ -1531,65 +1507,7 @@ module.exports = framework = {
 
     //endregion
 
-    //region common
-    getBlocksInfo: async function(server, startBlockNumber, endBlockNumber){
-        return new Promise(async (resolve, reject) => {
-            let blockTime = server.mode.defaultBlockTime / 1000
-            let blockTpsInfoList = []
-            let blockWhichHasTxList = []
-            for(let i = startBlockNumber; i <= endBlockNumber; i++){
-                let blockResponse = await server.getResponse(server, consts.rpcFunctions.getBlockByNumber, [i.toString(), false])
-                let block = blockResponse.result
-                let blockTpsInfo = {}
-                blockTpsInfo.blockNumber = block.ledger_index
-                blockTpsInfo.txCount = block.transactions ? block.transactions.length : 0
-                blockTpsInfo.tps = blockTpsInfo.txCount / blockTime
-                blockTpsInfoList.push(blockTpsInfo)
-                if(blockTpsInfo.txCount > 0){
-                    blockWhichHasTxList.push(blockTpsInfo)
-                }
-                logger.debug("=== block " + i + " done!")
-            }
 
-            let txCountInBlocks = 0
-            let maxBlock = null
-            let maxCount = -1
-            for(let blockTpsInfo of blockTpsInfoList){
-                if(blockTpsInfo.txCount > 0){
-                    logger.info('------ block tps status ------')
-                    logger.info("blockNumber: " + blockTpsInfo.blockNumber)
-                    logger.info("txCount: " + blockTpsInfo.txCount)
-                    logger.info("tps: " + blockTpsInfo.tps)
-                    txCountInBlocks += blockTpsInfo.txCount
-                    if(blockTpsInfo.txCount > maxCount){
-                        maxCount = blockTpsInfo.txCount
-                        maxBlock = blockTpsInfo
-                    }
-                }
-            }
-
-            let blockCount = endBlockNumber - startBlockNumber + 1
-            let tps = txCountInBlocks / blockCount / blockTime
-            logger.info("======== tps status ========")
-            logger.info("Start BlockNumber: " + startBlockNumber)
-            logger.info("End BlockNumber: " + endBlockNumber)
-            logger.info("Block Count: " + blockCount)
-            logger.info("Tx Count: " + txCountInBlocks)
-            logger.info("Block Tps: " + tps)
-            logger.info("Max Count Block: " + (maxBlock == null ? -1 : maxBlock.blockNumber))
-            logger.info("Max Count : " + maxCount)
-
-            let blockWhichHasTxCount = blockWhichHasTxList.length
-            logger.info("Tx Block Count: " + blockWhichHasTxCount)
-            logger.info("Tx Block Average Tps: " + txCountInBlocks / blockWhichHasTxCount / blockTime)
-
-            let blocksInfo = {}
-            blocksInfo.blockTpsInfoList = blockTpsInfoList
-            blocksInfo.txBlockCount = blockCount
-            resolve(blocksInfo)
-        })
-    },
-    //endregion
 
     //endregion
 
