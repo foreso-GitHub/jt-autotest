@@ -734,67 +734,69 @@ module.exports = tcsSubscribe = {
 
         //endregion
 
-        // //region block + tx
-        //
-        // testScripts = []
-        //
-        // title = titlePrefix + '0050\t已订阅区块时再订阅交易'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['block'],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['tx'],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = true
-        //     action.receiveTx = true
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0060\t已订阅交易时再订阅区块'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['tx'],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['block'],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = true
-        //     action.receiveTx = true
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
+        //region block + tx
+
+        testScripts = []
+
+        testCaseCode = 'FCJT_subscribe_000050'
+        scriptCode = defaultScriptCode + '_已订阅区块时再订阅交易'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000060'
+        scriptCode = defaultScriptCode + '_已订阅交易时再订阅区块'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = true
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
         // framework.testTestScripts(server, describeTitle + '_多个订阅', testScripts)
-        //
-        // //endregion
+
+        //endregion
 
         // //region token
         //
@@ -1108,46 +1110,6 @@ module.exports = tcsSubscribe = {
         //     framework.addTestScript(testScripts, testScript)
         // }
         //
-        // title = titlePrefix + '0160\t订阅account，带有效参数_01： 发送方地址'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', from.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = false
-        //     action.receiveTx = true
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0161\t订阅account，带有效参数_02： 接收方地址'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', to.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = false
-        //     action.receiveTx = true
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
         // title = titlePrefix + '0180\t订阅account，带无效参数: 未激活地址'
         // {
         //     actions = []
@@ -1279,11 +1241,11 @@ module.exports = tcsSubscribe = {
         //
         // //endregion
 
-        //region special
+        //region issue token
 
         testScripts = []
 
-        //region tx
+        //region token tx
 
         token = utility.getDynamicTokenName()
         token.issuer = sender.address
@@ -1448,321 +1410,419 @@ module.exports = tcsSubscribe = {
 
         //endregion
 
-        //region token
+        //region tx token
 
-        // token = utility.getDynamicTokenName()
-        // token.issuer = sender.address
-        //
-        // title = titlePrefix + '0081_0001\t订阅token，发行token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', token.symbol],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, false)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0081_0002\t订阅token，发送token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', token.symbol],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTxAction(sender, receiver, true)
-        //     action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0081_0003\t订阅token，增发token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', token.symbol],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, false)
-        //     action.txParams[0].total_supply = '10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0081_0004\t订阅token，销毁token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', token.symbol],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, false)
-        //     action.txParams[0].total_supply = '-10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0091_0001\t订阅token，发行token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', tcsSubscribe.getCoinFullName(token)],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, true)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0091_0002\t订阅token，发送token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', tcsSubscribe.getCoinFullName(token)],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTxAction(sender, receiver, true)
-        //     action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0091_0003\t订阅token，增发token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', tcsSubscribe.getCoinFullName(token)],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, true)
-        //     action.txParams[0].total_supply = '10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0091_0004\t订阅token，销毁token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['token', tcsSubscribe.getCoinFullName(token)],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, true)
-        //     action.txParams[0].total_supply = '-10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
+        token = utility.getDynamicTokenName()
+        token.issuer = sender.address
 
-        //endregion
+        testCaseCode = 'FCJT_subscribe_000081'
+        scriptCode = defaultScriptCode + '_订阅tx，发行token，全局token'
+        {
+            actions = []
 
-        //region account
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
 
-        // token = utility.getDynamicTokenName()
-        // token.issuer = sender.address
-        //
-        // title = titlePrefix + '0162_0001\t订阅account，发行token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, false)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0160_0001\t订阅account，发送token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTxAction(sender, receiver, true)
-        //     action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0163_0001\t订阅account，增发token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, false)
-        //     action.txParams[0].total_supply = '10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0164_0001\t订阅account，销毁token，全局token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, false)
-        //     action.txParams[0].total_supply = '-10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0162_0002\t订阅account，发行token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, true)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0160_0002\t订阅account，发送token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTxAction(sender, receiver, true)
-        //     action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0163_0002\t订阅account，增发token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, true)
-        //     action.txParams[0].total_supply = '10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
-        //
-        // title = titlePrefix + '0164_0002\t订阅account，销毁token，本地token'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.subscribe,
-        //         txParams: ['account', sender.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createTokenAction(sender, token, true)
-        //     action.txParams[0].total_supply = '-10'
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000081'
+        scriptCode = '000200' + '_订阅token，发送token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000081'
+        scriptCode = '000300' + '_订阅token，增发token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000081'
+        scriptCode = '000400' + '_订阅token，销毁token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', token.symbol],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000091'
+        scriptCode = defaultScriptCode + '_订阅token，发行token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(token)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000091'
+        scriptCode = defaultScriptCode + '_订阅token，发送token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(token)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000091'
+        scriptCode = defaultScriptCode + '_订阅token，增发token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(token)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000091'
+        scriptCode = '000400' + '_订阅token，销毁token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['token', tcsSubscribe.getCoinFullName(token)],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         //endregion
 
-        framework.testTestScripts(server, describeTitle + '_订阅发币', testScripts)
+        //region account token
+
+        token = utility.getDynamicTokenName()
+        token.issuer = sender.address
+
+        testCaseCode = 'FCJT_subscribe_000162'
+        scriptCode = defaultScriptCode + '_订阅account，发行token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000162'
+        scriptCode = '000200' + '_订阅account，发行token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000160'
+        scriptCode = defaultScriptCode + '_订阅account，带有效参数_01： 发送方地址'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000161'
+        scriptCode = defaultScriptCode + '_订阅account，带有效参数_02： 接收方地址'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', to.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000160'
+        scriptCode = '000200' + '_订阅account，发送方地址，发送token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000160'
+        scriptCode = '000300' + '_订阅account，发送方地址，发送token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000161'
+        scriptCode = '000200' + '_订阅account，接收方地址，发送token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', receiver.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, consts.default.issuer)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000161'
+        scriptCode = '000300' + '_订阅account，接收方地址，发送token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', receiver.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTxAction(sender, receiver, true)
+            action.txParams[0].value = utility.getShowValue(1, token.symbol, token.issuer)
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000163'
+        scriptCode = defaultScriptCode + '_订阅account，增发token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000163'
+        scriptCode = '000200' + '_订阅account，增发token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000164'
+        scriptCode = defaultScriptCode + '_订阅account，销毁token，全局token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, false)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_subscribe_000164'
+        scriptCode = defaultScriptCode + '_订阅account，销毁token，本地token'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['account', sender.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createTokenAction(sender, token, true)
+            action.txParams[0].total_supply = '-10'
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        // framework.testTestScripts(server, describeTitle + '_订阅发币', testScripts)
 
         //endregion
 
