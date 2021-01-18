@@ -173,6 +173,7 @@ describe('Jingtum测试', function() {
                 //endregion
 
                 //region special
+
                 // this.timeout(3600000)
                 // tcsBugInjection.test(server, '故障注入测试')
                 // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
@@ -252,15 +253,53 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
 
-                tcsSign.testForSign(server, '测试jt_sign')
+                // tcsSign.testForSign(server, '测试jt_sign')
 
                 //endregion
 
+                //region need work on
 
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
 
+                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+                //
+                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
+                //
+                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+                //
+                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+                //
+                // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
+                //
+                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+                //
+                // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+                //
+                // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCountByHash')
+                //
+                // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
+                //
+                // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
+                // //region websocket subscribe
+                //
+                // this.timeout(360000)
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // this.timeout(timeout)
+                //
+                // //endregion
 
+                //region special
+
+                this.timeout(3600000)
+                // tcsBugInjection.test(server, '故障注入测试')
+                tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+
+                //endregion
+
+                //endregion
 
 
 

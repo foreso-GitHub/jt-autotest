@@ -27,63 +27,74 @@ module.exports = tcsRASTest = {
     //region tx receipt check
 
     testChangeNodeCount: function(server, describeTitle){
-        let testCases = []
-        let title
-        let otherParams
-        let testCase
-        let titleIndex = 1
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
 
         describe(describeTitle, async function () {
-            title = '0030\t减少共识节点 - 5个节点减少1个'
-            otherParams = {}
-            otherParams.initNodeCount = 5
-            otherParams.reduceCount = 1
-            testCase = tcsRASTest.createTestCase(server, title, otherParams)
-            framework.addTestScript(testCases, testCase)
-            framework.testTestScripts(server, describeTitle + '_' + titleIndex++, testCases)  //node operation will conflict.  so one case, one test.
 
-            // title = '0030\t减少共识节点 - 5个节点减少2个'
-            // otherParams = {}
-            // otherParams.initNodeCount = 5
-            // otherParams.reduceCount = 2
-            // testCase = tcsRASTest.createTestCase(server, title, otherParams)
-            // testCases = []
-            // framework.addTestScript(testCases, testCase)
-            // framework.testTestScripts(server, describeTitle + '_' + titleIndex++, testCases)
+            testCaseCode = 'ERR_RAS_000030'
+            scriptCode = defaultScriptCode + '_减少共识节点，5个节点减少1个'
+            {
+                let txParams = {}
+                txParams.initNodeCount = 5
+                txParams.reduceCount = 1
+                let testScript = tcsRASTest.createTestScript(server, testCaseCode, scriptCode, txParams)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            scriptCode = '000200' + '_减少共识节点，5个节点减少2个'
+            {
+                let txParams = {}
+                txParams.initNodeCount = 5
+                txParams.reduceCount = 2
+                let testScript = tcsRASTest.createTestScript(server, testCaseCode, scriptCode, txParams)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            framework.testTestScripts(server, describeTitle, testScripts)  //node operation will conflict.  so one case, one test.
+
         })
 
     },
 
-    createTestCase: function(server, title, otherParams){
-        let testCase = framework.createTestCase(
-            title,
+    createTestScript: function(server, testCaseCode, scriptCode, txParams){
+
+        let testScript = framework.createTestScript(
             server,
-            null,
-            null,
-            otherParams,
-            tcsRASTest.execReduceNode,
-            tcsRASTest.checkChangeNodeCount,
-            null,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L3,
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        return testCase
+
+        let action = framework.createTestAction(testScript, 'RAS', txParams,
+            tcsRASTest.execReduceNode,
+            tcsRASTest.checkChangeNodeCount,
+            [{needPass: true}])
+        action.actualResult = []
+        testScript.actions.push(action)
+
+        return testScript
     },
 
-    execReduceNode: function(testCase){
-        testCase.hasExecuted = true
+    execReduceNode: function(action){
+        action.hasExecuted = true
         return new Promise(async (resolve, reject) => {
             let netSync = await monitor.checkSync(jtNodes)
             monitor.printNetSync(netSync)
-            testCase.actualResult.push(netSync)
+            action.actualResult.push(netSync)
 
-            let initNodeCount = testCase.otherParams.initNodeCount
+            let initNodeCount = action.txParams.initNodeCount
             if(netSync.syncCount != initNodeCount){
                 reject("init node count is not " + initNodeCount)
             }
             else{
-                let reduceCount = testCase.otherParams.reduceCount
+                let reduceCount = action.txParams.reduceCount
                 let nodes = []
                 let rands = testUtility.getRandList(0, initNodeCount - 1, reduceCount, false)
 
@@ -95,23 +106,23 @@ module.exports = tcsRASTest = {
                 await utility.timeout(10000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
-                testCase.actualResult.push(netSync)
+                action.actualResult.push(netSync)
 
                 tcsRASTest.startJtByNodes(nodes)
-                await utility.timeout(720000)
+                await utility.timeout(60000)
                 netSync = await monitor.checkSync(jtNodes)
                 monitor.printNetSync(netSync)
-                testCase.actualResult.push(netSync)
+                action.actualResult.push(netSync)
 
-                resolve(testCase)
+                resolve(action)
             }
         })
     },
 
-    checkChangeNodeCount: function(testCase){
-        let initNodeCount = testCase.otherParams.initNodeCount
-        let netSyncList = testCase.actualResult
-        let reduceCount = testCase.otherParams.reduceCount
+    checkChangeNodeCount: function(action){
+        let initNodeCount = action.txParams.initNodeCount
+        let netSyncList = action.actualResult
+        let reduceCount = action.txParams.reduceCount
         expect(netSyncList[0].syncCount).to.be.equals(initNodeCount)
         expect(netSyncList[1].syncCount).to.be.equals(initNodeCount - reduceCount)
         expect(netSyncList[1].blockNumber > netSyncList[0].blockNumber).to.be.ok
