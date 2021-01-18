@@ -29,7 +29,6 @@ const tcsSendRawTx = require('./testCases/tcsSendRawTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
 const tcsSendTxInOneRequest = require('./testCases/tcsSendTxInOneRequest')
 const tcsIpfs = require('./testCases/tcsIpfs')
-const tcsRASTest = require('./testCases/tcsRASTest')
 const tcsInteractiveTest = require('./testCases/tcsInteractiveTest')
 const tcsBugInjection = require('./testCases/tcsBugInjection')
 const tcsSubscribe = require('./testCases/tcsSubscribe')
@@ -255,6 +254,14 @@ describe('Jingtum测试', function() {
 
                 // tcsSign.testForSign(server, '测试jt_sign')
 
+                //region special
+
+                // this.timeout(3600000)
+                // tcsBugInjection.testForBugInjection(server, '故障注入测试')
+                // tcsBugInjection.testForRAS(server, 'RAS测试')
+
+                //endregion
+
                 //endregion
 
                 //region need work on
@@ -281,21 +288,13 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
-                // //region websocket subscribe
-                //
-                // this.timeout(360000)
+                //region websocket subscribe
+
+                this.timeout(360000)
                 // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
-                //
-                // //endregion
-
-                //region special
-
-                this.timeout(3600000)
-                tcsBugInjection.testForBugInjection(server, '故障注入测试')
-                tcsBugInjection.testForRAS(server, 'RAS测试')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 

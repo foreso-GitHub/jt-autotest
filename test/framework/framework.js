@@ -215,7 +215,7 @@ module.exports = framework = {
         testAction.executeFunction = executeFunction
         testAction.checkFunction = checkFunction
         testAction.expectedResults = expectedResults
-        testAction.actualResult = null
+        testAction.actualResult = []
         testAction.testResult = false
         testAction.hasExecuted = false
         testAction.otherParams = {}

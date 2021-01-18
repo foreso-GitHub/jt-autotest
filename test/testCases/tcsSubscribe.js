@@ -57,46 +57,70 @@ module.exports = tcsSubscribe = {
 
     //region main
 
-    createSingleTestCase: function(server, title, actions, needPass, expectedError){
-        let testCase = framework.createTestCase(
-            title,
+    // createSingleTestCase: function(server, title, actions, needPass, expectedError){
+    //     let testCase = framework.createTestCase(
+    //         title,
+    //         server,
+    //         null,
+    //         null,
+    //         null,
+    //         tcsSubscribe.executeForSubscribe,
+    //         tcsSubscribe.checkForSubscribe,
+    //         {needPass: needPass, isErrorInResult: true, expectedError: expectedError},
+    //         restrictedLevel.L2,
+    //         [serviceType.newChain],
+    //         [interfaceType.websocket],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    //     )
+    //
+    //     testCase.actions = actions
+    //
+    //     return testCase
+    // },
+
+    createTestScript: function(server, testCaseCode, scriptCode, txFunctionName, actions){
+
+        let testScript = framework.createTestScript(
             server,
-            null,
-            null,
-            null,
-            tcsSubscribe.executeForSubscribe,
-            tcsSubscribe.checkForSubscribe,
-            {needPass: needPass, isErrorInResult: true, expectedError: expectedError},
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain],
-            [interfaceType.websocket],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
 
-        testCase.actions = actions
+        let mainAction = framework.createTestAction(testScript, txFunctionName, [],
+            tcsSubscribe.executeForSubscribe,
+            tcsSubscribe.checkForSubscribe,
+            [{needPass: true}])
 
-        return testCase
+        mainAction.actions = actions
+
+        testScript.actions.push(mainAction)
+
+        return testScript
     },
 
-    executeForSubscribe: async function(testCase){
-        testCase.hasExecuted = true
+    executeForSubscribe: async function(mainAction){
+        mainAction.hasExecuted = true
         return new Promise(async (resolve, reject) => {
-            logger.debug('=== ' + testCase.title)
+            logger.debug('=== ' + mainAction.title)
 
             //new ws
-            let ws = testCase.server.newWebSocket(testCase.server)
+            let ws = mainAction.server.newWebSocket(mainAction.server)
 
             //execute actions
-            for(let i = 0; i < testCase.actions.length; i++){
+            for(let i = 0; i < mainAction.actions.length; i++){
 
                 // 执行本次action
-                let action = testCase.actions[i]
+                let action = mainAction.actions[i]
                 logger.debug('=== Executing action ' + i + '. ' + action.type)
                 if(action.type == actionTypes.sendTx
                     || action.type == actionTypes.signTx
                     || action.type == actionTypes.sendRawTx){  // send txs
-                    testCase.server.clearSub() //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
-                    // logger.debug('testCase.server.getOutputs().sub: ' + testCase.server.getOutputs().sub.length)
-                    let server = testCase.server
+                    mainAction.server.clearSub() //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
+                    // logger.debug('mainAction.server.getOutputs().sub: ' + mainAction.server.getOutputs().sub.length)
+                    let server = mainAction.server
 
                     let txParams = await utility.updateSequenceInTxParams(server, action.txParams, )
                     if(action.type == actionTypes.sendTx){
@@ -117,13 +141,13 @@ module.exports = tcsSubscribe = {
                     }
 
                     if(action.receiveTx){
-                        testCase.realHashes = action.hashes
+                        mainAction.realHashes = action.hashes
                     }
                     else{
-                        testCase.fakeHashes = action.hashes
+                        mainAction.fakeHashes = action.hashes
                     }
                 }else {  // execute subscribe/unsubscribe/listsubscribe
-                    await testCase.server.subscribe(ws, action.type, action.txParams)
+                    await mainAction.server.subscribe(ws, action.type, action.txParams)
                 }
 
                 // 执行timeout
@@ -131,23 +155,23 @@ module.exports = tcsSubscribe = {
                 await utility.timeout(action.timeout)
 
                 //保存这个action的执行结果
-                logger.debug(JSON.stringify(testCase.server.getOutputs()))
-                action.output = utility.deepClone(testCase.server.getOutputs().sub)  //必须现在调用getOutputs()获取最新的output，不能用变量
+                logger.debug(JSON.stringify(mainAction.server.getOutputs()))
+                action.output = utility.deepClone(mainAction.server.getOutputs().sub)  //必须现在调用getOutputs()获取最新的output，不能用变量
             }
 
             //close ws
-            let outputs = await testCase.server.closeWebSocket(ws)
-            // if(testCase.actions.length > 0){
-            //     testCase.actions[testCase.actions.length - 1].output = outputs.sub
+            let outputs = await mainAction.server.closeWebSocket(ws)
+            // if(mainAction.actions.length > 0){
+            //     mainAction.actions[mainAction.actions.length - 1].output = outputs.sub
             // }
-            testCase.actualResult.push(outputs.all)
-            resolve(testCase)
+            mainAction.actualResult.push(outputs.all)
+            resolve(mainAction)
         })
     },
 
-    checkForSubscribe: function(testCase){
-        for(let i = 0; i < testCase.actions.length; i++){
-            let action = testCase.actions[i]
+    checkForSubscribe: function(mainAction){
+        for(let i = 0; i < mainAction.actions.length; i++){
+            let action = mainAction.actions[i]
             logger.debug('=== Checking action ' + i + '. ' + action.type)
             if(action.checkFunction){
                 action.checkFunction(action)
@@ -289,10 +313,6 @@ module.exports = tcsSubscribe = {
             }
         }
         return null
-    },
-
-    findTxParam: function(txParams, type, sequence){
-
     },
 
     //endregion
@@ -2749,12 +2769,12 @@ module.exports = tcsSubscribe = {
     testForListSubscribe: function(server, describeTitle){
 
         //region fields
-        let titlePrefix = consts.rpcFunctions.listSubscribe + '_'
-        let title
-        let testCase
-        let testCases = []
-        let needPass = true
-        let expectedError = ''
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+        let txFunctionName = consts.rpcFunctions.listSubscribe
+        let testScript
         let actions = []
 
         let globalCoin = server.mode.coins[0]
@@ -2765,9 +2785,10 @@ module.exports = tcsSubscribe = {
 
         //region normal
 
-        testCases = []
+        testScripts = []
 
-        title = titlePrefix + '0010\t参数为空_01: client订阅了block、tx、多个token（全局和带issuer的都有）、多个account'
+        testCaseCode = 'FCJT_listSubscribe_000010'
+        scriptCode = defaultScriptCode + '_client订阅了block、tx、多个token（全局和带issuer的都有）、多个account'
         {
             actions = []
 
@@ -2820,13 +2841,16 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+
         }
 
-        title = titlePrefix + '0020\t参数为空_02: client没有订阅任何信息'
+        testCaseCode = 'FCJT_listSubscribe_000020'
+        scriptCode = defaultScriptCode + '_client没有订阅任何信息'
         {
             actions = []
+
             actions.push({type: actionTypes.list,
                 txParams: [],
                 checkParams: [],
@@ -2835,14 +2859,17 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0030\t参数为block_01: client订阅了block,参数列表为["block"]'
+        testCaseCode = 'FCJT_listSubscribe_000030'
+        scriptCode = defaultScriptCode + '_client订阅了block,参数列表为["block"]'
         {
             actions = []
+
             actions.push({type: actionTypes.subscribe, txParams: ['block'], timeout: 1000})
+
             actions.push({type: actionTypes.list,
                 txParams: ['block'],
                 checkParams: ['block'],
@@ -2851,13 +2878,15 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0040\t参数为block_02: client没有订阅block,参数列表为["block"]'
+        testCaseCode = 'FCJT_listSubscribe_000040'
+        scriptCode = defaultScriptCode + '_client没有订阅block,参数列表为["block"]'
         {
             actions = []
+
             actions.push({type: actionTypes.list,
                 txParams: ['block'],
                 checkParams: [],
@@ -2866,14 +2895,17 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0050\t参数为tx_01: client订阅了tx,参数列表为["tx"]'
+        testCaseCode = 'FCJT_listSubscribe_000050'
+        scriptCode = defaultScriptCode + '_client订阅了tx,参数列表为["tx"]'
         {
             actions = []
+
             actions.push({type: actionTypes.subscribe, txParams: ['tx'], timeout: 1000})
+
             actions.push({type: actionTypes.list,
                 txParams: ['tx'],
                 checkParams: ['tx'],
@@ -2882,13 +2914,15 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0060\t参数为tx_02:client没有订阅tx,参数列表为["tx"]'
+        testCaseCode = 'FCJT_listSubscribe_000060'
+        scriptCode = defaultScriptCode + '_client没有订阅tx,参数列表为["tx"]'
         {
             actions = []
+
             actions.push({type: actionTypes.list,
                 txParams: ['tx'],
                 checkParams: [],
@@ -2897,19 +2931,22 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0070\t参数为token_01:client订阅了多个token（全局的和带issuer的都有）,参数列表为["token"]'
+        testCaseCode = 'FCJT_listSubscribe_000070'
+        scriptCode = defaultScriptCode + '_client订阅了多个token（全局的和带issuer的都有）,参数列表为["token"]'
         {
             actions = []
+
             actions.push({type: actionTypes.subscribe,
                 txParams: ['token', globalCoin.symbol],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
                 expectedResult: {needPass: true, expectedError: ''},
             })
+
             actions.push({type: actionTypes.subscribe,
                 txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
                 timeout: Subscribe_Timeout,
@@ -2925,11 +2962,12 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0080\t参数为token_02:client没有订阅token,参数列表为["token"]'
+        testCaseCode = 'FCJT_listSubscribe_000080'
+        scriptCode = defaultScriptCode + '_client没有订阅token,参数列表为["token"]'
         {
             actions = []
             actions.push({type: actionTypes.list,
@@ -2940,19 +2978,22 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0090\t参数为account_01:client订阅了多个account,参数列表为["account"]'
+        testCaseCode = 'FCJT_listSubscribe_000090'
+        scriptCode = defaultScriptCode + '_client订阅了多个account,参数列表为["account"]'
         {
             actions = []
+
             actions.push({type: actionTypes.subscribe,
                 txParams: ['account', from.address],
                 timeout: Subscribe_Timeout,
                 checkFunction: tcsSubscribe.checkForSubscribeResult,
                 expectedResult: {needPass: true, expectedError: ''},
             })
+
             actions.push({type: actionTypes.subscribe,
                 txParams: ['account', to.address],
                 timeout: Subscribe_Timeout,
@@ -2968,11 +3009,12 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0100\t参数为account_02:client没有订阅account,参数列表为["account"]'
+        testCaseCode = 'FCJT_listSubscribe_000100'
+        scriptCode = defaultScriptCode + '_client没有订阅account,参数列表为["account"]'
         {
             actions = []
             actions.push({type: actionTypes.list,
@@ -2983,21 +3025,23 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        framework.testTestScripts(server, describeTitle + '_列表normal', testCases)
+        // framework.testTestScripts(server, describeTitle + '_列表normal', testScripts)
 
         //endregion
 
         //region mixed
 
-        testCases = []
+        testScripts = []
 
-        title = titlePrefix + '0110_0001\t无效的参数: 数字'
+        testCaseCode = 'FCJT_listSubscribe_000110'
+        scriptCode = defaultScriptCode + '_无效的参数: 数字'
         {
             actions = []
+
             actions.push({type: actionTypes.list,
                 txParams: ['12313123'],
                 checkParams: [],
@@ -3006,13 +3050,15 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0110_0002\t无效的参数: 乱码字符串'
+        testCaseCode = 'FCJT_listSubscribe_000110'
+        scriptCode = '000200' + '_无效的参数: 乱码字符串'
         {
             actions = []
+
             actions.push({type: actionTypes.list,
                 txParams: ['asdfasawer awer as09 8a0 sa098 a098__9e87r09w8fASDFASDF@#$@$ eoihsafkjn'],
                 checkParams: [],
@@ -3021,11 +3067,12 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0120\t参数包含多个内容_01:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["block","tx","token", "account"]'
+        testCaseCode = 'FCJT_listSubscribe_000120'
+        scriptCode = defaultScriptCode + '_client订阅了block、tx、多个token（全局和带issuer的都有）、多个account'
         {
             actions = []
 
@@ -3078,11 +3125,13 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0130\t参数包含多个内容_02:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["block","token"]'
+        testCaseCode = 'FCJT_listSubscribe_000130'
+        scriptCode = defaultScriptCode + '_参数包含多个内容_02:client订阅了block、tx、多个token（全局和带issuer的都有）、' +
+            '多个account,参数列表为["block","token"]'
         {
             actions = []
 
@@ -3134,284 +3183,303 @@ module.exports = tcsSubscribe = {
                 expectedResult: {needPass: true, expectedError: ''},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0140\t参数包含多个内容_03:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["tx", "account"]'
+        // title = titlePrefix + '0140\t参数包含多个内容_03:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表为["tx", "account"]'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['block'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['tx'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', globalCoin.symbol],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', from.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', to.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['tx', 'account'],
+        //         checkParams: ['tx',
+        //             'account ' + from.address + ',' + to.address],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     testScript = tcsSubscribe.createTestScript(server, title, actions, needPass, expectedError)
+        //     framework.addTestScript(testScripts, testScript)
+        // }
+
+        testScripts = []
+
+        testCaseCode = 'FCJT_listSubscribe_000110'
+        scriptCode = defaultScriptCode + '_无效的参数: 数字'
         {
             actions = []
 
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['block'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['tx'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', globalCoin.symbol],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', from.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', to.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
             actions.push({type: actionTypes.list,
-                txParams: ['tx', 'account'],
-                checkParams: ['tx',
-                    'account ' + from.address + ',' + to.address],
-                timeout: 1000,
-                checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
-        }
-
-        title = titlePrefix + '0150\t参数包含多个内容_04:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表包含一个有效的参数，一个无效的参数，比如["block","123"]'
-        {
-            actions = []
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['block'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['tx'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', globalCoin.symbol],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', from.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', to.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.list,
-                txParams: ['block', '123'],
-                checkParams: ['block'],
-                timeout: 1000,
-                checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
-        }
-
-        title = titlePrefix + '0160\t参数包含多个内容_05:参数列表包含几个无效的参数，比如["abc","123"]'
-        {
-            actions = []
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['block'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['tx'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', globalCoin.symbol],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', from.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', to.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.list,
-                txParams: ['abc', '123'],
+                txParams: ['12313123'],
                 checkParams: [],
                 timeout: 1000,
                 checkFunction: tcsSubscribe.checkForListSubscribe,
                 expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
             })
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = titlePrefix + '0170\t参数包含多个内容_06:client订阅了block、tx、多个token（全局和带issuer的都有），没有订阅account,参数列表为["block","account"]'
-        {
-            actions = []
+        // title = titlePrefix + '0150\t参数包含多个内容_04:client订阅了block、tx、多个token（全局和带issuer的都有）、多个account,参数列表包含一个有效的参数，一个无效的参数，比如["block","123"]'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['block'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['tx'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', globalCoin.symbol],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', from.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', to.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['block', '123'],
+        //         checkParams: ['block'],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     testScript = tcsSubscribe.createTestScript(server, title, actions, needPass, expectedError)
+        //     framework.addTestScript(testScripts, testScript)
+        // }
 
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['block'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['tx'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
+        // title = titlePrefix + '0160\t参数包含多个内容_05:参数列表包含几个无效的参数，比如["abc","123"]'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['block'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['tx'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', globalCoin.symbol],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', from.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', to.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['abc', '123'],
+        //         checkParams: [],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe,
+        //         expectedResult: {needPass: false, expectedError: framework.getError(-278, 'invalid topic')},
+        //     })
+        //
+        //     testScript = tcsSubscribe.createTestScript(server, title, actions, needPass, expectedError)
+        //     framework.addTestScript(testScripts, testScript)
+        // }
 
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', globalCoin.symbol],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
+        // title = titlePrefix + '0170\t参数包含多个内容_06:client订阅了block、tx、多个token（全局和带issuer的都有），没有订阅account,参数列表为["block","account"]'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['block'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['tx'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', globalCoin.symbol],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['block', 'account'],
+        //         checkParams: ['block'],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     testScript = tcsSubscribe.createTestScript(server, title, actions, needPass, expectedError)
+        //     framework.addTestScript(testScripts, testScript)
+        // }
 
-            actions.push({type: actionTypes.list,
-                txParams: ['block', 'account'],
-                checkParams: ['block'],
-                timeout: 1000,
-                checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
+        // title = titlePrefix + '0180\t参数包含多个内容_07:client订阅了block、多个token（全局和带issuer的都有）、多个account，没有订阅tx,参数列表为["tx", "token"]'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['block'],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', globalCoin.symbol],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', from.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //     actions.push({type: actionTypes.subscribe,
+        //         txParams: ['account', to.address],
+        //         timeout: Subscribe_Timeout,
+        //         checkFunction: tcsSubscribe.checkForSubscribeResult,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['tx', 'token'],
+        //         checkParams: ['token ' + globalCoin.symbol + ',' + tcsSubscribe.getCoinFullName(localCoin)],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     testScript = tcsSubscribe.createTestScript(server, title, actions, needPass, expectedError)
+        //     framework.addTestScript(testScripts, testScript)
+        // }
 
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
-        }
+        // title = titlePrefix + '0190\t参数包含多个内容_08:client什么都没订阅,参数列表为["block","tx","token", "account"]'
+        // {
+        //     actions = []
+        //
+        //     actions.push({type: actionTypes.list,
+        //         txParams: ['block', 'tx', 'token', 'account'],
+        //         checkParams: [],
+        //         timeout: 1000,
+        //         checkFunction: tcsSubscribe.checkForListSubscribe,
+        //         expectedResult: {needPass: true, expectedError: ''},
+        //     })
+        //
+        //     testScript = tcsSubscribe.createTestScript(server, title, actions, needPass, expectedError)
+        //     framework.addTestScript(testScripts, testScript)
+        // }
 
-        title = titlePrefix + '0180\t参数包含多个内容_07:client订阅了block、多个token（全局和带issuer的都有）、多个account，没有订阅tx,参数列表为["tx", "token"]'
-        {
-            actions = []
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['block'],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', globalCoin.symbol],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['token', tcsSubscribe.getCoinFullName(localCoin)],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', from.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-            actions.push({type: actionTypes.subscribe,
-                txParams: ['account', to.address],
-                timeout: Subscribe_Timeout,
-                checkFunction: tcsSubscribe.checkForSubscribeResult,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            actions.push({type: actionTypes.list,
-                txParams: ['tx', 'token'],
-                checkParams: ['token ' + globalCoin.symbol + ',' + tcsSubscribe.getCoinFullName(localCoin)],
-                timeout: 1000,
-                checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
-        }
-
-        title = titlePrefix + '0190\t参数包含多个内容_08:client什么都没订阅,参数列表为["block","tx","token", "account"]'
-        {
-            actions = []
-
-            actions.push({type: actionTypes.list,
-                txParams: ['block', 'tx', 'token', 'account'],
-                checkParams: [],
-                timeout: 1000,
-                checkFunction: tcsSubscribe.checkForListSubscribe,
-                expectedResult: {needPass: true, expectedError: ''},
-            })
-
-            testCase = tcsSubscribe.createSingleTestCase(server, title, actions, needPass, expectedError)
-            framework.addTestScript(testCases, testCase)
-        }
-
-        framework.testTestScripts(server, describeTitle + '_列表mixed', testCases)
+        framework.testTestScripts(server, describeTitle + '_列表mixed', testScripts)
 
         //endregion
     },

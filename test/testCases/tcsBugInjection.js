@@ -281,7 +281,6 @@ module.exports = tcsBugInjection = {
             tcsBugInjection.checkTcCmds,
             [{needPass: true}])
         action.txParams = txParams  //必须加上，因为 createTestAction中 txParams会被deepclone后赋值给originalTxParams，丢失functions
-        action.actualResult = []
         action.txParams.allNodes = jtNodes
         action.txParams.timeAfterExecCmds = 60000
         action.txParams.timeAfterResetCmds = 60000
