@@ -294,8 +294,8 @@ describe('Jingtum测试', function() {
                 //region special
 
                 this.timeout(3600000)
-                tcsBugInjection.test(server, '故障注入测试')
-                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+                tcsBugInjection.testForBugInjection(server, '故障注入测试')
+                tcsBugInjection.testForRAS(server, 'RAS测试')
 
                 //endregion
 

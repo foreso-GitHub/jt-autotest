@@ -25,15 +25,13 @@ const netStatusTool = require("../utility/monitor/netStatusTool")
 
 module.exports = tcsBugInjection = {
 
-    //region tx receipt check
-
-    test: function(server, describeTitle){
+    testForBugInjection: function(server, describeTitle){
 
         let testScripts = []
         let testCaseCode
         let defaultScriptCode = '000100'
         let scriptCode
-        let txParams = {}
+        let txFunctionName = 'Bug_Inject'
 
         describe(describeTitle, async function () {
 
@@ -54,7 +52,7 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 5
                 txParams.execCmdsFunc = tcsBugInjection.loss30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -65,35 +63,17 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.loss30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
 
-            framework.testTestScripts(server, describeTitle, testScripts)
+            framework.testTestScripts(server, describeTitle + '_网络丢包测试', testScripts)
 
             //endregion
 
             //region 网络包重复测试
 
-            // testCases = []
-            //
-            // title = '0130\t网络包重复测试_01:每个节点Duplicate30%，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 5
-            // txParams.execCmdsFunc = tcsBugInjection.duplicate30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0140\t网络包重复测试_02:单个节点Duplicate30%，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 1
-            // txParams.execCmdsFunc = tcsBugInjection.duplicate30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // framework.testTestScripts(server, describeTitle + '_网络包重复测试', testCases)  //node operation will conflict.  so one case, one test.
+            testScripts = []
 
             testCaseCode = 'ERR_Inject_000130'
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Duplicate30%，然后恢复'
@@ -102,7 +82,7 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 5
                 txParams.execCmdsFunc = tcsBugInjection.duplicate30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -113,33 +93,17 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.duplicate30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
+
+            framework.testTestScripts(server, describeTitle + '_网络包重复测试', testScripts)
 
             //endregion
 
             //region 网络包损坏测试
 
-            // testCases = []
-            //
-            // title = '0150\t网络包损坏测试_01:每个节点Corrupt30%，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 5
-            // txParams.execCmdsFunc = tcsBugInjection.corrupt30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0160\t网络包损坏测试_02:单个节点Corrupt30%，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 1
-            // txParams.execCmdsFunc = tcsBugInjection.corrupt30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // framework.testTestScripts(server, describeTitle + '_网络包损坏测试', testCases)  //node operation will conflict.  so one case, one test.
+            testScripts = []
 
             testCaseCode = 'ERR_Inject_000150'
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Corrupt30%，然后恢复'
@@ -148,7 +112,7 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 5
                 txParams.execCmdsFunc = tcsBugInjection.corrupt30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -159,34 +123,17 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.corrupt30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
+
+            framework.testTestScripts(server, describeTitle + '_网络包损坏测试', testScripts)
 
             //endregion
 
             //region 网络包乱序测试
 
-            // testCases = []
-            //
-            // title = '0170\t网络包乱序测试_01:每个节点Reorder30%，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 5
-            // txParams.execCmdsFunc = tcsBugInjection.reorder30
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0180\t网络包乱序测试_02:单个节点Reorder30%，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 1
-            // txParams.execCmdsFunc = tcsBugInjection.reorder30
-            // // txParams.execNode = jtNodes[3]  //指定执行的node，不然会随机选择
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // framework.testTestScripts(server, describeTitle + '_网络包乱序测试', testCases)  //node operation will conflict.  so one case, one test.
+            testScripts = []
 
             testCaseCode = 'ERR_Inject_000170'
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Reorder30%，然后恢复'
@@ -195,7 +142,7 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 5
                 txParams.execCmdsFunc = tcsBugInjection.reorder30
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -207,36 +154,17 @@ module.exports = tcsBugInjection = {
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.reorder30
                 // txParams.execNode = jtNodes[3]  //指定执行的node，不然会随机选择
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
+
+            framework.testTestScripts(server, describeTitle + '_网络包乱序测试', testScripts)
 
             //endregion
 
             //region 网络延时测试
 
-            // testCases = []
-            //
-            // title = '0090\t网络延时测试_01:每个节点5%概率延迟1s，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 5
-            // txParams.execCmdsFunc = tcsBugInjection.delay0_1_5
-            // txParams.timeAfterResetCmds = 60000  //確保网络延时测试需要60s來恢復
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0100\t网络延时测试_02:单个节点5%概率延迟1s，然后恢复'
-            // txParams = {}
-            // txParams.initNodeCount = 5
-            // txParams.execNodeCount = 1
-            // txParams.execCmdsFunc = tcsBugInjection.delay0_1_5
-            // txParams.timeAfterResetCmds = 60000  //確保网络延时测试需要60s來恢復
-            // // txParams.execNode = jtNodes[0]  //指定执行的node为bd，不然会随机选择
-            // testCase = tcsBugInjection.createTestCaseForTcCmds(server, title, txParams)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // framework.testTestScripts(server, describeTitle + '_网络延时测试', testCases)  //node operation will conflict.  so one case, one test.
+            testScripts = []
 
             testCaseCode = 'ERR_Inject_000090'
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点5%概率延迟1s，然后恢复'
@@ -245,7 +173,7 @@ module.exports = tcsBugInjection = {
                 txParams.initNodeCount = 5
                 txParams.execNodeCount = 5
                 txParams.execCmdsFunc = tcsBugInjection.delay0_1_5
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -257,47 +185,84 @@ module.exports = tcsBugInjection = {
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.delay0_1_5
                 // txParams.execNode = jtNodes[0]  //指定执行的node为bd，不然会随机选择
-                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
+                let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
             }
+
+            framework.testTestScripts(server, describeTitle + '_网络延时测试', testScripts)
 
             //endregion
 
             //region 断网测试
 
-            // testScripts = []
-            //
-            // testCaseCode = 'ERR_Inject_000010'
-            // scriptCode = defaultScriptCode + '_断开一个共识节点的网络'
-            // {
-            //     let txParams = {}
-            //     txParams.initNodeCount = 5
-            //     txParams.execNodeCount = 1
-            //     let testScript = tcsBugInjection.createTestScriptForCloseP2P(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
-            //     framework.addTestScript(testScripts, testScript)
-            //     framework.testTestScripts(server, describeTitle, testScripts)
-            // }
-            //
-            // testCaseCode = 'ERR_Inject_000010'
-            // {
-            //     for(let i = 1; i <= 5; i++){
-            //         testScripts = []
-            //         scriptCode = '000200' + '_多次断开一个共识节点的网络，第' + i + '次'
-            //         let txParams = {}
-            //         txParams.initNodeCount = 5
-            //         txParams.execNodeCount = 1
-            //         let testScript = tcsBugInjection.createTestScriptForCloseP2P(server, testCaseCode, scriptCode, 'Bug_Inject', txParams)
-            //         framework.addTestScript(testScripts, testScript)
-            //         // framework.testTestScripts(server, describeTitle, testScripts)
-            //     }
-            // }
+            testScripts = []
+
+            testCaseCode = 'ERR_Inject_000010'
+            scriptCode = defaultScriptCode + '_断开一个共识节点的网络'
+            {
+                let txParams = {}
+                txParams.initNodeCount = 5
+                txParams.execNodeCount = 1
+                let testScript = tcsBugInjection.createTestScriptForCloseP2P(server, testCaseCode, scriptCode, txFunctionName, txParams)
+                framework.addTestScript(testScripts, testScript)
+                framework.testTestScripts(server, describeTitle + '_单次断网测试', testScripts)
+            }
+
+            testCaseCode = 'ERR_Inject_000010'
+            {
+                for(let i = 1; i <= 5; i++){
+                    testScripts = []
+                    scriptCode = '000200' + '_多次断开一个共识节点的网络，第' + i + '次'
+                    let txParams = {}
+                    txParams.initNodeCount = 5
+                    txParams.execNodeCount = 1
+                    let testScript = tcsBugInjection.createTestScriptForCloseP2P(server, testCaseCode, scriptCode, txFunctionName, txParams)
+                    framework.addTestScript(testScripts, testScript)
+                    framework.testTestScripts(server, describeTitle + '_多次网络断网测试，第' + i + '次', testScripts)
+                }
+            }
 
             //endregion
 
         })
     },
 
-    //region exec/check p2p
+    testForRAS: function(server, describeTitle){
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+        let txFunctionName = 'RAS'
+
+        describe(describeTitle, async function () {
+
+            testCaseCode = 'ERR_RAS_000030'
+            scriptCode = defaultScriptCode + '_减少共识节点，5个节点减少1个'
+            {
+                let txParams = {}
+                txParams.initNodeCount = 5
+                txParams.execNodeCount = 1
+                let testScript = tcsBugInjection.createTestScriptForRestartNodes(server, testCaseCode, scriptCode, txFunctionName, txParams)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            scriptCode = '000200' + '_减少共识节点，5个节点减少2个'
+            {
+                let txParams = {}
+                txParams.initNodeCount = 5
+                txParams.execNodeCount = 2
+                let testScript = tcsBugInjection.createTestScriptForRestartNodes(server, testCaseCode, scriptCode, txFunctionName, txParams)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            framework.testTestScripts(server, describeTitle, testScripts)
+
+        })
+
+    },
+
+    //region exec/check
 
     createTestScript: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
 
@@ -321,6 +286,18 @@ module.exports = tcsBugInjection = {
         action.txParams.timeAfterExecCmds = 60000
         action.txParams.timeAfterResetCmds = 60000
         testScript.actions.push(action)
+
+        return testScript
+    },
+
+    createTestScriptForRestartNodes: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
+
+        let testScript = tcsBugInjection.createTestScript(server, testCaseCode, scriptCode, txFunctionName, txParams)
+        let action = testScript.actions[0]
+        action.txParams.timeAfterExecCmds = 10000
+        action.txParams.execCmdsFunc = tcsBugInjection.stopJt
+        action.txParams.resetCmdsFunc = tcsBugInjection.startJt
+        action.txParams.needCheck2ndNetSync = true
 
         return testScript
     },
@@ -413,105 +390,6 @@ module.exports = tcsBugInjection = {
 
     },
 
-    execCloseP2P: function(action){
-        action.hasExecuted = true
-        return new Promise(async (resolve, reject) => {
-            let netSync = await monitor.checkSync(jtNodes)
-            monitor.printNetSync(netSync)
-            action.actualResult.push(netSync)
-
-            let initNodeCount = action.txParams.initNodeCount
-            if(netSync.syncCount != initNodeCount){
-                reject("init node count is not " + initNodeCount)
-            }
-            else{
-                let execNodeCount = action.txParams.execNodeCount
-                let nodes = []
-                let rands = testUtility.getRandList(0, initNodeCount - 1, execNodeCount, false)
-
-                for (let i = 0; i < execNodeCount; i++){
-                    nodes.push(jtNodes[rands[i]])
-                    logger.debug('===selected service: ' + jtNodes[rands[i]].name)
-                }
-
-                tcsBugInjection.execByNodes(nodes, tcsBugInjection.closeP2P)
-                await utility.timeout(action.txParams.timeAfterExecCmds)
-                netSync = await monitor.checkSync(jtNodes)
-                monitor.printNetSync(netSync)
-                action.actualResult.push(netSync)
-
-                tcsBugInjection.execByNodes(nodes, tcsBugInjection.resetNet)
-                await utility.timeout(action.txParams.timeAfterResetCmds)
-                netSync = await monitor.checkSync(jtNodes)
-                monitor.printNetSync(netSync)
-                action.actualResult.push(netSync)
-
-                resolve(action)
-            }
-        })
-    },
-
-    checkCloseP2P: function(action){
-        let initNodeCount = action.txParams.initNodeCount
-        let netSyncList = action.actualResult
-        let execNodeCount = action.txParams.execNodeCount
-        expect(netSyncList[0].syncCount).to.be.equals(initNodeCount)
-        expect(netSyncList[1].syncCount).to.be.equals(initNodeCount - execNodeCount)
-        expect(netSyncList[1].blockNumber > netSyncList[0].blockNumber).to.be.ok
-        expect(netSyncList[2].syncCount).to.be.equals(initNodeCount)
-        expect(netSyncList[2].blockNumber > netSyncList[1].blockNumber).to.be.ok
-    },
-
-    //endregion
-
-    //region exec/check tc
-
-    // createTestCaseForTcCmds: function(server, title, txParams){
-    //     let testCase = framework.createTestCase(
-    //         title,
-    //         server,
-    //         null,
-    //         null,
-    //         txParams,
-    //         tcsBugInjection.execTcCmds,
-    //         tcsBugInjection.checkTcCmds,
-    //         null,
-    //         restrictedLevel.L3,
-    //         [serviceType.newChain, ],
-    //         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-    //     )
-    //     testCase.txParams.timeAfterExecCmds = 60000
-    //     testCase.txParams.resetCmdsFunc = tcsBugInjection.resetTc
-    //     testCase.txParams.timeAfterResetCmds = 60000
-    //     testCase.txParams.allNodes = jtNodes
-    //     return testCase
-    // },
-
-    // createTestScriptForTcCmds: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
-    //
-    //     let testScript = framework.createTestScript(
-    //         server,
-    //         testCaseCode,
-    //         scriptCode,
-    //         [],
-    //         restrictedLevel.L3,
-    //         [serviceType.newChain, ],
-    //         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-    //     )
-    //
-    //     let action = framework.createTestAction(testScript, txFunctionName, txParams,
-    //         tcsBugInjection.execTcCmds,
-    //         tcsBugInjection.checkTcCmds,
-    //         [{needPass: true}])
-    //     action.txParams.timeAfterExecCmds = 60000
-    //     action.txParams.timeAfterResetCmds = 60000
-    //     action.actualResult = []
-    //     testScript.actions.push(action)
-    //
-    //     return testScript
-    // },
-
-
     //endregion
 
     //region ssh cmd
@@ -565,6 +443,18 @@ module.exports = tcsBugInjection = {
 
     //endregion
 
+    //region jt node
+
+    startJt: function(service){
+        sshCmd.execSshCmd(service, service.cmds.start)
+    },
+
+    stopJt: function(service){
+        sshCmd.execSshCmd(service, service.cmds.stop)
+    },
+
+    //endregion
+
     execByNodes: function(services, execFunc){
         services.forEach(service =>{
             execFunc(service)
@@ -572,7 +462,5 @@ module.exports = tcsBugInjection = {
     },
 
     //endregion
-
-//endregion
 
 }
