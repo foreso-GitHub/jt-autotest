@@ -2205,7 +2205,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        // framework.testTestScripts(server, describeTitle + '_退订block', testScripts)
+        framework.testTestScripts(server, describeTitle + '_退订block', testScripts)
 
         //endregion
 
@@ -2333,7 +2333,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        // framework.testTestScripts(server, describeTitle + '_退订tx', testScripts)
+        framework.testTestScripts(server, describeTitle + '_退订tx', testScripts)
 
         //endregion
 
@@ -2393,6 +2393,72 @@ module.exports = tcsSubscribe = {
 
             actions.push({type: actionTypes.unsubscribe,
                 txParams: ['block'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_unsubscribe_000050'
+        scriptCode = defaultScriptCode + '_已订阅区块block，取消订阅时超长字符串数字'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['block'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['123123sddfasdfaewefsafasdff'],
+                timeout: 1000,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: false, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = true
+            action.receiveTx = false
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_unsubscribe_000050'
+        scriptCode = '000200' + '_已订阅交易tx，取消订阅时超长字符串数字'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.subscribe,
+                txParams: ['tx'],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForSubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = true
+            actions.push(action)
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['123123sddfasdfaewefsafasdff'],
                 timeout: 1000,
                 checkFunction: tcsSubscribe.checkForUnsubscribeResult,
                 expectedResult: {needPass: false, expectedError: ''},
@@ -2473,7 +2539,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        // framework.testTestScripts(server, describeTitle + '_退订失败', testScripts)
+        framework.testTestScripts(server, describeTitle + '_退订失败', testScripts)
 
         //endregion
 
@@ -2636,7 +2702,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        // framework.testTestScripts(server, describeTitle + '_退订token', testScripts)
+        framework.testTestScripts(server, describeTitle + '_退订token', testScripts)
 
         //endregion
 
@@ -2708,26 +2774,26 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        // testCaseCode = 'FCJT_unsubscribe_000151'
-        // scriptCode = defaultScriptCode + '_取消订阅内容为account，参数是合法的地址，但是该地址没被订阅过'
-        // {
-        //     actions = []
-        //
-        //     actions.push({type: actionTypes.unsubscribe,
-        //         txParams: ['account', from.address],
-        //         timeout: Subscribe_Timeout,
-        //         checkFunction: tcsSubscribe.checkForUnsubscribeResult,
-        //         expectedResult: {needPass: true, expectedError: ''},
-        //     })
-        //
-        //     action = tcsSubscribe.createRealTxAction(server)
-        //     action.receiveBlock = false
-        //     action.receiveTx = false
-        //     actions.push(action)
-        //
-        //     testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
-        //     framework.addTestScript(testScripts, testScript)
-        // }
+        testCaseCode = 'FCJT_unsubscribe_000151'
+        scriptCode = defaultScriptCode + '_取消订阅内容为account，参数是合法的地址，但是该地址没被订阅过'
+        {
+            actions = []
+
+            actions.push({type: actionTypes.unsubscribe,
+                txParams: ['account', from.address],
+                timeout: Subscribe_Timeout,
+                checkFunction: tcsSubscribe.checkForUnsubscribeResult,
+                expectedResult: {needPass: true, expectedError: ''},
+            })
+
+            action = tcsSubscribe.createRealTxAction(server)
+            action.receiveBlock = false
+            action.receiveTx = false
+            actions.push(action)
+
+            testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         testCaseCode = 'FCJT_unsubscribe_000160'
         scriptCode = defaultScriptCode + '_取消订阅有效的account地址:client有订阅的account'
@@ -2762,7 +2828,7 @@ module.exports = tcsSubscribe = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        // framework.testTestScripts(server, describeTitle + '_退订account', testScripts)
+        framework.testTestScripts(server, describeTitle + '_退订account', testScripts)
 
         //endregion
 
