@@ -295,12 +295,12 @@ describe('Jingtum测试', function() {
 
 
 
-                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
 
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
-                //
-                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
-                //
+
+                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+
                 // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
 
 

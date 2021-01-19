@@ -91,7 +91,7 @@ const TX_SCHEMA = {
         "inLedger",
         "ledger_index",
         "meta",
-        "validated"
+        // "validated"
     ],
     properties: {
         meta: {

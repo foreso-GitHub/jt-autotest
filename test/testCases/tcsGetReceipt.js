@@ -33,8 +33,6 @@ module.exports = tcsGetReceipt = {
 
         //endregion
 
-        let testCases = []
-
         testCaseCode = 'FCJT_getTransactionReceipt_000010'
         scriptCode = defaultScriptCode + '_发送币的交易'
         {
