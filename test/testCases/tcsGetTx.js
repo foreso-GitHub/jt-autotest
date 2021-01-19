@@ -388,170 +388,237 @@ module.exports = tcsGetTx = {
     //region get tx by block and index
 
     testForGetTransactionByBlockHashAndIndex: function(server, describeTitle){
+
+        //region fields
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+
         let txs = server.mode.txs
-        let testCases = []
         let functionName = consts.rpcFunctions.getTransactionByBlockHashAndIndex
 
-        let title = '0010\t有效区块哈希，有效交易索引'
-        let hash = txs.block.blockHash
-        let index = txs.tx1.meta.TransactionIndex.toString()
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+        //endregion
 
-        title = '0010\t有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
-        hash = txs.block.blockHash
-        testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockHash(server, title, hash)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000010'
+        scriptCode = defaultScriptCode + '_有效区块哈希，有效交易索引'
+        {
+            let hash = txs.block.blockHash
+            let index = txs.tx1.meta.TransactionIndex.toString()
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t有效区块哈希，无效交易索引无效交易索引:100'
-        hash = txs.block.blockHash
-        index = '999999'
-        needPass = false
-        expectedError = framework.getError(140, 'no such transaction in block')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000010'
+        scriptCode = '000200' + '_有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
+        {
 
-        title = '0020\t有效区块哈希，无效交易索引无效交易索引:负数'
-        hash = txs.block.blockHash
-        index = '-1'
-        needPass = false
-        expectedError = framework.getError(-189, 'index out of range')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            let hash = txs.block.blockHash
+            let count = 30
 
-        title = '0020\t有效区块哈希，无效交易索引无效交易索引:乱码'
-        hash = txs.block.blockHash
-        index = 'asdf'
-        needPass = false
-        expectedError = framework.getError(-269, 'index is not integer')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScript(
+                server,
+                testCaseCode,
+                scriptCode,
+                [],
+                restrictedLevel.L2,
+                [serviceType.newChain, ],
+                [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            )
 
-        title = '0030\t无效区块哈希'
-        hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-        index = '0'
-        needPass = false
-        expectedError = framework.getError(140, 't find block')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, hash, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            for(let i = 0; i < count; i++){
+                let txParams = []
+                txParams.push(hash)
+                txParams.push(i)
+                let action = framework.createTestAction(testScript, functionName, txParams,
+                    framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+                testScript.actions.push(action)
+            }
+
+            framework.addTestScript(testScripts, testScript)
+
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
+        scriptCode = defaultScriptCode + '_有效区块哈希，无效交易索引无效交易索引:999999'
+        {
+            let hash = txs.block.blockHash
+            let index = '999999'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 'no such transaction in block'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
+        scriptCode = '000200' + '_有效区块哈希，无效交易索引无效交易索引:负数'
+        {
+            let hash = txs.block.blockHash
+            let index = '-1'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-189, 'index out of range'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
+        scriptCode = '000200' + '_有效区块哈希，无效交易索引无效交易索引:乱码'
+        {
+            let hash = txs.block.blockHash
+            let index = 'asdf'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'index is not integer'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000030'
+        scriptCode = defaultScriptCode + '_无效区块哈希'
+        {
+            let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
+            let index = '0'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 't find block'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     testForGetTransactionByBlockNumberAndIndex: function(server, describeTitle){
+
+        //region fields
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+
         let txs = server.mode.txs
-        let testCases = []
         let functionName = consts.rpcFunctions.getTransactionByBlockNumberAndIndex
 
-        let tx1 = txs.tx1
-        let title = '0010\t有效区块哈希，有效交易索引'
-        let blockNumber = tx1.ledger_index.toString()
-        let index = txs.tx1.meta.TransactionIndex.toString()
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+        //endregion
 
-        title = '0010\t有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
-        blockNumber = txs.block.blockNumber
-        testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000010'
+        scriptCode = defaultScriptCode + '_有效区块编号，有效交易索引'
+        {
+            let tx = txs.tx1
+            let blockNumber = tx.ledger_index.toString()
+            let index = tx.meta.TransactionIndex.toString()
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        //todo need restore when these tags are supported.
-        // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号earliest，遍历所有有效交易索引'
-        // blockNumber = "earliest"
-        // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        // testCase.supportedServices = [serviceType.newChain,]
-        // framework.addTestScript(testCases, testCase)
-        //
-        // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号latest，遍历所有有效交易索引'
-        // blockNumber = "latest"
-        // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        // testCase.supportedServices = [serviceType.newChain,]
-        // framework.addTestScript(testCases, testCase)
-        //
-        // title = '0010\t有效区块编号，有效交易索引:查询有效区块编号pending，遍历所有有效交易索引'
-        // blockNumber = "pending"
-        // testCase = tcsGetTx.createSingleTestCaseForGoThroughTxsInBlockByBlockNumber(server, title, blockNumber)
-        // testCase.supportedServices = [serviceType.newChain,]
-        // framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000010'
+        scriptCode = '000200' + '_有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
+        {
 
-        title = '0020\t有效区块编号，无效交易索引无效交易索引:100'
-        blockNumber = tx1.ledger_index.toString()
-        index = '100'
-        needPass = false
-        expectedError = framework.getError(140, 'no such transaction in block')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            let blockNumber = txs.block.blockNumber
+            let count = 30
 
-        title = '0020\t有效区块编号，无效交易索引无效交易索引:负数'
-        blockNumber = tx1.ledger_index.toString()
-        index = '-1'
-        needPass = false
-        expectedError = framework.getError(-189, 'index out of range')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            let testScript = framework.createTestScript(
+                server,
+                testCaseCode,
+                scriptCode,
+                [],
+                restrictedLevel.L2,
+                [serviceType.newChain, ],
+                [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            )
 
-        title = '0020\t有效区块编号，无效交易索引无效交易索引:乱码'
-        blockNumber = tx1.ledger_index.toString()
-        index = 'asdf'
-        needPass = false
-        expectedError = framework.getError(-269, 'index is not integer')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            for(let i = 0; i < count; i++){
+                let txParams = []
+                txParams.push(blockNumber)
+                txParams.push(i)
+                let action = framework.createTestAction(testScript, functionName, txParams,
+                    framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+                testScript.actions.push(action)
+            }
 
-        title = '0030\t无效区块编号'
-        blockNumber = '999999999'
-        index = '0'
-        needPass = false
-        expectedError = framework.getError(140, 't find block')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransactionByBlockAndIndex(server, title, functionName, blockNumber, index, needPass, expectedError)
-        testCase.supportedServices = [serviceType.newChain,]
-        framework.addTestScript(testCases, testCase)
+            framework.addTestScript(testScripts, testScript)
+
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
+        scriptCode = defaultScriptCode + '_有效区块编号，无效交易索引无效交易索引:999999'
+        {
+            let tx = txs.tx1
+            let blockNumber = tx.ledger_index.toString()
+            let index = '999999'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 'no such transaction in block'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
+        scriptCode = '000200' + '_有效区块编号，无效交易索引无效交易索引:负数'
+        {
+            let tx = txs.tx1
+            let blockNumber = tx.ledger_index.toString()
+            let index = '-1'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-189, 'index out of range'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
+        scriptCode = '000300' + '_有效区块编号，无效交易索引无效交易索引:乱码'
+        {
+            let tx = txs.tx1
+            let blockNumber = tx.ledger_index.toString()
+            let index = 'asdf'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'index is not integer'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000030'
+        scriptCode = defaultScriptCode + '_无效区块编号'
+        {
+            let blockNumber = '999999999'
+            let index = '0'
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 't find block'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetTransactionByBlockAndIndex: function(server, title, functionName,
-                                                                            hashOrNumber, index, needPass, expectedError){
+    createTestScriptForGetTransactionByBlockAndIndex: function(server, testCaseCode, scriptCode, functionName, hashOrNumber, index,){
 
         let txParams = []
         txParams.push(hashOrNumber)
         txParams.push(index)
 
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
-
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetTx.checkTransactionByBlockHashAndIndex,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain,],
+            [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetTx.checkTransactionByBlockHashAndIndex, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        return testCase
     },
 
     checkTransactionByBlockHashAndIndex: function(action){
@@ -561,98 +628,23 @@ module.exports = tcsGetTx = {
         if(needPass){
             expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
             let tx1 = action.server.mode.txs.tx1
-            framework.compareTx(response.result, tx1)
+            framework.compareTxs(response.result, tx1)
         }
         else{
             framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
 
-    createSingleTestCaseForGoThroughTxsInBlockByBlockHash: function(server, title, hash){
-        // todo: need consider how to combine these 2 similar functions.
-        // try to combine number and hash function but failed.
-        // because use function as param will cause 'this' in function direct to other value, response function cannot be found.
-        // let getCountFunc = numberOrHash.length == HASH_LENGTH ? server.responseGetTxCountByHash : server.responseGetTxCountByBlockNumber
-        // let getTxFunc = numberOrHash.length == HASH_LENGTH ? server.responseGetTxByBlockHashAndIndex : server.responseGetTxByBlockNumberAndIndex
-
-        return framework.createTestCase(
-            title,
-            server,
-            '',
-            null,
-            null,
-            function(testCase){
-                testCase.hasExecuted = true
-                return server.responseGetTxCountByHash(server, hash).then(async(countResponse)=> {
-                    // testCase.hasExecuted = true
-                    testCase.actualResult.push(countResponse)
-                })
-            },
-            async function(testCase){
-                let countResponse = testCase.actualResult[0]
-                framework.checkResponse(true, countResponse)
-                let txCount = Number(countResponse.result)
-                let finishCount = 0
-                for(let i = 0; i < txCount; i++){
-                    await Promise.resolve(server.responseGetTxByBlockHashAndIndex(server, hash, i.toString())).then(function (response) {
-                        framework.checkResponse(true, response)
-                        finishCount++
-                    })
-                }
-                if(finishCount == txCount){
-                    logger.debug("遍历所有有效交易索引成功，共查询到" + txCount + "条交易!")
-                }
-                else{
-                    logger.debug("遍历所有有效交易索引失败，应该有" + txCount + "条交易，实际查询到" + finishCount + "条交易!")
-                    expect(false).to.be.ok
-                }
-            },
-            null,
-            restrictedLevel.L2,
-            [serviceType.newChain,],
-            [],//[interfaceType.rpc, interfaceType.websocket]
-        )
-    },
-
-    createSingleTestCaseForGoThroughTxsInBlockByBlockNumber: function(server, title, number){
-        // todo: need consider how to combine these 2 similar functions.
-        return framework.createTestCase(
-            title,
-            server,
-            '',
-            null,
-            null,
-            function(testCase){  //execute function
-                testCase.hasExecuted = true
-                return server.responseGetTxCountByBlockNumber(server, number).then(async(countResponse)=> {
-                    // testCase.hasExecuted = true
-                    testCase.actualResult.push(countResponse)
-                })
-            },
-            async function(testCase){  //check function
-                let countResponse = testCase.actualResult[0]
-                framework.checkResponse(true, countResponse)
-                let txCount = Number(countResponse.result)
-                let finishCount = 0
-                for(let i = 0; i < txCount; i++){
-                    await Promise.resolve(server.responseGetTxCountByBlockNumber(server, number, i.toString())).then(function (response) {
-                        framework.checkResponse(true, response)
-                        finishCount++
-                    })
-                }
-                if(finishCount == txCount){
-                    logger.debug("遍历所有有效交易索引成功，共查询到" + txCount + "条交易!")
-                }
-                else{
-                    logger.debug("遍历所有有效交易索引失败，应该有" + txCount + "条交易，实际查询到" + finishCount + "条交易!")
-                    expect(false).to.be.ok
-                }
-            },
-            null,
-            restrictedLevel.L2,
-            [serviceType.newChain,],
-            [],//[interfaceType.rpc, interfaceType.websocket]
-        )
+    checkTransactionForGoThrough: function(action){
+        let response = action.actualResult
+        let needPass = action.expectedResults[0].needPass
+        framework.checkGetResponse(response)
+        if(needPass){
+            expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
+        }
+        else{
+            framework.checkResponseError(action, action.expectedResults[0], response)
+        }
     },
 
     //endregion
