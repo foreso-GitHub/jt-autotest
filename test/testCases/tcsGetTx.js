@@ -23,107 +23,139 @@ module.exports = tcsGetTx = {
     //region get tx check
 
     //region get tx by hash
+
     testForGetTransaction: function(server, describeTitle){
-        let testCases = []
+
+        //region fields
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+
+        //endregion
 
         let txs = server.mode.txs
 
-        let title = '0010\t查询有效交易哈希-底层币'
-        let hash = txs.tx1.hash
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000010'
+        scriptCode = defaultScriptCode + '_查询有效交易哈希-底层币'
+        {
+            let hash = txs.tx1.hash
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t查询有效交易哈希-token'
-        hash = txs.tx_token.hash
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000020'
+        scriptCode = defaultScriptCode + '_查询有效交易哈希-token'
+        {
+            let hash = txs.tx_token.hash
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0030\t查询有效交易哈希-memos'
-        hash = txs.tx_memo.hash
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000030'
+        scriptCode = defaultScriptCode + '_查询有效交易哈希-memos'
+        {
+            let hash = txs.tx_memo.hash
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0040\t查询无效交易哈希:数字'
-        hash = 1231111
-        needPass = false
-        expectedError = framework.getError(-269, 'hash is not string')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000040'
+        scriptCode = defaultScriptCode + '_查询无效交易哈希:数字'
+        {
+            let hash = 1231111
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'hash is not string'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0040\t查询无效交易哈希:字符串'
-        hash = 'data.tx1.hash'
-        expectedError = framework.getError(-269, 'invalid byte')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000040'
+        scriptCode = '000200' + '_查询无效交易哈希:字符串'
+        {
+            let hash = 'data.tx1.hash'
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'invalid byte'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0040\t查询无效交易哈希:参数为空'
-        hash = null
-        expectedError = framework.getError(-269, 'hash is null')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000040'
+        scriptCode = '000300' + '_查询无效交易哈希:参数为空'
+        {
+            let hash = null
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'hash is not string'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0040\t无效交易哈希：不存在的hash'
-        hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-        expectedError = framework.getError(140, 't find transaction')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000040'
+        scriptCode = '000400' + '_无效交易哈希：不存在的hash'
+        {
+            let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 't find transaction'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0040\t无效交易哈希：hash长度超过标准'
-        hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
-        expectedError = framework.getError(-189, 'index out of range')
-        testCase = tcsGetTx.createSingleTestCaseForGetTransaction(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionByHash_000040'
+        scriptCode = '000500' + '_无效交易哈希：hash长度超过标准'
+        {
+            let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
+            let testScript = tcsGetTx.createSingleTestCaseForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-189, 'index out of range'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetTransaction: function(server, title, hash, needPass, expectedError){
+    createSingleTestCaseForGetTransaction: function(server, testCaseCode, scriptCode, hash,){
 
         let functionName = consts.rpcFunctions.getTransactionByHash
         let txParams = []
         txParams.push(hash)
 
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
-
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetTx.checkTransaction,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain, serviceType.oldChain],
+            [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetReceipt.checkTransaction, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        testCase.checkParams = {}
-        testCase.checkParams.hash = hash;
-
-        return testCase
     },
 
-    checkTransaction: function(testCase){
+    checkTransaction: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
-            // let hash = testCase.txParams[0]
-            let hash = testCase.checkParams.hash
-            // expect(value.result).to.be.jsonSchema(schema.TX_SCHEMA)
+            expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
+            let hash = action.txParams[0]
+            // let hash = action.checkParams.hash
             expect(response.result.hash).to.be.equal(hash)
         }
         else{
             framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
+
     //endregion
 
     //region get tx by index
