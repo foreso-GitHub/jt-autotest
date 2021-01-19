@@ -23,77 +23,97 @@ module.exports = tcsGetReceipt = {
     //region tx receipt check
 
     testForGetTransactionReceipt: function(server, describeTitle){
+
+        //region fields
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+
+        //endregion
+
         let testCases = []
 
-        let title = '0010\t有效交易哈希'
-        let hash = server.mode.txs.tx1.hash
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionReceipt_000010'
+        scriptCode = defaultScriptCode + '_发送币的交易'
+        {
+            let hash = server.mode.txs.tx1.hash
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t无效交易哈希：不存在的交易哈希'
-        needPass = false
-        hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
-        expectedError = framework.getError(140, 't find transaction')
-        testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        //todo FCJT_getTransactionReceipt_000010 查询有效的交易哈希（发币的交易、发送币的交易、底层币、代币等）
 
-        title = '0020\t无效交易哈希：数字'
-        hash = '100093'
-        expectedError = framework.getError(-269, 'NewHash256: Wrong length')
-        testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionReceipt_000020'
+        scriptCode = defaultScriptCode + '_不存在的交易哈希'
+        {
+            let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 't find transaction'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t无效交易哈希：字符串乱码'
-        hash = '1231dsfafwrwerwer'
-        expectedError = framework.getError(-269, 'encoding/hex: invalid byte')
-        // expectedError.description = 'invalid byte'
-        testCase = tcsGetReceipt.createSingleTestCaseForGetTransactionReceipt(server, title, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getTransactionReceipt_000020'
+        scriptCode = '000200' + '_数字'
+        {
+            let hash = '100093'
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'NewHash256: Wrong length'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getTransactionReceipt_000020'
+        scriptCode = '000300' + '_字符串乱码'
+        {
+            let hash = '1231dsfafwrwerwer'
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-269, 'encoding/hex: invalid byte'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetTransactionReceipt: function(server, title, hash, needPass, expectedError){
+    createTestScript: function(server, testCaseCode, scriptCode, hash,){
 
         let functionName = consts.rpcFunctions.getTransactionReceipt
         let txParams = []
         txParams.push(hash)
 
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
-
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetReceipt.checkTransactionReceipt,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetReceipt.checkTransactionReceipt, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        return testCase
     },
 
-    checkTransactionReceipt: function(testCase){
+    checkTransactionReceipt: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
             let affectedNodes = response.result.AffectedNodes
             let from = affectedNodes[1].ModifiedNode.FinalFields.Account
             let to = affectedNodes[2].ModifiedNode.FinalFields.Account
-            expect(from).to.be.equals(testCase.server.mode.txs.tx1.Account)
-            expect(to).to.be.equals(testCase.server.mode.txs.tx1.Destination)
+            expect(from).to.be.equals(action.server.mode.txs.tx1.Account)
+            expect(to).to.be.equals(action.server.mode.txs.tx1.Destination)
         }
         else{
             framework.checkResponseError(action, action.expectedResults[0], response)
