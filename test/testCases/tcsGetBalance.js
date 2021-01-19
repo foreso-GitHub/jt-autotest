@@ -21,28 +21,24 @@ const testUtility = require('../framework/testUtility')
 
 module.exports = tcsGetBalance = {
 
-    //注意：一般而言，初始化使用baidu节点的rpc接口，因此初始化时的nickname只存在于baidu节点。因此getBalance检查nickname的case只有在baidu节点才能通过。
-
-//region balance check
+    //注意：一般而言，初始化使用al-01节点的rpc接口，因此初始化时的nickname只存在于al-01节点。
+    // 因此getBalance检查nickname的case只有在al-01节点才能通过。
 
     testForGetBalance: function(server, describeTitle){
         describe(describeTitle, function () {
-            let symbol = null //swtc
-            tcsGetBalance.testForGetBalanceByAllTags(server, symbol)
-            if(server.mode.service == serviceType.newChain){
-                symbol = server.mode.coins[0].symbol   //token with issuer
-                tcsGetBalance.testForGetBalanceByAllTags(server, symbol, null)
-                symbol = server.mode.coins[1].symbol   //token without issuer
-                let issuer = server.mode.coins[1].issuer
-                tcsGetBalance.testForGetBalanceByAllTags(server, symbol, issuer)
-            }
+            tcsGetBalance.testForGetBalanceByAllTags(server, describeTitle, consts.coinCategory.native, null)
+            tcsGetBalance.testForGetBalanceByAllTags(server, describeTitle, consts.coinCategory.global, server.mode.coins[0].symbol, null)
+            tcsGetBalance.testForGetBalanceByAllTags(server, describeTitle, consts.coinCategory.local, server.mode.coins[1].symbol,
+                server.mode.coins[1].issuer)
+
         })
     },
 
-    testForGetBalanceByAllTags: function(server, symbol, issuer){
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, null)
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, consts.tags.current)
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, consts.tags.validated)
+    testForGetBalanceByAllTags: function(server, describeTitle, coinType, symbol, issuer){
+
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, null)
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, consts.tags.current)
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, consts.tags.validated)
 
         //todo need restore when these tags are supported.
         // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'earliest')
@@ -53,58 +49,105 @@ module.exports = tcsGetBalance = {
         // })
         // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, chainData.block.blockNumber)  //block number
         // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, chainData.block.blockHash)  //block hash
+
     },
 
-    testForGetBalanceBySymbolAndTag: function(server, symbol, issuer, tag){
+    testForGetBalanceBySymbolAndTag: function(server, describeTitle, coinType, symbol, issuer, tag){
 
-        let testCases = []
-        let showSymbol = symbol == null ? 'swtc' : symbol
-        let describeTitle = '测试jt_getBalance， Token为' + showSymbol + '，tag为' + tag
+        //region fields
 
-        let title = '0010\t查询有效的地址_01:地址内有底层币和代币'
-        let addressOrName = server.mode.addresses.balanceAccount.address
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestScript(testCases, testCase)
+        describeTitle = describeTitle + '，coinType为' + coinType + '，tag为' + tag
 
-        title = '0010\t查询有效的昵称_01:地址内有底层币和代币'
-        addressOrName = server.mode.addresses.balanceAccount.nickName
-        testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
 
-        title = '0010\t查询未激活的地址_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.inactiveAccount1.address
-        needPass = false
-        expectedError = framework.getError(-96, tag == consts.tags.current ? 'no such account info' : 't find account' )
-        testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestScript(testCases, testCase)
+        if(coinType == consts.coinCategory.native){
+            defaultScriptCode = '000100'
+        }
+        else if(coinType == consts.coinCategory.global){
+            defaultScriptCode = '000200'
+        }
+        else if(coinType == consts.coinCategory.local){
+            defaultScriptCode = '000300'
+        }
+        else{
+            defaultScriptCode = '000100'
+        }
 
-        title = '0010\t查询未激活的昵称_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.inactiveAccount1.nickName
-        expectedError =framework.getError(-96, 'Bad account address')
-        testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        //endregion
 
-        title = '0010\t查询无效的地址_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.wrongFormatAccount1.address
-        expectedError = framework.getError(-96, 'Bad account address')
-        testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        if(tag == null) testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBalance_000010'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询有效的地址_01:地址内有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.balanceAccount.address
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0010\t查询无效的昵称_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
-        expectedError = framework.getError(-96, 'Bad account address')
-        testCase = tcsGetBalance.createSingleTestCaseForGetBalance(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBalance_000030'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询有效的地址_01:地址内有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.balanceAccount.nickName
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getBalance_000020'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询未激活的地址_01:地址内没有有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.inactiveAccount1.address
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'no such account'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getBalance_000040'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询未激活的昵称_01:地址内没有有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.inactiveAccount1.nickName
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getBalance_000050'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询无效的地址_01:查询不存在的地址'
+        {
+            let addressOrName = server.mode.addresses.wrongFormatAccount1.address
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getBalance_000060'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询无效的地址_01:查询不存在的昵称'
+        {
+            let addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetBalance: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){
+    createTestScript: function(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag){
 
         let functionName = consts.rpcFunctions.getBalance
         let txParams = []
@@ -120,32 +163,27 @@ module.exports = tcsGetBalance = {
             }
             txParams.push(tag)
         }
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
 
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetBalance.checkGetBalance,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain,],
+            [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetBalance.checkGetBalance, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        return testCase
     },
 
-    checkGetBalance: function(testCase){
+    checkGetBalance: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
             expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)
             expect(Number(response.result.balance.value)).to.be.above(0)
@@ -154,7 +192,5 @@ module.exports = tcsGetBalance = {
             framework.checkResponseError(action, action.expectedResults[0], response)
         }
     },
-
-//endregion
 
 }

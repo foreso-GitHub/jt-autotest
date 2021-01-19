@@ -138,6 +138,13 @@ module.exports = consts = {
     //endregion
 
     //region coin type
+
+    coinCategory: {
+        native: 'SWT',
+        global: 'GlobalCoin',
+        local: 'LocalCoin'
+    },
+
     coinTypes:{
         global_normal: "不可增发不可销毁的全局代币",
         global_mintable: "可增发的全局代币",
@@ -148,6 +155,7 @@ module.exports = consts = {
         local_burnable: "可销毁的本地代币",
         local_both: "既可增发又可销毁的本地代币",
     },
+
     //endregion
 
     //region versions

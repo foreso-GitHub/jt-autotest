@@ -19,17 +19,15 @@ let testUtility = require('../framework/testUtility')
 const chainDatas = require('../testData/chainDatas').chainDatas
 //endregion
 
-let CoinTypes = {native: 'SWT', global: 'GlobalCoin', local: 'LocalCoin'}
-
 module.exports = tcsGetAccount = {
 
     //region get account
     testForGetAccount: function(server, describeTitle){
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle, CoinTypes.native, null, null)
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle, CoinTypes.global, globalCoin.symbol, null)
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle, CoinTypes.local, localCoin.symbol, localCoin.issuer)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle, consts.coinCategory.native, null, null)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle, consts.coinCategory.global, globalCoin.symbol, null)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle, consts.coinCategory.local, localCoin.symbol, localCoin.issuer)
     },
 
     testForGetAccountByTag: function(server, describeTitle, coinType, symbol, issuer){
@@ -54,6 +52,8 @@ module.exports = tcsGetAccount = {
 
     testForGetAccountByParams: function(server, describeTitle, coinType, symbol, issuer, tag){
 
+        //region fields
+
         describeTitle = describeTitle + '，coinType为' + coinType + '，tag为' + tag
 
         let testScripts = []
@@ -61,18 +61,20 @@ module.exports = tcsGetAccount = {
         let defaultScriptCode = '000100'
         let scriptCode
 
-        if(coinType == CoinTypes.native){
+        if(coinType == consts.coinCategory.native){
             defaultScriptCode = '000100'
         }
-        else if(coinType == CoinTypes.global){
+        else if(coinType == consts.coinCategory.global){
             defaultScriptCode = '000200'
         }
-        else if(coinType == CoinTypes.local){
+        else if(coinType == consts.coinCategory.local){
             defaultScriptCode = '000300'
         }
         else{
             defaultScriptCode = '000100'
         }
+
+        //endregion
 
         testCaseCode = 'FCJT_getAccount_000010'
         scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
@@ -118,7 +120,7 @@ module.exports = tcsGetAccount = {
 
         testCaseCode = 'FCJT_getAccount_000050'
         scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
-            + '_查询无效的地址_01:地址内没有有底层币和代币'
+            + '_查询无效的地址_01:查询不存在的地址'
         {
             let addressOrName = server.mode.addresses.wrongFormatAccount1.address
             let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
@@ -130,7 +132,7 @@ module.exports = tcsGetAccount = {
 
         testCaseCode = 'FCJT_getAccount_000060'
         scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
-            + '_查询无效的昵称_01:地址内没有有底层币和代币'
+            + '_查询无效的昵称_01:查询不存在的昵称'
         {
             let addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
             let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
@@ -142,45 +144,6 @@ module.exports = tcsGetAccount = {
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
-
-    // createSingleTestCaseForGetAccount: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){
-    //
-    //     let functionName = consts.rpcFunctions.getAccount
-    //     let txParams = []
-    //     txParams.push(addressOrName)
-    //     if(symbol != null) txParams.push(symbol)
-    //     if(issuer != null) txParams.push(issuer)
-    //     if(tag != null) {
-    //         if(symbol == null){
-    //             txParams.push(consts.default.nativeCoin)  //使用tag，必须要有token
-    //         }
-    //         if(issuer == null){
-    //             txParams.push(consts.default.issuer)  //使用tag，必须要有issuer
-    //         }
-    //         txParams.push(tag)
-    //     }
-    //     let expectedResult = {}
-    //     expectedResult.needPass = needPass
-    //     expectedResult.isErrorInResult = true
-    //     expectedResult.expectedError = expectedError
-    //     // let rLevel = (tag == null || tag == consts.tags.validated || tag == consts.tags.current) ? restrictedLevel.L2 : restrictedLevel.L4
-    //
-    //     let testCase = framework.createTestCase(
-    //         title,
-    //         server,
-    //         functionName,
-    //         txParams,
-    //         null,
-    //         framework.executeTestActionForGet,
-    //         tcsGetAccount.checkGetAccount,
-    //         expectedResult,
-    //         restrictedLevel.L2,
-    //         [serviceType.newChain,],
-    //         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-    //     )
-    //
-    //     return testCase
-    // },
 
     createTestScript: function(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag){
 
@@ -212,6 +175,7 @@ module.exports = tcsGetAccount = {
             framework.executeTestActionForGet, tcsGetAccount.checkGetAccount, [{needPass:true}])
         testScript.actions.push(action)
         return testScript
+
     },
 
     checkGetAccount: function(action){
