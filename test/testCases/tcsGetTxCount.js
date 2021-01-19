@@ -23,101 +23,133 @@ module.exports = tcsGetTxCount = {
     //region tx count check
 
     testForGetBlockTransactionCountByHash: function(server, describeTitle){
-        let testCases = []
+
+        //region fields
+
         let functionName = consts.rpcFunctions.getBlockTransactionCountByHash
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
 
-        let title = '0010\t查询有效区块哈希'
-        let hash = server.mode.txs.block.blockHash
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        //endregion
 
-        title = '0020\t无效交易哈希：不存在的hash'
-        hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-        needPass = false
-        expectedError = framework.getError(140, 't find block')
-        testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBlockTransactionCountByHash_000010'
+        scriptCode = defaultScriptCode + '_查询有效区块哈希'
+        {
+            let hash = server.mode.txs.block.blockHash
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t无效交易哈希：hash长度超过标准'
-        hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
-        needPass = false
-        expectedError = framework.getError(-189, 'index out of range')
-        testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, hash, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBlockTransactionCountByHash_000020'
+        scriptCode = defaultScriptCode + '_无效交易哈希：不存在的hash'
+        {
+            let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 't find block'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getBlockTransactionCountByHash_000020'
+        scriptCode = '000200' + '_无效交易哈希：hash长度超过标准'
+        {
+            let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-189, 'index out of range'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     testForGetBlockTransactionCountByNumber: function(server, describeTitle){
-        let testCases = []
+
+        //region fields
+
         let functionName = consts.rpcFunctions.getBlockTransactionCountByNumber
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
 
-        let title = '0010\t查询有效区块编号'
-        let blockNumber = server.mode.txs.block.blockNumber
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        //endregion
 
-        title = '0020\t无效交易编号：9999999'
-        blockNumber = '999999999'
-        needPass = false
-        expectedError = framework.getError(140, 't find block')
-        testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000010'
+        scriptCode = defaultScriptCode + '_查询有效区块编号'
+        {
+            let blockNumber = server.mode.txs.block.blockNumber
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t无效交易编号：负数'
-        blockNumber = '-100'
-        needPass = false
-        expectedError = framework.getError(140, 'invalid syntax')
-        testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000020'
+        scriptCode = defaultScriptCode + '_无效交易编号：9999999'
+        {
+            let blockNumber = '999999999'
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 't find block'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0020\t无效交易编号：乱码'
-        blockNumber = 'addeew'
-        needPass = false
-        expectedError = framework.getError(140, 'invalid syntax')
-        testCase = tcsGetTxCount.createSingleTestCaseForGetBlockTransactionCount(server, title, functionName, blockNumber, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000020'
+        scriptCode = '000200' + '_无效交易编号：负数'
+        {
+            let blockNumber = '-100'
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 'invalid syntax'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000020'
+        scriptCode = '000300' + '_无效交易编号：乱码'
+        {
+            let blockNumber = 'addeew'
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(140, 'invalid syntax'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetBlockTransactionCount: function(server, title, functionName, hashOrNumber, needPass, expectedError){
+    createTestScript: function(server, testCaseCode, scriptCode, functionName, hashOrNumber,){
 
         let txParams = []
         txParams.push(hashOrNumber)
 
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
-
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetTxCount.checkBlockTransactionCount,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetTxCount.checkBlockTransactionCount, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        return testCase
     },
 
-    checkBlockTransactionCount: function(testCase){
+    checkBlockTransactionCount: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
-            let txCount = testCase.server.mode.txs.block.txCountInBlock
+            let txCount = action.server.mode.txs.block.txCountInBlock
             expect(txCount).to.equal(response.result)
         }
         else{
@@ -130,164 +162,184 @@ module.exports = tcsGetTxCount = {
     //region jt_getTransactionCount
 
     testForGetTransactionCount: function(server, describeTitle){
-        let testCases = []
+
+        //region fields
+
         let from = server.mode.addresses.nickNameSender
         let to = server.mode.addresses.nickNameReceiver
-        let tag = null
 
-        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, tag)
+        //endregion
+
+        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, null)
+        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.tags.current)
+        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.tags.validated)
         // tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_区块参数:100', from, to, 100)
 
-        framework.testTestScripts(server, describeTitle, testScripts)
     },
 
     testGroupForGetTransactionCount: function(server, describeTitle, from, to, tag){
-        let testCases = []
-        let addressOrName = from.address
 
-        let title = '0010\t查询有效地址'
+        //region fields
+
+        describeTitle = describeTitle + '，tag为' + tag
+
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
+
+        //endregion
+
+        testCaseCode = 'FCJT_getTransactionCount_000010'
+        scriptCode = defaultScriptCode + '_查询有效地址'
         {
-            addressOrName = from.address
+            let addressOrName = from.address
             let needSendTx = true
-            let needPass = true
-            let expectedError = ''
-            let testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCase.from = addressOrName
-            testCase.secret = from.secret
-            testCase.to = to.address
-            testCase.subCheck = function(testCase){
-                expect(testCase.actualResult[0].result).to.least(1)
-                expect(testCase.countAfterSend).to.equal(testCase.countBeforeSend + 1)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let action = testScript.actions[0]
+            action.from = from.address
+            action.secret = from.secret
+            action.to = to.address
+            action.subCheck = function(action){
+                expect(action.actualResult.result).to.least(1)
+                expect(action.countAfterSend).to.equal(action.countBeforeSend + 1)
             }
-            testCases.push(testCase)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0011\t查询有效地址: 未激活的地址'
+        testCaseCode = 'FCJT_getTransactionCount_000010'
+        scriptCode = '000200' + '_查询有效地址: 未激活的地址'
         {
-            addressOrName = server.mode.addresses.inactiveAccount1.address
-            needSendTx = false
-            needPass = true
-            expectedError = ''
-            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCases.push(testCase)
-            testCase.subCheck = function(testCase){
-                expect(testCase.actualResult[0].result).to.equal(1)
+            let addressOrName = server.mode.addresses.inactiveAccount1.address
+            let needSendTx = false
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let action = testScript.actions[0]
+            action.subCheck = function(action){
+                expect(action.actualResult.result).to.least(1)
             }
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0020\t查询有效昵称'
+        testCaseCode = 'FCJT_getTransactionCount_000020'
+        scriptCode = defaultScriptCode + '_查询有效昵称'
         {
-            addressOrName = from.nickName
-            needSendTx = true
-            needPass = true
-            expectedError = ''
-            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCase.from = addressOrName
-            testCase.secret = from.secret
-            testCase.to = to.address
-            testCase.needSendTx = true
-            testCase.subCheck = function(testCase){
-                expect(testCase.actualResult[0].result).to.least(1)
-                expect(testCase.countAfterSend).to.equal(testCase.countBeforeSend + 1)
+            let addressOrName = from.nickName
+            let needSendTx = true
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let action = testScript.actions[0]
+            action.from = from.address
+            action.secret = from.secret
+            action.to = to.address
+            action.subCheck = function(action){
+                expect(action.actualResult.result).to.least(1)
+                expect(action.countAfterSend).to.equal(action.countBeforeSend + 1)
             }
-            testCases.push(testCase)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0030\t查询无效地址: 过短的地址'
+
+        testCaseCode = 'FCJT_getTransactionCount_000030'
+        scriptCode = defaultScriptCode + '_查询无效地址: 过短的地址'
         {
-            addressOrName = 'jnZ7CDuqmj6Pe1KGMdiacfh4aeuXSDj'
-            needSendTx = false
-            needPass = false
-            expectedError = framework.getError(-96, 'Bad account address')
-            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCases.push(testCase)
+            let addressOrName = 'jnZ7CDuqmj6Pe1KGMdiacfh4aeuXSDj'
+            let needSendTx = false
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0031\t查询无效地址: 过长的地址'
+        testCaseCode = 'FCJT_getTransactionCount_000030'
+        scriptCode = '000200' + '_查询无效地址: 过长的地址'
         {
-            addressOrName = from.address + 'a'
-            needPass = false
-            expectedError = framework.getError(-96, 'Bad account address')
-            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCases.push(testCase)
+            let addressOrName = from.address + 'a'
+            let needSendTx = false
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0032\t查询无效地址: 格式错误的地址'
+        testCaseCode = 'FCJT_getTransactionCount_000030'
+        scriptCode = '000300' + '_查询无效地址: 格式错误的地址'
         {
-            addressOrName = server.mode.addresses.wrongFormatAccount1.address
-            needPass = false
-            expectedError = framework.getError(-96, 'Bad account address')
-            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCases.push(testCase)
+            let addressOrName = server.mode.addresses.wrongFormatAccount1.address
+            let needSendTx = false
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
-        title = '0040\t查询无效昵称: 不存在的昵称'
+        testCaseCode = 'FCJT_getTransactionCount_000040'
+        scriptCode = defaultScriptCode + '_查询无效昵称: 不存在的昵称'
         {
-            addressOrName = server.mode.addresses.inactiveAccount1.nickName
-            needPass = false
-            expectedError = framework.getError(-96, 'Bad account address')
-            testCase = tcsGetTxCount.createSingleTestCaseForGetTransactionCount(server, title, addressOrName, tag, needSendTx, needPass, expectedError)
-            testCases.push(testCase)
+            let addressOrName = server.mode.addresses.inactiveAccount1.nickName
+            let needSendTx = false
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
         }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetTransactionCount: function(server, title, addressOrName, tag, needSendTx, needPass, expectedError){
+    createTestScriptForGetTransactionCount: function(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,){
 
         let txParams = []
         txParams.push(addressOrName)
         if(tag) txParams.push(tag)
 
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
-
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            consts.rpcFunctions.getTransactionCount,
-            txParams,
-            null,
-            (needSendTx) ? tcsGetTxCount.executeGetTransactionCount : framework.executeTestActionForGet,
-            tcsGetTxCount.checkGetTransactionCount,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
+        let action = framework.createTestAction(testScript, consts.rpcFunctions.getTransactionCount, txParams,
+            (needSendTx) ? tcsGetTxCount.executeGetTransactionCount : framework.executeTestActionForGet,
+            tcsGetTxCount.checkGetTransactionCount,
+            [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
 
-        return testCase
     },
 
-    executeGetTransactionCount: function(testCase){
-        testCase.hasExecuted = true
+    executeGetTransactionCount: function(action){
+        action.hasExecuted = true
         return new Promise(async (resolve, reject) => {
-            let server = testCase.server
-            let response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, testCase.txParams)
-            testCase.countBeforeSend = response.result
+            let server = action.server
+            let response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, action.txParams)
+            action.countBeforeSend = response.result
 
-            let txParams = await utility.createTxParams(server, testCase.from, testCase.secret, testCase.to, '1')
+            let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, '1')
             await utility.sendTxs(server, txParams, 1)
             await utility.timeout(6000)
 
-            response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, testCase.txParams)
-            testCase.countAfterSend = response.result
-            testCase.actualResult.push(response)
+            response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, action.txParams)
+            action.countAfterSend = response.result
+            action.actualResult = response
             resolve('done')
         })
     },
 
-    checkGetTransactionCount: function(testCase){
+    checkGetTransactionCount: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
             // let txCount = 1
             // expect(response.result).to.equal(txCount)
-            // expect(testCase.countAfterSend).to.equal(testCase.countBeforeSend + 1)
-            testCase.subCheck(testCase)
+            // expect(action.countAfterSend).to.equal(action.countBeforeSend + 1)
+            action.subCheck(action)
         }
         else{
             framework.checkResponseError(action, action.expectedResults[0], response)

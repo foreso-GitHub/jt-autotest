@@ -248,6 +248,8 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
                 //
+                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+                //
                 // tcsSign.testForSign(server, '测试jt_sign')
                 //
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
@@ -287,7 +289,7 @@ describe('Jingtum测试', function() {
 
 
 
-                tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+
 
                 // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
                 //
@@ -296,11 +298,11 @@ describe('Jingtum测试', function() {
                 // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
                 //
                 // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
-                //
-                // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCountByHash')
-                //
+
+                tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
+
                 // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
-                //
+
                 // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
 

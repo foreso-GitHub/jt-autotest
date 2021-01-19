@@ -732,6 +732,11 @@ module.exports = framework = {
             for(let i = 0; i < testScript.actions.length; i++){
                 let action = testScript.actions[i]
                 if(action.executeFunction) await action.executeFunction(action)
+                // 执行timeout
+                if(action.timeout){
+                    logger.debug('=== Waiting for ' + action.timeout + '!')
+                    await utility.timeout(action.timeout)
+                }
             }
             // logger.debug('=== after executeFunction')
             // logger.debug("===2. index: " + index )
