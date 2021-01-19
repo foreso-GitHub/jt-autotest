@@ -21,26 +21,41 @@ const { token, } = require("../testData/testData")
 
 module.exports = tcsSendTxInOneRequest = {
 
-    testForSendTxs: function(server, describeTitle, txCount){
+    testForSendTxs: function(server, describeTitle, actionCount, txCount, needCheck){
         let testScripts = []
         let testCaseCode
         let scriptCode
 
         testCaseCode = 'UNK_UNKNOWN_000000'
-        scriptCode = '000100_tcsSendTxInOneRequest_一个请求执行' + txCount + '个交易'
-        let txParams = framework.createTxParamsForTransfer(server)
-        let txTemplate = txParams[0]
-        let expectResults = []
-        for(let i = 1; i < txCount; i++){
-            txParams.push(utility.deepClone(txTemplate))
-            expectResults.push(framework.createExpecteResult({needPass: true}))
+        scriptCode = '000100_tcsSendTxInOneRequest_' + actionCount + '个请求，各执行' + txCount + '个交易'
+
+        let testScript = framework.createTestScript(
+            server,
+            testCaseCode,
+            scriptCode,
+            [],
+            restrictedLevel.L2,
+            [serviceType.newChain, ],
+            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+        )
+
+        for(let j = 0; j < actionCount; j++){
+            let txParams = framework.createTxParamsForTransfer(server)
+            let txTemplate = txParams[0]
+            let expectResults = []
+            for(let i = 1; i < txCount; i++){
+                txParams.push(utility.deepClone(txTemplate))
+                expectResults.push(framework.createExpecteResult({needPass: true}))
+            }
+            framework.pushTestActionForSendAndSign(testScript, consts.rpcFunctions.sendTx, txParams)
+            testScript.actions[j].expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+            if(needCheck != undefined && needCheck == false){
+                testScript.actions[j].checkFunction = null
+            }
         }
-        let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, consts.rpcFunctions.sendTx, txParams)
-        testScript.actions[0].expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+
         testScripts.push(testScript)
         framework.testTestScripts(server, describeTitle, testScripts)
     },
-
-    //endregion
 
 }
