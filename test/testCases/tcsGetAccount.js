@@ -19,24 +19,27 @@ let testUtility = require('../framework/testUtility')
 const chainDatas = require('../testData/chainDatas').chainDatas
 //endregion
 
+let CoinTypes = {native: 'SWT', global: 'GlobalCoin', local: 'LocalCoin'}
+
 module.exports = tcsGetAccount = {
 
     //region get account
     testForGetAccount: function(server, describeTitle){
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle + '， 原生币', null, null)
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle + '， global coin', globalCoin.symbol, null)
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle + '， local coin', localCoin.symbol, localCoin.issuer)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle, CoinTypes.native, null, null)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle, CoinTypes.global, globalCoin.symbol, null)
+        tcsGetAccount.testForGetAccountByTag(server, describeTitle, CoinTypes.local, localCoin.symbol, localCoin.issuer)
     },
 
-    testForGetAccountByTag: function(server, describeTitle, symbol, issuer){
+    testForGetAccountByTag: function(server, describeTitle, coinType, symbol, issuer){
         describe(describeTitle, function () {
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, null)
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, consts.tags.validated)
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, consts.tags.current)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, null)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.tags.validated)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.tags.current)
 
             //todo need restore when these tags are supported.
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.tags.closed)
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'latest')
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'pending')
@@ -45,58 +48,141 @@ module.exports = tcsGetAccount = {
             // })
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockNumber)  //block number
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, chainData.block.blockHash)  //block hash
+
         })
     },
 
-    testForGetAccountByParams: function(server, describeTitle, symbol, issuer, tag){
-        let testCases = []
+    testForGetAccountByParams: function(server, describeTitle, coinType, symbol, issuer, tag){
 
-        describeTitle = describeTitle + '， tag为' + tag
+        describeTitle = describeTitle + '，coinType为' + coinType + '，tag为' + tag
 
-        let title = '0010\t查询有效的地址_01:地址内有底层币和代币'
-        let addressOrName = server.mode.addresses.balanceAccount.address
-        let needPass = true
-        let expectedError = ''
-        let testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestScript(testCases, testCase)
+        let testScripts = []
+        let testCaseCode
+        let defaultScriptCode = '000100'
+        let scriptCode
 
-        title = '0030\t查询有效的昵称_01:地址内有底层币和代币'
-        addressOrName = server.mode.addresses.balanceAccount.nickName
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        if(coinType == CoinTypes.native){
+            defaultScriptCode = '000100'
+        }
+        else if(coinType == CoinTypes.global){
+            defaultScriptCode = '000200'
+        }
+        else if(coinType == CoinTypes.local){
+            defaultScriptCode = '000300'
+        }
+        else{
+            defaultScriptCode = '000100'
+        }
 
-        title = '0020\t查询未激活的地址_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.inactiveAccount1.address
-        needPass = false
-        expectedError = framework.getError(-96, 'no such account')
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getAccount_000010'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询有效的地址_01:地址内有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.balanceAccount.address
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0040\t查询未激活的昵称_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.inactiveAccount1.nickName
-        expectedError = framework.getError(-96, 'Bad account address')
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getAccount_000030'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询有效的昵称_01:地址内有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.balanceAccount.nickName
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0050\t查询无效的地址_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.wrongFormatAccount1.address
-        expectedError = framework.getError(-96, 'Bad account address')
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        testCase.supportedServices.push(serviceType.oldChain)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getAccount_000020'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询未激活的地址_01:地址内没有有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.inactiveAccount1.address
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'no such account'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
-        title = '0060\t查询无效的昵称_01:地址内没有有底层币和代币'
-        addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
-        expectedError = framework.getError(-96, 'Bad account address')
-        testCase = tcsGetAccount.createSingleTestCaseForGetAccount(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError)
-        framework.addTestScript(testCases, testCase)
+        testCaseCode = 'FCJT_getAccount_000040'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询未激活的昵称_01:地址内没有有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.inactiveAccount1.nickName
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getAccount_000050'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询无效的地址_01:地址内没有有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.wrongFormatAccount1.address
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_getAccount_000060'
+        scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
+            + '_查询无效的昵称_01:地址内没有有底层币和代币'
+        {
+            let addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
+            let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
+            let expectedResult = framework.createExpecteResult(false,
+                framework.getError(-96, 'Bad account address'))
+            framework.changeExpectedResult(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
 
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createSingleTestCaseForGetAccount: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){
+    // createSingleTestCaseForGetAccount: function(server, title, addressOrName, symbol, issuer, tag, needPass, expectedError){
+    //
+    //     let functionName = consts.rpcFunctions.getAccount
+    //     let txParams = []
+    //     txParams.push(addressOrName)
+    //     if(symbol != null) txParams.push(symbol)
+    //     if(issuer != null) txParams.push(issuer)
+    //     if(tag != null) {
+    //         if(symbol == null){
+    //             txParams.push(consts.default.nativeCoin)  //使用tag，必须要有token
+    //         }
+    //         if(issuer == null){
+    //             txParams.push(consts.default.issuer)  //使用tag，必须要有issuer
+    //         }
+    //         txParams.push(tag)
+    //     }
+    //     let expectedResult = {}
+    //     expectedResult.needPass = needPass
+    //     expectedResult.isErrorInResult = true
+    //     expectedResult.expectedError = expectedError
+    //     // let rLevel = (tag == null || tag == consts.tags.validated || tag == consts.tags.current) ? restrictedLevel.L2 : restrictedLevel.L4
+    //
+    //     let testCase = framework.createTestCase(
+    //         title,
+    //         server,
+    //         functionName,
+    //         txParams,
+    //         null,
+    //         framework.executeTestActionForGet,
+    //         tcsGetAccount.checkGetAccount,
+    //         expectedResult,
+    //         restrictedLevel.L2,
+    //         [serviceType.newChain,],
+    //         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+    //     )
+    //
+    //     return testCase
+    // },
+
+    createTestScript: function(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag){
 
         let functionName = consts.rpcFunctions.getAccount
         let txParams = []
@@ -112,33 +198,26 @@ module.exports = tcsGetAccount = {
             }
             txParams.push(tag)
         }
-        let expectedResult = {}
-        expectedResult.needPass = needPass
-        expectedResult.isErrorInResult = true
-        expectedResult.expectedError = expectedError
-        // let rLevel = (tag == null || tag == consts.tags.validated || tag == consts.tags.current) ? restrictedLevel.L2 : restrictedLevel.L4
 
-        let testCase = framework.createTestCase(
-            title,
+        let testScript = framework.createTestScript(
             server,
-            functionName,
-            txParams,
-            null,
-            framework.executeTestActionForGet,
-            tcsGetAccount.checkGetAccount,
-            expectedResult,
+            testCaseCode,
+            scriptCode,
+            [],
             restrictedLevel.L2,
-            [serviceType.newChain,],
+            [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-
-        return testCase
+        let action = framework.createTestAction(testScript, functionName, txParams,
+            framework.executeTestActionForGet, tcsGetAccount.checkGetAccount, [{needPass:true}])
+        testScript.actions.push(action)
+        return testScript
     },
 
-    checkGetAccount: function(testCase){
+    checkGetAccount: function(action){
         let response = action.actualResult
         let needPass = action.expectedResults[0].needPass
-        framework.checkResponse(response)
+        framework.checkGetResponse(response)
         if(needPass){
             // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
             let valueString = testUtility.isJSON(response.result.Balance) ? response.result.Balance.value: response.result.Balance

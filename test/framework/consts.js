@@ -42,6 +42,7 @@ module.exports = consts = {
         latest: 'latest',
         earliest: 'earliest',
         pending: 'pending',
+        closed: 'closed',
     },
     //endregion
 
