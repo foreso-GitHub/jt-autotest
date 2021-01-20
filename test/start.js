@@ -77,8 +77,8 @@ describe('Jingtum测试', function() {
             })
 
             after(async function() {
-                // framework.statistics()
-                framework.loadWashedTestCases()
+                framework.statistics()
+                // framework.loadWashedTestCases()
                 framework.stoptWork()
             })
 
@@ -256,6 +256,14 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
                 //
+                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+                //
+                // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
+                //
+                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+                //
+                // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+                //
                 // tcsSign.testForSign(server, '测试jt_sign')
                 //
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
@@ -291,19 +299,7 @@ describe('Jingtum测试', function() {
 
                 //region need work on
 
-                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
-
-
-
-                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
-
-                tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
-
-                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
-
-                tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
-
-
+                tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
 
                 //endregion
 

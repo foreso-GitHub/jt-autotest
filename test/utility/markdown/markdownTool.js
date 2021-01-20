@@ -192,7 +192,10 @@ module.exports = markdownTool = {
         let testCaseLines = lines.slice(2, lines.length -1)
         let testCases = []
         for(let i = 0; i < testCaseLines.length; i++){
-            testCases.push(markdownTool.parseTestCaseLine_style_2(testCaseLines[i]))
+            let testCase = markdownTool.parseTestCaseLine_style_2(testCaseLines[i])
+            if(testCase != null){
+                testCases.push(testCase)
+            }
         }
         return testCases
     },
@@ -477,8 +480,10 @@ module.exports = markdownTool = {
         let map = new HashMap()
         for(let i = 0; i < doc.length; i++){
             let testCase = doc[i]
-            testCase.scripts = []
-            map.set(testCase.code, testCase)
+            if(testCase != null){
+                testCase.scripts = []
+                map.set(testCase.code, testCase)
+            }
         }
         return map
     },
