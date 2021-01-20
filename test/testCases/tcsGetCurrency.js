@@ -65,108 +65,157 @@ module.exports = tcsGetCurrency = {
                 framework.addTestScript(testScripts, testScript)
             }
 
-            // let title = '0010\t查询有效的全局代币，不带issuer'
-            // let needPass = true
-            // let expectedError = ''
-            // let testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     globalCoin.symbol, null, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
+            testCaseCode = 'FCJT_getCurrency_000010'
+            scriptCode = '000200' + '_查询有效的全局代币，带issuer'
+            {
+                let symbol = globalCoin.symbol
+                let issuer = globalCoin.issuer
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                framework.addTestScript(testScripts, testScript)
+            }
 
-            // title = '0011\t查询有效的全局代币，带issuer'
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     globalCoin.symbol, globalCoin.issuer, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
+            testCaseCode = 'FCJT_getCurrency_000020'
+            scriptCode = defaultScriptCode + '_查询无效的全局代币_01,不存在的全局代币'
+            {
+                let symbol = 'NoCoin_1'
+                let issuer = null
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    tag == consts.tags.current
+                        ? framework.getError(140, 'no such currency info')
+                        : framework.getError(140, 't find currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
 
-            // title = '0020\t查询有效的本地代币'
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     localCoin.symbol, localCoin.issuer, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0030\t查询无效的代币，代币不存在'
-            // let symbol = 'NoCoin_1'
-            // needPass = false
-            // expectedError = tag == consts.tags.current
-            //     ? framework.getError(140, 'no such currency info')
-            //     : framework.getError(140, 't find currency')
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     symbol, null, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0031\t查询无效的代币，代币名过长'
-            // symbol = 'CoinNotExists'
-            // expectedError = framework.getError(-269, 'Bad Currency')
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     symbol, null, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0040\t查询无效的全局代币，错误的issuer'
-            // expectedError = tag == consts.tags.current
-            //     ? framework.getError(140, 'no such currency info')
-            //     : framework.getError(140, 't find currency')
-            // let wrongAddress = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     globalCoin.symbol, wrongAddress, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0041\t查询无效的全局代币，错误格式的issuer'
-            // expectedError = framework.getError(-269, 'Bad Base58 checksum')
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     globalCoin.symbol, globalCoin.issuer + 'a', tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0050\t查询无效的本地代币，错误的issuer'
-            // expectedError = tag == consts.tags.current
-            //     ? framework.getError(140, 'no such currency info')
-            //     : framework.getError(140, 't find currency')
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     localCoin.symbol, wrongAddress, tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
-            //
-            // title = '0051\t查询无效的本地代币，错误格式的issuer'
-            // expectedError = framework.getError(-269, 'Bad Base58 checksum')
-            // testCase = tcsGetCurrency.createSingleTestCaseForGetCurrency(server, title,
-            //     localCoin.symbol, localCoin.issuer + 'a', tag, needPass, expectedError)
-            // framework.addTestScript(testCases, testCase)
+            testCaseCode = 'FCJT_getCurrency_000020'
+            scriptCode = '000200' + '_查询无效的全局代币_01,代币名过长'
+            {
+                let symbol = 'CoinNotExists'
+                let issuer = null
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-269, 'Bad Currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000030'
+            scriptCode = defaultScriptCode + '_查询无效的全局代币_02,错误的issuer'
+            {
+                let symbol = globalCoin.symbol
+                let issuer = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    tag == consts.tags.current
+                        ? framework.getError(140, 'no such currency info')
+                        : framework.getError(140, 't find currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000030'
+            scriptCode = '000200' + '_查询无效的全局代币_02,错误格式的issuer'
+            {
+                let symbol = globalCoin.symbol
+                let issuer = globalCoin.issuer + 'a'
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-269, 'Bad Base58 checksum'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000040'
+            scriptCode = defaultScriptCode + '_查询有效的本地代币'
+            {
+                let symbol = localCoin.symbol
+                let issuer = localCoin.issuer
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000050'
+            scriptCode = defaultScriptCode + '_查询无效的本地代币_01,不存在的本地代币,ISSUER参数为空'
+            {
+                let symbol = 'NoCoin_1'
+                let issuer = null
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    tag == consts.tags.current
+                        ? framework.getError(140, 'no such currency info')
+                        : framework.getError(140, 't find currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000050'
+            scriptCode = '000200' + '_查询无效的本地代币_01,代币名过长'
+            {
+                let symbol = 'CoinNotExists'
+                let issuer = null
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-269, 'Bad Currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000050'
+            scriptCode = '000300' + '_查询无效的本地代币_01,不存在的本地代币,ISSUER参数为有效地址'
+            {
+                let symbol = 'NoCoin_1'
+                let issuer = localCoin.issuer
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    tag == consts.tags.current
+                        ? framework.getError(140, 'no such currency info')
+                        : framework.getError(140, 't find currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000050'
+            scriptCode = '000400' + '_查询无效的本地代币_01,不存在的本地代币,ISSUER参数为任意字符串'
+            {
+                let symbol = 'NoCoin_1'
+                let issuer = 'localCoin.issuer'
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-269, 'Bad Base58 string'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000060'
+            scriptCode = defaultScriptCode + '_查询无效的本地代币，错误的issuer'
+            {
+                let symbol = localCoin.symbol
+                let issuer = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    tag == consts.tags.current
+                        ? framework.getError(140, 'no such currency info')
+                        : framework.getError(140, 't find currency'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
+
+            testCaseCode = 'FCJT_getCurrency_000060'
+            scriptCode = '000200' + '_查询无效的本地代币，错误格式的issuer'
+            {
+                let symbol = localCoin.symbol
+                let issuer = localCoin.issuer + 'a'
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let expectedResult = framework.createExpecteResult(false,
+                    framework.getError(-269, 'Bad Base58 checksum'))
+                framework.changeExpectedResult(testScript, expectedResult)
+                framework.addTestScript(testScripts, testScript)
+            }
 
             framework.testTestScripts(server, describeTitle, testScripts)
         })
     },
-
-    // createSingleTestCaseForGetCurrency: function(server, title, symbol, issuer, tag, needPass, expectedError){
-    //     let functionName = consts.rpcFunctions.getCurrency
-    //     let txParams = []
-    //     txParams.push(symbol)
-    //     if(issuer != null) txParams.push(issuer)
-    //     if(tag != null) {
-    //         if(symbol == null){
-    //             txParams.push(consts.default.nativeCoin)  //使用tag，必须要有token
-    //         }
-    //         if(issuer == null){
-    //             txParams.push(consts.default.issuer)  //使用tag，必须要有issuer
-    //         }
-    //         txParams.push(tag)
-    //     }
-    //     let expectedResult = {}
-    //     expectedResult.needPass = needPass
-    //     expectedResult.isErrorInResult = true
-    //     expectedResult.expectedError = expectedError
-    //
-    //     let testCase = framework.createTestCase(
-    //         title,
-    //         server,
-    //         functionName,
-    //         txParams,
-    //         null,
-    //         framework.executeTestActionForGet,
-    //         tcsGetCurrency.checkGetCurrency,
-    //         expectedResult,
-    //         restrictedLevel.L2,
-    //         [serviceType.newChain,],
-    //         [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-    //     )
-    //
-    //     return testCase
-    // },
 
     createTestScript: function(server, testCaseCode, scriptCode, symbol, issuer, tag,){
 
