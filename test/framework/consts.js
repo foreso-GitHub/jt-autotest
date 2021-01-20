@@ -296,6 +296,12 @@ module.exports = consts = {
             "time": "20210118",
             "version": "v10.5.3"
         },
+        '20210120':{
+            "checksum": "5da671e93e5500a66701cd86dc39d967e5a16890",
+            "time": "20210120",
+            "version": "v0.5.4-dev"
+        }
+
     },
     //endregion
 
