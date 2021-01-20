@@ -365,7 +365,16 @@ const cmds_tx = {start: 'sudo ' + cmds_path_tx + cmd_start, stop: 'sudo ' + cmds
     shasum: 'sudo ' + cmds_path_tx + cmd_shasum,
 }
 
+
 let jt_node_al = sshCmd.createService('al', '121.89.209.19', '22', '9545',
+    'root', 'Lianjing@123456', cmds)
+let jt_node_al_02 = sshCmd.createService('al_02', '121.89.212.154', '22', '9545',
+    'root', 'Lianjing@123456', cmds)
+let jt_node_al_03 = sshCmd.createService('al_03', '121.89.207.217', '22', '9545',
+    'root', 'Lianjing@123456', cmds)
+let jt_node_al_04 = sshCmd.createService('al_04', '121.89.206.115', '22', '9545',
+    'root', 'Lianjing@123456', cmds)
+let jt_node_al_05 = sshCmd.createService('al_05', '121.89.198.119', '22', '9545',
     'root', 'Lianjing@123456', cmds)
 let jt_node_bd = sshCmd.createService('bd', '180.76.125.22', '22', '9545',
     'root', 'Lianjing@123456', cmds)
@@ -382,6 +391,10 @@ nodes.push(jt_node_tx)
 nodes.push(jt_node_hw)
 nodes.push(jt_node_ty)
 nodes.push(jt_node_al)
+nodes.push(jt_node_al_02)
+nodes.push(jt_node_al_03)
+nodes.push(jt_node_al_04)
+nodes.push(jt_node_al_05)
 let jtNodes = nodes
 //endregion
 

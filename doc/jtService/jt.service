@@ -1,0 +1,14 @@
+[Unit]
+Description=Jingtum Blockchain Service
+After=network-pre.target network-manager.service network-online.target network.target networking.service
+[Service]
+Type=simple
+LimitNOFILE=40960
+LimitNPROC=40960
+WorkingDirectory=/root/node/
+User=root
+ExecStart=/bin/bash /root/node/chain2.sh
+Restart=always
+[Install]
+WantedBy=multi-user.target
+
