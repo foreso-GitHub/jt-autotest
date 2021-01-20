@@ -156,7 +156,7 @@ module.exports = markdownTool = {
             testCase.expectedOutput = tsCells[4]
         }
         else{
-            console.log('Parse test cases error: not 5 cells in line!');
+            console.log('Parse test cases error: not 5 cells in line! Line content: ' + line)
         }
 
         return testCase
@@ -189,7 +189,7 @@ module.exports = markdownTool = {
 
     parseTestCaseWiki_style_2: function(content){
         let lines = content.split('\r\n')
-        let testCaseLines = lines.slice(2, lines.length -1)
+        let testCaseLines = lines.slice(2, lines.length)
         let testCases = []
         for(let i = 0; i < testCaseLines.length; i++){
             let testCase = markdownTool.parseTestCaseLine_style_2(testCaseLines[i])
@@ -243,7 +243,7 @@ module.exports = markdownTool = {
             testCase.expectedOutput = details.substring(start, end)
         }
         else{
-            console.log('Parse test cases error: not 3 cells in line!');
+            console.log('Parse test cases error: not 3 cells in line! Line content: ' + line)
         }
 
         return testCase

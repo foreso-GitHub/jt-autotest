@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -143,21 +143,20 @@ describe('Jingtum测试', function() {
 
                 //region performance test
 
-                tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
+                // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
+                //
+                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
+                //
+                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
+                //
+                // tcsPressureSendTx.testForFastPerformance(server,
+                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', allRpcServers, 1)
+                //
+                // tcsPressureSendTx.testForFastPerformance(server,
+                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
+                //
+                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
 
-                tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
-
-                tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-
-                tcsPressureSendTx.testForFastPerformance(server,
-                    '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', allRpcServers, 1)
-
-                tcsPressureSendTx.testForFastPerformance(server,
-                    '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
-
-                tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
-
-                tcsSendTxInOneRequest.testForSendTxsFast(server, '一个请求执行多个交易，快速执行', 100)
 
                 // endregion
 
@@ -173,9 +172,10 @@ describe('Jingtum测试', function() {
 
                 //region special
 
-                // this.timeout(3600000)
-                // tcsBugInjection.test(server, '故障注入测试')
-                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
+                this.timeout(3600000)
+                tcsBugInjection.testForBugInjection(server, '故障注入测试')
+                tcsBugInjection.testForRAS(server, 'RAS测试')
+                this.timeout(timeout)
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
@@ -248,6 +248,8 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
                 //
+                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
+                //
                 // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
                 //
                 // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
@@ -299,7 +301,7 @@ describe('Jingtum测试', function() {
 
                 //region need work on
 
-                tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
+
 
                 //endregion
 
