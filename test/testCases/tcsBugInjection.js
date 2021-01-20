@@ -49,8 +49,8 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Loss30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
-                txParams.execNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
+                txParams.execNodeCount = txParams.initNodeCount
                 txParams.execCmdsFunc = tcsBugInjection.loss30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -60,7 +60,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_02:单个节点Loss30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.loss30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -79,8 +79,8 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Duplicate30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
-                txParams.execNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
+                txParams.execNodeCount  = txParams.initNodeCount
                 txParams.execCmdsFunc = tcsBugInjection.duplicate30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -90,7 +90,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_02:单个节点Duplicate30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.duplicate30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -109,8 +109,8 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Corrupt30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
-                txParams.execNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
+                txParams.execNodeCount  = txParams.initNodeCount
                 txParams.execCmdsFunc = tcsBugInjection.corrupt30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -120,7 +120,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_02:单个节点Corrupt30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.corrupt30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
@@ -139,8 +139,8 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点Reorder30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
-                txParams.execNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
+                txParams.execNodeCount  = txParams.initNodeCount
                 txParams.execCmdsFunc = tcsBugInjection.reorder30
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -150,7 +150,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_02:单个节点Reorder30%，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.reorder30
                 // txParams.execNode = jtNodes[3]  //指定执行的node，不然会随机选择
@@ -170,8 +170,8 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_01:每个节点5%概率延迟1s，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
-                txParams.execNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
+                txParams.execNodeCount  = txParams.initNodeCount
                 txParams.execCmdsFunc = tcsBugInjection.delay0_1_5
                 let testScript = tcsBugInjection.createTestScriptForTcCmds(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -181,7 +181,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_网络丢包测试_02:单个节点5%概率延迟1s，然后恢复'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 txParams.execCmdsFunc = tcsBugInjection.delay0_1_5
                 // txParams.execNode = jtNodes[0]  //指定执行的node为bd，不然会随机选择
@@ -201,7 +201,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_断开一个共识节点的网络'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 let testScript = tcsBugInjection.createTestScriptForCloseP2P(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -214,7 +214,7 @@ module.exports = tcsBugInjection = {
                     testScripts = []
                     scriptCode = '000200' + '_多次断开一个共识节点的网络，第' + i + '次'
                     let txParams = {}
-                    txParams.initNodeCount = 5
+                    txParams.initNodeCount = jtNodes.length
                     txParams.execNodeCount = 1
                     let testScript = tcsBugInjection.createTestScriptForCloseP2P(server, testCaseCode, scriptCode, txFunctionName, txParams)
                     framework.addTestScript(testScripts, testScript)
@@ -241,7 +241,7 @@ module.exports = tcsBugInjection = {
             scriptCode = defaultScriptCode + '_减少共识节点，5个节点减少1个'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 1
                 let testScript = tcsBugInjection.createTestScriptForRestartNodes(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
@@ -250,7 +250,7 @@ module.exports = tcsBugInjection = {
             scriptCode = '000200' + '_减少共识节点，5个节点减少2个'
             {
                 let txParams = {}
-                txParams.initNodeCount = 5
+                txParams.initNodeCount = jtNodes.length
                 txParams.execNodeCount = 2
                 let testScript = tcsBugInjection.createTestScriptForRestartNodes(server, testCaseCode, scriptCode, txFunctionName, txParams)
                 framework.addTestScript(testScripts, testScript)
