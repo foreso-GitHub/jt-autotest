@@ -415,7 +415,7 @@ module.exports = tcsGetTx = {
         {
 
             let hash = txs.block.blockHash
-            let count = 30
+            let count = 16
 
             let testScript = framework.createTestScript(
                 server,
@@ -520,7 +520,7 @@ module.exports = tcsGetTx = {
         {
 
             let blockNumber = txs.block.blockNumber
-            let count = 30
+            let count = 16
 
             let testScript = framework.createTestScript(
                 server,

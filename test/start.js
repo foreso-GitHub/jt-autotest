@@ -275,22 +275,22 @@ describe('Jingtum测试', function() {
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, true)
                 //
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-
-                //region websocket subscribe
-
+                //
+                // //region websocket subscribe
+                //
                 // this.timeout(360000)
                 // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
                 // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
                 // this.timeout(timeout)
-
-                //endregion
-
-                //region special
-
+                //
+                // //endregion
+                //
+                // //region special
+                //
                 // this.timeout(3600000)
                 // tcsBugInjection.testForBugInjection(server, '故障注入测试')
-                // // tcsBugInjection.testForRAS(server, 'RAS测试')
+                // tcsBugInjection.testForRAS(server, 'RAS测试')
                 // this.timeout(timeout)
 
                 //endregion

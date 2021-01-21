@@ -990,7 +990,7 @@ module.exports = framework = {
             }
             expect(tx.TotalSupply.currency).to.be.equals(param.symbol)
             expect(tx.TotalSupply.issuer).to.be.equals((param.local) ? param.from : consts.default.issuer)
-            expect(tx.Flags).to.be.equals(param.flags)
+            expect(tx.Flags).to.be.equals(param.flags.toString())
         }
     },
 
