@@ -427,14 +427,21 @@ module.exports = tcsGetTx = {
                 [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
             )
 
-            for(let i = 0; i < count; i++){
-                let txParams = []
-                txParams.push(hash)
-                txParams.push(i)
-                let action = framework.createTestAction(testScript, functionName, txParams,
-                    framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
-                testScript.actions.push(action)
-            }
+            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockTransactionCountByHash, [hash],
+                async function(){
+                    await framework.executeTestActionForGet(action)
+                    let count = action.actualResult.result
+                    for(let i = 0; i < count; i++){
+                        let txParams = []
+                        txParams.push(hash)
+                        txParams.push(i)
+                        let newAction = framework.createTestAction(action.testScript, functionName, txParams,
+                            framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+                        testScript.actions.push(newAction)
+                    }
+                },
+                null, [{needPass:true}])
+            testScript.actions.push(action)
 
             framework.addTestScript(testScripts, testScript)
 
@@ -532,14 +539,30 @@ module.exports = tcsGetTx = {
                 [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
             )
 
-            for(let i = 0; i < count; i++){
-                let txParams = []
-                txParams.push(blockNumber)
-                txParams.push(i)
-                let action = framework.createTestAction(testScript, functionName, txParams,
-                    framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
-                testScript.actions.push(action)
-            }
+            // for(let i = 0; i < count; i++){
+            //     let txParams = []
+            //     txParams.push(blockNumber)
+            //     txParams.push(i)
+            //     let action = framework.createTestAction(testScript, functionName, txParams,
+            //         framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+            //     testScript.actions.push(action)
+            // }
+
+            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockTransactionCountByNumber, [blockNumber],
+                async function(){
+                    await framework.executeTestActionForGet(action)
+                    let count = action.actualResult.result
+                    for(let i = 0; i < count; i++){
+                        let txParams = []
+                        txParams.push(blockNumber)
+                        txParams.push(i)
+                        let newAction = framework.createTestAction(action.testScript, functionName, txParams,
+                            framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+                        testScript.actions.push(newAction)
+                    }
+                },
+                null, [{needPass:true}])
+            testScript.actions.push(action)
 
             framework.addTestScript(testScripts, testScript)
 
