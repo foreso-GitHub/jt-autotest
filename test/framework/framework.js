@@ -1090,7 +1090,8 @@ module.exports = framework = {
                 logger.debug("===final sequence: " + sequence)
                 resolve(sequence)
             }).catch(function (error){
-                logger.debug("Error!!! " + error)
+                logger.debug("getSequence Error!!! " + error)
+                resolve(null)
             })
         })
     },
@@ -1104,7 +1105,8 @@ module.exports = framework = {
                 framework.setSequence(server.getName(), from, sequence)
                 resolve(sequence)
             }).catch(function (error){
-                logger.debug("Error!!! " + error)
+                logger.debug("getSequenceByChain Error!!! " + error)
+                resolve(null)
             })
         })
     },
