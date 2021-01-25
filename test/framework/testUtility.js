@@ -528,7 +528,7 @@ module.exports = testUtility = {
     //
     // 　　　3.4）a和m如果互质，产生随机数效果比不互质好。
     //endregion
-    getRand: function(min, max){
+    getRand_1: function(min, max,){
         const a = 401  // a = 4p + 1
         const b = 301  // b = 2q + 1
         const m = 123456789
@@ -538,6 +538,13 @@ module.exports = testUtility = {
         let gap = max - min + 1
         let rawRand = seed2 % gap
         let rand = rawRand + min
+        return rand
+    },
+
+    getRand: function(min, max,){
+        let gap = max - min + 1
+        let raw = Math.random()
+        let rand = Math.floor(raw * gap)
         return rand
     },
 

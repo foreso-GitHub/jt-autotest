@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -290,10 +290,10 @@ describe('Jingtum测试', function() {
 
                 //region special
 
-                // this.timeout(3600000)
-                // tcsBugInjection.testForBugInjection(server, '故障注入测试')
-                // tcsBugInjection.testForRAS(server, 'RAS测试')
-                // this.timeout(timeout)
+                this.timeout(3600000)
+                tcsBugInjection.testForBugInjection(server, '故障注入测试')
+                tcsBugInjection.testForRAS(server, 'RAS测试')
+                this.timeout(timeout)
 
                 //endregion
 
