@@ -135,7 +135,8 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, 5000, true)
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                    2, 10, true, 5000, true, )
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
@@ -172,10 +173,10 @@ describe('Jingtum测试', function() {
 
                 //region special
 
-                this.timeout(3600000)
-                tcsBugInjection.testForBugInjection(server, '故障注入测试')
-                tcsBugInjection.testForRAS(server, 'RAS测试')
-                this.timeout(timeout)
+                // this.timeout(3600000)
+                // tcsBugInjection.testForBugInjection(server, '故障注入测试')
+                // tcsBugInjection.testForRAS(server, 'RAS测试')
+                // this.timeout(timeout)
 
                 // tcsIpfs.testForIpfsTest(server, '测试ipfs')
 
@@ -272,7 +273,8 @@ describe('Jingtum测试', function() {
                 //
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
                 //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, 5000, true)
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     2, 10, true, 5000, false, )
                 //
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
@@ -310,17 +312,23 @@ describe('Jingtum测试', function() {
 
                 this.timeout(3600000)
 
+
+
                 // 直接发送交易，每个请求发送txCount个交易，发送actionCount轮，可选是否检查
                 // 需要增加
                 // 1. 目前只有sendTx，需要增加sendRawTx.x
-                // 2. 需要增加多帐号发送
-                // 3. 增加不同memo内容
-                // 4. 多节点轮流发送交易
+                // 2. 需要增加多帐号发送 【帐号list】
+                // 3. 增加不同memo内容    【memo的list】
+                // 4. 多节点轮流发送交易 【节点list】
                 // 5. 增加发送间隔.x
                 // 6. 可以设定每次发送是否需要重取sequence.x
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                    2, 10, true, 5000, false, )
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     5, 10, true, 5000, false, )
 
+                for(let i = 0; i < 10000; i++){
+                    tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                        1, 50, true, 5000, false, )
+                }
 
 
                 // //连续发送多个交易请求，每个请求一个交易，有检查【可去除】
@@ -343,6 +351,7 @@ describe('Jingtum测试', function() {
                 // //用sendRaw发送交易 【可合并】
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流',
                 //     10, 2)
+
 
                 this.timeout(timeout)
 
