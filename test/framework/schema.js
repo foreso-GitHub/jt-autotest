@@ -80,11 +80,14 @@ const TX_SCHEMA = {
     type: "object",
     required: [
         "Account",
-        "Fee",
+        // "Destination",
+        "TransactionType",
         "Flags",
         "Sequence",
+        // "Amount",
+        "Fee",
+        // "Memos",
         "SigningPubKey",
-        "TransactionType",
         "TxnSignature",
         "date",
         "hash",
@@ -94,6 +97,76 @@ const TX_SCHEMA = {
         // "validated"
     ],
     properties: {
+        //todo need add more checks
+        Account: {
+            "type": "string"
+        },
+        Destination: {
+            "type": "string"
+        },
+        TransactionType: {
+            "type": "string"
+        },
+        Flags: {
+            "type": "integer"
+        },
+        Sequence: {
+            "type": "integer"
+        },
+        Amount: {
+            type: "object",
+            required: ["value", "currency", "issuer"],
+            properties: {
+                value: {
+                    type: "string"
+                },
+                currency: {
+                    type: "string"
+                },
+                issuer: {
+                    type: "string"
+                },
+            }
+        },
+        TotalSupply:{
+            type: "object",
+            required: ["value", "currency", "issuer"],
+            properties: {
+                value: {
+                    type: "string"
+                },
+                currency: {
+                    type: "string"
+                },
+                issuer: {
+                    type: "string"
+                },
+            }
+        },
+        Fee: {
+            "type": "string"
+        },
+        Memos: {
+            "type": "array"
+        },
+        SigningPubKey: {
+            "type": "string"
+        },
+        TxnSignature: {
+            "type": "string"
+        },
+        date: {
+            "type": "integer"
+        },
+        hash: {
+            "type": "string"
+        },
+        inLedger: {
+            "type": "integer"
+        },
+        ledger_index: {
+            "type": "integer"
+        },
         meta: {
             type: "object",
             required: ["AffectedNodes", "TransactionIndex", "TransactionResult"],

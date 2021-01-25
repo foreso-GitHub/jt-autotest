@@ -472,7 +472,7 @@ module.exports = framework = {
         if(moreChecks) action.moreChecks = moreChecks
         //common check, response
         framework.checkResponseOfCommon(action)
-        expect(action.actualResult).to.be.jsonSchema(schema.SENDTX_SCHEMA)  //todo tx目前返回多个结果。以后查询也会返回多个结果，这个检查应加入framework.checkResponse
+        expect(action.actualResult).to.be.jsonSchema(schema.SENDTX_SCHEMA)
 
         //every result
         let params = []
@@ -506,6 +506,7 @@ module.exports = framework = {
                     if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
                         let hash = actualResult.result
                         let tx = (await utility.getTxByHash(action.server, hash, 0)).result
+                        expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
                         expect(tx.hash).to.be.equal(hash)
                         await framework.compareParamAndTx(param, tx)
 
