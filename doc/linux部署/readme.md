@@ -1,3 +1,12 @@
+1. 按照环境（basicInstall.sh）
+2. 下载代码（deploy.sh）
+3. copy文件npm-shrinkwrap.json到package.json文件的同级目录
+4. npm install
+5. 执行初始化（init.sh）
+6. 执行测试：node "./node_modules/mocha/bin/_mocha" --ui bdd "./test/start.js"
+
+
+注1：
 解决REFERENCEERROR: primordials is not defined问题
 https://www.it610.com/article/1296291835026677760.htm
 

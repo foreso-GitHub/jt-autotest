@@ -307,6 +307,25 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
+                //region server test
+
+                this.timeout(3600000)
+
+                // for(let i = 0; i < 3000; i++) {
+                //     tcsBugInjection.testForBugInjection(server, '故障注入测试')
+                //     tcsBugInjection.testForRAS(server, 'RAS测试')
+                // }
+
+
+                // for(let i = 0; i < 50000; i++){
+                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //         1, 50, true, 5000, false, )
+                // }
+
+                this.timeout(timeout)
+
+                //endregion
+
 
                 //region performance test
 
