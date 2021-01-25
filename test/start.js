@@ -135,7 +135,7 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, true)
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, 5000, true)
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
@@ -272,7 +272,7 @@ describe('Jingtum测试', function() {
                 //
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
                 //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, true)
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', 1, 100, 5000, true)
                 //
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
@@ -301,26 +301,50 @@ describe('Jingtum测试', function() {
 
                 //region need work on
 
-
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 //endregion
 
+
                 //region performance test
 
+                this.timeout(3600000)
+
+                // 直接发送交易，每个请求发送txCount个交易，发送actionCount轮，可选是否检查
+                // 需要增加
+                // 1. 目前只有sendTx，需要增加sendRawTx.x
+                // 2. 需要增加多帐号发送
+                // 3. 增加不同memo内容
+                // 4. 多节点轮流发送交易
+                // 5. 增加发送间隔.x
+                // 6. 可以设定每次发送是否需要重取sequence.x
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                    2, 10, true, 5000, false, )
+
+
+
+                // //连续发送多个交易请求，每个请求一个交易，有检查【可去除】
                 // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
                 //
+                // //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.【可合并】
                 // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
                 //
+                // //向不同的账户连续发送交易【可合并】
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
                 //
+                // //【可合并】
                 // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
                 //     allRpcServers, 1)
                 //
+                // //【可合并】
                 // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
                 //     allRpcServers, 1, 'WithoutResponse')
                 //
+                // //用sendRaw发送交易 【可合并】
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流',
                 //     10, 2)
+
+                this.timeout(timeout)
 
                 // endregion
 

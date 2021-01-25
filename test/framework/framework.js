@@ -353,27 +353,27 @@ module.exports = framework = {
             for(let i = 0; i < totalCount; i++){
                 let data = action.txParams[i]
                 if(data){
-                    if(!data.sequence){
-                        // if(i != 0 && action.sendType &&
-                        //     (action.sendType == consts.sendTxType.InOneRequestQuickly
-                        //     || action.sendType == consts.sendTxType.InOneRequest)){
+                    if(data.sequence == undefined){  //有时data.sequence已经设定，此时不要再修改
+
                         if(totalCount > 1 && i != 0){
                             sequence++
                         }else{
-                            sequence = await framework.getSequence(server, data.from)
-                            if(data.sequence == null){  //有时data.sequence已经设定，此时不要再修改
-                                data.sequence = isNaN(sequence) ? 1 : sequence
+                            if(action.needResetSequence){
+                                sequence = await framework.getSequenceByChain(server, data.from)
                             }
+                            else{
+                                sequence = await framework.getSequence(server, data.from)
+                            }
+
+                            data.sequence = isNaN(sequence) ? 1 : sequence
+
                         }
                         if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
                             data.sequence = sequence
                         }
+
                     }
 
-                    // if(!action.sendType || action.sendType != consts.sendTxType.InOneRequestQuickly){
-                    //     let balanceBeforeExecution = await server.getBalance(server, data.from, data.symbol)
-                    //     action.balanceBeforeExecutionList.push(balanceBeforeExecution)
-                    // }
                 }
             }
 

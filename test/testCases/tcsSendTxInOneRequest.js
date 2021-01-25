@@ -21,7 +21,7 @@ const { token, } = require("../testData/testData")
 
 module.exports = tcsSendTxInOneRequest = {
 
-    testForSendTxs: function(server, describeTitle, actionCount, txCount, needCheck){
+    testForSendTxs: function(server, describeTitle, txFunctionName, actionCount, txCount, needResetSequence, timeout, needCheck, ){
         let testScripts = []
         let testCaseCode
         let scriptCode
@@ -47,10 +47,27 @@ module.exports = tcsSendTxInOneRequest = {
                 txParams.push(utility.deepClone(txTemplate))
                 expectResults.push(framework.createExpecteResult({needPass: true}))
             }
-            framework.pushTestActionForSendAndSign(testScript, consts.rpcFunctions.sendTx, txParams)
-            testScript.actions[j].expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
-            if(needCheck != undefined && needCheck == false){
-                testScript.actions[j].checkFunction = null
+            framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                let action = testScript.actions[j]
+                action.needResetSequence = needResetSequence
+                action.timeout = timeout
+                action.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                if(needCheck != undefined && needCheck == false){
+                    action.checkFunction = null
+                }
+            }
+            else if(txFunctionName == consts.rpcFunctions.signTx){
+                let action_sign = testScript.actions[j * 2]
+                let action_sendRaw = testScript.actions[j * 2 + 1]
+                action_sign.needResetSequence = needResetSequence
+                action_sign.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                action_sendRaw.timeout = timeout
+                action_sendRaw.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                if(needCheck != undefined && needCheck == false){
+                    action_sign.checkFunction = null
+                    action_sendRaw.checkFunction = null
+                }
             }
         }
 
