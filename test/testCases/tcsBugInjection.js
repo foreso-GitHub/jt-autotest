@@ -256,6 +256,20 @@ module.exports = tcsBugInjection = {
                 framework.addTestScript(testScripts, testScript)
             }
 
+            testScripts = []
+
+            scriptCode = '000300' + '_减少共识节点，9个节点减少6个'
+            {
+                if(jtNodes.length == 9){
+                    let txParams = {}
+                    txParams.initNodeCount = jtNodes.length
+                    txParams.execNodeCount = 6
+                    let testScript = tcsBugInjection.createTestScriptForRestartNodes(server, testCaseCode, scriptCode, txFunctionName, txParams)
+                    testScript.actions[0].txParams.timeAfterExecCmds = 30000
+                    framework.addTestScript(testScripts, testScript)
+                }
+            }
+
             framework.testTestScripts(server, describeTitle, testScripts)
 
         })
