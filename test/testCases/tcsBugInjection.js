@@ -256,8 +256,6 @@ module.exports = tcsBugInjection = {
                 framework.addTestScript(testScripts, testScript)
             }
 
-            testScripts = []
-
             scriptCode = '000300' + '_减少共识节点，9个节点减少6个'
             {
                 if(jtNodes.length == 9){
