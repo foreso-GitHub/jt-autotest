@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -344,10 +344,10 @@ describe('Jingtum测试', function() {
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //     5, 10, true, 5000, false, )
 
-                // for(let i = 0; i < 10000; i++){
-                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //         1, 50, true, 5000, false, )
-                // }
+                for(let i = 0; i < 10000; i++){
+                    tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                        1, 50, true, 5000, false, )
+                }
 
 
                 // //连续发送多个交易请求，每个请求一个交易，有检查【可去除】
