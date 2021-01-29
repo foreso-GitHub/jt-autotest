@@ -1,14 +1,14 @@
 ------
 打包压缩，git bash窗口
-cd /e/2. work/井系/3. 链景/井通新链/自动测试/codes/TEMP
+cd '/e/2. work/井系/3. 链景/井通新链/自动测试/codes/TEMP'
 
 ===
 压缩
 ===
-tar zcvf jt-autotest-1.tar.gz jt-autotest-1
+tar zcvf jt-autotest.tar.gz jt-autotest
 
 ===
 解压
 ===
-tar zxvf jt-autotest-1.tar.gz
+tar zxvf jt-autotest.tar.gz
 
