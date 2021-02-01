@@ -129,14 +129,14 @@ describe('Jingtum测试', function() {
 
                 //region send and sign
 
-                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
-                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-
-                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                    2, 10, true, 5000, true, )
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+                //
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+                //
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                //
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     2, 10, true, 5000, true, )
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 

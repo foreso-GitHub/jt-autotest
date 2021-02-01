@@ -542,18 +542,18 @@ const ERROR_SCHEMA = {
         error: {
             type: "object",
             required: [
-                "description",
-                "information",
+                "desc",
+                "info",
                 // "message",
             ],
             properties: {
                 count: {
                     type: "integer"
                 },
-                description: {
+                desc: {
                     type: "string"
                 },
-                information: {
+                info: {
                     type: "string"
                 },
                 message: {
@@ -570,33 +570,17 @@ const ERROR_SCHEMA = {
     },
 }
 
-const ERROR_MESSAGE_SCHEMA = {
-    title: "test response error message schema",
-    type: "object",
-    required: [
-        "engine_result_message",
-        "engine_result",
-        "engine_result_code",
-    ],
-    properties: {
-        engine_result_message: {
-            type: "string"
-        },
-        engine_result: {
-            type: "string"
-        },
-        engine_result_code: {
-            type: "integer"
-        },
-    },
-}
-
 const BLOCKNUMBER_SCHEMA = {
     title: "test response of jt_blockNumber",
     type: "integer",
 }
 
-const VERSION_SCHEMA = {
+const VERSION_TXT_SCHEMA = {
+    title: "test response of jt_version, txt format",
+    type: "string",
+}
+
+const VERSION_JSON_SCHEMA = {
     title: "test response of jt_version",
     type: "object",
     required: [
@@ -638,6 +622,7 @@ const VERSION_SCHEMA = {
 //     "value": "1000000"
 // }
 // }
+
 const BALANCE_SCHEMA = {
     title: "test response of jt_getBalance, for token",
     type: "object",
@@ -991,7 +976,8 @@ module.exports = {
     ORDER_SCHEMA,
     PAYMENT_SCHEMA,
     BLOCKNUMBER_SCHEMA,
-    VERSION_SCHEMA,
+    VERSION_TXT_SCHEMA,
+    VERSION_JSON_SCHEMA,
     BALANCE_SCHEMA,
     // BALANCE_TOKEN_SCHEMA,
     WALLET_SCHEMA,

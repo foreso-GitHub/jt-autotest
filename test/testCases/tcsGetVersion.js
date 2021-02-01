@@ -38,7 +38,15 @@ module.exports = tcsGetVersion = {
         scriptCode = '000100_参数json'
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
-            testScript.actions[0].txParams = ['json']
+            testScript.actions[0].txParams = [{format: 'json'}]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000021'
+        scriptCode = '000100_参数txt'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{format: 'text'}]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -47,6 +55,18 @@ module.exports = tcsGetVersion = {
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = [""]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000110_format参数空字符串'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{format: ''}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -61,12 +81,51 @@ module.exports = tcsGetVersion = {
         }
 
         testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000210_format参数123'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{format: '123'}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000030'
         scriptCode = '000300_参数abc'
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = ['abc']
             testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
                 framework.getError(-269, 'error parameter'))]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000310_format参数abc'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{format: 'abc'}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_version_000030'
+        scriptCode = '000400_混合多個參數'
+        {
+            let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{format: 'json'}]
+
+            let action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [{format: ''}],
+                framework.executeTestActionForGet, tcsGetVersion.checkGetVersion,
+                [framework.createExpecteResult(false,
+                    framework.getError(-269, 'error parameter'))])
+            testScript.actions.push(action)
+
+            action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [{format: 'text'}],
+                framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, [{needPass:true}])
+            testScript.actions.push(action)
+
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -90,22 +149,40 @@ module.exports = tcsGetVersion = {
     },
 
     checkGetVersion: function(action){
-        let expectedResult = action.expectedResults[0]
-        let actualResult = action.actualResult
-        framework.checkGetResponse(actualResult)
-        if(expectedResult.needPass){
-            let version = actualResult.result
-            if(utility.isJSON(version)){
-                expect(version).to.be.jsonSchema(schema.VERSION_SCHEMA)
-            }
-            else{
-                // expect(version).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
-                version = utility.parseVersionInfo(version)
-            }
+        framework.checkGetResponse(action.actualResult)
+
+        let params = action.txParams
+        let expectedResults = action.expectedResults
+        let actualResults = action.actualResult.result
+
+        if(params.length == 0){
+            let version = utility.parseVersionInfo(actualResults)
             expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
         }
         else{
-            framework.checkResponseError(action, expectedResult, actualResult)
+            for(let i = 0; i < params.length; i++){
+                let param = params[i]
+                let expected = expectedResults[i]
+                let actual = actualResults[i]
+
+                if(expected.needPass){
+                    let version = actual.result
+                    if(param.format && param.format == 'json'){
+                        expect(version).to.be.jsonSchema(schema.VERSION_JSON_SCHEMA)
+                        expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+                    }
+                    else if (param.format && param.format == 'text'){
+                        expect(version).to.be.jsonSchema(schema.VERSION_TXT_SCHEMA)
+                        expect(version).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+                    }
+                    else{
+                        expect('param error ' + JSON.stringify(param)).to.be.not.ok
+                    }
+                }
+                else{
+                    framework.checkResponseError(expected, actual)
+                }
+            }
         }
     },
 //endregion

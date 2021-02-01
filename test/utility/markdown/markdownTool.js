@@ -52,8 +52,8 @@ module.exports = markdownTool = {
                     }
                     else if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.paragraph){
                         if(markdownTool.getLastMark(marks, 2) === consts.markdownTypes.block_quote){//the mark in outer level
-                            //category description
-                            category.description = txt
+                            //category desc
+                            category.desc = txt
                         }
                         else{
                             //error status
@@ -65,8 +65,8 @@ module.exports = markdownTool = {
                     else if(node.type === consts.markdownTypes.text && currentMark === consts.markdownTypes.strong){  //error type
                         error.type = txt
                     }
-                    else if(node.type === consts.markdownTypes.code){  //error description
-                        error.description = txt
+                    else if(node.type === consts.markdownTypes.code){  //error desc
+                        error.desc = txt
                     }
                     else{
                         console.log('=== unknown mark: ' + currentMark + ', type: ' +node.type + ' @ ' + node.sourcepos)
@@ -501,19 +501,19 @@ module.exports = markdownTool = {
         return marks[marks.length - offset]
     },
 
-    newError: function(status, type, description, category){
+    newError: function(status, type, desc, category){
         let error = {}
         error.status = status
         error.type = type
-        error.description = description
+        error.desc = desc
         error.category = category
         return error
     },
 
-    newCategory: function(name, description){
+    newCategory: function(name, desc){
         let category = {}
         category.name = name
-        category.description = description
+        category.desc = desc
         category.errors = []
         return category
     },
@@ -555,7 +555,7 @@ module.exports = markdownTool = {
 
     printCategory: function(category){
         console.log('category name: ' + category.name)
-        console.log('category description: ' + category.description)
+        console.log('category desc: ' + category.desc)
         markdownTool.printArray(category.errors, markdownTool.printError)
     },
 

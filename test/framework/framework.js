@@ -107,10 +107,10 @@ module.exports = framework = {
         framework.errors = map
     },
 
-    getError: function(code, information){
+    getError: function(code, info){
         let error = utility.deepClone(framework.errors.get(code))
-        if(information) {
-            error.information = information
+        if(info) {
+            error.info = info
         }
         return error
     },
@@ -1036,6 +1036,13 @@ module.exports = framework = {
         }
     },
 
+    checkResponseError: function(expectedResult, actualResult){
+        if(NEED_CHECK_ExpectedResult){
+            // expect(actualResult).to.be.jsonSchema(schema.ERROR_SCHEMA)
+            framework.compareErrorResult(expectedResult.expectedError, actualResult)
+        }
+    },
+
     checkError: function(expectedError, actualError){
         expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
         if(actualError.result){  //if actualResult is the outside result
@@ -1059,8 +1066,8 @@ module.exports = framework = {
         expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
         expect(actualError.status).to.equals(expectedError.status)
         expect(actualError.type.toLowerCase()).to.equals(expectedError.type.toLowerCase())
-        expect(actualError.error.description).to.equals(expectedError.description)
-        expect(actualError.error.information).to.contains(expectedError.information)
+        expect(actualError.error.desc).to.equals(expectedError.desc)
+        expect(actualError.error.info).to.contains(expectedError.info)
     },
 
     //endregion
