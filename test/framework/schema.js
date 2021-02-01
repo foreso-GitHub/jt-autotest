@@ -570,10 +570,21 @@ const ERROR_SCHEMA = {
     },
 }
 
-const BLOCKNUMBER_SCHEMA = {
+
+const BLOCKNUMBER_NUMBER_SCHEMA = {
     title: "test response of jt_blockNumber",
     type: "integer",
 }
+
+const BLOCKNUMBER_INFO_SCHEMA = {
+    title: "test response of jt_blockNumber",
+    type: "array",
+    minItems: 2,
+    item: {
+        type: "integer",
+    }
+}
+
 
 const VERSION_TXT_SCHEMA = {
     title: "test response of jt_version, txt format",
@@ -975,7 +986,8 @@ module.exports = {
     PATH_FIND_SCHEMA,
     ORDER_SCHEMA,
     PAYMENT_SCHEMA,
-    BLOCKNUMBER_SCHEMA,
+    BLOCKNUMBER_NUMBER_SCHEMA,
+    BLOCKNUMBER_INFO_SCHEMA,
     VERSION_TXT_SCHEMA,
     VERSION_JSON_SCHEMA,
     BALANCE_SCHEMA,

@@ -242,6 +242,9 @@ module.exports = markdownTool = {
             end = details.length - 1
             testCase.expectedOutput = details.substring(start, end)
         }
+        else if(tsCells.length == 0){
+            //emtpy line, do nothing
+        }
         else{
             console.log('Parse test cases error: not 3 cells in line! Line content: ' + line)
         }

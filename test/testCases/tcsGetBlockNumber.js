@@ -57,6 +57,61 @@ module.exports = tcsGetBlockNumber = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testCaseCode = 'FCJT_blockNumber_000020'
+        scriptCode = defaultScriptCode + '_type参数为number'
+        {
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{"type": "number"}]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_blockNumber_000030'
+        scriptCode = defaultScriptCode + '_type参数为info'
+        {
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{"type": "info"}]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_blockNumber_000030'
+        scriptCode = '000200' + '_type参数为"123"'
+        {
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{"type": "123"}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_blockNumber_000030'
+        scriptCode = '000300' + '_type参数为空字符串'
+        {
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{"type": ""}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_blockNumber_000030'
+        scriptCode = '000400' + '_多個參數混合'
+        {
+            let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
+            testScript.actions[0].txParams = [{"type": ""}]
+            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+                framework.getError(-269, 'error parameter'))]
+
+            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockNumber, [{type: 'number'}],
+                framework.executeTestActionForGet, tcsGetBlockNumber.checkBlockNumber, [{needPass:true}])
+            testScript.actions.push(action)
+
+            action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockNumber, [{type: 'info'}],
+                framework.executeTestActionForGet, tcsGetBlockNumber.checkBlockNumber, [{needPass:true}])
+            testScript.actions.push(action)
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
@@ -77,10 +132,42 @@ module.exports = tcsGetBlockNumber = {
     },
     
     checkBlockNumber: function(action){
-        let response = action.actualResult
-        framework.checkResponse(response)
-        expect(response.result).to.be.jsonSchema(schema.BLOCKNUMBER_SCHEMA)
-        expect(response.result).to.be.above(10)
+        framework.checkGetResponse(action.actualResult)
+
+        let params = action.txParams
+        let expectedResults = action.expectedResults
+        let actualResults = action.actualResult.result
+
+        if(params.length == 0){
+            expect(action.actualResult.result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)
+            expect(action.actualResult.result).to.be.above(10)
+        }
+        else{
+            for(let i = 0; i < params.length; i++) {
+                let param = params[i]
+                let expected = expectedResults[i]
+                let actual = actualResults[i]
+
+                if(expected.needPass){
+                    let result = actual.result
+                    if(param.type && param.type == 'number'){
+                        expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)
+                        expect(result).to.be.above(10)
+                    }
+                    else if (param.type && param.type == 'info'){
+                        expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_INFO_SCHEMA)
+                        expect(result[0]).to.be.above(10)
+                        expect(result[1]).to.be.least(0)
+                    }
+                    else{
+                        expect('param error ' + JSON.stringify(param)).to.be.not.ok
+                    }
+                }
+                else{
+                    framework.checkResponseError(expected, actual)
+                }
+            }
+        }
     },
 
     get2BlockNumber: async function(server) {
