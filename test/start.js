@@ -234,7 +234,7 @@ describe('Jingtum测试', function() {
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
                 //
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-
+                //
                 // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
                 //
                 // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
@@ -269,12 +269,12 @@ describe('Jingtum测试', function() {
 
                 // tcsSign.testForSign(server, '测试jt_sign')
                 //
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
-                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                    2, 10, true, 5000, false, )
+                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+                //
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+                //
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     2, 10, true, 5000, false, )
 
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 

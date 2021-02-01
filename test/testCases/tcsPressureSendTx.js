@@ -335,7 +335,7 @@ module.exports = tcsPressureSendTx = {
     changeSequence: async function(action){
         let server = action.server
         let from = action.bindData.txParams[0].from
-        let currentSequence = await utility.getSequence(server, from)
+        let currentSequence = await server.getSequence(server, from)
         let offset = action.bindData.sequenceOffset ? action.bindData.sequenceOffset : 1
 
         for(let i = 0; i < action.bindData.txParams.length; i++){

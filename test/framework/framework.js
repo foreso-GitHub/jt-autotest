@@ -350,30 +350,25 @@ module.exports = framework = {
             if(action.beforeExecution) await action.beforeExecution(action)
 
             let sequence
-            for(let i = 0; i < totalCount; i++){
-                let data = action.txParams[i]
-                if(data){
-                    if(data.sequence == undefined){  //有时data.sequence已经设定，此时不要再修改
+            if(action.txFunctionName === consts.rpcFunctions.sendTx || action.txFunctionName === consts.rpcFunctions.signTx){
+                for(let i = 0; i < totalCount; i++){
+                    let data = action.txParams[i]
+                    if(data){
+                        if(data.sequence == undefined){  //有时data.sequence已经设定，此时不要再修改
 
-                        if(totalCount > 1 && i != 0){
-                            sequence++
-                        }else{
-                            if(action.needResetSequence){
-                                sequence = await framework.getSequenceByChain(server, data.from)
+                            if(totalCount > 1 && i != 0){
+                                sequence++
+                            }else{
+                                if(action.needResetSequence){
+                                    sequence = await framework.getSequenceByChain(server, data.from)
+                                }
+                                else{
+                                    sequence = await framework.getSequence(server, data.from)
+                                }
                             }
-                            else{
-                                sequence = await framework.getSequence(server, data.from)
-                            }
-
-                            data.sequence = isNaN(sequence) ? 1 : sequence
-
-                        }
-                        if(action.txFunctionName !== consts.rpcFunctions.sendRawTx){
                             data.sequence = sequence
                         }
-
                     }
-
                 }
             }
 
@@ -1128,9 +1123,7 @@ module.exports = framework = {
             logger.debug("===get sequence from map: " + local_sequence)
         }
 
-        let accountInfo = await server.responseGetAccount(server, from)
-        let result = accountInfo.result[0].result
-        remote_sequence = result ? Number(result.Sequence) : -1
+        remote_sequence = await server.getSequence(server, from)
         logger.debug("===get sequence from accountInfo: " + remote_sequence)
         sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
         framework.setSequence(server.getName(), from, sequence)
@@ -1139,9 +1132,7 @@ module.exports = framework = {
     },
 
     getSequenceByChain: async function(server, from){
-        let accountInfo = await server.responseGetAccount(server, from)
-        let result = accountInfo.result[0].result
-        let sequence = result ? Number(result.Sequence) : -1
+        let sequence = await server.getSequence(server, from)
         logger.debug("===get sequence from accountInfo: " + sequence)
         framework.setSequence(server.getName(), from, sequence)
         return sequence
@@ -1843,7 +1834,7 @@ module.exports = framework = {
             let totalShouldSuccessCount = 0
             let totalShouldFailCount = 0
             let totalFailCount = 0
-            let startBlockNumber = await server.getBlockNumber(server)
+            let startBlockNumber = await server.getBlockNumber(server, 'number')
             if(startBlockNumber < 0){
                 expect().to.be.not.ok
             }

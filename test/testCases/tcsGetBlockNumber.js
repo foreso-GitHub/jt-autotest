@@ -174,10 +174,10 @@ module.exports = tcsGetBlockNumber = {
         return new Promise(async (resolve, reject) => {
             if(!server) reject("Server cannot be null!")
             let result = {}
-            result.blockNumber1 = await server.getBlockNumber(server)
+            result.blockNumber1 = await server.getBlockNumber(server, 'number')
             //logger.debug("defaultBlockTime: " + server.mode.defaultBlockTime)
             await utility.timeout(server.mode.defaultBlockTime)
-            result.blockNumber2 = await server.getBlockNumber(server)
+            result.blockNumber2 = await server.getBlockNumber(server, 'number')
             resolve(result)
         })
     },

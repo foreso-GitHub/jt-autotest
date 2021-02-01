@@ -15,7 +15,7 @@ function nodeMonitor(){
                 let server = new rpc()
                 server.url = node.url
                 node.server = server
-                node.blockNumber = await server.getBlockNumber(server)
+                node.blockNumber = await server.getBlockNumber(server, 'number')
                 doneNodes.push(node)
                 logger.debug(server.getName())
 
