@@ -227,8 +227,7 @@ function chainDataCreator(){
         chainData.tx_memo = await getTxByHash(server, chainData.tx_memo_hash)
 
         let blockNumber = chainData.tx1.ledger_index
-        let blockResult = await server.responseGetBlockByNumber(server, blockNumber.toString(), false)
-        let block = blockResult.result
+        let block = await server.getBlockByNumber(server, blockNumber.toString(), false)
         chainData.block = {}
         chainData.block.blockNumber = block.ledger_index
         chainData.block.blockHash = block.ledger_hash
@@ -239,7 +238,7 @@ function chainDataCreator(){
 
     async function getTxByHash(server, hash){
         let tx = await utility.getTxByHash(server, hash)
-        return tx.result
+        return tx.result[0].result
     }
 
     async function issueCoin(server, sender, sequence, coin, local, flag){

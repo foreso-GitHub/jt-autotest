@@ -116,6 +116,8 @@ function baseInterface() {
 
     //region account
 
+    //region createAccount
+
     baseInterface.prototype.createAccount = async function(server, nickName, type){
         let response = await this.responseCreateAccount(server, nickName, type)
         return response.result[0].result[0]
@@ -133,20 +135,38 @@ function baseInterface() {
         return param
     }
 
-    baseInterface.prototype.responseGetAccount = function (server, address, currency, issuer, ledger) {
+    //endregion
+
+    //region GetAccount
+
+    baseInterface.prototype.createParamGetAccount = function(address, currency, issuer, ledger) {
         let param = {}
         param.address = address
         if(currency) param.currency = currency
         if(issuer) param.issuer = issuer
         if(ledger) param.ledger = ledger
+        return param
+    }
+
+    baseInterface.prototype.responseGetAccount = function (server, address, currency, issuer, ledger) {
+        let param = this.createParamGetAccount(address, currency, issuer, ledger)
         return this.getResponse(server, consts.rpcFunctions.getAccount, [param])
     }
 
-    baseInterface.prototype.getSequence = async function (server, address, currency, issuer, ledger) {
+    baseInterface.prototype.getAccount = async function (server, address, currency, issuer, ledger) {
         let response = await this.responseGetAccount(server, address, currency, issuer, ledger)
+        let account
+        if(response && response.result && response.result[0] && response.result[0].result && response.result[0].result){
+            account = response.result[0].result
+        }
+        return account
+    }
+
+    baseInterface.prototype.getSequence = async function (server, address, currency, issuer, ledger) {
+        let account = await this.getAccount(server, address, currency, issuer, ledger)
         let sequence
-        if(response && response.result && response.result[0] && response.result[0].result && response.result[0].result.Sequence){
-            sequence = response.result[0].result.Sequence
+        if(account && account.Sequence){
+            sequence = account.Sequence
         }
         else{
             sequence = -1
@@ -154,10 +174,18 @@ function baseInterface() {
         return sequence
     }
 
+    //endregion
+
+
+    //region GetAccounts
+
     baseInterface.prototype.responseGetAccounts = function (server, ) {
         let params = []
         return this.getResponse(server, consts.rpcFunctions.getAccounts, params)
     }
+
+    //endregion
+
     //endregion
 
     //region currency
@@ -217,26 +245,59 @@ function baseInterface() {
     //endregion
 
     //region get block
-    baseInterface.prototype.responseGetBlockByNumber = function (server, blockNumber, showFullTx) {
-        let params = []
-        params.push(blockNumber)
-        if(showFullTx != null) params.push(showFullTx)
-        return this.getResponse(server, consts.rpcFunctions.getBlockByNumber, params)
+
+    //region by number
+
+    baseInterface.prototype.createParamGetBlockByNumber = function(blockNumber, showFullTx, ledger) {
+        let param = {}
+        param.number = blockNumber
+        if(showFullTx != undefined) param.full = showFullTx
+        if(ledger) param.ledger = ledger
+        return param
     }
 
-    baseInterface.prototype.responseGetBlockByHash = function (server, blockHash, showFullTx) {
-        let params = []
-        params.push(blockHash)
-        if(showFullTx != null) params.push(showFullTx)
-        return this.getResponse(consts.rpcFunctions.getBlockByHash, params)
+    baseInterface.prototype.responseGetBlockByNumber = function (server, blockNumber, showFullTx, ledger) {
+        let param = this.createParamGetBlockByNumber(blockNumber, showFullTx, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getBlockByNumber, [param])
     }
 
-    baseInterface.prototype.createParams_GetBlock = function (numberOrHash, showFullTx){
-        let params = []
-        params.push(numberOrHash)
-        if(showFullTx != null) params.push(showFullTx)
-        return params
+    baseInterface.prototype.getBlockByNumber = async function (server, blockNumber, showFullTx, ledger) {
+        let response = await this.responseGetBlockByNumber(server, blockNumber, showFullTx, ledger)
+        let block
+        if(!response.error){
+            block = response.result[0].result
+        }
+        return block
     }
+
+    //endregion
+
+    //region by hash
+
+    baseInterface.prototype.createParamGetBlockByHash = function(blockHash, showFullTx, ledger) {
+        let param = {}
+        param.hash = blockHash
+        if(showFullTx != undefined) param.full = showFullTx
+        if(ledger) param.ledger = ledger
+        return param
+    }
+
+    baseInterface.prototype.responseGetBlockByHash = function (server, blockHash, showFullTx, ledger) {
+        let param = this.createParamGetBlockByHash(blockHash, showFullTx, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getBlockByNumber, [param])
+    }
+
+    baseInterface.prototype.getBlockByHash = async function (server, blockHash, showFullTx, ledger) {
+        let response = await this.responseGetBlockByHash(server, blockHash, showFullTx, ledger)
+        let block
+        if(!response.error){
+            block = response.result[0].result
+        }
+        return block
+    }
+
+    //endregion
+
     //endregion
 
     //region send tx

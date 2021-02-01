@@ -280,11 +280,11 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                this.timeout(360000)
-                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                this.timeout(timeout)
+                // this.timeout(360000)
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // this.timeout(timeout)
 
                 //endregion
 
