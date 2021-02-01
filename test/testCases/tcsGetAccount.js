@@ -188,7 +188,7 @@ module.exports = tcsGetAccount = {
             expect(Number(valueString)).to.be.above(0)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 //endregion

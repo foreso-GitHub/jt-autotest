@@ -257,7 +257,7 @@ module.exports = tcsGetCurrency = {
             expect(response.result.TotalSupply.currency).to.equals(action.txParams[0])
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 //endregion

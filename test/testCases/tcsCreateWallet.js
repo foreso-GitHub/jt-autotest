@@ -224,7 +224,7 @@ module.exports = tcsCreateWallet = {
             }
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
     //endregion

@@ -75,7 +75,7 @@ module.exports = tcsGetAccounts = {
             expect(accounts).to.be.contains(rootAccount)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 

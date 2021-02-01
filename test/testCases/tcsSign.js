@@ -232,7 +232,7 @@ module.exports = tcsSign = {
         //     }
         // }
         // else{
-        //     framework.checkResponseError(action, action.expectedResults, response)
+        //     framework.checkResponseError(action.expectedResults, response)
         // }
     },
     //endregion

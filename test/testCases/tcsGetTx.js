@@ -152,7 +152,7 @@ module.exports = tcsGetTx = {
             expect(response.result.hash).to.be.equal(hash)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 
@@ -379,7 +379,7 @@ module.exports = tcsGetTx = {
             expect(response.result.Sequence).to.be.equal(index)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 
@@ -654,7 +654,7 @@ module.exports = tcsGetTx = {
             framework.compareTxs(response.result, tx1)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 
@@ -666,7 +666,7 @@ module.exports = tcsGetTx = {
             expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 

@@ -60,23 +60,37 @@ function baseInterface() {
     //endregion
 
     //region balance
-    baseInterface.prototype.getBalance = async function (server, address, symbol, issuer) {
-        let response = await this.responseBalance(server, address, symbol, issuer)
-        let balance = response.result ? response.result.balance : null
+    // baseInterface.prototype.getBalance = async function (server, address, symbol, issuer) {
+    //     let response = await this.responseBalance(server, address, symbol, issuer)
+    //     let balance = response.result ? response.result.balance : null
+    //     return balance
+    // }
+
+    // baseInterface.prototype.responseBalance = function (server, address, symbol, issuer, tag) {
+    //     let params = {}
+    //     params.push(address)
+    //     if(symbol) params.push(symbol)
+    //     if(issuer) params.push(issuer)
+    //     if(tag) params.push(tag)
+    //     return this.getResponse(server, consts.rpcFunctions.getBalance, params)
+    // }
+
+    baseInterface.prototype.getBalance = async function (server, address, currency, issuer, ledger) {
+        let balance = null
+        let response = await this.responseBalance(server, address, currency, issuer, ledger)
+        if(response.result && response.result[0] && response.result[0].result){
+            balance = response.result[0].result.balance
+        }
         return balance
     }
 
-    baseInterface.prototype.processBalanceResponse = function(response){
-        return response.result.balance
-    }
-
-    baseInterface.prototype.responseBalance = function (server, address, symbol, issuer, tag) {
-        let params = []
-        params.push(address)
-        if(symbol) params.push(symbol)
-        if(issuer) params.push(issuer)
-        if(tag) params.push(tag)
-        return this.getResponse(server, consts.rpcFunctions.getBalance, params)
+    baseInterface.prototype.responseBalance = function (server, address, currency, issuer, ledger) {
+        let param = {}
+        param.address = address
+        if(currency) param.currency = currency
+        if(issuer) param.issuer = issuer
+        if(ledger) param.ledger = ledger
+        return this.getResponse(server, consts.rpcFunctions.getBalance, [param])
     }
     //endregion
 

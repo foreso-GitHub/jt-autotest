@@ -458,7 +458,7 @@ module.exports = framework = {
                 expect(utility.isHex(signedTx)).to.be.ok
             }
             else{
-                framework.checkResponseError(action, expectedResult, actualResult)
+                framework.checkResponseError(expectedResult, actualResult)
             }
         }
         action.testResult = true
@@ -505,7 +505,7 @@ module.exports = framework = {
                 if(expectedResult.needCheckTx == undefined || expectedResult.needCheckTx){
                     if(actualResult && actualResult.result && utility.isHex(actualResult.result) && !actualResult.error){
                         let hash = actualResult.result
-                        let tx = (await utility.getTxByHash(action.server, hash, 0)).result
+                        let tx = (await utility.getTxByHash(action.server, hash, 0)).result[0].result
                         expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
                         expect(tx.hash).to.be.equal(hash)
                         await framework.compareParamAndTx(param, tx)
@@ -531,7 +531,7 @@ module.exports = framework = {
                 }
             }
             else{
-                framework.checkResponseError(action, expectedResult, actualResult)
+                framework.checkResponseError(expectedResult, actualResult)
             }
             action.testResult = true
         }
@@ -910,8 +910,7 @@ module.exports = framework = {
     //token example:
     checkBalanceChange: async function(server, from, symbol, issuer, expectedBalance){
         expectedBalance = expectedBalance.toString()
-        let balanceResponse = await server.responseBalance(server, from, symbol, issuer)
-        let balance = balanceResponse.result.balance
+        let balance = await server.getBalance(server, from, symbol, issuer)
         let actualValue = balance.value
         let paramValueObject = utility.parseShowValue(expectedBalance)
         let expectedValue
@@ -1028,17 +1027,16 @@ module.exports = framework = {
         // framework.checkResponse(actualResult)
     },
 
-    checkResponseError: function(action, expectedResult, actualResult){
-        if(NEED_CHECK_ExpectedResult
-            && action.server.mode.restrictedLevel >= restrictedLevel.L3){
-            expect(action.actualResult).to.be.jsonSchema(schema.ERROR_SCHEMA)
-            framework.checkError(expectedResult.expectedError, actualResult)
-        }
-    },
+    // checkResponseError: function(action, expectedResult, actualResult){
+    //     if(NEED_CHECK_ExpectedResult
+    //         && action.server.mode.restrictedLevel >= restrictedLevel.L3){
+    //         expect(action.actualResult).to.be.jsonSchema(schema.ERROR_SCHEMA)
+    //         framework.checkError(expectedResult.expectedError, actualResult)
+    //     }
+    // },
 
     checkResponseError: function(expectedResult, actualResult){
         if(NEED_CHECK_ExpectedResult){
-            // expect(actualResult).to.be.jsonSchema(schema.ERROR_SCHEMA)
             framework.compareErrorResult(expectedResult.expectedError, actualResult)
         }
     },
@@ -1077,46 +1075,76 @@ module.exports = framework = {
     //region process sequence
 
     //region getSequence
-    getSequence: function(server, from){
-        return new Promise(function (resolve){
-            // let key = from + '@' + server.getName()
-            let key = from
-            let local_sequence = -1
-            let remote_sequence = -1
-            let sequence = -1
+    // getSequence: function(server, from){
+    //     return new Promise(function (resolve){
+    //         // let key = from + '@' + server.getName()
+    //         let key = from
+    //         let local_sequence = -1
+    //         let remote_sequence = -1
+    //         let sequence = -1
+    //
+    //         if(_SequenceMap.has(key)){
+    //             local_sequence = _SequenceMap.get(key)
+    //             logger.debug("===get sequence from map: " + local_sequence)
+    //         }
+    //
+    //         Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
+    //             remote_sequence = accountInfo.result ? Number(accountInfo.result.Sequence) : -1
+    //             logger.debug("===get sequence from accountInfo: " + remote_sequence)
+    //             sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
+    //             framework.setSequence(server.getName(), from, sequence)
+    //             logger.debug("===final sequence: " + sequence)
+    //             resolve(sequence)
+    //         }).catch(function (error){
+    //             logger.debug("getSequence Error!!! " + error)
+    //             resolve(null)
+    //         })
+    //     })
+    // },
 
-            if(_SequenceMap.has(key)){
-                local_sequence = _SequenceMap.get(key)
-                logger.debug("===get sequence from map: " + local_sequence)
-            }
+    // getSequenceByChain: function(server, from){
+    //     return new Promise(function (resolve){
+    //         let key = from
+    //         Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
+    //             // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
+    //             let sequence = Number(accountInfo.result.Sequence)
+    //             framework.setSequence(server.getName(), from, sequence)
+    //             resolve(sequence)
+    //         }).catch(function (error){
+    //             logger.debug("getSequenceByChain Error!!! " + error)
+    //             resolve(null)
+    //         })
+    //     })
+    // },
 
-            Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-                remote_sequence = accountInfo.result ? Number(accountInfo.result.Sequence) : -1
-                logger.debug("===get sequence from accountInfo: " + remote_sequence)
-                sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
-                framework.setSequence(server.getName(), from, sequence)
-                logger.debug("===final sequence: " + sequence)
-                resolve(sequence)
-            }).catch(function (error){
-                logger.debug("getSequence Error!!! " + error)
-                resolve(null)
-            })
-        })
+    getSequence: async function(server, from){
+        let key = from
+        let local_sequence = -1
+        let remote_sequence = -1
+        let sequence = -1
+
+        if(_SequenceMap.has(key)){
+            local_sequence = _SequenceMap.get(key)
+            logger.debug("===get sequence from map: " + local_sequence)
+        }
+
+        let accountInfo = await server.responseGetAccount(server, from)
+        let result = accountInfo.result[0].result
+        remote_sequence = result ? Number(result.Sequence) : -1
+        logger.debug("===get sequence from accountInfo: " + remote_sequence)
+        sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
+        framework.setSequence(server.getName(), from, sequence)
+        logger.debug("===final sequence: " + sequence)
+        return sequence
     },
 
-    getSequenceByChain: function(server, from){
-        return new Promise(function (resolve){
-            let key = from
-            Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-                // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
-                let sequence = Number(accountInfo.result.Sequence)
-                framework.setSequence(server.getName(), from, sequence)
-                resolve(sequence)
-            }).catch(function (error){
-                logger.debug("getSequenceByChain Error!!! " + error)
-                resolve(null)
-            })
-        })
+    getSequenceByChain: async function(server, from){
+        let accountInfo = await server.responseGetAccount(server, from)
+        let result = accountInfo.result[0].result
+        let sequence = result ? Number(result.Sequence) : -1
+        logger.debug("===get sequence from accountInfo: " + sequence)
+        framework.setSequence(server.getName(), from, sequence)
+        return sequence
     },
 
     setSequence: function(serverName, from, sequence){

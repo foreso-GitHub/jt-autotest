@@ -344,7 +344,7 @@ module.exports = tcsSendAndSignTx = {
             let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = "-100" + showSymbol
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'value must be integer type and >= 0'))
+                framework.getError(-278, 'value must be >= 0'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -470,7 +470,7 @@ module.exports = tcsSendAndSignTx = {
             let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = "-0.1" + showSymbol
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'value must be integer type'))
+                framework.getError(-278, 'value must be >= 0'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -984,7 +984,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = "config.total_supply"
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'total_supply must be integer type'))
+                framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -997,7 +997,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = -10000000
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'total_supply must be integer type'))
+                framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -1023,7 +1023,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = 10000.12345678
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'total_supply must be integer type'))
+                framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -1036,7 +1036,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = '10000.12345678'
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'total_supply must be integer type'))
+                framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -1513,9 +1513,9 @@ module.exports = tcsSendAndSignTx = {
 
     beforeBurnAll: async function(action){
         let param = action.txParams[0]
-        let balanceResponse = await action.server.responseBalance(action.server, param.from, param.symbol,
+        let balance = await action.server.getBalance(action.server, param.from, param.symbol,
             param.local ? param.from : consts.default.issuer)
-        action.txParams[0].total_supply = '-' + balanceResponse.result.balance.value.toString()
+        action.txParams[0].total_supply = '-' + balance.value.toString()
     },
 
     executeBurnAllOfSendTx: function(action){

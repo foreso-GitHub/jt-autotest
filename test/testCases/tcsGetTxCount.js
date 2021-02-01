@@ -153,7 +153,7 @@ module.exports = tcsGetTxCount = {
             expect(txCount).to.equal(response.result)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
 
@@ -342,7 +342,7 @@ module.exports = tcsGetTxCount = {
             action.subCheck(action)
         }
         else{
-            framework.checkResponseError(action, action.expectedResults[0], response)
+            framework.checkResponseError(action.expectedResults[0], response)
         }
     },
     //endregion
