@@ -243,17 +243,10 @@ module.exports = testUtility = {
     },
 
     createTxParams: async function (server, from, secret, to, value, fee, memos){
-        let account = await server.responseGetAccount(server, from, )
-        let sequence = account.result.Sequence
+        let sequence = await server.getSequence(server, from, )
         let params = server.createTxParams(from, secret, sequence, to, value, fee, memos,
             null, null, null, null, null, null, null)
         return params
-    },
-
-    updateSequenceInTxParams: async function (server, txParams){
-        let account = await server.responseGetAccount(server, txParams[0].from, )
-        txParams[0].sequence = account.result.Sequence
-        return txParams
     },
 
     sendTxs: async function (server, params, txCount){

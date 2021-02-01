@@ -122,7 +122,8 @@ module.exports = tcsSubscribe = {
                     // logger.debug('mainAction.server.getOutputs().sub: ' + mainAction.server.getOutputs().sub.length)
                     let server = mainAction.server
 
-                    let txParams = await utility.updateSequenceInTxParams(server, action.txParams, )
+                    let txParams = action.txParams
+                    txParams[0].sequence = await server.getSequence(server, txParams[0].from)
                     if(action.type == actionTypes.sendTx){
                         action.hashes = await utility.sendTxs(server, txParams, action.txCount)
                     }
@@ -514,7 +515,7 @@ module.exports = tcsSubscribe = {
 
         }
 
-        framework.testTestScripts(server, describeTitle + '_订阅block', testScripts)
+        // framework.testTestScripts(server, describeTitle + '_订阅block', testScripts)
 
         //endregion
 

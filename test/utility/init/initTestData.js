@@ -40,51 +40,6 @@ async function initTestDataForSwtclib(){
     }
 }
 
-
-async function initTestDataForNewChain(){
-    // let value = "100000000"
-    let value = '30'
-    await server.responseGetAccount(root).then(async function(response){
-        let sequence = response.result.Sequence
-        for(let account of accounts){
-            await chargeTogether(account.address, value, sequence++)
-                .then(function(result){logger.debug(JSON.stringify(result))})
-        }
-    })
-
-    // charge("jnrX7oqQLtF2Vi5tXpS8gNza2x75kgQmFp", "100")
-    //     .then(function(result){logger.debug(JSON.stringify(result))})
-}
-
-async function charge(address, value, sequence){
-    let params = server.createTxParams(root, secret, sequence, address, value, null, 'init test data: charge',
-        null, null, null, null, null, null, null)
-    return Promise.resolve(server.responseSendTx(params)).then(async function (result) {
-        await utility.timeout(5000)
-        return {address: address, value: value, success: true}
-    }).catch(function(error){
-        return {address: address, value: value, success: false, message: error}
-    })
-}
-
-function charge2(address, value, sequence){
-    return Promise.resolve(server.responseSendTx(
-        root,
-        secret,
-        //"j3C3LAfQ6aTgnG3gvPPEaUE3g6cPnXZQdd",
-        //"ss6iFshVyH7zZL2pGiQ4otrrd5uCg",
-        address,
-        value,
-        12,
-        null,
-        sequence
-    )).then(async function (result) {
-        return {address: address, value: value, success: true}
-    }).catch(function(error){
-        return {address: address, value: value, success: false, message: error}
-    })
-}
-
 async function chargeMain(from, secret, to, value, sequence, waitSpan){
     let params = server.createTxParams(from, secret, sequence, to, value, null, null,
         null, null, null, null, null, null, null)
@@ -100,14 +55,7 @@ async function chargeMain(from, secret, to, value, sequence, waitSpan){
     })
 }
 
-function chargeOnebyoneForNewChain(address, value, sequence){
-    return chargeMain(root, rootSecret, address, value, sequence, 5000)
-}
-
 function chargeOnebyoneForSwtclib(address, value, sequence){
     return chargeMain(root, rootSecret, address, value, sequence, 10000)
 }
 
-function chargeTogether(address, value, sequence){
-    return chargeMain(root, rootSecret, address, value, sequence, 0)
-}

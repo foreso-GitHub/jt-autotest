@@ -85,8 +85,7 @@ function chainDataCreator(){
         let params
         let result
 
-        let rootResponse = await server.responseGetAccount(server, root.address)
-        let rootSequence = rootResponse.result.Sequence
+        let rootSequence = await server.getSequence(server, root.address)
 
         //send more swt to sender accounts
         let senders = [mode.addresses.sender1, mode.addresses.sender2, mode.addresses.sender3]
@@ -143,8 +142,7 @@ function chainDataCreator(){
         result = await issueCoin(server, root, rootSequence++, globalSameCoin, false, consts.flags.both)
         result = await issueCoin(server, root, rootSequence++, localSameCoin1, true, consts.flags.both)
 
-        let senderResponse = await server.responseGetAccount(server, sender.address)
-        let senderSequence = senderResponse.result.Sequence
+        let senderSequence = await server.getSequence(server, sender.address)
         let localSameCoin2 = utility.deepClone(localSameCoin1)
         localSameCoin2.name = 'TestCoin_same_local_2'
         localSameCoin2.issuer = sender.address
@@ -180,11 +178,6 @@ function chainDataCreator(){
         let sequence = await batchChargeCoin(server, sender, senderSequence, localSameCoin2)
         //endregion
 
-        //get sequence
-        // await utility.timeout(6000)
-        // let response = await server.responseGetAccount(server, sender.address)
-        // let sequence = response.result.Sequence
-
         //normal swtc tx
         params = server.createTxParams(sender.address, sender.secret, sequence++, to, '1', null, null,
             null, null, null, null, null, null, null)
@@ -218,8 +211,7 @@ function chainDataCreator(){
         }
 
         //make a tx for sequence3 account, to make 0650 case work
-        response = await server.responseGetAccount(server, sequence3.address)
-        sequence = response.result.Sequence
+        sequence = await server.getSequence(server, sequence3.address)
         params = server.createTxParams(sequence3.address, sequence3.secret, sequence, to, '1',
             null, null,null, null, null, null, null, null, null)
         result = await server.responseSendTx(server, params)
