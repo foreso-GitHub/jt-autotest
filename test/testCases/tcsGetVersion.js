@@ -111,7 +111,7 @@ module.exports = tcsGetVersion = {
         }
 
         testCaseCode = 'FCJT_version_000030'
-        scriptCode = '000400_混合多個參數'
+        scriptCode = '000400_多個參數混合'
         {
             let testScript = tcsGetVersion.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = [{format: 'json'}]

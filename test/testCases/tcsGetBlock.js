@@ -36,36 +36,37 @@ module.exports = tcsGetBlock = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScriptsForGetBlock: function(server, functionName, numberOrHash, tag){
+    createTestScriptsForGetBlock: function(server, functionName, numberOrHash, ledger){
         let testScripts = []
         let testCaseCodePrefix = (functionName === consts.rpcFunctions.getBlockByNumber)
             ? 'FCJT_getBlockByNumber_' : 'FCJT_getBlockByHash_'
         let testCaseCode
         let defaultScriptCode = '000100'
         let scriptCode
-        let showFullTx = true
+        let full = true
+        let rawNumberOrHash = numberOrHash
 
         testCaseCode = testCaseCodePrefix + '000010'
-        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为ture' + (tag ? '_' + tag : '')
+        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为ture' + (ledger ? '_' + ledger : '')
         {
-            showFullTx = true
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = true
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = testCaseCodePrefix + '000020'
-        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为false' + (tag ? '_' + tag : '')
+        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为false' + (ledger ? '_' + ledger : '')
         {
-            showFullTx = false
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = testCaseCodePrefix + '000030'
-        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为字符串' + (tag ? '_' + tag : '')
+        scriptCode = defaultScriptCode + '_有效区块编号或哈希，showFullTx为字符串' + (ledger ? '_' + ledger : '')
         {
-            showFullTx = 'wrwerwre'
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = 'wrwerwre'
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'full is not boolean'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -73,10 +74,10 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000030'
-        scriptCode = '000200' + '_有效区块编号或哈希，showFullTx为数字' + (tag ? '_' + tag : '')
+        scriptCode = '000200' + '_有效区块编号或哈希，showFullTx为数字' + (ledger ? '_' + ledger : '')
         {
-            showFullTx = 123123
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = 123123
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'full is not boolean'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -84,10 +85,10 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000030'
-        scriptCode = '000300' + '_有效区块编号或哈希，showFullTx为null' + (tag ? '_' + tag : '')
+        scriptCode = '000300' + '_有效区块编号或哈希，showFullTx为null' + (ledger ? '_' + ledger : '')
         {
-            showFullTx = null
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = null
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'full is null'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -95,11 +96,11 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000040'
-        scriptCode = defaultScriptCode + '_无效区块编号或哈希9990000000，' + (tag ? '_' + tag : '')
+        scriptCode = defaultScriptCode + '_无效区块编号或哈希9990000000，' + (ledger ? '_' + ledger : '')
         {
             numberOrHash = '9990000000'
-            showFullTx = false
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(140, 'value out of range')
@@ -109,11 +110,11 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000040'
-        scriptCode = '000200' + '_无效区块编号或哈希99900000，' + (tag ? '_' + tag : '')
+        scriptCode = '000200' + '_无效区块编号或哈希99900000，' + (ledger ? '_' + ledger : '')
         {
             numberOrHash = '99900000'
-            showFullTx = false
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(140, 't find block')
@@ -123,11 +124,11 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000040'
-        scriptCode = '000300' + '_无效区块编号或哈希-100，' + (tag ? '_' + tag : '')
+        scriptCode = '000300' + '_无效区块编号或哈希-100，' + (ledger ? '_' + ledger : '')
         {
             numberOrHash = '-100'
-            showFullTx = false
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(140, 'invalid syntax')
@@ -137,11 +138,11 @@ module.exports = tcsGetBlock = {
         }
 
         testCaseCode = testCaseCodePrefix + '000040'
-        scriptCode = '000400' + '_无效区块编号或哈希abcdefg，' + (tag ? '_' + tag : '')
+        scriptCode = '000400' + '_无效区块编号或哈希abcdefg，' + (ledger ? '_' + ledger : '')
         {
             numberOrHash = 'abcdefg'
-            showFullTx = false
-            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag)
+            full = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(140, 'invalid syntax')
@@ -150,15 +151,33 @@ module.exports = tcsGetBlock = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testCaseCode = testCaseCodePrefix + '000040'
+        scriptCode = '000500' + '_多個參數混合，' + (ledger ? '_' + ledger : '')
+        {
+            numberOrHash = rawNumberOrHash
+            full = false
+            let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
+
+            let action = framework.createTestAction(testScript, functionName,
+                [tcsGetBlock.createTxParam(functionName, numberOrHash, true, ledger)],
+                framework.executeTestActionForGet, tcsGetBlock.checkBlock, [{needPass:true}])
+            testScript.actions.push(action)
+
+            action = framework.createTestAction(testScript, functionName,
+                [tcsGetBlock.createTxParam(functionName, numberOrHash, null, ledger)],
+                framework.executeTestActionForGet, tcsGetBlock.checkBlock,
+                [framework.createExpecteResult(false,
+                    framework.getError(-269, 'full is null'))])
+            testScript.actions.push(action)
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
         return testScripts
 
     },
 
-    createTestScript: function(server, testCaseCode, scriptCode, functionName, numberOrHash, showFullTx, tag){
-        let txParams = []
-        txParams.push(numberOrHash)
-        txParams.push(showFullTx)
-        if(tag) txParams.push(tag)
+    createTestScript: function(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger){
 
         let testScript = framework.createTestScript(
             server,
@@ -169,33 +188,65 @@ module.exports = tcsGetBlock = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
+
+        let txParam = tcsGetBlock.createTxParam(functionName, numberOrHash, full, ledger)
+
+        let action = framework.createTestAction(testScript, functionName, [txParam],
             framework.executeTestActionForGet, tcsGetBlock.checkBlock, [{needPass:true}])
         testScript.actions.push(action)
+
         return testScript
     },
 
-    checkBlock: function(action){
-        let response = action.actualResult
-        let expectedResult = action.expectedResults[0]
-        let needPass = expectedResult.needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
-            let functionName = action.txFunctionName
-            let blockNumberOrHash = action.txParams[0]
-            expect((functionName === consts.rpcFunctions.getBlockByNumber) ? response.result.ledger_index : response.result.ledger_hash)
-                .to.be.equals(blockNumberOrHash)
-            let server = action.server
-            expect(response.result.transactions.length).to.be.equals(server.mode.txs.block.txCountInBlock)
-            let showFullTx = action.txParams[1]
-            if(showFullTx != null){
-                let tx = response.result.transactions[0]
-                expect(typeof tx == 'object' || utility.isJSON(tx)).to.be.equals(showFullTx)
-            }
+    createTxParam: function(functionName, numberOrHash, full, ledger){
+        let txParam = {}
+        if(functionName == consts.rpcFunctions.getBlockByNumber){
+            txParam.number = numberOrHash
         }
         else{
-            framework.checkResponseError(action, expectedResult, response)
+            txParam.hash = numberOrHash
+        }
+        txParam.full = full
+        if(ledger) txParam.ledger = ledger
+        return txParam
+    },
+
+    checkBlock: function(action){
+        framework.checkGetResponse(action.actualResult)
+
+        let params = action.txParams
+        let expectedResults = action.expectedResults
+        let actualResults = action.actualResult.result
+        let server = action.server
+        let functionName = action.txFunctionName
+
+        for(let i = 0; i < params.length; i++){
+            let param = params[i]
+            let expected = expectedResults[i]
+            let actual = actualResults[i]
+
+            if(expected.needPass){
+                let block = actual.result
+                expect(block).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
+
+                if(functionName === consts.rpcFunctions.getBlockByNumber){
+                    expect(block.ledger_index).to.be.equals(param.number)
+                }
+                else{
+                    expect(block.ledger_hash).to.be.equals(param.hash)
+                }
+
+                expect(block.transactions.length).to.be.equals(server.mode.txs.block.txCountInBlock)
+
+                let full = param[1]
+                if(full != null){
+                    let tx = block.transactions[0]
+                    expect(typeof tx == 'object' || utility.isJSON(tx)).to.be.equals(full)
+                }
+            }
+            else{
+                framework.checkResponseError(expected, actual)
+            }
         }
     },
 

@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -129,14 +129,14 @@ describe('Jingtum测试', function() {
 
                 //region send and sign
 
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-                //
-                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-                //
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-                //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     2, 10, true, 5000, true, )
+                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
+                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                    2, 10, true, 5000, true, )
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
@@ -234,11 +234,11 @@ describe('Jingtum测试', function() {
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
                 //
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-                //
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-                //
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
                 // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
                 //
                 // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
