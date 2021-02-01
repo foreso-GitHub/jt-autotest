@@ -67,9 +67,9 @@ let _FailRawTx_WrongFormat_1 = {tx: '120000228000000024000f24cb61400009184e729ff
 let _FailRawTx_WrongFormat_2 = {tx: '120000228000000024000f24cb61400009184e729fff68400000000000000a732102064d6800ea3fb2de01804f4d7257088eeec355c516548ec8c029ea9c6fc98b927446304402201617e755869b46252cdcaf0d1647b05029b55a67abe80ef877b796b765527da102205acf91905badfe2163a8ce7b64a360b69327399b04d1f21aafe863f684bd22fd8114e7dbc7c57517887e4c17c81e083d2ca0df6945a083144ea5258eb18f44b05e135a3833df5fc8efc466ecf9ea7d084141414141414141e1fa',
     code: -173, information: 'Missing field:  &{typ:4 field:0}'}
 let _FailRawTx_WrongFormat_3 = {tx: 123123,
-    code: -269, information: 'tx blob is not string'}
+    code: -269, information: 'unknown parameter'}
 let _FailRawTx_WrongFormat_4 = {tx: null,
-    code: -269, information: 'tx blob is null'}
+    code: -269, information: 'null blob'}
 //endregion
 
 module.exports = tcsSendRawTx = {
