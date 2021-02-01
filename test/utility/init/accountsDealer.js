@@ -61,7 +61,7 @@ function accountsDealer() {
         for (let i = 1; i <= 4; i++) {
             let result = await createAccount(server)
             if (result.success) {
-                accounts.push(result.account)
+                accounts.push(result)
             } else {
                 logger.debug(JSON.stringify((result)))
             }
@@ -71,7 +71,7 @@ function accountsDealer() {
         for (let i = 1; i < count; i++) {
             let result = await createWallet(server)
             if (result.success) {
-                accounts.push(result.account)
+                accounts.push(result)
                 // logger.debug(JSON.stringify((result)))
             } else {
                 logger.debug(JSON.stringify((result)))
@@ -90,25 +90,27 @@ function accountsDealer() {
         })
     }
 
-    function createAccount(server) {
-        return new Promise((resolve, reject) => {
-            let name = utility.getDynamicTokenName().name
-            server.getResponse(server, consts.rpcFunctions.createAccount, [name]).then(async function (result) {
-                resolve({account: {address: result.result[0].address, secret: result.result[0].secret, nickName: name,}, success: true})
-            }).catch(function (error) {
-                reject({message: error, success: false})
-            })
-        })
+    async function createAccount(server) {
+        let name = utility.getDynamicTokenName().name
+        let account = await server.createAccount(server, name, consts.walletTypes.ECDSA)
+        if(account.type && account.type == consts.walletTypes.ECDSA){
+            account.success = true
+        }
+        else{
+            account.success = false
+        }
+        return account
     }
 
-    function createWallet(server) {
-        return new Promise((resolve, reject) => {
-            server.getResponse(server, consts.rpcFunctions.createWallet, []).then(async function (result) {
-                resolve({account: {address: result.result[0].address, secret: result.result[0].secret,}, success: true})
-            }).catch(function (error) {
-                reject({message: error, success: false})
-            })
-        })
+    async function createWallet(server) {
+        let wallet = await server.createWallet(server, consts.walletTypes.ECDSA)
+        if(wallet.type && wallet.type == consts.walletTypes.ECDSA){
+            wallet.success = true
+        }
+        else{
+            wallet.success = false
+        }
+        return wallet
     }
 
     //endregion
