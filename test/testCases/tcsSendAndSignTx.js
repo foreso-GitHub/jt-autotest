@@ -470,7 +470,10 @@ module.exports = tcsSendAndSignTx = {
             let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = "-0.1" + showSymbol
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-278, 'value must be >= 0'))
+                framework.getError(-278,
+                    rawValue.symbol == undefined || rawValue.symbol == 'SWT'
+                        ? 'value must be integer type'
+                        : 'value must be >= 0'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
