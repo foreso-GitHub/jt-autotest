@@ -269,22 +269,22 @@ describe('Jingtum测试', function() {
 
                 // tcsSign.testForSign(server, '测试jt_sign')
                 //
-                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
                 //
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
                 //
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //     2, 10, true, 5000, false, )
-
+                //
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 //region websocket subscribe
 
-                // this.timeout(360000)
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+                this.timeout(360000)
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 

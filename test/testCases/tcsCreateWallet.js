@@ -133,7 +133,7 @@ module.exports = tcsCreateWallet = {
             let type = 123123
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-269, 'key type is not string'))
+                framework.getError(-269, 'null key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -177,7 +177,7 @@ module.exports = tcsCreateWallet = {
             let type = ""
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-269, 'unknown key type'))
+                framework.getError(-269, 'null key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -207,24 +207,64 @@ module.exports = tcsCreateWallet = {
     },
 
     checkCreateWallet: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        let type = action.txParams[0]
-        framework.checkGetResponse(response)
-        if(needPass){
-            let account = response.result[0]
-            expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
-            expect(account.address).to.match(/^j/)
-            expect(account.secret).to.match(/^s/)
-            if(!type || type == ''){
-                expect(account.type).to.match(/\bECDSA|\bEd25519|\bSM2/)
-            }
-            else{
-                expect(account.type.toUpperCase()).to.equal(type.toUpperCase())
-            }
+        // let response = action.actualResult
+        // let needPass = action.expectedResults[0].needPass
+        // let type = action.txParams[0]
+        // framework.checkGetResponse(response)
+        // if(needPass){
+        //     let account = response.result[0]
+        //     expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
+        //     expect(account.address).to.match(/^j/)
+        //     expect(account.secret).to.match(/^s/)
+        //     if(!type || type == ''){
+        //         expect(account.type).to.match(/\bECDSA|\bEd25519|\bSM2/)
+        //     }
+        //     else{
+        //         expect(account.type.toUpperCase()).to.equal(type.toUpperCase())
+        //     }
+        // }
+        // else{
+        //     framework.checkResponseError(action.expectedResults[0], response)
+        // }
+
+        framework.checkGetResponse(action.actualResult)
+
+        let params = action.txParams
+        let expectedResults = action.expectedResults
+        let actualResults = action.actualResult.result
+
+        if(params.length == 0){
+            let account = actualResults[0]
+            let type = consts.walletTypes.ECDSA
+            tcsCreateWallet.checkPass(account, type)
         }
         else{
-            framework.checkResponseError(action.expectedResults[0], response)
+            for(let i = 0; i < params.length; i++){
+                let param = params[i]
+                let expected = expectedResults[i]
+                let actual = actualResults[i]
+                let type = param.type
+
+                if(expected.needPass){
+                    let account = actual.result[0]
+                    tcsCreateWallet.checkPass(account, type)
+                }
+                else{
+                    framework.checkResponseError(expected, actual)
+                }
+            }
+        }
+    },
+
+    checkPass: function(account, type){
+        expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
+        expect(account.address).to.match(/^j/)
+        expect(account.secret).to.match(/^s/)
+        if(!type || type == ''){
+            expect(account.type).to.match(/\bECDSA|\bEd25519|\bSM2/)
+        }
+        else{
+            expect(account.type.toUpperCase()).to.equal(type.toUpperCase())
         }
     },
     //endregion
