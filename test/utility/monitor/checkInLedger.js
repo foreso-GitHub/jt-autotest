@@ -8,8 +8,9 @@ const framekwork = require('../../framework/framework')
 //endregion
 
 // checkInLedgerByBlocks(0, 1000)
-// checkInLedgerByBlocks(1001, 10000)
-checkInLedgerByBlocks(103001, 103599)
+// checkInLedgerByBlocks(90001, 100000)
+// checkInLedgerByBlocks(100000, 103700)
+checkInLedgerByBlocks(89001, 90000)
 
 async function checkInLedgerByBlocks(startBlock, endBlock){
     let server = framework.activeServer(modes[0])
@@ -33,19 +34,39 @@ async function checkBlock(server, blockNumber){
     let block = await server.getBlockByNumber(server, blockNumber, false)
     if(block){
         let txs = block.transactions
+        let count = txs.length
         let failTxs = []
-        txs.forEach(async hash => {
+
+        for(let i = 0; i < txs.length; i++){
+            let hash = txs[i]
             let tx = await server.getTx(server, hash)
             let result = checkTx(blockNumber, tx)
             if(!result){
                 failTxs.push(hash)
             }
-        })
+        }
         logger.debug('Block ' + blockNumber + ' has checked!')
         if(failTxs.length > 0){
             logger.debug('Block ' + blockNumber + ' has ' + failTxs.length + ' failed tx!')
         }
         return failTxs
+
+        // let index = 0
+        // txs.forEach(async hash => {
+        //     let tx = await server.getTx(server, hash)
+        //     let result = checkTx(blockNumber, tx)
+        //     if(!result){
+        //         failTxs.push(hash)
+        //     }
+        //     index++
+        //     if(index == count){
+        //         logger.debug('Block ' + blockNumber + ' has checked!')
+        //         if(failTxs.length > 0){
+        //             logger.debug('Block ' + blockNumber + ' has ' + failTxs.length + ' failed tx!')
+        //         }
+        //         return failTxs
+        //     }
+        // })
     }
 }
 

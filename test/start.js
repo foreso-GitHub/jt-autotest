@@ -235,11 +235,11 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
-                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-
-                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-
-                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+                //
+                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+                //
+                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
 
 
 
@@ -322,10 +322,10 @@ describe('Jingtum测试', function() {
                 // }
 
 
-                // for(let i = 0; i < 50000; i++){
-                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //         1, 50, true, 5000, false, )
-                // }
+                for(let i = 0; i < 500; i++){
+                    tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                        1, 50, true, 5000, false, )
+                }
 
                 this.timeout(timeout)
 
