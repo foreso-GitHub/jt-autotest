@@ -570,7 +570,6 @@ const ERROR_SCHEMA = {
     },
 }
 
-
 const BLOCKNUMBER_NUMBER_SCHEMA = {
     title: "test response of jt_blockNumber",
     type: "integer",
@@ -584,7 +583,6 @@ const BLOCKNUMBER_INFO_SCHEMA = {
         type: "integer",
     }
 }
-
 
 const VERSION_TXT_SCHEMA = {
     title: "test response of jt_version, txt format",
@@ -656,7 +654,7 @@ const BALANCE_SCHEMA = {
 }
 
 const WALLET_SCHEMA = {
-    title: "test response of jt_createWallet",
+    title: "test response of jt_createWallet and jt_createAccount",
     type: "object",
     properties: {
         "address": {
@@ -677,6 +675,51 @@ const WALLET_SCHEMA = {
         "secret",
         "type",
     ]
+}
+
+const ACCOUNT_SCHEMA = {
+    title: "test response of jt_getAccount",
+    type: "object",
+    required: [
+        "Account",
+        "Balance",
+        "Hash",
+        "LedgerEntryType",
+        "Sequence",
+    ],
+    properties: {
+        "Account": {
+            "type": "string"
+        },
+        "Balance": {
+            type: "object",
+            required: [
+                "currency",
+                "issuer",
+                "value",
+            ],
+            properties: {
+                "currency": {
+                    "type": "string"
+                },
+                "issuer": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+            },
+        },
+        "Hash": {
+            "type": "string"
+        },
+        "LedgerEntryType": {
+            "type": "string"
+        },
+        "Sequence": {
+            "type": "integer"
+        },
+    },
 }
 
 //todo need be replaced by SENDTX_SCHEMA
@@ -991,8 +1034,8 @@ module.exports = {
     VERSION_TXT_SCHEMA,
     VERSION_JSON_SCHEMA,
     BALANCE_SCHEMA,
-    // BALANCE_TOKEN_SCHEMA,
     WALLET_SCHEMA,
+    ACCOUNT_SCHEMA,
     RESPONSE_SCHEMA,
     GET_RESPONSE_SCHEMA,
     ERROR_SCHEMA,
