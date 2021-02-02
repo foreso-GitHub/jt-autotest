@@ -246,8 +246,8 @@ describe('Jingtum测试', function() {
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
                 //
                 // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-
-                tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+                //
+                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
 
                 // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
                 //

@@ -192,7 +192,6 @@ module.exports = tcsGetBlock = {
         let txParam = tcsGetBlock.createTxParam(server, functionName, numberOrHash, full, ledger)
         let action = framework.createTestActionForGet(testScript, functionName)
         action.txParams = [txParam]
-        action.checkForGetByNoneArrayParams = null
         action.checkForPassResult = tcsGetBlock.checkForPassResult
         testScript.actions.push(action)
 
