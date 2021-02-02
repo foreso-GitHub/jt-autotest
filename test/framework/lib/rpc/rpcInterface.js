@@ -6,6 +6,7 @@ let util = require('util')
 let RpcServer = require('./rpcServer')
 let baseInterface = require('../base/baseInterface')
 let utility = require('../../testUtility')
+let basicConfig = require('../../../config/basicConfig')
 //endregion
 
 
@@ -35,9 +36,11 @@ function rpcInterface() {
             let data = baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params)
             this.server.RPC_POST(this.url, data).then(function(data){
                 if (data != null && JSON.stringify(data.result) !== '{}'){
-                    logger.debug('---Result: ', data)  //important logger
-                    if(data.message){
-                        logger.debug('---message.result: ', JSON.stringify(data.message.result))
+                    if(basicConfig.printImportantLog) {  //important logger
+                        logger.debug('---Result: ', JSON.stringify(data))
+                        if(data.error){
+                            logger.debug('---error: ', JSON.stringify(data.error))
+                        }
                     }
                     resolve(data)
                 }

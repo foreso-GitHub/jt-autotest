@@ -93,7 +93,7 @@ function rpcServer() {
         let username = null
         let password = null
         let parserText = PARSER_TEXT_JSON
-        logger.debug('---Params: ' + JSON.stringify(data))  //important logger
+        // logger.debug('---Params: ' + JSON.stringify(data))  //important logger
         return this.sendRequest(url, requestMethod, parserText, data, username, password)
     }
     // endregion

@@ -7,10 +7,14 @@ const { modes, } = require("../../config/config")
 const framekwork = require('../../framework/framework')
 //endregion
 
+//region done
 // checkInLedgerByBlocks(0, 1000)
 // checkInLedgerByBlocks(90001, 100000)
 // checkInLedgerByBlocks(100000, 103700)
-checkInLedgerByBlocks(89001, 90000)
+// checkInLedgerByBlocks(89001, 90000)
+//endregion
+
+checkInLedgerByBlocks(91700, 91710)
 
 async function checkInLedgerByBlocks(startBlock, endBlock){
     let server = framework.activeServer(modes[0])

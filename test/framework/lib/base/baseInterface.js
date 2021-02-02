@@ -5,6 +5,7 @@ let logger = log4js.getLogger('default')
 const consts = require('../../consts')
 const utility = require('../../testUtility')
 let enums = require('../../enums')
+let basicConfig = require('../../../config/basicConfig')
 //endregion
 
 function baseInterface() {
@@ -356,8 +357,10 @@ function baseInterface() {
 
     //region common methods
     baseInterface.prototype.getResponse = function (server, methodName, params) {
-        logger.debug('---Trying to invoke ' + methodName + ', by ' + server.getName() + '!')     //important logger
-        // logger.debug('---Params: ' + JSON.stringify(params))   //important logger
+        if(basicConfig.printImportantLog){
+            logger.debug('---Trying to invoke ' + methodName + ', by ' + server.getName() + '!')     //important logger
+            logger.debug('---Params: ' + JSON.stringify(params))   //important logger
+        }
     }
 
     baseInterface.prototype.createError = function(error){

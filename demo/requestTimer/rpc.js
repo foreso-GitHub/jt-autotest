@@ -84,7 +84,7 @@ module.exports = rpc = {
         data.id = this.id++
         data.method = method
         data.params = params
-        logger.debug('---Params: ' + JSON.stringify(data))  //important logger
+        logger.debug('---Params: ' + JSON.stringify(data))
         return this.sendRequest(url, requestMethod, parserText, data, username, password)
     },
 
@@ -93,9 +93,9 @@ module.exports = rpc = {
             logger.debug('url: ' + server.url)
             this.RPC_POST(server.url, methodName, params).then(function(data){
                 if (data != null && JSON.stringify(data.result) !== '{}'){
-                    logger.debug('---Result: ', data)  //important logger
-                    if(data.message){
-                        logger.debug('---message.result: ', JSON.stringify(data.message.result))
+                    logger.debug('---Result: ', JSON.stringify(data))
+                    if(data.error){
+                        logger.debug('---error: ', JSON.stringify(data.error))
                     }
                     resolve(data)
                 }

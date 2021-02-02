@@ -6,6 +6,7 @@ let logger = log4js.getLogger('default')
 let util = require('util')
 let baseInterface = require('../base/baseInterface')
 let utility = require('../../testUtility')
+let basicConfig = require('../../../config/basicConfig')
 //endregion
 
 function websocketInterface() {
@@ -34,9 +35,11 @@ function websocketInterface() {
             let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
             let data = await websocketInterface.prototype.request(server.url, requestContent)
             if (data != null && JSON.stringify(data.result) !== '{}'){
-                logger.debug('---Result: ', data)  //important logger
-                if(data.message){
-                    logger.debug('---message.result: ', JSON.stringify(data.message.result))
+                if(basicConfig.printImportantLog){  //important logger
+                    logger.debug('---Result: ', JSON.stringify(data))
+                    if(data.error){
+                        logger.debug('---error: ', JSON.stringify(data.error))
+                    }
                 }
                 resolve(data)
             }
@@ -77,7 +80,7 @@ function websocketInterface() {
     //region subscribe methods
     let all_outputs
     let sub_outputs
-    let openLogger = true
+    let openLogger = basicConfig.printWsLog
 
     websocketInterface.prototype.newWebSocket = function(server) {
         let ws = new WebSocket(server.url)

@@ -13,8 +13,13 @@ let rpcSettings = {
 
 let jtVersion = '20210201b'
 
+let printImportantLog = true
+let printWsLog = true
+
 module.exports = {
     commonPaths,
     rpcSettings,
     jtVersion,
+    printImportantLog,
+    printWsLog,
 }

@@ -9,6 +9,7 @@ let HashMap = require('hashmap')
 let utility = require("./testUtility.js")
 const schema = require("./schema.js")
 const consts = require('./consts')
+let basicConfig = require('../config/basicConfig')
 const { chainDatas } = require("../testData/chainDatas")
 let { modeAccounts } = require('../testData/accounts')
 const AccountsDealer = require('../utility/init/accountsDealer')
@@ -813,21 +814,23 @@ module.exports = framework = {
     },
 
     printTestScript: function(testScript){
-        logger.debug('---script title: ' + testScript.title)      //important logger
-        logger.debug('---test precondition: ' + testScript.testCase.precondition)
-        logger.debug('---test input: ' + testScript.testCase.input)
-        logger.debug('---test expectedOutput: ' + testScript.testCase.expectedOutput)
-        logger.debug('---supportedServices: ' + JSON.stringify(testScript.supportedServices))
-        logger.debug('---supportedInterfaces: ' + JSON.stringify(testScript.supportedInterfaces))
-        logger.debug('---restrictedLevel: ' + JSON.stringify(testScript.restrictedLevel))
-        // logger.debug('---hasExecuted: ' + testScript.hasExecuted)
-        logger.debug('---testResult: ' + testScript.testResult)
-        for(let i = 0; i < testScript.actions.length; i++){
-            let action = testScript.actions[i]
-            logger.debug('---txFunctionName[' +i + ']: ' + JSON.stringify(action.txFunctionName))
-            logger.debug('---txParams[' +i + ']: ' + JSON.stringify(action.txParams))
-            logger.debug('---result[' +i + ']: ' + JSON.stringify(action.actualResult))
-            logger.debug('---testResult[' +i + ']: ' + action.testResult)
+        if(basicConfig.printImportantLog){
+            logger.debug('---script title: ' + testScript.title)      //important logger
+            logger.debug('---test precondition: ' + testScript.testCase.precondition)
+            logger.debug('---test input: ' + testScript.testCase.input)
+            logger.debug('---test expectedOutput: ' + testScript.testCase.expectedOutput)
+            logger.debug('---supportedServices: ' + JSON.stringify(testScript.supportedServices))
+            logger.debug('---supportedInterfaces: ' + JSON.stringify(testScript.supportedInterfaces))
+            logger.debug('---restrictedLevel: ' + JSON.stringify(testScript.restrictedLevel))
+            // logger.debug('---hasExecuted: ' + testScript.hasExecuted)
+            logger.debug('---testResult: ' + testScript.testResult)
+            for(let i = 0; i < testScript.actions.length; i++){
+                let action = testScript.actions[i]
+                logger.debug('---txFunctionName[' +i + ']: ' + JSON.stringify(action.txFunctionName))
+                logger.debug('---txParams[' +i + ']: ' + JSON.stringify(action.txParams))
+                logger.debug('---result[' +i + ']: ' + JSON.stringify(action.actualResult))
+                logger.debug('---testResult[' +i + ']: ' + action.testResult)
+            }
         }
     },
 
@@ -1865,7 +1868,7 @@ module.exports = framework = {
                 for(let i = 0; i < count; i++){
                     let index = i % serverCount
                     server = servers[index]
-                    logger.debug('---[' + (txNumber++).toString() + '/' + totalCount + ']. ') //important logger
+                    if(basicConfig.printImportantLog) logger.debug('---[' + (txNumber++).toString() + '/' + totalCount + ']. ') //important logger
                     let params = server.createTransferParams(accountParam.from, accountParam.secret, sequence,
                         accountParam.to, accountParam.value, accountParam.fee, accountParam.memos)
                     let result = server.getResponse(server, txFunctionName, params)
