@@ -53,7 +53,7 @@ module.exports = tcsCreateAccount = {
         scriptCode = prefixCode + '100' + '_创建有效的账户'
         {
             let nickname = utility.getDynamicTokenName().symbol
-            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname)
+            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname, type)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -61,7 +61,7 @@ module.exports = tcsCreateAccount = {
         scriptCode = prefixCode + '100' + '_创建无效的账户，重复的名字'
         {
             let nickname = server.mode.addresses.balanceAccount.nickname
-            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname)
+            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname, type)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'the nickname already exists'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -75,7 +75,7 @@ module.exports = tcsCreateAccount = {
                 + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
                 + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
                 + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
-            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname)
+            let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname, type)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'the length of the nickname must be in the range (0,256]'))
             framework.changeExpectedResult(testScript, expectedResult)
