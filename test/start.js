@@ -231,39 +231,39 @@ describe('Jingtum测试', function() {
 
                 //region done
 
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
-                //
-                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-                //
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-                //
-                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
-                //
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
-                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
-                //
-                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-                //
-                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-                //
-                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
-                //
-                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
-                //
-                // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
+                tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
+                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
+                tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+
+                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
+                tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+
+                tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
+
+                tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+
+                tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
+
+                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+
+                tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
 
-
-                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
-
-                // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
 
                 // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
                 //
