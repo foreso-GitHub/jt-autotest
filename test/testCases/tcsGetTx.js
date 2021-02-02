@@ -106,7 +106,7 @@ module.exports = tcsGetTx = {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 't find transaction'))
+                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
