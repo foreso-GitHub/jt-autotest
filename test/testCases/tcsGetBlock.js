@@ -159,12 +159,12 @@ module.exports = tcsGetBlock = {
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
 
             let action = framework.createTestAction(testScript, functionName,
-                [tcsGetBlock.createTxParam(functionName, numberOrHash, true, ledger)],
+                [tcsGetBlock.createTxParam(server, functionName, numberOrHash, true, ledger)],
                 framework.executeTestActionForGet, tcsGetBlock.checkBlock, [{needPass:true}])
             testScript.actions.push(action)
 
             action = framework.createTestAction(testScript, functionName,
-                [tcsGetBlock.createTxParam(functionName, numberOrHash, null, ledger)],
+                [tcsGetBlock.createTxParam(server, functionName, numberOrHash, null, ledger)],
                 framework.executeTestActionForGet, tcsGetBlock.checkBlock,
                 [framework.createExpecteResult(false,
                     framework.getError(-269, 'full is null'))])
@@ -189,7 +189,7 @@ module.exports = tcsGetBlock = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
 
-        let txParam = tcsGetBlock.createTxParam(functionName, numberOrHash, full, ledger)
+        let txParam = tcsGetBlock.createTxParam(server, functionName, numberOrHash, full, ledger)
 
         let action = framework.createTestAction(testScript, functionName, [txParam],
             framework.executeTestActionForGet, tcsGetBlock.checkBlock, [{needPass:true}])
@@ -198,16 +198,14 @@ module.exports = tcsGetBlock = {
         return testScript
     },
 
-    createTxParam: function(functionName, numberOrHash, full, ledger){
+    createTxParam: function(server, functionName, numberOrHash, full, ledger){
         let txParam = {}
         if(functionName == consts.rpcFunctions.getBlockByNumber){
-            txParam.number = numberOrHash
+            txParam = server.createParamGetBlockByNumber(numberOrHash, full, ledger)
         }
         else{
-            txParam.hash = numberOrHash
+            txParam = server.createParamGetBlockByHash(numberOrHash, full, ledger)
         }
-        txParam.full = full
-        if(ledger) txParam.ledger = ledger
         return txParam
     },
 

@@ -1030,12 +1030,6 @@ module.exports = framework = {
     //     }
     // },
 
-    checkResponseError: function(expectedResult, actualResult){
-        if(NEED_CHECK_ExpectedResult){
-            framework.compareErrorResult(expectedResult.expectedError, actualResult)
-        }
-    },
-
     checkError: function(expectedError, actualError){
         expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
         if(actualError.result){  //if actualResult is the outside result
@@ -1052,6 +1046,12 @@ module.exports = framework = {
         }
         else{
             framework.compareErrorResult(expectedError, actualError)
+        }
+    },
+
+    checkResponseError: function(expectedResult, actualResult){
+        if(NEED_CHECK_ExpectedResult){
+            framework.compareErrorResult(expectedResult.expectedError, actualResult)
         }
     },
 

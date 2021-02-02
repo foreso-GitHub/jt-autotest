@@ -247,21 +247,21 @@ function baseInterface() {
 
     //region by number
 
-    baseInterface.prototype.createParamGetBlockByNumber = function(blockNumber, showFullTx, ledger) {
+    baseInterface.prototype.createParamGetBlockByNumber = function(blockNumber, full, ledger) {
         let param = {}
         param.number = blockNumber
-        if(showFullTx != undefined) param.full = showFullTx
+        param.full = full
         if(ledger) param.ledger = ledger
         return param
     }
 
-    baseInterface.prototype.responseGetBlockByNumber = function (server, blockNumber, showFullTx, ledger) {
-        let param = this.createParamGetBlockByNumber(blockNumber, showFullTx, ledger)
+    baseInterface.prototype.responseGetBlockByNumber = function (server, blockNumber, full, ledger) {
+        let param = this.createParamGetBlockByNumber(blockNumber, full, ledger)
         return this.getResponse(server, consts.rpcFunctions.getBlockByNumber, [param])
     }
 
-    baseInterface.prototype.getBlockByNumber = async function (server, blockNumber, showFullTx, ledger) {
-        let response = await this.responseGetBlockByNumber(server, blockNumber, showFullTx, ledger)
+    baseInterface.prototype.getBlockByNumber = async function (server, blockNumber, full, ledger) {
+        let response = await this.responseGetBlockByNumber(server, blockNumber, full, ledger)
         let block
         if(!response.error){
             block = response.result[0].result
@@ -273,21 +273,21 @@ function baseInterface() {
 
     //region by hash
 
-    baseInterface.prototype.createParamGetBlockByHash = function(blockHash, showFullTx, ledger) {
+    baseInterface.prototype.createParamGetBlockByHash = function(blockHash, full, ledger) {
         let param = {}
         param.hash = blockHash
-        if(showFullTx != undefined) param.full = showFullTx
+        param.full = full
         if(ledger) param.ledger = ledger
         return param
     }
 
-    baseInterface.prototype.responseGetBlockByHash = function (server, blockHash, showFullTx, ledger) {
-        let param = this.createParamGetBlockByHash(blockHash, showFullTx, ledger)
+    baseInterface.prototype.responseGetBlockByHash = function (server, blockHash, full, ledger) {
+        let param = this.createParamGetBlockByHash(blockHash, full, ledger)
         return this.getResponse(server, consts.rpcFunctions.getBlockByNumber, [param])
     }
 
-    baseInterface.prototype.getBlockByHash = async function (server, blockHash, showFullTx, ledger) {
-        let response = await this.responseGetBlockByHash(server, blockHash, showFullTx, ledger)
+    baseInterface.prototype.getBlockByHash = async function (server, blockHash, full, ledger) {
+        let response = await this.responseGetBlockByHash(server, blockHash, full, ledger)
         let block
         if(!response.error){
             block = response.result[0].result

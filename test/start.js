@@ -234,12 +234,14 @@ describe('Jingtum测试', function() {
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
                 //
                 // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-                //
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-                //
-                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+
 
                 // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
                 //
@@ -266,6 +268,9 @@ describe('Jingtum测试', function() {
                 // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
                 //
                 // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+
+
+
 
                 // tcsSign.testForSign(server, '测试jt_sign')
                 //
