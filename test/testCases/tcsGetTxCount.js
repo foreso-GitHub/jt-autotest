@@ -171,8 +171,8 @@ module.exports = tcsGetTxCount = {
         //endregion
 
         tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, null)
-        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.tags.current)
-        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.tags.validated)
+        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.ledgers.current)
+        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.ledgers.validated)
         // tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_区块参数:100', from, to, 100)
 
     },

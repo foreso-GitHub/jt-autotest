@@ -33,11 +33,11 @@ module.exports = tcsGetAccount = {
     testForGetAccountByTag: function(server, describeTitle, coinType, symbol, issuer){
         describe(describeTitle, function () {
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, null)
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.tags.validated)
-            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.tags.current)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.validated)
+            tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.current)
 
             //todo need restore when these tags are supported.
-            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.tags.closed)
+            // tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.closed)
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'latest')
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'pending')

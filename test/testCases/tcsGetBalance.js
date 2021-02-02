@@ -37,8 +37,8 @@ module.exports = tcsGetBalance = {
     testForGetBalanceByAllTags: function(server, describeTitle, coinType, symbol, issuer){
 
         tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, null)
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, consts.tags.current)
-        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, consts.tags.validated)
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, consts.ledgers.current)
+        tcsGetBalance.testForGetBalanceBySymbolAndTag(server, describeTitle, coinType, symbol, issuer, consts.ledgers.validated)
 
         //todo need restore when these tags are supported.
         // tcsGetBalance.testForGetBalanceBySymbolAndTag(server, symbol, issuer, 'earliest')

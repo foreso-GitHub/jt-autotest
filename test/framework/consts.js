@@ -35,7 +35,7 @@ module.exports = consts = {
     //endregion
 
     //region block tag
-    tags: {
+    ledgers: {
         null: undefined,
         current: 'current',
         validated: 'validated',
