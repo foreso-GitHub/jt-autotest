@@ -238,7 +238,7 @@ describe('Jingtum测试', function() {
                 // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
                 //
                 // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-
+                //
                 // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
 
                 // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')

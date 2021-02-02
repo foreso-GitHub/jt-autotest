@@ -98,7 +98,7 @@ function baseInterface() {
 
     baseInterface.prototype.createWallet = async function(server, type){
         let response = await this.responseCreateWallet(server, type)
-        return response.result[0].result[0]
+        return response.result[0].result
     }
 
     baseInterface.prototype.responseCreateWallet = function (server, type) {
@@ -120,7 +120,7 @@ function baseInterface() {
 
     baseInterface.prototype.createAccount = async function(server, nickName, type){
         let response = await this.responseCreateAccount(server, nickName, type)
-        return response.result[0].result[0]
+        return response.result[0].result
     }
 
     baseInterface.prototype.responseCreateAccount = function (server, nickName, type) {
@@ -175,7 +175,6 @@ function baseInterface() {
     }
 
     //endregion
-
 
     //region GetAccounts
 

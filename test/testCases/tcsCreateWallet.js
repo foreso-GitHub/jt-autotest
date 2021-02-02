@@ -207,26 +207,6 @@ module.exports = tcsCreateWallet = {
     },
 
     checkCreateWallet: function(action){
-        // let response = action.actualResult
-        // let needPass = action.expectedResults[0].needPass
-        // let type = action.txParams[0]
-        // framework.checkGetResponse(response)
-        // if(needPass){
-        //     let account = response.result[0]
-        //     expect(account).to.be.jsonSchema(schema.WALLET_SCHEMA)
-        //     expect(account.address).to.match(/^j/)
-        //     expect(account.secret).to.match(/^s/)
-        //     if(!type || type == ''){
-        //         expect(account.type).to.match(/\bECDSA|\bEd25519|\bSM2/)
-        //     }
-        //     else{
-        //         expect(account.type.toUpperCase()).to.equal(type.toUpperCase())
-        //     }
-        // }
-        // else{
-        //     framework.checkResponseError(action.expectedResults[0], response)
-        // }
-
         framework.checkGetResponse(action.actualResult)
 
         let params = action.txParams
@@ -234,7 +214,7 @@ module.exports = tcsCreateWallet = {
         let actualResults = action.actualResult.result
 
         if(params.length == 0){
-            let account = actualResults[0]
+            let account = actualResults
             let type = consts.walletTypes.ECDSA
             tcsCreateWallet.checkPass(account, type)
         }
@@ -246,7 +226,7 @@ module.exports = tcsCreateWallet = {
                 let type = param.type
 
                 if(expected.needPass){
-                    let account = actual.result[0]
+                    let account = actual.result
                     tcsCreateWallet.checkPass(account, type)
                 }
                 else{
