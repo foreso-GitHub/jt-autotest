@@ -51,16 +51,16 @@ module.exports = tcsGetAccounts = {
 
         let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getAccounts)
         action.txParams = []
-        action.checkForPassResult = tcsGetAccounts.checkForPassResult
+        action.checkForGetByNoneArrayParams = tcsGetAccounts.checkForGetByNoneArrayParams
         testScript.actions.push(action)
 
         return testScript
 
     },
 
-    checkForPassResult: function(action, param, expected, actual){
-        // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
-        let accounts = actual.result
+    checkForGetByNoneArrayParams: function(action){
+        let accounts = action.actualResult.result
+        expect(accounts).to.be.jsonSchema(schema.ACCOUNTS_SCHEMA)
         let rootAccount = 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh:root'
         expect(accounts.length).to.be.above(0)
         expect(accounts).to.be.contains(rootAccount)

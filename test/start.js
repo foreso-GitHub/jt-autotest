@@ -244,11 +244,11 @@ describe('Jingtum测试', function() {
                 // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
                 //
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
-
+                //
                 tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
 
                 // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-                //
+
                 // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
                 //
                 // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')

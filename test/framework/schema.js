@@ -722,6 +722,15 @@ const ACCOUNT_SCHEMA = {
     },
 }
 
+const ACCOUNTS_SCHEMA = {
+    title: "test response of jt_getAccount",
+    type: "array",
+    minItems: 0,
+    items: {
+        type: "string"
+    }
+}
+
 //todo need be replaced by SENDTX_SCHEMA
 const OLD_SENDTX_SCHEMA = {
     title: "test response of jt_sendTransaction",
@@ -1036,6 +1045,7 @@ module.exports = {
     BALANCE_SCHEMA,
     WALLET_SCHEMA,
     ACCOUNT_SCHEMA,
+    ACCOUNTS_SCHEMA,
     RESPONSE_SCHEMA,
     GET_RESPONSE_SCHEMA,
     ERROR_SCHEMA,
