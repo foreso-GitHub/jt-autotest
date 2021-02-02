@@ -43,7 +43,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '100' + '_查询有效区块哈希'
         {
             let hash = server.mode.txs.block.blockHash
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -51,7 +51,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '100' + '_无效交易哈希：不存在的hash'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(140, 't find block'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -62,7 +62,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '200' + '_无效交易哈希：hash长度超过标准'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -94,7 +94,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '100' + '_查询有效区块编号'
         {
             let blockNumber = server.mode.txs.block.blockNumber
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -102,7 +102,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '100' + '_无效交易编号：9999999'
         {
             let blockNumber = '999999999'
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(140, 't find block'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -113,7 +113,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '200' + '_无效交易编号：负数'
         {
             let blockNumber = '-100'
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(140, 'invalid syntax'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -124,7 +124,7 @@ module.exports = tcsGetTxCount = {
         scriptCode = prefixCode + '300' + '_无效交易编号：乱码'
         {
             let blockNumber = 'addeew'
-            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
+            let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(140, 'invalid syntax'))
             framework.changeExpectedResult(testScript, expectedResult)
