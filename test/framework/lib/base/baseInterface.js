@@ -199,8 +199,22 @@ function baseInterface() {
 
     //region get tx
 
-    baseInterface.prototype.getTx = async function (server, hash) {
-        let response = await this.responseGetTxByHash(server, hash)
+    //region get tx
+
+    baseInterface.prototype.createParamGetTxByHash = function(hash, ledger) {
+        let param = {}
+        param.hash = hash
+        if(ledger) param.ledger = ledger
+        return param
+    }
+
+    baseInterface.prototype.responseGetTxByHash = function (server, hash, ledger) {
+        let param = this.createParamGetTxByHash(hash, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getTransactionByHash, [param])
+    }
+
+    baseInterface.prototype.getTxByHash = async function (server, hash, ledger) {
+        let response = await this.responseGetTxByHash(server, hash, ledger)
         let tx
         if(response && !response.error && response.result && response.result[0] && response.result[0].result){
             tx = response.result[0].result
@@ -208,25 +222,61 @@ function baseInterface() {
         return tx
     }
 
-    baseInterface.prototype.responseGetTxByHash = function (server, hash) {
+    baseInterface.prototype.getTx = async function (server, hash, ledger) {
+        return await this.getTxByHash(server, hash, ledger)
+    }
+
+    //endregion
+
+    //region by index
+
+    //jt_getTransactionByIndex
+    baseInterface.prototype.createParamGetTxByIndex = function(address, sequence, ledger) {
         let param = {}
-        param.hash = hash
-        return this.getResponse(server, consts.rpcFunctions.getTransactionByHash, [param])
+        param.address = address
+        param.sequence = sequence
+        if(ledger) param.ledger = ledger
+        return param
     }
 
-    baseInterface.prototype.responseGetTxByBlockNumberAndIndex = function (server, blockNumber, index) {
-        let params = []
-        params.push(blockNumber)
-        params.push(index)
-        return this.getResponse(server, consts.rpcFunctions.getTransactionByBlockNumberAndIndex, params)
+    baseInterface.prototype.responseGetTxByIndex = function (server, address, sequence, ledger) {
+        let param = this.createParamGetTxByIndex(address, sequence, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getTransactionByIndex, [param])
     }
 
-    baseInterface.prototype.responseGetTxByBlockHashAndIndex = function (server, blockHash, index) {
-        let params = []
-        params.push(blockHash)
-        params.push(index)
-        return this.getResponse(server, consts.rpcFunctions.getTransactionByBlockHashAndIndex, params)
+    //endregion
+
+    //region getTxByBlock
+
+    baseInterface.prototype.createParamGetTxByBlockNumberAndIndex = function(blockNumber, index, ledger) {
+        let param = {}
+        param.number = blockNumber
+        param.index = index
+        if(ledger) param.ledger = ledger
+        return param
     }
+
+    baseInterface.prototype.responseGetTxByBlockNumberAndIndex = function (server, blockNumber, index, ledger) {
+        let param = this.createParamGetTxByBlockNumberAndIndex(blockNumber, index, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getTransactionByBlockNumberAndIndex, [param])
+    }
+
+    baseInterface.prototype.createParamGetTxByBlockHashAndIndex = function(blockHash, index, ledger) {
+        let param = {}
+        param.hash = blockHash
+        param.index = index
+        if(ledger) param.ledger = ledger
+        return param
+    }
+
+    baseInterface.prototype.responseGetTxByBlockHashAndIndex = function (server, blockHash, index, ledger) {
+        let param = this.createParamGetTxByBlockHashAndIndex(blockHash, index, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getTransactionByBlockHashAndIndex, [param])
+    }
+
+    //endregion
+
+    //region get tx count
 
     baseInterface.prototype.responseGetTxCountByBlockNumber = function (server, blockNumber) {
         let params = []
@@ -239,6 +289,8 @@ function baseInterface() {
         params.push(blockHash)
         return this.getResponse(server, consts.rpcFunctions.getBlockTransactionCountByHash, params)
     }
+
+    //endregion
 
     //endregion
 
@@ -356,6 +408,7 @@ function baseInterface() {
     // endregion
 
     //region common methods
+
     baseInterface.prototype.getResponse = function (server, methodName, params) {
         if(basicConfig.printImportantLog){
             logger.debug('---Trying to invoke ' + methodName + ', by ' + server.getName() + '!')     //important logger
@@ -384,6 +437,7 @@ function baseInterface() {
         data.params = params
         return data
     }
+
     //endregion
 
 }
