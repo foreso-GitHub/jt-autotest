@@ -252,9 +252,9 @@ describe('Jingtum测试', function() {
                 // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
                 //
                 // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
-
-                tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
-
+                //
+                // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
+                //
                 // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
                 //
                 // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')

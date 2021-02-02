@@ -311,7 +311,7 @@ function baseInterface() {
         return this.getResponse(server, consts.rpcFunctions.getTransactionCount, [param])
     }
 
-    baseInterface.prototype.getTransactionCount= async function (server, address, ledger) {
+    baseInterface.prototype.getTransactionCount = async function (server, address, ledger) {
         let response = await this.responseGetTransactionCount(server, address, ledger)
         let count
         if(response && response.result && response.result[0] && response.result[0].result){
@@ -322,17 +322,54 @@ function baseInterface() {
 
     //endregion
 
-    baseInterface.prototype.responseGetTxCountByBlockNumber = function (server, blockNumber) {
-        let params = []
-        params.push(blockNumber)
-        return this.getResponse(server, consts.rpcFunctions.getBlockTransactionCountByNumber, params)
+    //region by number
+
+    baseInterface.prototype.createParamGetTxCountByBlockNumber = function(blockNumber, ledger) {
+        let param = {}
+        param.number = blockNumber
+        if(ledger) param.ledger = ledger
+        return param
+    }
+
+    baseInterface.prototype.responseGetTxCountByBlockNumber = function (server, blockNumber, ledger) {
+        let param = this.createParamGetTxCountByBlockNumber(blockNumber, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getBlockTransactionCountByNumber, [param])
+    }
+
+    baseInterface.prototype.getTxCountByBlockNumber = async function (server, blockNumber, ledger) {
+        let response = await this.responseGetTxCountByBlockNumber(server, blockNumber, ledger)
+        let count
+        if(response && response.result && response.result[0] && response.result[0].result){
+            count = response.result[0].result
+        }
+        return count
+    }
+    //endregion
+
+    //region by number
+
+    baseInterface.prototype.createParamGetTxCountByHash = function(blockHash, ledger) {
+        let param = {}
+        param.hash = blockHash
+        if(ledger) param.ledger = ledger
+        return param
     }
 
     baseInterface.prototype.responseGetTxCountByHash = function (server, blockHash) {
-        let params = []
-        params.push(blockHash)
-        return this.getResponse(server, consts.rpcFunctions.getBlockTransactionCountByHash, params)
+        let param = this.createParamGetTxCountByHash(blockHash, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getBlockTransactionCountByHash, [param])
     }
+
+    baseInterface.prototype.getTxCountByHash = async function (server, blockHash, ledger) {
+        let response = await this.responseGetTxCountByHash(server, blockHash, ledger)
+        let count
+        if(response && response.result && response.result[0] && response.result[0].result){
+            count = response.result[0].result
+        }
+        return count
+    }
+
+    //endregion
 
     //endregion
 

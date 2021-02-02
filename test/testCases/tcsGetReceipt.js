@@ -34,16 +34,7 @@ module.exports = tcsGetReceipt = {
         let testScripts = []
         let testCaseCode
         let scriptCode
-
-        let prefixCode = '000'
-        if(ledger){
-            if(ledger == consts.ledgers.current){
-                prefixCode = '001'
-            }
-            else if(ledger == consts.ledgers.validated){
-                prefixCode = '002'
-            }
-        }
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
         //endregion
 
         testCaseCode = 'FCJT_getTransactionReceipt_000010'
@@ -89,7 +80,7 @@ module.exports = tcsGetReceipt = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        framework.testTestScripts(server, describeTitle, testScripts)
+        framework.testTestScripts(server, describeTitle + ', ledger: ' + ledger, testScripts)
     },
 
     createTestScript: function(server, testCaseCode, scriptCode, hash, ledger){

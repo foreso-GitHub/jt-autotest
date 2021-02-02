@@ -767,5 +767,22 @@ module.exports = testUtility = {
 
     //endregion
 
+    //region prefix code
+
+    getPrefixCodeForLedger: function(ledger){
+        let prefixCode = '000'
+        if(ledger){
+            if(ledger == consts.ledgers.current){
+                prefixCode = '001'
+            }
+            else if(ledger == consts.ledgers.validated){
+                prefixCode = '002'
+            }
+        }
+        return prefixCode
+    },
+
+    //endregion
+
 }
 

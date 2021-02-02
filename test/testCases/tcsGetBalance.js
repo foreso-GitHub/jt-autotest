@@ -36,8 +36,8 @@ module.exports = tcsGetBalance = {
     testForGetBalanceByAllledgers: function(server, describeTitle, coinType, symbol, issuer){
 
         tcsGetBalance.testForGetBalanceBySymbolAndledger(server, describeTitle, coinType, symbol, issuer, null)
-        tcsGetBalance.testForGetBalanceBySymbolAndledger(server, describeTitle, coinType, symbol, issuer, consts.ledgers.current)
         tcsGetBalance.testForGetBalanceBySymbolAndledger(server, describeTitle, coinType, symbol, issuer, consts.ledgers.validated)
+        tcsGetBalance.testForGetBalanceBySymbolAndledger(server, describeTitle, coinType, symbol, issuer, consts.ledgers.current)
 
         //todo need restore when these ledgers are supported.
         // tcsGetBalance.testForGetBalanceBySymbolAndledger(server, symbol, issuer, 'earliest')

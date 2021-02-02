@@ -23,19 +23,24 @@ module.exports = tcsGetTxCount = {
     //region tx count check
 
     testForGetBlockTransactionCountByHash: function(server, describeTitle){
+        tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, null)
+        tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, consts.ledgers.validated)
+        tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, consts.ledgers.current)
+    },
+
+    testForGetBlockTransactionCountByHashByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
         let functionName = consts.rpcFunctions.getBlockTransactionCountByHash
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
-
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
         //endregion
 
         testCaseCode = 'FCJT_getBlockTransactionCountByHash_000010'
-        scriptCode = defaultScriptCode + '_查询有效区块哈希'
+        scriptCode = prefixCode + '100' + '_查询有效区块哈希'
         {
             let hash = server.mode.txs.block.blockHash
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
@@ -43,7 +48,7 @@ module.exports = tcsGetTxCount = {
         }
 
         testCaseCode = 'FCJT_getBlockTransactionCountByHash_000020'
-        scriptCode = defaultScriptCode + '_无效交易哈希：不存在的hash'
+        scriptCode = prefixCode + '100' + '_无效交易哈希：不存在的hash'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
@@ -54,7 +59,7 @@ module.exports = tcsGetTxCount = {
         }
 
         testCaseCode = 'FCJT_getBlockTransactionCountByHash_000020'
-        scriptCode = '000200' + '_无效交易哈希：hash长度超过标准'
+        scriptCode = prefixCode + '200' + '_无效交易哈希：hash长度超过标准'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
@@ -64,23 +69,29 @@ module.exports = tcsGetTxCount = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        framework.testTestScripts(server, describeTitle, testScripts)
+        framework.testTestScripts(server, describeTitle + ', ledger: ' + ledger, testScripts)
     },
 
     testForGetBlockTransactionCountByNumber: function(server, describeTitle){
+        tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, null)
+        tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, consts.ledgers.validated)
+        tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, consts.ledgers.current)
+    },
+
+    testForGetBlockTransactionCountByNumberByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
         let functionName = consts.rpcFunctions.getBlockTransactionCountByNumber
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
 
         //endregion
 
         testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000010'
-        scriptCode = defaultScriptCode + '_查询有效区块编号'
+        scriptCode = prefixCode + '100' + '_查询有效区块编号'
         {
             let blockNumber = server.mode.txs.block.blockNumber
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
@@ -88,7 +99,7 @@ module.exports = tcsGetTxCount = {
         }
 
         testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000020'
-        scriptCode = defaultScriptCode + '_无效交易编号：9999999'
+        scriptCode = prefixCode + '100' + '_无效交易编号：9999999'
         {
             let blockNumber = '999999999'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
@@ -99,7 +110,7 @@ module.exports = tcsGetTxCount = {
         }
 
         testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000020'
-        scriptCode = '000200' + '_无效交易编号：负数'
+        scriptCode = prefixCode + '200' + '_无效交易编号：负数'
         {
             let blockNumber = '-100'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
@@ -110,7 +121,7 @@ module.exports = tcsGetTxCount = {
         }
 
         testCaseCode = 'FCJT_getBlockTransactionCountByNumber_000020'
-        scriptCode = '000300' + '_无效交易编号：乱码'
+        scriptCode = prefixCode + '300' + '_无效交易编号：乱码'
         {
             let blockNumber = 'addeew'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber)
@@ -120,10 +131,10 @@ module.exports = tcsGetTxCount = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        framework.testTestScripts(server, describeTitle, testScripts)
+        framework.testTestScripts(server, describeTitle + ', ledger: ' + ledger, testScripts)
     },
 
-    createTestScript: function(server, testCaseCode, scriptCode, functionName, hashOrNumber,){
+    createTestScript: function(server, testCaseCode, scriptCode, functionName, hashOrNumber, ledger){
 
         let txParams = []
         txParams.push(hashOrNumber)
@@ -137,24 +148,23 @@ module.exports = tcsGetTxCount = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetTxCount.checkBlockTransactionCount, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, functionName)
+        let param = server.createParamGetTxCountByBlockNumber(hashOrNumber, ledger)
+        if (functionName == consts.rpcFunctions.getBlockTransactionCountByHash){
+            param = server.createParamGetTxCountByHash(hashOrNumber, ledger)
+        }
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetTxCount.checkForPassResultForHashOrNumber
         testScript.actions.push(action)
         return testScript
 
     },
 
-    checkBlockTransactionCount: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            let txCount = action.server.mode.txs.block.txCountInBlock
-            expect(txCount).to.equal(response.result)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResultForHashOrNumber: function(action, param, expected, actual){
+        let count = actual.result
+        let txCount = action.server.mode.txs.block.txCountInBlock
+        expect(count).to.equal(txCount)
     },
 
     //endregion
