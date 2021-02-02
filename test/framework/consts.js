@@ -34,7 +34,7 @@ module.exports = consts = {
     },
     //endregion
 
-    //region block tag
+    //region ledgers
     ledgers: {
         null: undefined,
         current: 'current',

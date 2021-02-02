@@ -312,11 +312,28 @@ function baseInterface() {
     //endregion
 
     //region get receipt
-    baseInterface.prototype.responseGetTransactionReceipt = function (server, blockHash) {
-        let params = []
-        params.push(blockHash)
-        return this.getResponse(server, consts.rpcFunctions.getTransactionReceipt, params)
+
+    baseInterface.prototype.createParamGetTransactionReceipt = function(hash, ledger) {
+        let param = {}
+        param.hash = hash
+        if(ledger) param.ledger = ledger
+        return param
     }
+
+    baseInterface.prototype.responseGetTransactionReceipt = function (server, hash, ledger) {
+        let param = this.createParamGetTransactionReceipt(hash, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getTransactionReceipt, [param])
+    }
+
+    baseInterface.prototype.getTransactionReceipt = async function (server, hash, ledger) {
+        let response = await this.responseGetTransactionReceipt(server, hash, ledger)
+        let receipt
+        if(response && response.result && response.result[0] && response.result[0].result && response.result[0].result){
+            receipt = response.result[0].result
+        }
+        return receipt
+    }
+
     //endregion
 
     //region get block

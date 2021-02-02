@@ -1012,49 +1012,6 @@ module.exports = framework = {
 
     //region process sequence
 
-    //region getSequence
-    // getSequence: function(server, from){
-    //     return new Promise(function (resolve){
-    //         // let key = from + '@' + server.getName()
-    //         let key = from
-    //         let local_sequence = -1
-    //         let remote_sequence = -1
-    //         let sequence = -1
-    //
-    //         if(_SequenceMap.has(key)){
-    //             local_sequence = _SequenceMap.get(key)
-    //             logger.debug("===get sequence from map: " + local_sequence)
-    //         }
-    //
-    //         Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-    //             remote_sequence = accountInfo.result ? Number(accountInfo.result.Sequence) : -1
-    //             logger.debug("===get sequence from accountInfo: " + remote_sequence)
-    //             sequence = (local_sequence > remote_sequence) ? local_sequence : remote_sequence
-    //             framework.setSequence(server.getName(), from, sequence)
-    //             logger.debug("===final sequence: " + sequence)
-    //             resolve(sequence)
-    //         }).catch(function (error){
-    //             logger.debug("getSequence Error!!! " + error)
-    //             resolve(null)
-    //         })
-    //     })
-    // },
-
-    // getSequenceByChain: function(server, from){
-    //     return new Promise(function (resolve){
-    //         let key = from
-    //         Promise.resolve(server.responseGetAccount(server, from)).then(function (accountInfo) {
-    //             // logger.debug("---sequence   accountInfo:" + JSON.stringify(accountInfo))
-    //             let sequence = Number(accountInfo.result.Sequence)
-    //             framework.setSequence(server.getName(), from, sequence)
-    //             resolve(sequence)
-    //         }).catch(function (error){
-    //             logger.debug("getSequenceByChain Error!!! " + error)
-    //             resolve(null)
-    //         })
-    //     })
-    // },
-
     getSequence: async function(server, from){
         let key = from
         let local_sequence = -1

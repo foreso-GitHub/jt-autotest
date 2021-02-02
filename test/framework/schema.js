@@ -788,6 +788,40 @@ const CURRENCY_SCHEMA = {
     },
 }
 
+const RECEIPT_SCHEMA = {
+    title: "test response of jt_getCurrency",
+    type: "object",
+    required: [
+        "AffectedNodes",
+        "TransactionIndex",
+        "TransactionResult",
+    ],
+    properties: {
+        "AffectedNodes": {
+            type: "array",
+            minItems: 0,
+            items: {
+                type: "object",
+                required: [
+                    "ModifiedNode",
+                ],
+                properties: {
+                    "ModifiedNode": {
+                        "type": "object"
+                    },
+                },
+            }
+
+        },
+        "TransactionIndex": {
+            "type": "integer"
+        },
+        "TransactionResult": {
+            "type": "string"
+        },
+    },
+}
+
 //todo need be replaced by SENDTX_SCHEMA
 const OLD_SENDTX_SCHEMA = {
     title: "test response of jt_sendTransaction",
@@ -1104,6 +1138,7 @@ module.exports = {
     ACCOUNT_SCHEMA,
     ACCOUNTS_SCHEMA,
     CURRENCY_SCHEMA,
+    RECEIPT_SCHEMA,
     RESPONSE_SCHEMA,
     GET_RESPONSE_SCHEMA,
     ERROR_SCHEMA,

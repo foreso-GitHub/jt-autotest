@@ -79,11 +79,7 @@ module.exports = tcsGetReceipt = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScript: function(server, testCaseCode, scriptCode, hash,){
-
-        let functionName = consts.rpcFunctions.getTransactionReceipt
-        let txParams = []
-        txParams.push(hash)
+    createTestScript: function(server, testCaseCode, scriptCode, hash, ledger){
 
         let testScript = framework.createTestScript(
             server,
@@ -94,28 +90,24 @@ module.exports = tcsGetReceipt = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetReceipt.checkTransactionReceipt, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionReceipt)
+        let param = server.createParamGetTransactionReceipt(hash, ledger)
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetReceipt.checkForPassResult
         testScript.actions.push(action)
         return testScript
 
     },
 
-    checkTransactionReceipt: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            // expect(response.result).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
-            let affectedNodes = response.result.AffectedNodes
-            let from = affectedNodes[1].ModifiedNode.FinalFields.Account
-            let to = affectedNodes[2].ModifiedNode.FinalFields.Account
-            expect(from).to.be.equals(action.server.mode.txs.tx1.Account)
-            expect(to).to.be.equals(action.server.mode.txs.tx1.Destination)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResult: function(action, param, expected, actual){
+        let result = actual.result
+        expect(result).to.be.jsonSchema(schema.RECEIPT_SCHEMA)
+        let affectedNodes = result.AffectedNodes
+        let from = affectedNodes[1].ModifiedNode.FinalFields.Account
+        let to = affectedNodes[2].ModifiedNode.FinalFields.Account
+        expect(from).to.be.equals(action.server.mode.txs.tx1.Account)
+        expect(to).to.be.equals(action.server.mode.txs.tx1.Destination)
     },
 
 //endregion
