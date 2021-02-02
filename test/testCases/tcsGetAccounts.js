@@ -27,9 +27,6 @@ module.exports = tcsGetAccounts = {
         let testCaseCode
         let scriptCode
 
-        let functionName = consts.rpcFunctions.getAccounts
-
-
         testCaseCode = 'FCJT_accounts_000010'
         scriptCode = '000100'
         {
@@ -42,9 +39,6 @@ module.exports = tcsGetAccounts = {
 
     createTestScript: function(server, testCaseCode, scriptCode, ){
 
-        let functionName = consts.rpcFunctions.getAccounts
-        let txParams = []
-
         let testScript = framework.createTestScript(
             server,
             testCaseCode,
@@ -54,29 +48,22 @@ module.exports = tcsGetAccounts = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetAccounts.checkGetAccounts, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getAccounts)
+        action.txParams = []
+        action.checkForPassResult = tcsGetAccounts.checkForPassResult
         testScript.actions.push(action)
 
         return testScript
 
     },
 
-    checkGetAccounts: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
-            let accounts = response.result
-            let rootAccount = 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh:root'
-            // logger.debug(JSON.stringify(accounts))
-            expect(accounts.length).to.be.above(0)
-            expect(accounts).to.be.contains(rootAccount)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResult: function(action, param, expected, actual){
+        // expect(response.result).to.be.jsonSchema(schema.BALANCE_SCHEMA)  //todo: add account schema
+        let accounts = actual.result
+        let rootAccount = 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh:root'
+        expect(accounts.length).to.be.above(0)
+        expect(accounts).to.be.contains(rootAccount)
     },
 
     //endregion
