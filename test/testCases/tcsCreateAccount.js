@@ -23,13 +23,34 @@ module.exports = tcsCreateAccount = {
     //region create account
     testForCreateAccount: function(server, describeTitle){
 
+        tcsCreateAccount.testByTypes(server, describeTitle, null)
+        tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.ECDSA)
+        tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.Ed25519)
+        tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.SM2)
+
+    },
+
+    testByTypes: function(server, describeTitle, type){
+
+        let prefixCode = '000'
+        if(type){
+            if(type == consts.walletTypes.ECDSA){
+                prefixCode = '001'
+            }
+            else if(type == consts.walletTypes.Ed25519){
+                prefixCode = '002'
+            }
+            else if(type == consts.walletTypes.SM2){
+                prefixCode = '003'
+            }
+        }
+
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
 
         testCaseCode = 'FCJT_createAccount_000010'
-        scriptCode = defaultScriptCode + '_创建有效的账户'
+        scriptCode = prefixCode + '100' + '_创建有效的账户'
         {
             let nickname = utility.getDynamicTokenName().symbol
             let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname)
@@ -37,7 +58,7 @@ module.exports = tcsCreateAccount = {
         }
 
         testCaseCode = 'FCJT_createAccount_000020'
-        scriptCode = defaultScriptCode + '_创建无效的账户，重复的名字'
+        scriptCode = prefixCode + '100' + '_创建无效的账户，重复的名字'
         {
             let nickname = server.mode.addresses.balanceAccount.nickname
             let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname)
@@ -48,7 +69,7 @@ module.exports = tcsCreateAccount = {
         }
 
         testCaseCode = 'FCJT_createAccount_000020'
-        scriptCode = '000200' + '_创建无效的账户，超过长度的字符串数字'
+        scriptCode = prefixCode + '200' + '_创建无效的账户，超过长度的字符串数字'
         {
             let nickname = utility.getDynamicTokenName().name + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
                 + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
@@ -61,13 +82,10 @@ module.exports = tcsCreateAccount = {
             framework.addTestScript(testScripts, testScript)
         }
 
-        framework.testTestScripts(server, describeTitle, testScripts)
-
+        framework.testTestScripts(server, describeTitle + ', type: ' + type, testScripts)
     },
 
     createTestScript: function(server, testCaseCode, scriptCode, nickname, type){
-
-        if(!type) type = consts.walletTypes.ECDSA
 
         let testScript = framework.createTestScript(
             server,

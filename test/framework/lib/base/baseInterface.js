@@ -132,7 +132,7 @@ function baseInterface() {
     baseInterface.prototype.createParamCreateAccount = function(nickname, type) {
         let param = {}
         param.nick = nickname
-        param.type = type
+        if(type) param.type = type
         return param
     }
 
