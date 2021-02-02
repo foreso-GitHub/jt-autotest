@@ -64,7 +64,7 @@ module.exports = tcsGetTxCount = {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-189, 'index out of range'))
+                framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }

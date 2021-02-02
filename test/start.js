@@ -255,13 +255,13 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
                 //
-                // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
+                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
 
 
 
-                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
 
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
                 //
