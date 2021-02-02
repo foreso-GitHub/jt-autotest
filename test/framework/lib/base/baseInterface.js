@@ -119,19 +119,19 @@ function baseInterface() {
 
     //region createAccount
 
-    baseInterface.prototype.createAccount = async function(server, nickName, type){
-        let response = await this.responseCreateAccount(server, nickName, type)
+    baseInterface.prototype.createAccount = async function(server, nickname, type){
+        let response = await this.responseCreateAccount(server, nickname, type)
         return response.result[0].result
     }
 
-    baseInterface.prototype.responseCreateAccount = function (server, nickName, type) {
-        let param = this.createParamCreateAccount(nickName, type)
+    baseInterface.prototype.responseCreateAccount = function (server, nickname, type) {
+        let param = this.createParamCreateAccount(nickname, type)
         return this.getResponse(server, consts.rpcFunctions.createAccount, [param])
     }
 
-    baseInterface.prototype.createParamCreateAccount = function(nickName, type) {
+    baseInterface.prototype.createParamCreateAccount = function(nickname, type) {
         let param = {}
-        param.nick = nickName
+        param.nick = nickname
         param.type = type
         return param
     }

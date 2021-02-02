@@ -223,7 +223,7 @@ module.exports = tcsGetTxCount = {
         testCaseCode = 'FCJT_getTransactionCount_000020'
         scriptCode = defaultScriptCode + '_查询有效昵称'
         {
-            let addressOrName = from.nickName
+            let addressOrName = from.nickname
             let needSendTx = true
             let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
             let action = testScript.actions[0]
@@ -277,7 +277,7 @@ module.exports = tcsGetTxCount = {
         testCaseCode = 'FCJT_getTransactionCount_000040'
         scriptCode = defaultScriptCode + '_查询无效昵称: 不存在的昵称'
         {
-            let addressOrName = server.mode.addresses.inactiveAccount1.nickName
+            let addressOrName = server.mode.addresses.inactiveAccount1.nickname
             let needSendTx = false
             let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
             let expectedResult = framework.createExpecteResult(false,

@@ -23,7 +23,7 @@ function accountsDealer() {
 
     function init(mode) {
         root = mode.root
-        root.nickName = 'root'
+        root.nickname = 'root'
         server = mode.server
         server.init(mode)
     }
@@ -124,12 +124,12 @@ function accountsDealer() {
             {
                 address:"j4tBKPidB9iEJMqdatq7rbh14nPhAbCyfg",
                 secret:"sawLfQ4sDGHAu65pe11Uvv5HkvDcG",
-                nickName: "inactive_1",
+                nickname: "inactive_1",
             },
             {
                 address:"j4SnwaukEx7VaRhwaQGzJJ9LF7XAbJhDzv",
                 secret:"shU9YLun779XCUa91SkRe5z8ZG3LZ",
-                nickName: "notexist1",
+                nickname: "notexist1",
             },
         ]
 
@@ -138,7 +138,7 @@ function accountsDealer() {
             rootAccount:{
                 address:accounts[i].address,
                 secret:accounts[i].secret,
-                nickName: accounts[i++].nickName,
+                nickname: accounts[i++].nickname,
             },
             fixedSender1:{
                 address:accounts[i].address,
@@ -167,22 +167,22 @@ function accountsDealer() {
             walletAccount:{
                 address:accounts[i].address,
                 secret:accounts[i].secret,
-                nickName: accounts[i++].nickName,
+                nickname: accounts[i++].nickname,
             },
             balanceAccount:{
                 address:accounts[i].address,
                 secret:accounts[i].secret,
-                nickName: accounts[i++].nickName,
+                nickname: accounts[i++].nickname,
             },
             nickNameSender:{
                 address:accounts[i].address,
                 secret:accounts[i].secret,
-                nickName: accounts[i++].nickName,
+                nickname: accounts[i++].nickname,
             },
             nickNameReceiver:{
                 address:accounts[i].address,
                 secret:accounts[i].secret,
-                nickName: accounts[i++].nickName,
+                nickname: accounts[i++].nickname,
             },
             sender1:{
                 address:accounts[i].address,
@@ -335,12 +335,12 @@ function accountsDealer() {
             inactiveAccount1:{
                 address:inactiveAccounts[0].address,
                 secret:inactiveAccounts[0].secret,
-                nickName:inactiveAccounts[0].nickName,
+                nickname:inactiveAccounts[0].nickname,
             },
             wrongFormatAccount1:{
                 address:"inactiveAccounts[0].address",
                 secret:"inactiveAccounts[0].secret",
-                nickName:"inactiveAccounts[0].nickName",
+                nickname:"inactiveAccounts[0].nickname",
             },
             defaultIssuer:{
                 address: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',

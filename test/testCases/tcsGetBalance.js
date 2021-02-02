@@ -91,7 +91,7 @@ module.exports = tcsGetBalance = {
         scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
             + '_查询有效的地址_01:地址内有底层币和代币'
         {
-            let addressOrName = server.mode.addresses.balanceAccount.nickName
+            let addressOrName = server.mode.addresses.balanceAccount.nickname
             let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
             framework.addTestScript(testScripts, testScript)
         }
@@ -112,7 +112,7 @@ module.exports = tcsGetBalance = {
         scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
             + '_查询未激活的昵称_01:地址内没有有底层币和代币'
         {
-            let addressOrName = server.mode.addresses.inactiveAccount1.nickName
+            let addressOrName = server.mode.addresses.inactiveAccount1.nickname
             let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
@@ -136,7 +136,7 @@ module.exports = tcsGetBalance = {
         scriptCode = defaultScriptCode + (symbol ? '_' + symbol : '') + (tag ? '_' + tag : '')
             + '_查询无效的地址_01:查询不存在的昵称'
         {
-            let addressOrName = server.mode.addresses.wrongFormatAccount1.nickName
+            let addressOrName = server.mode.addresses.wrongFormatAccount1.nickname
             let testScript = tcsGetAccount.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, tag)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
