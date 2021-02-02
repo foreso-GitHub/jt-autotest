@@ -126,47 +126,32 @@ module.exports = tcsGetBlockNumber = {
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
         let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockNumber, [],
-            framework.executeTestActionForGet, tcsGetBlockNumber.checkBlockNumber, [{needPass:true}])
+            framework.executeTestActionForGet, framework.checkForGet, [{needPass:true}])
+        action.checkForGetByNoneArrayParams = tcsGetBlockNumber.checkForGetByNoneArrayParams
+        action.checkForPassResult = tcsGetBlockNumber.checkForPassResult
+        action.checkForFailResult = framework.checkResponseError
         testScript.actions.push(action)
         return testScript
     },
-    
-    checkBlockNumber: function(action){
-        framework.checkGetResponse(action.actualResult)
 
-        let params = action.txParams
-        let expectedResults = action.expectedResults
-        let actualResults = action.actualResult.result
+    checkForGetByNoneArrayParams: function(action){
+        expect(action.actualResult.result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)
+        expect(action.actualResult.result).to.be.above(10)
+    },
 
-        if(params.length == 0){
-            expect(action.actualResult.result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)
-            expect(action.actualResult.result).to.be.above(10)
+    checkForPassResult: function(param, expected, actual){
+        let result = actual.result
+        if(param.type && param.type == 'number'){
+            expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)
+            expect(result).to.be.above(10)
+        }
+        else if (param.type && param.type == 'info'){
+            expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_INFO_SCHEMA)
+            expect(result[0]).to.be.above(10)
+            expect(result[1]).to.be.least(0)
         }
         else{
-            for(let i = 0; i < params.length; i++) {
-                let param = params[i]
-                let expected = expectedResults[i]
-                let actual = actualResults[i]
-
-                if(expected.needPass){
-                    let result = actual.result
-                    if(param.type && param.type == 'number'){
-                        expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)
-                        expect(result).to.be.above(10)
-                    }
-                    else if (param.type && param.type == 'info'){
-                        expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_INFO_SCHEMA)
-                        expect(result[0]).to.be.above(10)
-                        expect(result[1]).to.be.least(0)
-                    }
-                    else{
-                        expect('param error ' + JSON.stringify(param)).to.be.not.ok
-                    }
-                }
-                else{
-                    framework.checkResponseError(expected, actual)
-                }
-            }
+            expect('param error ' + JSON.stringify(param)).to.be.not.ok
         }
     },
 

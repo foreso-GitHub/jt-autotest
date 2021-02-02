@@ -144,47 +144,34 @@ module.exports = tcsGetVersion = {
         )
         let action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [],
             framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, [{needPass:true}])
+        action.checkForGetByNoneArrayParams = tcsGetVersion.checkForGetByNoneArrayParams
+        action.checkForPassResult = tcsGetVersion.checkForPassResult
+        action.checkForFailResult = framework.checkResponseError
         testScript.actions.push(action)
         return testScript
     },
 
-    checkGetVersion: function(action){
-        framework.checkGetResponse(action.actualResult)
-
-        let params = action.txParams
-        let expectedResults = action.expectedResults
+    checkForGetByNoneArrayParams: function(action){
         let actualResults = action.actualResult.result
+        let version = utility.parseVersionInfo(actualResults)
+        expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+    },
 
-        if(params.length == 0){
-            let version = utility.parseVersionInfo(actualResults)
+    checkForPassResult: function(param, expected, actual){
+        let version = actual.result
+        if(param.format && param.format == 'json'){
+            expect(version).to.be.jsonSchema(schema.VERSION_JSON_SCHEMA)
             expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
         }
+        else if (param.format && param.format == 'text'){
+            expect(version).to.be.jsonSchema(schema.VERSION_TXT_SCHEMA)
+            expect(version).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+        }
         else{
-            for(let i = 0; i < params.length; i++){
-                let param = params[i]
-                let expected = expectedResults[i]
-                let actual = actualResults[i]
-
-                if(expected.needPass){
-                    let version = actual.result
-                    if(param.format && param.format == 'json'){
-                        expect(version).to.be.jsonSchema(schema.VERSION_JSON_SCHEMA)
-                        expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
-                    }
-                    else if (param.format && param.format == 'text'){
-                        expect(version).to.be.jsonSchema(schema.VERSION_TXT_SCHEMA)
-                        expect(version).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
-                    }
-                    else{
-                        expect('param error ' + JSON.stringify(param)).to.be.not.ok
-                    }
-                }
-                else{
-                    framework.checkResponseError(expected, actual)
-                }
-            }
+            expect('param error ' + JSON.stringify(param)).to.be.not.ok
         }
     },
+
 //endregion
 
 }

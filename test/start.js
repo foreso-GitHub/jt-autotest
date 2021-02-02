@@ -231,9 +231,9 @@ describe('Jingtum测试', function() {
 
                 //region done
 
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
-                //
-                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+                tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
+                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
 
                 // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
                 //
@@ -322,10 +322,10 @@ describe('Jingtum测试', function() {
                 // }
 
 
-                for(let i = 0; i < 500; i++){
-                    tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                        1, 50, true, 5000, false, )
-                }
+                // for(let i = 0; i < 500; i++){
+                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //         1, 50, true, 5000, false, )
+                // }
 
                 this.timeout(timeout)
 

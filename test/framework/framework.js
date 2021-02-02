@@ -438,6 +438,38 @@ module.exports = framework = {
 
     //region 3. check test actions
 
+    //region check get result
+
+    checkForGet: function(action){
+        framework.checkGetResponse(action.actualResult)
+
+        let params = action.txParams
+        let expectedResults = action.expectedResults
+        let actualResults = action.actualResult.result
+
+        if(params.length == 0){ //检查非数组参数的情况（老的调用方式，已经改成内部API）
+            if(action.checkForGetByNoneArrayParams) action.checkForGetByNoneArrayParams(action)
+        }
+        else{
+            for(let i = 0; i < params.length; i++) {
+                let param = params[i]
+                let expected = expectedResults[i]
+                let actual = actualResults[i]
+
+                if(expected.needPass){
+                    //检查每一个应该通过的结果
+                    if(action.checkForPassResult) action.checkForPassResult(param, expected, actual)
+                }
+                else{
+                    //检查每一个应该出错的结果
+                    if(action.checkForFailResult) action.checkForFailResult(expected, actual)
+                }
+            }
+        }
+    },
+
+    //endregion
+
     //region check send tx result
 
     checkTestActionOfSignTx: async function(action){
@@ -544,116 +576,10 @@ module.exports = framework = {
         expect(actualLength).to.be.equals(params.length)
     },
 
-    // checkSingleResponseOfCommonOneByOne: async function(testCase, txParams, checkFunction, index){
-    //     await framework.checkSingleResponseOfCommon(testCase, testCase.actualResult[index], txParams, checkFunction)
-    //     index++
-    //     if(index < testCase.actualResult.length){
-    //         await framework.checkSingleResponseOfCommonOneByOne(testCase, txParams, checkFunction, index)
-    //     }
-    // },
-
-    // checkSingleResponseOfCommon: async function(testCase, responseOfSendTx, txParams, checkFunction){
-    //     framework.checkResponse(testCase.expectedResult.needPass, responseOfSendTx)
-    //
-    //     //todo need remove OLD_SENDTX_SCHEMA when new chain updates its sendTx response
-    //     if(testCase.server.mode.service == serviceType.newChain){
-    //
-    //         // if(testCase.expectedResult.needPass){
-    //         //     expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
-    //         //     let hashCount = 0
-    //         //     for(let i =0; i < responseOfSendTx.result.length; i++){
-    //         //         let result = responseOfSendTx.result[i]
-    //         //         if(result && utility.isHex(result)){
-    //         //             let hash = result
-    //         //             hashCount ++
-    //         //             // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-    //         //             // let hash = responseOfSendTx.result[0]
-    //         //             // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-    //         //             let responseOfGetTx = await utility.getTxByHash(testCase.server, hash, 0)
-    //         //             framework.checkResponse(true, responseOfGetTx)
-    //         //             expect(responseOfGetTx.result.hash).to.be.equal(hash)
-    //         //             await checkFunction(testCase, txParams, responseOfGetTx.result)
-    //         //         }
-    //         //         else{
-    //         //             expect('Not a hash!').to.be.ok
-    //         //         }
-    //         //     }
-    //         //     expect(hashCount).to.be.equal(testCase.txParams.length)
-    //         // }
-    //         // else{
-    //         //     framework.checkResponseError(testCase, responseOfSendTx.message, testCase.expectedResult.expectedError)
-    //         // }
-    //
-    //         if(testCase.expectedResult.needPass){
-    //             expect(responseOfSendTx).to.be.jsonSchema(schema.OLD_SENDTX_SCHEMA)
-    //             let hashCount = 0
-    //             for(let i =0; i < responseOfSendTx.result.length; i++){
-    //                 let result = responseOfSendTx.result[i].result
-    //                 if(result && utility.isHex(result)){
-    //                     let hash = result
-    //                     hashCount ++
-    //                     // expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-    //                     // let hash = responseOfSendTx.result[0]
-    //                     // let hash = responseOfSendTx.result.tx_json.hash  //for swtclib
-    //                     let responseOfGetTx = await utility.getTxByHash(testCase.server, hash, 0)
-    //                     framework.checkResponse(true, responseOfGetTx)
-    //                     expect(responseOfGetTx.result.hash).to.be.equal(hash)
-    //                     await checkFunction(testCase, txParams, responseOfGetTx.result)
-    //                 }
-    //                 else{
-    //                     expect('Not a hash!').to.be.ok
-    //                 }
-    //             }
-    //             expect(hashCount).to.be.equal(testCase.txParams.length)
-    //         }
-    //         else{
-    //             framework.checkResponseError(testCase, responseOfSendTx, testCase.expectedResult.expectedError)
-    //         }
-    //     }
-    //     else{
-    //         if(testCase.expectedResult.needPass){
-    //             expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-    //             let hash = responseOfSendTx.result.hash  //for swtclib
-    //             await utility.getTxByHash(testCase.server, hash, 0).then(async function(responseOfGetTx){
-    //                 framework.checkResponse(true, responseOfGetTx)
-    //                 // expect(responseOfGetTx.result).to.be.jsonSchema(schema.TX_SCHEMA)
-    //                 expect(responseOfGetTx.result.hash).to.be.equal(hash)
-    //                 await checkFunction(testCase, txParams, responseOfGetTx.result)
-    //             }, function (err) {
-    //                 expect(err).to.be.ok
-    //             })
-    //         }
-    //         else{
-    //             expect(responseOfSendTx).to.be.jsonSchema(schema.SENDTX_SCHEMA)
-    //             let expectedResult = testCase.expectedResult.expectedError
-    //             framework.compareEngineResults(expectedResult, responseOfSendTx.result)
-    //         }
-    //     }
-    // },
-
-    // compareEngineResults: function(result1, result2){
-    //     expect(result2.engine_result).to.equals(result1.engine_result)
-    //     expect(result2.engine_result_code).to.equals(result1.engine_result_code)
-    //     expect(result2.engine_result_message).to.equals(result1.engine_result_message)
-    // },
-
-    // getBalanceValue: function(balanceObject){
-    //     if(balanceObject){
-    //         if(balanceObject.value){
-    //             return Number(balanceObject.value.toString())
-    //         }
-    //         else{
-    //             return Number(balanceObject.toString())
-    //         }
-    //     }
-    //     else{
-    //         return 0
-    //     }
-    // },
-
     //endregion
 
     //region common check system for sequence and ipfs test
+
     checkTestCase: async function(testCase){
         await framework.checkTestCaseOneByOne(testCase, 0)
     },
@@ -668,6 +594,7 @@ module.exports = framework = {
             await framework.checkTestCaseOneByOne(testCase, index)
         }
     },
+
     //endregion
 
     //endregion
