@@ -22,9 +22,13 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 
 //region work dock
 
+//region basic
+
 // init()
 // compare()
 // upgradeChain('20210201b')
+
+//endregion
 
 //region set status
 
@@ -44,6 +48,12 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 // loadTestCasesFromMdFiles('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // updateTestCaseJson('..\\ipfslib.wiki\\', '_TestCase_Index.md')
 // loadTestCasesFromJson('.\\test\\utility\\markdown\\json\\testcase.json')
+
+//endregion
+
+//region others
+
+
 
 //endregion
 

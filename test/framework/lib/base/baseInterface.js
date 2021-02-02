@@ -197,15 +197,20 @@ function baseInterface() {
     //endregion
 
     //region get tx
-    baseInterface.prototype.getTx = async function (hash) {
-        let response = await this.responseGetTxByHash(hash)
-        return response.result.balance
+
+    baseInterface.prototype.getTx = async function (server, hash) {
+        let response = await this.responseGetTxByHash(server, hash)
+        let tx
+        if(response && !response.error && response.result && response.result[0] && response.result[0].result){
+            tx = response.result[0].result
+        }
+        return tx
     }
 
     baseInterface.prototype.responseGetTxByHash = function (server, hash) {
-        let params = []
-        params.push(hash)
-        return this.getResponse(server, consts.rpcFunctions.getTransactionByHash, params)
+        let param = {}
+        param.hash = hash
+        return this.getResponse(server, consts.rpcFunctions.getTransactionByHash, [param])
     }
 
     baseInterface.prototype.responseGetTxByBlockNumberAndIndex = function (server, blockNumber, index) {
@@ -233,6 +238,7 @@ function baseInterface() {
         params.push(blockHash)
         return this.getResponse(server, consts.rpcFunctions.getBlockTransactionCountByHash, params)
     }
+
     //endregion
 
     //region get receipt
@@ -249,7 +255,7 @@ function baseInterface() {
 
     baseInterface.prototype.createParamGetBlockByNumber = function(blockNumber, full, ledger) {
         let param = {}
-        param.number = blockNumber
+        param.number = blockNumber.toString()
         param.full = full
         if(ledger) param.ledger = ledger
         return param
