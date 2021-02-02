@@ -231,10 +231,10 @@ describe('Jingtum测试', function() {
 
                 //region done
 
-                tcsGetVersion.testForGetVersion(server, '测试jt_version')
-
-                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+                //
+                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+                //
                 // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
                 //
                 // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
@@ -243,8 +243,8 @@ describe('Jingtum测试', function() {
 
 
 
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
                 // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
                 //
                 // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')

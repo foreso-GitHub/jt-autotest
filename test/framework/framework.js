@@ -223,6 +223,15 @@ module.exports = framework = {
         return testAction
     },
 
+    createTestActionForGet: function(testScript, txFunctionName, ){
+        let action = framework.createTestAction(testScript, txFunctionName, [],
+            framework.executeTestActionForGet, framework.checkForGet, [{needPass:true}])
+        action.checkForGetByNoneArrayParams = null
+        action.checkForPassResult = null
+        action.checkForFailResult = framework.checkForFailResult
+        return action
+    },
+
     createTestScriptForTx: function(server, testCaseCode, scriptCode, txFunctionName, txParams){
 
         let testScript = framework.createTestScript(
@@ -458,11 +467,11 @@ module.exports = framework = {
 
                 if(expected.needPass){
                     //检查每一个应该通过的结果
-                    if(action.checkForPassResult) action.checkForPassResult(param, expected, actual)
+                    if(action.checkForPassResult) action.checkForPassResult(action, param, expected, actual)
                 }
                 else{
                     //检查每一个应该出错的结果
-                    if(action.checkForFailResult) action.checkForFailResult(expected, actual)
+                    if(action.checkForFailResult) action.checkForFailResult(action, expected, actual)
                 }
             }
         }
@@ -977,6 +986,10 @@ module.exports = framework = {
         else{
             framework.compareErrorResult(expectedError, actualError)
         }
+    },
+
+    checkForFailResult: function(action, expectedResult, actualResult){
+        framework.checkResponseError(expectedResult, actualResult)
     },
 
     checkResponseError: function(expectedResult, actualResult){

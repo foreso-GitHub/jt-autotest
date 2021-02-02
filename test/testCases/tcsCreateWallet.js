@@ -34,8 +34,8 @@ module.exports = tcsCreateWallet = {
         testCaseCode = 'FCJT_createWallet_000010'
         scriptCode = defaultScriptCode + '_参数为空'
         {
-            let type
-            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
+            let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, null)
+            testScript.actions[0].txParams = []
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -188,8 +188,6 @@ module.exports = tcsCreateWallet = {
     },
 
     createTestScript: function(server, testCaseCode, scriptCode, functionName, type){
-        let txParams = []
-        if(type != undefined) txParams.push(type)
 
         let testScript = framework.createTestScript(
             server,
@@ -200,40 +198,25 @@ module.exports = tcsCreateWallet = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsCreateWallet.checkCreateWallet, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.createWallet)
+        action.txParams = [server.createParamCreateWallet(type)]
+        action.checkForGetByNoneArrayParams = tcsCreateWallet.checkForGetByNoneArrayParams
+        action.checkForPassResult = tcsCreateWallet.checkForPassResult
         testScript.actions.push(action)
         return testScript
     },
 
-    checkCreateWallet: function(action){
-        framework.checkGetResponse(action.actualResult)
+    checkForGetByNoneArrayParams: function(action){
+        let account = action.actualResult.result
+        let type = consts.walletTypes.ECDSA
+        tcsCreateWallet.checkPass(account, type)
+    },
 
-        let params = action.txParams
-        let expectedResults = action.expectedResults
-        let actualResults = action.actualResult.result
-
-        if(params.length == 0){
-            let account = actualResults
-            let type = consts.walletTypes.ECDSA
-            tcsCreateWallet.checkPass(account, type)
-        }
-        else{
-            for(let i = 0; i < params.length; i++){
-                let param = params[i]
-                let expected = expectedResults[i]
-                let actual = actualResults[i]
-                let type = param.type
-
-                if(expected.needPass){
-                    let account = actual.result
-                    tcsCreateWallet.checkPass(account, type)
-                }
-                else{
-                    framework.checkResponseError(expected, actual)
-                }
-            }
-        }
+    checkForPassResult: function(action, param, expected, actual){
+        let type = param.type
+        let account = actual.result
+        tcsCreateWallet.checkPass(account, type)
     },
 
     checkPass: function(account, type){

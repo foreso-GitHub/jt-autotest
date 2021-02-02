@@ -190,9 +190,10 @@ module.exports = tcsGetBlock = {
         )
 
         let txParam = tcsGetBlock.createTxParam(server, functionName, numberOrHash, full, ledger)
-
-        let action = framework.createTestAction(testScript, functionName, [txParam],
-            framework.executeTestActionForGet, tcsGetBlock.checkBlock, [{needPass:true}])
+        let action = framework.createTestActionForGet(testScript, functionName)
+        action.txParams = [txParam]
+        action.checkForGetByNoneArrayParams = null
+        action.checkForPassResult = tcsGetBlock.checkForPassResult
         testScript.actions.push(action)
 
         return testScript
@@ -209,42 +210,25 @@ module.exports = tcsGetBlock = {
         return txParam
     },
 
-    checkBlock: function(action){
-        framework.checkGetResponse(action.actualResult)
-
-        let params = action.txParams
-        let expectedResults = action.expectedResults
-        let actualResults = action.actualResult.result
-        let server = action.server
+    checkForPassResult: function(action, param, expected, actual){
         let functionName = action.txFunctionName
+        let server = action.server
+        let block = actual.result
+        expect(block).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
 
-        for(let i = 0; i < params.length; i++){
-            let param = params[i]
-            let expected = expectedResults[i]
-            let actual = actualResults[i]
+        if(functionName === consts.rpcFunctions.getBlockByNumber){
+            expect(block.ledger_index).to.be.equals(param.number)
+        }
+        else{
+            expect(block.ledger_hash).to.be.equals(param.hash)
+        }
 
-            if(expected.needPass){
-                let block = actual.result
-                expect(block).to.be.jsonSchema(schema.LEDGER_SCHEMA)   //todo need add full block schema
+        expect(block.transactions.length).to.be.equals(server.mode.txs.block.txCountInBlock)
 
-                if(functionName === consts.rpcFunctions.getBlockByNumber){
-                    expect(block.ledger_index).to.be.equals(param.number)
-                }
-                else{
-                    expect(block.ledger_hash).to.be.equals(param.hash)
-                }
-
-                expect(block.transactions.length).to.be.equals(server.mode.txs.block.txCountInBlock)
-
-                let full = param[1]
-                if(full != null){
-                    let tx = block.transactions[0]
-                    expect(typeof tx == 'object' || utility.isJSON(tx)).to.be.equals(full)
-                }
-            }
-            else{
-                framework.checkResponseError(expected, actual)
-            }
+        let full = param[1]
+        if(full != null){
+            let tx = block.transactions[0]
+            expect(typeof tx == 'object' || utility.isJSON(tx)).to.be.equals(full)
         }
     },
 

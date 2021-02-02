@@ -125,11 +125,9 @@ module.exports = tcsGetBlockNumber = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockNumber, [],
-            framework.executeTestActionForGet, framework.checkForGet, [{needPass:true}])
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getBlockNumber)
         action.checkForGetByNoneArrayParams = tcsGetBlockNumber.checkForGetByNoneArrayParams
         action.checkForPassResult = tcsGetBlockNumber.checkForPassResult
-        action.checkForFailResult = framework.checkResponseError
         testScript.actions.push(action)
         return testScript
     },
@@ -139,7 +137,7 @@ module.exports = tcsGetBlockNumber = {
         expect(action.actualResult.result).to.be.above(10)
     },
 
-    checkForPassResult: function(param, expected, actual){
+    checkForPassResult: function(action, param, expected, actual){
         let result = actual.result
         if(param.type && param.type == 'number'){
             expect(result).to.be.jsonSchema(schema.BLOCKNUMBER_NUMBER_SCHEMA)

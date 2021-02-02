@@ -123,7 +123,7 @@ module.exports = tcsGetVersion = {
             testScript.actions.push(action)
 
             action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [{format: 'text'}],
-                framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, [{needPass:true}])
+                framework.executeTestActionForGet, framework.checkForGet, [{needPass:true}])
             testScript.actions.push(action)
 
             framework.addTestScript(testScripts, testScript)
@@ -140,13 +140,11 @@ module.exports = tcsGetVersion = {
             [],
             restrictedLevel.L2,
             [serviceType.newChain, ],
-            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            [],
         )
-        let action = framework.createTestAction(testScript, consts.rpcFunctions.getVersion, [],
-            framework.executeTestActionForGet, tcsGetVersion.checkGetVersion, [{needPass:true}])
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getVersion)
         action.checkForGetByNoneArrayParams = tcsGetVersion.checkForGetByNoneArrayParams
         action.checkForPassResult = tcsGetVersion.checkForPassResult
-        action.checkForFailResult = framework.checkResponseError
         testScript.actions.push(action)
         return testScript
     },
@@ -157,7 +155,7 @@ module.exports = tcsGetVersion = {
         expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
     },
 
-    checkForPassResult: function(param, expected, actual){
+    checkForPassResult: function(action, param, expected, actual){
         let version = actual.result
         if(param.format && param.format == 'json'){
             expect(version).to.be.jsonSchema(schema.VERSION_JSON_SCHEMA)
