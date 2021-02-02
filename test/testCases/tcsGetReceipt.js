@@ -41,7 +41,7 @@ module.exports = tcsGetReceipt = {
         scriptCode = prefixCode + '100' + '_发送币的交易'
         {
             let hash = server.mode.txs.tx1.hash
-            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -51,9 +51,9 @@ module.exports = tcsGetReceipt = {
         scriptCode = prefixCode + '100' + '_不存在的交易哈希'
         {
             let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
-            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 't find transaction'))
+                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -62,7 +62,7 @@ module.exports = tcsGetReceipt = {
         scriptCode = prefixCode + '200' + '_数字'
         {
             let hash = '100093'
-            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -73,9 +73,9 @@ module.exports = tcsGetReceipt = {
         scriptCode = prefixCode + '300' + '_字符串乱码'
         {
             let hash = '1231dsfafwrwerwer'
-            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-269, 'encoding/hex: invalid byte'))
+                framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
