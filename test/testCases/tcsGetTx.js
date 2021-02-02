@@ -23,22 +23,27 @@ module.exports = tcsGetTx = {
     //region get tx check
 
     //region get tx by hash
+    testForGetTransaction: function(server, describeTitle,){
+        tcsGetTx.testForGetTransactionByLedger(server, describeTitle, null)
+        tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.current)
+        tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.validated)
+    },
 
-    testForGetTransaction: function(server, describeTitle){
+    testForGetTransactionByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
-
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
+        describeTitle = describeTitle + ', ledger: ' + ledger
         let txs = server.mode.txs
 
         //endregion
 
         testCaseCode = 'FCJT_getTransactionByHash_000010'
-        scriptCode = defaultScriptCode + '_查询有效交易哈希-底层币'
+        scriptCode = prefixCode + '100' + '_查询有效交易哈希-底层币'
         {
             let hash = txs.tx1.hash
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
@@ -46,7 +51,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000020'
-        scriptCode = defaultScriptCode + '_查询有效交易哈希-token'
+        scriptCode = prefixCode + '100' + '_查询有效交易哈希-token'
         {
             let hash = txs.tx_token.hash
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
@@ -54,7 +59,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000030'
-        scriptCode = defaultScriptCode + '_查询有效交易哈希-memos'
+        scriptCode = prefixCode + '100' + '_查询有效交易哈希-memos'
         {
             let hash = txs.tx_memo.hash
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
@@ -62,7 +67,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000040'
-        scriptCode = defaultScriptCode + '_查询无效交易哈希:数字'
+        scriptCode = prefixCode + '100' + '_查询无效交易哈希:数字'
         {
             let hash = 1231111
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
@@ -73,18 +78,18 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000040'
-        scriptCode = '000200' + '_查询无效交易哈希:字符串'
+        scriptCode = prefixCode + '200' + '_查询无效交易哈希:字符串'
         {
             let hash = 'data.tx1.hash'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-269, 'invalid byte'))
+                framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000040'
-        scriptCode = '000300' + '_查询无效交易哈希:参数为空'
+        scriptCode = prefixCode + '300' + '_查询无效交易哈希:参数为空'
         {
             let hash = null
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
@@ -95,7 +100,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000040'
-        scriptCode = '000400' + '_无效交易哈希：不存在的hash'
+        scriptCode = prefixCode + '400' + '_无效交易哈希：不存在的hash'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
@@ -106,12 +111,12 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByHash_000040'
-        scriptCode = '000500' + '_无效交易哈希：hash长度超过标准'
+        scriptCode = prefixCode + '500' + '_无效交易哈希：hash长度超过标准'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-189, 'index out of range'))
+                framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -119,11 +124,7 @@ module.exports = tcsGetTx = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScriptForGetTransaction: function(server, testCaseCode, scriptCode, hash,){
-
-        let functionName = consts.rpcFunctions.getTransactionByHash
-        let txParams = []
-        txParams.push(hash)
+    createTestScriptForGetTransaction: function(server, testCaseCode, scriptCode, hash, ledger){
 
         let testScript = framework.createTestScript(
             server,
@@ -134,26 +135,21 @@ module.exports = tcsGetTx = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetTx.checkTransaction, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByHash)
+        let param = server.createParamGetTxByHash(hash, ledger)
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetTx.checkForPassResult
         testScript.actions.push(action)
         return testScript
 
     },
 
-    checkTransaction: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
-            let hash = action.txParams[0]
-            // let hash = action.checkParams.hash
-            expect(response.result.hash).to.be.equal(hash)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResult: function(action, param, expected, actual){
+        let tx = actual.result
+        expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
+        let hash = param.hash
+        expect(tx.hash).to.be.equal(hash)
     },
 
     //endregion
