@@ -23,6 +23,7 @@ module.exports = tcsGetTx = {
     //region get tx check
 
     //region get tx by hash
+
     testForGetTransaction: function(server, describeTitle,){
         tcsGetTx.testForGetTransactionByLedger(server, describeTitle, null)
         tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.current)
@@ -46,7 +47,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '100' + '_查询有效交易哈希-底层币'
         {
             let hash = txs.tx1.hash
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -54,7 +55,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '100' + '_查询有效交易哈希-token'
         {
             let hash = txs.tx_token.hash
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -62,7 +63,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '100' + '_查询有效交易哈希-memos'
         {
             let hash = txs.tx_memo.hash
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -70,7 +71,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '100' + '_查询无效交易哈希:数字'
         {
             let hash = 1231111
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'hash is not string'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -81,7 +82,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '200' + '_查询无效交易哈希:字符串'
         {
             let hash = 'data.tx1.hash'
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -92,7 +93,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '300' + '_查询无效交易哈希:参数为空'
         {
             let hash = null
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'hash is null'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -103,7 +104,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '400' + '_无效交易哈希：不存在的hash'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -114,7 +115,7 @@ module.exports = tcsGetTx = {
         scriptCode = prefixCode + '500' + '_无效交易哈希：hash长度超过标准'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
-            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash)
+            let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -139,13 +140,13 @@ module.exports = tcsGetTx = {
         let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByHash)
         let param = server.createParamGetTxByHash(hash, ledger)
         action.txParams = [param]
-        action.checkForPassResult = tcsGetTx.checkForPassResult
+        action.checkForPassResult = tcsGetTx.checkForPassResultForByHash
         testScript.actions.push(action)
         return testScript
 
     },
 
-    checkForPassResult: function(action, param, expected, actual){
+    checkForPassResultForByHash: function(action, param, expected, actual){
         let tx = actual.result
         expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
         let hash = param.hash
@@ -156,14 +157,21 @@ module.exports = tcsGetTx = {
 
     //region get tx by index
 
-    testForGetTransactionByIndex: function(server, describeTitle){
+    testForGetTransactionByIndex: function(server, describeTitle,){
+        tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, null)
+        tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, consts.ledgers.current)
+        tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, consts.ledgers.validated)
+    },
+
+    testForGetTransactionByIndexByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
+        describeTitle = describeTitle + ', ledger: ' + ledger
 
         let txs = server.mode.txs
         let tx = txs.tx1
@@ -173,30 +181,30 @@ module.exports = tcsGetTx = {
         //endregion
 
         testCaseCode = 'FCJT_getTransactionByIndex_000010'
-        scriptCode = defaultScriptCode + '_token tx,有效的地址，有效的sequence'
+        scriptCode = prefixCode + '100' + '_token tx,有效的地址，有效的sequence'
         {
             tx = txs.tx_token
             from = tx.Account
             index = tx.Sequence
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000010'
-        scriptCode = '000200' + '_swt tx,有效的地址，有效的sequence'
+        scriptCode = prefixCode + '200' + '_swt tx,有效的地址，有效的sequence'
         {
             tx = txs.tx1
             from = tx.Account
             index = tx.Sequence
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000010'
-        scriptCode = '000300' + '_swt tx,有效的地址，有效的sequence'
+        scriptCode = prefixCode + '300' + '_swt tx,有效的地址，有效的sequence'
         {
             tx = txs.tx1
-            from = tx.Account
+            let from = tx.Account
             let lastIndex = 10
 
             let testScript = framework.createTestScript(
@@ -209,54 +217,53 @@ module.exports = tcsGetTx = {
                 [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
             )
 
+            let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByIndex)
             for(let i = 1; i <= lastIndex; i++){
-                index = i
-                let functionName = consts.rpcFunctions.getTransactionByIndex
-                let txParams = []
-                txParams.push(from)
-                txParams.push(index)
-                let action = framework.createTestAction(testScript, functionName, txParams,
-                    framework.executeTestActionForGet, tcsGetTx.checkTransactionByIndex, [{needPass:true}])
-                testScript.actions.push(action)
+                let index = i
+                let param = server.createParamGetTxByIndex(from, index, ledger)
+                action.txParams.push(param)
+                action.expectedResults.push({needPass:true})
             }
+
+            testScript.actions.push(action)
 
             framework.addTestScript(testScripts, testScript)
 
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000020'
-        scriptCode = defaultScriptCode + '_有效的地址，无效的sequence,很大的数值'
+        scriptCode = prefixCode + '100' + '_有效的地址，无效的sequence,很大的数值'
         {
             tx = txs.tx1
             from = tx.Account
             index = 99999999
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 't find transaction'))
+                framework.getError(140,  ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000020'
-        scriptCode = '000200' + '_有效的地址，无效的sequence,0'
+        scriptCode = prefixCode + '200' + '_有效的地址，无效的sequence,0'
         {
             tx = txs.tx1
             from = tx.Account
             index = 0
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 't find transaction'))
+                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000020'
-        scriptCode = '000300' + '_有效的地址，无效的sequence,负数'
+        scriptCode = prefixCode + '300' + '_有效的地址，无效的sequence,负数'
         {
             tx = txs.tx1
             from = tx.Account
             index = -1
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-269, 'index or sequence should be >= 0'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -264,37 +271,37 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000020'
-        scriptCode = '000400' + '_有效的地址，无效的sequence,小数'
+        scriptCode = prefixCode + '400' + '_有效的地址，无效的sequence,小数'
         {
             tx = txs.tx1
             from = tx.Account
             index = 5.87
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-269, 'index or sequence is not integer'))
+                framework.getError(-269, 'sequence is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000020'
-        scriptCode = '000500' + '_有效的地址，无效的sequence,乱码字符串'
+        scriptCode = prefixCode + '500' + '_有效的地址，无效的sequence,乱码字符串'
         {
             tx = txs.tx1
             from = tx.Account
             index = 'sjdflsajf32241kjksd'
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-269, 'index or sequence is not integer'))
+                framework.getError(-269, 'sequence is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000030'
-        scriptCode = defaultScriptCode + '_无效的地址参数_01：地址长度不够'
+        scriptCode = prefixCode + '100' + '_无效的地址参数_01：地址长度不够'
         {
             from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSV'
             index = 1
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -302,11 +309,11 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000030'
-        scriptCode = '000200' + '_无效的地址参数_01：地址长度过长'
+        scriptCode = prefixCode + '200' + '_无效的地址参数_01：地址长度过长'
         {
             from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm1'
             index = 1
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -314,11 +321,11 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000030'
-        scriptCode = '000200' + '_无效的地址参数_01：地址不以j开头'
+        scriptCode = prefixCode + '200' + '_无效的地址参数_01：地址不以j开头'
         {
             from = 'tpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm'
             index = 1
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -326,13 +333,13 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByIndex_000040'
-        scriptCode = defaultScriptCode + '_无效的地址参数_02：未激活的地址'
+        scriptCode = prefixCode + '100' + '_无效的地址参数_02：未激活的地址'
         {
             from = server.mode.addresses.inactiveAccount1.address
             index = 1
-            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index,)
+            let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 't find transaction'))
+                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -340,12 +347,7 @@ module.exports = tcsGetTx = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScriptForGetTransactionByIndex: function(server, testCaseCode, scriptCode, from, index){
-
-        let functionName = consts.rpcFunctions.getTransactionByIndex
-        let txParams = []
-        txParams.push(from)
-        txParams.push(index)
+    createTestScriptForGetTransactionByIndex: function(server, testCaseCode, scriptCode, address, sequence, ledger){
 
         let testScript = framework.createTestScript(
             server,
@@ -356,11 +358,23 @@ module.exports = tcsGetTx = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetTx.checkTransactionByIndex, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByIndex)
+        let param = server.createParamGetTxByIndex(address, sequence, ledger)
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetTx.checkForPassResultForByIndex
         testScript.actions.push(action)
         return testScript
 
+    },
+
+    checkForPassResultForByIndex: function(action, param, expected, actual){
+        let tx = actual.result
+        expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
+        let from = param.address
+        let index = param.sequence
+        expect(tx.Account).to.be.equal(from)
+        expect(tx.Sequence).to.be.equal(index)
     },
 
     checkTransactionByIndex: function(action){
@@ -407,7 +421,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000010'
-        scriptCode = '000200' + '_有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
+        scriptCode = prefixCode + '200' + '_有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
         {
 
             let hash = txs.block.blockHash
@@ -456,7 +470,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
-        scriptCode = '000200' + '_有效区块哈希，无效交易索引无效交易索引:负数'
+        scriptCode = prefixCode + '200' + '_有效区块哈希，无效交易索引无效交易索引:负数'
         {
             let hash = txs.block.blockHash
             let index = '-1'
@@ -468,7 +482,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
-        scriptCode = '000200' + '_有效区块哈希，无效交易索引无效交易索引:乱码'
+        scriptCode = prefixCode + '200' + '_有效区块哈希，无效交易索引无效交易索引:乱码'
         {
             let hash = txs.block.blockHash
             let index = 'asdf'
@@ -519,7 +533,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000010'
-        scriptCode = '000200' + '_有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
+        scriptCode = prefixCode + '200' + '_有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
         {
 
             let blockNumber = txs.block.blockNumber
@@ -578,7 +592,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
-        scriptCode = '000200' + '_有效区块编号，无效交易索引无效交易索引:负数'
+        scriptCode = prefixCode + '200' + '_有效区块编号，无效交易索引无效交易索引:负数'
         {
             let tx = txs.tx1
             let blockNumber = tx.ledger_index.toString()
@@ -591,7 +605,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
-        scriptCode = '000300' + '_有效区块编号，无效交易索引无效交易索引:乱码'
+        scriptCode = prefixCode + '300' + '_有效区块编号，无效交易索引无效交易索引:乱码'
         {
             let tx = txs.tx1
             let blockNumber = tx.ledger_index.toString()
