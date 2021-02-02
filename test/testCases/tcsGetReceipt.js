@@ -23,18 +23,31 @@ module.exports = tcsGetReceipt = {
     //region tx receipt check
 
     testForGetTransactionReceipt: function(server, describeTitle){
+        tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, null)
+        tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, consts.ledgers.current)
+        tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, consts.ledgers.validated)
+    },
+
+    testForGetTransactionReceiptByLedger: function(server, describeTitle, ledger){
 
         //region fields
-
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
 
+        let prefixCode = '000'
+        if(ledger){
+            if(ledger == consts.ledgers.current){
+                prefixCode = '001'
+            }
+            else if(ledger == consts.ledgers.validated){
+                prefixCode = '002'
+            }
+        }
         //endregion
 
         testCaseCode = 'FCJT_getTransactionReceipt_000010'
-        scriptCode = defaultScriptCode + '_发送币的交易'
+        scriptCode = prefixCode + '100' + '_发送币的交易'
         {
             let hash = server.mode.txs.tx1.hash
             let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
@@ -44,7 +57,7 @@ module.exports = tcsGetReceipt = {
         //todo FCJT_getTransactionReceipt_000010 查询有效的交易哈希（发币的交易、发送币的交易、底层币、代币等）
 
         testCaseCode = 'FCJT_getTransactionReceipt_000020'
-        scriptCode = defaultScriptCode + '_不存在的交易哈希'
+        scriptCode = prefixCode + '100' + '_不存在的交易哈希'
         {
             let hash = 'B9A45BD943EE1F3AB8F505A61F6EE38F251DA723ECA084CBCDAB5076C60F84E8'
             let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
@@ -55,7 +68,7 @@ module.exports = tcsGetReceipt = {
         }
 
         testCaseCode = 'FCJT_getTransactionReceipt_000020'
-        scriptCode = '000200' + '_数字'
+        scriptCode = prefixCode + '200' + '_数字'
         {
             let hash = '100093'
             let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
@@ -66,7 +79,7 @@ module.exports = tcsGetReceipt = {
         }
 
         testCaseCode = 'FCJT_getTransactionReceipt_000020'
-        scriptCode = '000300' + '_字符串乱码'
+        scriptCode = prefixCode + '300' + '_字符串乱码'
         {
             let hash = '1231dsfafwrwerwer'
             let testScript = tcsGetReceipt.createTestScript(server, testCaseCode, scriptCode, hash)
