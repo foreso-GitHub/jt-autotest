@@ -731,6 +731,63 @@ const ACCOUNTS_SCHEMA = {
     }
 }
 
+const CURRENCY_SCHEMA = {
+    title: "test response of jt_getCurrency",
+    type: "object",
+    required: [
+        "LedgerEntryType",
+        "Flags",
+        "Hash",
+        "Account",
+        "Sequence",
+        "Name",
+        "Decimals",
+        "TotalSupply",
+    ],
+    properties: {
+        "LedgerEntryType": {
+            "type": "string"
+        },
+        "Flags": {
+            "type": "integer"
+        },
+        "Hash": {
+            "type": "string"
+        },
+        "Account": {
+            "type": "string"
+        },
+        "Sequence": {
+            "type": "integer"
+        },
+        "Name": {
+            "type": "string"
+        },
+        "Decimals": {
+            "type": "integer"
+        },
+        "TotalSupply": {
+            type: "object",
+            required: [
+                "currency",
+                "issuer",
+                "value",
+            ],
+            properties: {
+                "currency": {
+                    "type": "string"
+                },
+                "issuer": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+            },
+        },
+    },
+}
+
 //todo need be replaced by SENDTX_SCHEMA
 const OLD_SENDTX_SCHEMA = {
     title: "test response of jt_sendTransaction",
@@ -1046,6 +1103,7 @@ module.exports = {
     WALLET_SCHEMA,
     ACCOUNT_SCHEMA,
     ACCOUNTS_SCHEMA,
+    CURRENCY_SCHEMA,
     RESPONSE_SCHEMA,
     GET_RESPONSE_SCHEMA,
     ERROR_SCHEMA,

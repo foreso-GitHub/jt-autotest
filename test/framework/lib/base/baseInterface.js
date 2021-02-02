@@ -119,9 +119,11 @@ function baseInterface() {
 
     //region createAccount
 
-    baseInterface.prototype.createAccount = async function(server, nickname, type){
-        let response = await this.responseCreateAccount(server, nickname, type)
-        return response.result[0].result
+    baseInterface.prototype.createParamCreateAccount = function(nickname, type) {
+        let param = {}
+        param.nick = nickname
+        if(type) param.type = type
+        return param
     }
 
     baseInterface.prototype.responseCreateAccount = function (server, nickname, type) {
@@ -129,11 +131,9 @@ function baseInterface() {
         return this.getResponse(server, consts.rpcFunctions.createAccount, [param])
     }
 
-    baseInterface.prototype.createParamCreateAccount = function(nickname, type) {
-        let param = {}
-        param.nick = nickname
-        if(type) param.type = type
-        return param
+    baseInterface.prototype.createAccount = async function(server, nickname, type){
+        let response = await this.responseCreateAccount(server, nickname, type)
+        return response.result[0].result
     }
 
     //endregion
@@ -189,12 +189,29 @@ function baseInterface() {
     //endregion
 
     //region currency
-    baseInterface.prototype.responseGetCurrency = function (server, currency, issuer) {
-        let params = []
-        params.push(currency)
-        if(issuer) params.push(issuer)
-        return this.getResponse(server, consts.rpcFunctions.getCurrency, params)
+
+    baseInterface.prototype.createParamGetCurrency = function(currency, issuer, ledger) {
+        let param = {}
+        param.currency = currency
+        if(issuer) param.issuer = issuer
+        if(ledger) param.ledger = ledger
+        return param
     }
+
+    baseInterface.prototype.responseGetCurrency = function (server, currency, issuer, ledger) {
+        let param = this.createParamGetCurrency(currency, issuer, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getCurrency, [param])
+    }
+
+    baseInterface.prototype.getCurrency = async function (server, currency, issuer, ledger) {
+        let response = await this.responseGetAccount(server, currency, issuer, ledger)
+        let currencyInfo
+        if(response && response.result && response.result[0] && response.result[0].result && response.result[0].result){
+            currencyInfo = response.result[0].result
+        }
+        return currencyInfo
+    }
+
     //endregion
 
     //region get tx

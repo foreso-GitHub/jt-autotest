@@ -23,26 +23,26 @@ module.exports = tcsGetCurrency = {
 
     //region get currency
     testForGetCurrency: function(server, describeTitle){
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, null)
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, consts.ledgers.validated)
-        tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, consts.ledgers.current)
+        tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, null)
+        tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, consts.ledgers.validated)
+        tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, consts.ledgers.current)
 
-        //todo need restore when these tags are supported.
-        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'earliest')
-        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'latest')
-        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, 'pending')
+        //todo need restore when these ledgers are supported.
+        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'earliest')
+        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'latest')
+        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'pending')
         // let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
         //     return chainData.chainDataName
         // })
-        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockNumber)  //block number
-        // tcsGetCurrency.testForGetCurrencyByTag(server, describeTitle, chainData.block.blockHash)  //block hash
+        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, chainData.block.blockNumber)  //block number
+        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, chainData.block.blockHash)  //block hash
     },
 
-    testForGetCurrencyByTag: function(server, describeTitle, tag){
+    testForGetCurrencyByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
-        describeTitle = describeTitle + '，tag为' + tag
+        describeTitle = describeTitle + '，ledger为' + ledger
 
         let testScripts = []
         let testCaseCode
@@ -61,7 +61,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = globalCoin.symbol
                 let issuer = null
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -70,7 +70,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = globalCoin.symbol
                 let issuer = globalCoin.issuer
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -79,9 +79,9 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = 'NoCoin_1'
                 let issuer = null
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
-                    tag == consts.ledgers.current
+                    ledger == consts.ledgers.current
                         ? framework.getError(140, 'no such currency info')
                         : framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -93,7 +93,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = 'CoinNotExists'
                 let issuer = null
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
                     framework.getError(-269, 'Bad Currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -105,9 +105,9 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = globalCoin.symbol
                 let issuer = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
-                    tag == consts.ledgers.current
+                    ledger == consts.ledgers.current
                         ? framework.getError(140, 'no such currency info')
                         : framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -119,7 +119,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = globalCoin.symbol
                 let issuer = globalCoin.issuer + 'a'
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
                     framework.getError(-269, 'Bad Base58 checksum'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -131,7 +131,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = localCoin.symbol
                 let issuer = localCoin.issuer
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 framework.addTestScript(testScripts, testScript)
             }
 
@@ -140,9 +140,9 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = 'NoCoin_1'
                 let issuer = null
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
-                    tag == consts.ledgers.current
+                    ledger == consts.ledgers.current
                         ? framework.getError(140, 'no such currency info')
                         : framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -154,7 +154,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = 'CoinNotExists'
                 let issuer = null
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
                     framework.getError(-269, 'Bad Currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -166,9 +166,9 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = 'NoCoin_1'
                 let issuer = localCoin.issuer
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
-                    tag == consts.ledgers.current
+                    ledger == consts.ledgers.current
                         ? framework.getError(140, 'no such currency info')
                         : framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -180,7 +180,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = 'NoCoin_1'
                 let issuer = 'localCoin.issuer'
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
                     framework.getError(-269, 'Bad Base58 string'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -192,9 +192,9 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = localCoin.symbol
                 let issuer = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
-                    tag == consts.ledgers.current
+                    ledger == consts.ledgers.current
                         ? framework.getError(140, 'no such currency info')
                         : framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -206,7 +206,7 @@ module.exports = tcsGetCurrency = {
             {
                 let symbol = localCoin.symbol
                 let issuer = localCoin.issuer + 'a'
-                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, tag,)
+                let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
                 let expectedResult = framework.createExpecteResult(false,
                     framework.getError(-269, 'Bad Base58 checksum'))
                 framework.changeExpectedResult(testScript, expectedResult)
@@ -217,21 +217,7 @@ module.exports = tcsGetCurrency = {
         })
     },
 
-    createTestScript: function(server, testCaseCode, scriptCode, symbol, issuer, tag,){
-
-        let functionName = consts.rpcFunctions.getCurrency
-        let txParams = []
-        txParams.push(symbol)
-        if(issuer != null) txParams.push(issuer)
-        if(tag != null) {
-            if(symbol == null){
-                txParams.push(consts.default.nativeCoin)  //使用tag，必须要有token
-            }
-            if(issuer == null){
-                txParams.push(consts.default.issuer)  //使用tag，必须要有issuer
-            }
-            txParams.push(tag)
-        }
+    createTestScript: function(server, testCaseCode, scriptCode, currency, issuer, ledger,){
 
         let testScript = framework.createTestScript(
             server,
@@ -242,24 +228,30 @@ module.exports = tcsGetCurrency = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetCurrency.checkGetCurrency, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getCurrency)
+        let param = server.createParamGetCurrency(currency, issuer, ledger)
+        if(ledger != null) {
+            if(currency == null){
+                param.currency = consts.default.nativeCoin  //使用ledger，必须要有token
+            }
+            if(issuer == null){
+                param.issuer = consts.default.issuer  //使用ledger，必须要有issuer
+            }
+        }
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetCurrency.checkForPassResult
         testScript.actions.push(action)
         return testScript
 
     },
 
-    checkGetCurrency: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            expect(response.result.TotalSupply.currency).to.equals(action.txParams[0])
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResult: function(action, param, expected, actual){
+        let currency = actual.result
+        expect(currency).to.be.jsonSchema(schema.CURRENCY_SCHEMA)
+        expect(currency.TotalSupply.currency).to.equals(param.currency)
     },
+
 //endregion
 
 }

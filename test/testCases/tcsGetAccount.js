@@ -25,18 +25,18 @@ module.exports = tcsGetAccount = {
     testForGetAccount: function(server, describeTitle){
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle, consts.coinCategory.native, null, null)
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle, consts.coinCategory.global, globalCoin.symbol, null)
-        tcsGetAccount.testForGetAccountByTag(server, describeTitle, consts.coinCategory.local, localCoin.symbol, localCoin.issuer)
+        tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.native, null, null)
+        tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.global, globalCoin.symbol, null)
+        tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.local, localCoin.symbol, localCoin.issuer)
     },
 
-    testForGetAccountByTag: function(server, describeTitle, coinType, symbol, issuer){
+    testForGetAccountByLedger: function(server, describeTitle, coinType, symbol, issuer){
         describe(describeTitle, function () {
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, null)
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.validated)
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.current)
 
-            //todo need restore when these tags are supported.
+            //todo need restore when these ledgers are supported.
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.closed)
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'earliest')
             // tcsGetAccount.testForGetAccountByParams(server, describeTitle, symbol, issuer, 'latest')
@@ -54,7 +54,7 @@ module.exports = tcsGetAccount = {
 
         //region fields
 
-        describeTitle = describeTitle + '，coinType为' + coinType + '，tag为' + ledger
+        describeTitle = describeTitle + '，coinType为' + coinType + '，ledger为' + ledger
 
         let testScripts = []
         let testCaseCode
@@ -145,7 +145,7 @@ module.exports = tcsGetAccount = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScript: function(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, ledger){
+    createTestScript: function(server, testCaseCode, scriptCode, addressOrName, currency, issuer, ledger){
 
         let testScript = framework.createTestScript(
             server,
@@ -158,13 +158,13 @@ module.exports = tcsGetAccount = {
         )
 
         let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getAccount)
-        let param = server.createParamGetAccount(addressOrName, symbol, issuer, ledger)
+        let param = server.createParamGetAccount(addressOrName, currency, issuer, ledger)
         if(ledger != null) {
-            if(symbol == null){
-                param.currency = consts.default.nativeCoin  //使用tag，必须要有token
+            if(currency == null){
+                param.currency = consts.default.nativeCoin  //使用ledger，必须要有token
             }
             if(issuer == null){
-                param.issuer = consts.default.issuer  //使用tag，必须要有issuer
+                param.issuer = consts.default.issuer  //使用ledger，必须要有issuer
             }
         }
         action.txParams = [param]
