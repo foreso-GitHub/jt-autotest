@@ -177,11 +177,11 @@ module.exports = tcsGetTxCount = {
 
     },
 
-    testGroupForGetTransactionCount: function(server, describeTitle, from, to, tag){
+    testGroupForGetTransactionCount: function(server, describeTitle, from, to, ledger){
 
         //region fields
 
-        describeTitle = describeTitle + '，tag为' + tag
+        describeTitle = describeTitle + '，ledger为' + ledger
 
         let testScripts = []
         let testCaseCode
@@ -195,13 +195,12 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = from.address
             let needSendTx = true
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let action = testScript.actions[0]
             action.from = from.address
             action.secret = from.secret
             action.to = to.address
             action.subCheck = function(action){
-                expect(action.actualResult.result).to.least(1)
                 expect(action.countAfterSend).to.equal(action.countBeforeSend + 1)
             }
             framework.addTestScript(testScripts, testScript)
@@ -212,10 +211,9 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = server.mode.addresses.inactiveAccount1.address
             let needSendTx = false
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let action = testScript.actions[0]
             action.subCheck = function(action){
-                expect(action.actualResult.result).to.least(1)
             }
             framework.addTestScript(testScripts, testScript)
         }
@@ -225,13 +223,12 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = from.nickname
             let needSendTx = true
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let action = testScript.actions[0]
             action.from = from.address
             action.secret = from.secret
             action.to = to.address
             action.subCheck = function(action){
-                expect(action.actualResult.result).to.least(1)
                 expect(action.countAfterSend).to.equal(action.countBeforeSend + 1)
             }
             framework.addTestScript(testScripts, testScript)
@@ -243,7 +240,7 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = 'jnZ7CDuqmj6Pe1KGMdiacfh4aeuXSDj'
             let needSendTx = false
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -255,7 +252,7 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = from.address + 'a'
             let needSendTx = false
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -267,7 +264,7 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = server.mode.addresses.wrongFormatAccount1.address
             let needSendTx = false
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -279,7 +276,7 @@ module.exports = tcsGetTxCount = {
         {
             let addressOrName = server.mode.addresses.inactiveAccount1.nickname
             let needSendTx = false
-            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,)
+            let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
             let expectedResult = framework.createExpecteResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
@@ -289,11 +286,11 @@ module.exports = tcsGetTxCount = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScriptForGetTransactionCount: function(server, testCaseCode, scriptCode, addressOrName, tag, needSendTx,){
+    createTestScriptForGetTransactionCount: function(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,){
 
         let txParams = []
         txParams.push(addressOrName)
-        if(tag) txParams.push(tag)
+        if(ledger) txParams.push(ledger)
 
         let testScript = framework.createTestScript(
             server,
@@ -304,10 +301,12 @@ module.exports = tcsGetTxCount = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, consts.rpcFunctions.getTransactionCount, txParams,
-            (needSendTx) ? tcsGetTxCount.executeGetTransactionCount : framework.executeTestActionForGet,
-            tcsGetTxCount.checkGetTransactionCount,
-            [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionCount)
+        let param = server.createParamGetTransactionCount(addressOrName, ledger)
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetTxCount.checkForPassResult
+        action.executeFunction = (needSendTx) ? tcsGetTxCount.executeGetTransactionCount : framework.executeTestActionForGet
         testScript.actions.push(action)
         return testScript
 
@@ -318,32 +317,23 @@ module.exports = tcsGetTxCount = {
         return new Promise(async (resolve, reject) => {
             let server = action.server
             let response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, action.txParams)
-            action.countBeforeSend = response.result
+            action.countBeforeSend = response.result[0].result
 
             let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, '1')
             await utility.sendTxs(server, txParams, 1)
             await utility.timeout(6000)
 
             response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, action.txParams)
-            action.countAfterSend = response.result
+            action.countAfterSend = response.result[0].result
             action.actualResult = response
             resolve('done')
         })
     },
 
-    checkGetTransactionCount: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            // let txCount = 1
-            // expect(response.result).to.equal(txCount)
-            // expect(action.countAfterSend).to.equal(action.countBeforeSend + 1)
-            action.subCheck(action)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResult: function(action, param, expected, actual){
+        let count = actual.result
+        expect(count).to.be.least(1)
+        action.subCheck(action)
     },
 
     //endregion
