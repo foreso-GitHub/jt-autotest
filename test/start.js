@@ -263,7 +263,7 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
                 //
-                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
 
                 tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
 

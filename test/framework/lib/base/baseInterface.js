@@ -43,16 +43,10 @@ function baseInterface() {
 
     //region block number
 
-    baseInterface.prototype.getBlockNumber = async function(server, type){
-        let response = await this.responseBlockNumber(server, type)
-        let number
-        if(type == 'number'){
-            number = response.result[0].result
-        }
-        else if (type == 'info'){
-            number = response.result[0].result[0]
-        }
-        return number
+    baseInterface.prototype.createParamBlockNumber = function(type) {
+        let param = {}
+        param.type = type
+        return param
     }
 
     baseInterface.prototype.responseBlockNumber = function(server, type) {
@@ -60,29 +54,23 @@ function baseInterface() {
         return this.getResponse(server, consts.rpcFunctions.getBlockNumber, [param])
     }
 
-    baseInterface.prototype.createParamBlockNumber = function(type) {
-        let param = {}
-        param.type = type
-        return param
+    baseInterface.prototype.getBlockNumber = async function(server, type){
+        let response = await this.responseBlockNumber(server, type)
+        let number
+        if(response && !response.error && response.result && response.result[0] && response.result[0].result){
+            if(type == 'number'){
+                number = response.result[0].result
+            }
+            else if (type == 'info'){
+                number = response.result[0].result[0]
+            }
+        }
+        return number
     }
 
     //endregion
 
     //region balance
-
-    baseInterface.prototype.getBalance = async function (server, address, currency, issuer, ledger) {
-        let balance = null
-        let response = await this.responseGetBalance(server, address, currency, issuer, ledger)
-        if(response.result && response.result[0] && response.result[0].result){
-            balance = response.result[0].result.balance
-        }
-        return balance
-    }
-
-    baseInterface.prototype.responseGetBalance = function (server, address, currency, issuer, ledger) {
-        let param = this.createParamGetBalance(address, currency, issuer, ledger)
-        return this.getResponse(server, consts.rpcFunctions.getBalance, [param])
-    }
 
     baseInterface.prototype.createParamGetBalance = function(address, currency, issuer, ledger) {
         let param = {}
@@ -93,13 +81,29 @@ function baseInterface() {
         return param
     }
 
+    baseInterface.prototype.responseGetBalance = function (server, address, currency, issuer, ledger) {
+        let param = this.createParamGetBalance(address, currency, issuer, ledger)
+        return this.getResponse(server, consts.rpcFunctions.getBalance, [param])
+    }
+
+    baseInterface.prototype.getBalance = async function (server, address, currency, issuer, ledger) {
+        let response = await this.responseGetBalance(server, address, currency, issuer, ledger)
+        let result = this.returnObjectInResponse(response)
+        let balance = null
+        if(result){
+            balance = result.balance
+        }
+        return balance
+    }
+
     //endregion
 
     //region new wallet
 
-    baseInterface.prototype.createWallet = async function(server, type){
-        let response = await this.responseCreateWallet(server, type)
-        return response.result[0].result
+    baseInterface.prototype.createParamCreateWallet = function(type) {
+        let param = {}
+        param.type = type
+        return param
     }
 
     baseInterface.prototype.responseCreateWallet = function (server, type) {
@@ -107,10 +111,9 @@ function baseInterface() {
         return this.getResponse(server, 'jt_createWallet', [param])
     }
 
-    baseInterface.prototype.createParamCreateWallet = function(type) {
-        let param = {}
-        param.type = type
-        return param
+    baseInterface.prototype.createWallet = async function(server, type){
+        let response = await this.responseCreateWallet(server, type)
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -133,7 +136,7 @@ function baseInterface() {
 
     baseInterface.prototype.createAccount = async function(server, nickname, type){
         let response = await this.responseCreateAccount(server, nickname, type)
-        return response.result[0].result
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -330,6 +333,7 @@ function baseInterface() {
         let response = await this.responseGetTxCountByBlockNumber(server, blockNumber, ledger)
         return this.returnObjectInResponse(response)
     }
+
     //endregion
 
     //region by number
@@ -395,11 +399,7 @@ function baseInterface() {
 
     baseInterface.prototype.getBlockByNumber = async function (server, blockNumber, full, ledger) {
         let response = await this.responseGetBlockByNumber(server, blockNumber, full, ledger)
-        let block
-        if(!response.error){
-            block = response.result[0].result
-        }
-        return block
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -421,11 +421,7 @@ function baseInterface() {
 
     baseInterface.prototype.getBlockByHash = async function (server, blockHash, full, ledger) {
         let response = await this.responseGetBlockByHash(server, blockHash, full, ledger)
-        let block
-        if(!response.error){
-            block = response.result[0].result
-        }
-        return block
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
