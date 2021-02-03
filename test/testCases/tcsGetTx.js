@@ -413,10 +413,7 @@ module.exports = tcsGetTx = {
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000010'
         scriptCode = prefixCode + '200' + '_有效区块哈希，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
         {
-
             let hash = txs.block.blockHash
-            let count = 16
-
             let testScript = framework.createTestScript(
                 server,
                 testCaseCode,
@@ -426,25 +423,23 @@ module.exports = tcsGetTx = {
                 [serviceType.newChain, ],
                 [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
             )
-
-            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockTransactionCountByHash, [hash],
+            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockTransactionCountByHash,
+                [hash],
                 async function(){
                     await framework.executeTestActionForGet(action)
-                    let count = action.actualResult.result
+                    let server = action.server
+                    let count = action.actualResult.result[0].result
                     for(let i = 0; i < count; i++){
-                        let txParams = []
-                        txParams.push(hash)
-                        txParams.push(i)
-                        let newAction = framework.createTestAction(action.testScript, functionName, txParams,
-                            framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+                        let newAction = framework.createTestActionForGet(testScript, functionName)
+                        let param = server.createParamGetTxByBlockHashAndIndex(hash, i)
+                        newAction.txParams = [param]
+                        newAction.checkForPassResult = tcsGetTx.checkForPassResultForGoThrough
                         testScript.actions.push(newAction)
                     }
                 },
                 null, [{needPass:true}])
             testScript.actions.push(action)
-
             framework.addTestScript(testScripts, testScript)
-
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
@@ -531,10 +526,7 @@ module.exports = tcsGetTx = {
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000010'
         scriptCode = prefixCode + '200' + '_有效区块编号，有效交易索引:查询有效区块编号，遍历所有有效交易索引'
         {
-
             let blockNumber = txs.block.blockNumber
-            let count = 16
-
             let testScript = framework.createTestScript(
                 server,
                 testCaseCode,
@@ -544,34 +536,23 @@ module.exports = tcsGetTx = {
                 [serviceType.newChain, ],
                 [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
             )
-
-            // for(let i = 0; i < count; i++){
-            //     let txParams = []
-            //     txParams.push(blockNumber)
-            //     txParams.push(i)
-            //     let action = framework.createTestAction(testScript, functionName, txParams,
-            //         framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
-            //     testScript.actions.push(action)
-            // }
-
-            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockTransactionCountByNumber, [blockNumber],
+            let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockTransactionCountByNumber,
+                [blockNumber],
                 async function(){
                     await framework.executeTestActionForGet(action)
-                    let count = action.actualResult.result
+                    let server = action.server
+                    let count = action.actualResult.result[0].result
                     for(let i = 0; i < count; i++){
-                        let txParams = []
-                        txParams.push(blockNumber)
-                        txParams.push(i)
-                        let newAction = framework.createTestAction(action.testScript, functionName, txParams,
-                            framework.executeTestActionForGet, tcsGetTx.checkTransactionForGoThrough, [{needPass:true}])
+                        let newAction = framework.createTestActionForGet(testScript, functionName)
+                        let param = server.createParamGetTxByBlockNumberAndIndex(blockNumber, i)
+                        newAction.txParams = [param]
+                        newAction.checkForPassResult = tcsGetTx.checkForPassResultForGoThrough
                         testScript.actions.push(newAction)
                     }
                 },
                 null, [{needPass:true}])
             testScript.actions.push(action)
-
             framework.addTestScript(testScripts, testScript)
-
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
@@ -666,16 +647,9 @@ module.exports = tcsGetTx = {
         framework.compareTxs(tx, tx1)
     },
 
-    checkTransactionForGoThrough: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResultForGoThrough: function(action, param, expected, actual){
+        let tx = actual.result
+        expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
     },
 
     //endregion
