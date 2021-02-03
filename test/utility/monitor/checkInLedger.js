@@ -15,9 +15,10 @@ const framekwork = require('../../framework/framework')
 // checkInLedgerByBlocks(103701, 105000)
 // checkInLedgerByBlocks(105001, 110000)
 // checkInLedgerByBlocks(110001, 112000)
+// checkInLedgerByBlocks(112001, 120000)
 //endregion
 
-checkInLedgerByBlocks(112001, 117000)
+checkInLedgerByBlocks(120001, 130000)
 
 async function checkInLedgerByBlocks(startBlock, endBlock){
     let server = framework.activeServer(modes[0])
@@ -44,7 +45,7 @@ async function checkBlock(server, blockNumber){
         let count = txs.length
         let failTxs = []
 
-        for(let i = 0; i < txs.length; i++){
+        for(let i = 0; i < count; i++){
             let hash = txs[i]
             let tx = await server.getTx(server, hash)
             let result = checkTx(blockNumber, tx)

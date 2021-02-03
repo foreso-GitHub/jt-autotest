@@ -263,8 +263,8 @@ describe('Jingtum测试', function() {
                 //
                 // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
                 //
-                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
-
+                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+                //
                 // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
 
 
@@ -276,17 +276,17 @@ describe('Jingtum测试', function() {
                 // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
                 //
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     2, 10, true, 5000, false, )
+                //     2, 10, true, 5000, true, )
                 //
                 // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
                 //region websocket subscribe
 
-                // this.timeout(360000)
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+                this.timeout(360000)
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 
