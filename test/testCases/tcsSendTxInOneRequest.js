@@ -21,7 +21,23 @@ const { token, } = require("../testData/testData")
 
 module.exports = tcsSendTxInOneRequest = {
 
-    testForSendTxs: function(server, describeTitle, txFunctionName, actionCount, txCount, needResetSequence, timeout, needCheck, ){
+    createPerformanceTestParam: function(txFunctionName, actionCount, txCount, serverCount, fromCount, toCount,
+                                         timeout, needResetSequence, needCheck, quickTx){
+        let param = {}
+        param.txFunctionName = txFunctionName           // sendTx or signTx+sendRaw
+        param.actionCount = actionCount                 // total count of actions in this test
+        param.txCount = txCount                         // tx count will be sent in per action
+        param.serverCount = serverCount                 // send txs through different server
+        param.fromCount = fromCount                     // send txs by different addresses
+        param.toCount = toCount                         // send txs by different addresses
+        param.timeout = timeout                         // time out between 2 actions.
+        param.needResetSequence = needResetSequence     // if need get sequence from chain on beginning, so avoid to be frozen in skipped sequence
+        param.needCheck = needCheck                     // if need check test result. some performance test need not check result.
+        param.quickTx = quickTx                         // flags='0x40000000'
+        return param
+    },
+
+    testForSendTxs: function(server, describeTitle, txFunctionName, actionCount, txCount, needResetSequence, timeout, needCheck, quickTx){
         let testScripts = []
         let testCaseCode
         let scriptCode
@@ -41,10 +57,19 @@ module.exports = tcsSendTxInOneRequest = {
 
         for(let j = 0; j < actionCount; j++){
             let txParams = framework.createTxParamsForTransfer(server)
+            if(quickTx) txParams[0].flags = consts.flags.quick
             let txTemplate = txParams[0]
             let expectResults = []
+
+            //select server in server list, then change action.server
+
             for(let i = 1; i < txCount; i++){
                 txParams.push(utility.deepClone(txTemplate))
+
+                //select from address in address list, then change param.from
+
+                //select to address in address list, then change param.to
+
                 expectResults.push(framework.createExpecteResult({needPass: true}))
             }
             framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)

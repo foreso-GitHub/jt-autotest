@@ -65,11 +65,13 @@ module.exports = consts = {
     // TxCoinBurnable  TransactionFlag = 0x00020000 (131072)
     // Mintable+Burnable  TransactionFlag = 0x00030000  (196608)
     // Neither Mintable nor Burnable  TransactionFlag = 0x00000000  (0)
+    // 增加快速交易标志位，标志位为0x40000000，也即1073741824
     flags:{
         normal: 0,
         mintable: 65536,
         burnable: 131072,
         both: 196608,
+        quick: 1073741824,
     },
     //endregion
 

@@ -282,11 +282,11 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                this.timeout(360000)
-                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                this.timeout(timeout)
+                // this.timeout(360000)
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // this.timeout(timeout)
 
                 //endregion
 
@@ -321,7 +321,7 @@ describe('Jingtum测试', function() {
 
                 // for(let i = 0; i < 5000; i++){
                 //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //         1, 50, true, 5000, false, )
+                //         1, 30, true, 5000, true, )
                 // }
 
                 this.timeout(timeout)
@@ -345,25 +345,31 @@ describe('Jingtum测试', function() {
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //     5, 10, true, 5000, false, )
 
-                // for(let i = 0; i < 10000; i++){
+                // for(let i = 0; i < 1; i++){
                 //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //         1, 50, true, 5000, false, )
                 // }
 
 
-                // //连续发送多个交易请求，每个请求一个交易，有检查【可去除】
+                // //连续发送多个交易请求，每个请求一个交易，有检查【完成】
                 // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
-                //
-                // //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.【可合并】
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     2, 2, true, 5000, true, false)
+
+                // //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.【完成】
                 // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
-                //
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.signTx,
+                //     1, 2, true, 5000, true, false)
+
                 // //向不同的账户连续发送交易【可合并】
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-                //
-                // //【可合并】
-                // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
-                //     allRpcServers, 1)
-                //
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                    5, 10, true, 5000, false, )
+
+                //【可合并】
+                tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
+                    allRpcServers, 1)
+
                 // //【可合并】
                 // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
                 //     allRpcServers, 1, 'WithoutResponse')
