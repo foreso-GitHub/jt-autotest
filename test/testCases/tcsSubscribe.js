@@ -57,26 +57,6 @@ module.exports = tcsSubscribe = {
 
     //region main
 
-    // createSingleTestCase: function(server, title, actions, needPass, expectedError){
-    //     let testCase = framework.createTestCase(
-    //         title,
-    //         server,
-    //         null,
-    //         null,
-    //         null,
-    //         tcsSubscribe.executeForSubscribe,
-    //         tcsSubscribe.checkForSubscribe,
-    //         {needPass: needPass, isErrorInResult: true, expectedError: expectedError},
-    //         restrictedLevel.L2,
-    //         [serviceType.newChain],
-    //         [interfaceType.websocket],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-    //     )
-    //
-    //     testCase.actions = actions
-    //
-    //     return testCase
-    // },
-
     createTestScript: function(server, testCaseCode, scriptCode, txFunctionName, actions){
 
         let testScript = framework.createTestScript(
@@ -3714,12 +3694,12 @@ module.exports = tcsSubscribe = {
             for(let i = 0;  i < action.checkParams.length; i++){
                 let expectedArray = tcsSubscribe.parseArray(action.checkParams[i])
                 if(expectedArray != null){
-                    let actualArray = tcsSubscribe.parseArray(results[0].result[i])
+                    let actualArray = tcsSubscribe.parseArray(results[0].result[i].result)
                     let compareResult = tcsSubscribe.compareArray(actualArray, expectedArray)
                     expect(compareResult).to.be.ok
                 }
                 else{
-                    expect(results[0].result[i]).to.be.equals(action.checkParams[i])
+                    expect(results[0].result[i].result).to.be.equals(action.checkParams[i])
                 }
             }
         }
