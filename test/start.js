@@ -282,11 +282,12 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                // this.timeout(360000)
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+                this.timeout(360000)
+                server.mode.testMode = testMode.singleMode
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 
@@ -363,12 +364,12 @@ describe('Jingtum测试', function() {
 
                 // //向不同的账户连续发送交易【可合并】
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                    5, 10, true, 5000, false, )
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     5, 10, true, 5000, false, )
 
-                //【可合并】
-                tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
-                    allRpcServers, 1)
+                // //【可合并】
+                // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
+                //     allRpcServers, 1)
 
                 // //【可合并】
                 // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
