@@ -377,42 +377,32 @@ module.exports = tcsGetTx = {
         expect(tx.Sequence).to.be.equal(index)
     },
 
-    checkTransactionByIndex: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
-            let from = action.txParams[0]
-            let index = action.txParams[1]
-            expect(response.result.Account).to.be.equal(from)
-            expect(response.result.Sequence).to.be.equal(index)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
-    },
-
     //endregion
 
     //region get tx by block and index
 
     testForGetTransactionByBlockHashAndIndex: function(server, describeTitle){
+        tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, null)
+        tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, consts.ledgers.current)
+        tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, consts.ledgers.validated)
+    },
+
+    testForGetTransactionByBlockHashAndIndexByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
-
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
+        describeTitle = describeTitle + ', ledger: ' + ledger
         let txs = server.mode.txs
         let functionName = consts.rpcFunctions.getTransactionByBlockHashAndIndex
 
         //endregion
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000010'
-        scriptCode = defaultScriptCode + '_有效区块哈希，有效交易索引'
+        scriptCode = prefixCode + '100'  + '_有效区块哈希，有效交易索引'
         {
             let hash = txs.block.blockHash
             let index = txs.tx1.meta.TransactionIndex.toString()
@@ -458,7 +448,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000020'
-        scriptCode = defaultScriptCode + '_有效区块哈希，无效交易索引无效交易索引:999999'
+        scriptCode = prefixCode + '100'  + '_有效区块哈希，无效交易索引无效交易索引:999999'
         {
             let hash = txs.block.blockHash
             let index = '999999'
@@ -476,7 +466,7 @@ module.exports = tcsGetTx = {
             let index = '-1'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-189, 'index out of range'))
+                framework.getError(140, 'no such transaction in block:'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -494,7 +484,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockHashAndIndex_000030'
-        scriptCode = defaultScriptCode + '_无效区块哈希'
+        scriptCode = prefixCode + '100'  + '_无效区块哈希'
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let index = '0'
@@ -509,21 +499,27 @@ module.exports = tcsGetTx = {
     },
 
     testForGetTransactionByBlockNumberAndIndex: function(server, describeTitle){
+        tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, null)
+        tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, consts.ledgers.current)
+        tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, consts.ledgers.validated)
+    },
+
+    testForGetTransactionByBlockNumberAndIndexByLedger: function(server, describeTitle, ledger){
 
         //region fields
 
         let testScripts = []
         let testCaseCode
-        let defaultScriptCode = '000100'
         let scriptCode
-
+        let prefixCode = utility.getPrefixCodeForLedger(ledger)
+        describeTitle = describeTitle + ', ledger: ' + ledger
         let txs = server.mode.txs
         let functionName = consts.rpcFunctions.getTransactionByBlockNumberAndIndex
 
         //endregion
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000010'
-        scriptCode = defaultScriptCode + '_有效区块编号，有效交易索引'
+        scriptCode = prefixCode + '100'  + '_有效区块编号，有效交易索引'
         {
             let tx = txs.tx1
             let blockNumber = tx.ledger_index.toString()
@@ -579,7 +575,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000020'
-        scriptCode = defaultScriptCode + '_有效区块编号，无效交易索引无效交易索引:999999'
+        scriptCode = prefixCode + '100'  + '_有效区块编号，无效交易索引无效交易索引:999999'
         {
             let tx = txs.tx1
             let blockNumber = tx.ledger_index.toString()
@@ -599,7 +595,7 @@ module.exports = tcsGetTx = {
             let index = '-1'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-189, 'index out of range'))
+                framework.getError(140, 'no such transaction in block:'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -618,7 +614,7 @@ module.exports = tcsGetTx = {
         }
 
         testCaseCode = 'FCJT_getTransactionByBlockNumberAndIndex_000030'
-        scriptCode = defaultScriptCode + '_无效区块编号'
+        scriptCode = prefixCode + '100'  + '_无效区块编号'
         {
             let blockNumber = '999999999'
             let index = '0'
@@ -632,7 +628,7 @@ module.exports = tcsGetTx = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    createTestScriptForGetTransactionByBlockAndIndex: function(server, testCaseCode, scriptCode, functionName, hashOrNumber, index,){
+    createTestScriptForGetTransactionByBlockAndIndex: function(server, testCaseCode, scriptCode, functionName, hashOrNumber, index, ledger){
 
         let txParams = []
         txParams.push(hashOrNumber)
@@ -647,25 +643,27 @@ module.exports = tcsGetTx = {
             [serviceType.newChain, ],
             [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
         )
-        let action = framework.createTestAction(testScript, functionName, txParams,
-            framework.executeTestActionForGet, tcsGetTx.checkTransactionByBlockHashAndIndex, [{needPass:true}])
+
+        let action = framework.createTestActionForGet(testScript, functionName)
+        let param
+        if(functionName == consts.rpcFunctions.getTransactionByBlockNumberAndIndex){
+            param = server.createParamGetTxByBlockNumberAndIndex(hashOrNumber, index, ledger)
+        }
+        else if(functionName == consts.rpcFunctions.getTransactionByBlockHashAndIndex){
+            param = server.createParamGetTxByBlockHashAndIndex(hashOrNumber, index, ledger)
+        }
+        action.txParams = [param]
+        action.checkForPassResult = tcsGetTx.checkForPassResultForByBlockHashAndIndex
         testScript.actions.push(action)
         return testScript
 
     },
 
-    checkTransactionByBlockHashAndIndex: function(action){
-        let response = action.actualResult
-        let needPass = action.expectedResults[0].needPass
-        framework.checkGetResponse(response)
-        if(needPass){
-            expect(response.result).to.be.jsonSchema(schema.TX_SCHEMA)
-            let tx1 = action.server.mode.txs.tx1
-            framework.compareTxs(response.result, tx1)
-        }
-        else{
-            framework.checkResponseError(action.expectedResults[0], response)
-        }
+    checkForPassResultForByBlockHashAndIndex: function(action, param, expected, actual){
+        let tx = actual.result
+        expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
+        let tx1 = action.server.mode.txs.tx1
+        framework.compareTxs(tx, tx1)
     },
 
     checkTransactionForGoThrough: function(action){

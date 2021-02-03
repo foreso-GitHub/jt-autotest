@@ -156,11 +156,7 @@ function baseInterface() {
 
     baseInterface.prototype.getAccount = async function (server, address, currency, issuer, ledger) {
         let response = await this.responseGetAccount(server, address, currency, issuer, ledger)
-        let account
-        if(response && response.result && response.result[0] && response.result[0].result){
-            account = response.result[0].result
-        }
-        return account
+        return this.returnObjectInResponse(response)
     }
 
     baseInterface.prototype.getSequence = async function (server, address, currency, issuer, ledger) {
@@ -205,11 +201,7 @@ function baseInterface() {
 
     baseInterface.prototype.getCurrency = async function (server, currency, issuer, ledger) {
         let response = await this.responseGetAccount(server, currency, issuer, ledger)
-        let currencyInfo
-        if(response && response.result && response.result[0] && response.result[0].result){
-            currencyInfo = response.result[0].result
-        }
-        return currencyInfo
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -232,11 +224,7 @@ function baseInterface() {
 
     baseInterface.prototype.getTxByHash = async function (server, hash, ledger) {
         let response = await this.responseGetTxByHash(server, hash, ledger)
-        let tx
-        if(response && !response.error && response.result && response.result[0] && response.result[0].result){
-            tx = response.result[0].result
-        }
-        return tx
+        return this.returnObjectInResponse(response)
     }
 
     baseInterface.prototype.getTx = async function (server, hash, ledger) {
@@ -248,6 +236,7 @@ function baseInterface() {
     //region by index
 
     //jt_getTransactionByIndex
+
     baseInterface.prototype.createParamGetTxByIndex = function(address, sequence, ledger) {
         let param = {}
         param.address = address
@@ -259,6 +248,11 @@ function baseInterface() {
     baseInterface.prototype.responseGetTxByIndex = function (server, address, sequence, ledger) {
         let param = this.createParamGetTxByIndex(address, sequence, ledger)
         return this.getResponse(server, consts.rpcFunctions.getTransactionByIndex, [param])
+    }
+
+    baseInterface.prototype.getTxByIndex = async function (server, address, sequence, ledger) {
+        let response = await this.responseGetTxByHash(server, address, sequence, ledger)
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -313,11 +307,7 @@ function baseInterface() {
 
     baseInterface.prototype.getTransactionCount = async function (server, address, ledger) {
         let response = await this.responseGetTransactionCount(server, address, ledger)
-        let count
-        if(response && response.result && response.result[0] && response.result[0].result){
-            count = response.result[0].result
-        }
-        return count
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -338,11 +328,7 @@ function baseInterface() {
 
     baseInterface.prototype.getTxCountByBlockNumber = async function (server, blockNumber, ledger) {
         let response = await this.responseGetTxCountByBlockNumber(server, blockNumber, ledger)
-        let count
-        if(response && response.result && response.result[0] && response.result[0].result){
-            count = response.result[0].result
-        }
-        return count
+        return this.returnObjectInResponse(response)
     }
     //endregion
 
@@ -362,11 +348,7 @@ function baseInterface() {
 
     baseInterface.prototype.getTxCountByHash = async function (server, blockHash, ledger) {
         let response = await this.responseGetTxCountByHash(server, blockHash, ledger)
-        let count
-        if(response && response.result && response.result[0] && response.result[0].result){
-            count = response.result[0].result
-        }
-        return count
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -389,11 +371,7 @@ function baseInterface() {
 
     baseInterface.prototype.getTransactionReceipt = async function (server, hash, ledger) {
         let response = await this.responseGetTransactionReceipt(server, hash, ledger)
-        let receipt
-        if(response && response.result && response.result[0] && response.result[0].result){
-            receipt = response.result[0].result
-        }
-        return receipt
+        return this.returnObjectInResponse(response)
     }
 
     //endregion
@@ -532,6 +510,14 @@ function baseInterface() {
         data.method = method
         data.params = params
         return data
+    }
+
+    baseInterface.prototype.returnObjectInResponse = function(response){
+        let object
+        if(response && !response.error && response.result && response.result[0] && response.result[0].result){
+            object = response.result[0].result
+        }
+        return object
     }
 
     //endregion
