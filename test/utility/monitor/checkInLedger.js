@@ -16,66 +16,61 @@ const framekwork = require('../../framework/framework')
 // checkInLedgerByBlocks(105001, 110000)
 // checkInLedgerByBlocks(110001, 112000)
 // checkInLedgerByBlocks(112001, 120000)
+// checkInLedgerByBlocks(120001, 125000)
+// checkInLedgerByBlocks(125001, 126000)
+// checkInLedgerByBlocks(126001, 126500)
 //endregion
 
-checkInLedgerByBlocks(120001, 130000)
+checkInLedgerByBlocks(126466, 126500)
 
 async function checkInLedgerByBlocks(startBlock, endBlock){
     let server = framework.activeServer(modes[0])
-    let failTxs = await checkBlocks(server, startBlock, endBlock)
-    logger.debug('Total fail txs count: ' + failTxs.length)
-    for(let i = 0; i < failTxs.length; i++){
+    let checkResult = await checkBlocks(server, startBlock, endBlock)
+    logger.debug('Total tx count: ' + checkResult.txCount + ', fail txs count: ' + checkResult.failTxs.length)
+    for(let i = 0; i < checkResult.failTxs.length; i++){
         logger.debug((i+1).toString() + '. ' + failTxs[i])
     }
 }
 
 async function checkBlocks(server, startBlock, endBlock){
-    let failTxs = []
+    let checkResult = {}
+    checkResult.failTxs = []
+    checkResult.txCount = 0
     for(let i = startBlock; i <= endBlock; i++){
-        let subFailTxs = await checkBlock(server, i)
-        failTxs = failTxs.concat(subFailTxs)
+        let subResult = await checkBlock(server, i)
+        checkResult.failTxs = checkResult.failTxs.concat(subResult.failTxs)
+        checkResult.txCount += subResult.count
+        logger.debug('Block ' + i + ' has checked, total ' + subResult.count
+            + ' txs, found ' + checkResult.failTxs.length + ' failed tx! '
+            + 'Total block count: ' + (i - startBlock + 1)
+            + ', tx count: ' + checkResult.txCount
+            + ', failed tx count:' + checkResult.failTxs.length
+        )
     }
-    return failTxs
+    checkResult.blockCount = endBlock - startBlock + 1
+    return checkResult
 }
 
 async function checkBlock(server, blockNumber){
     let block = await server.getBlockByNumber(server, blockNumber, false)
     if(block){
         let txs = block.transactions
-        let count = txs.length
-        let failTxs = []
+        let checkResult = {}
+        checkResult.failTxs = []
+        checkResult.count = txs.length
 
-        for(let i = 0; i < count; i++){
+        for(let i = 0; i < checkResult.count; i++){
             let hash = txs[i]
             let tx = await server.getTx(server, hash)
             let result = checkTx(blockNumber, tx)
             if(!result){
-                failTxs.push(hash)
+                checkResult.failTxs.push(hash)
             }
         }
-        logger.debug('Block ' + blockNumber + ' has checked!')
-        if(failTxs.length > 0){
-            logger.debug('Block ' + blockNumber + ' has ' + failTxs.length + ' failed tx!')
-        }
-        return failTxs
 
-        // let index = 0
-        // txs.forEach(async hash => {
-        //     let tx = await server.getTx(server, hash)
-        //     let result = checkTx(blockNumber, tx)
-        //     if(!result){
-        //         failTxs.push(hash)
-        //     }
-        //     index++
-        //     if(index == count){
-        //         logger.debug('Block ' + blockNumber + ' has checked!')
-        //         if(failTxs.length > 0){
-        //             logger.debug('Block ' + blockNumber + ' has ' + failTxs.length + ' failed tx!')
-        //         }
-        //         return failTxs
-        //     }
-        // })
+        return checkResult
     }
+    return null
 }
 
 function checkTx(blockNumber, tx){
