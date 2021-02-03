@@ -322,22 +322,21 @@ module.exports = tcsGetTxCount = {
 
     },
 
-    executeGetTransactionCount: function(action){
+    executeGetTransactionCount: async function(action){
         action.hasExecuted = true
-        return new Promise(async (resolve, reject) => {
-            let server = action.server
-            let response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, action.txParams)
-            action.countBeforeSend = response.result[0].result
 
-            let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, '1')
-            await utility.sendTxs(server, txParams, 1)
-            await utility.timeout(6000)
+        let server = action.server
+        let address = action.txParams[0].address
+        let ledger = action.txParams[0].ledger
+        action.countBeforeSend = await server.getTransactionCount(server, address, ledger)
 
-            response = await server.getResponse(server, consts.rpcFunctions.getTransactionCount, action.txParams)
-            action.countAfterSend = response.result[0].result
-            action.actualResult = response
-            resolve('done')
-        })
+        let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, '1')
+        await utility.sendTxs(server, txParams, 1)
+        await utility.timeout(6000)
+
+        let response = await server.responseGetTransactionCount(server, address, ledger)
+        action.countAfterSend = response.result[0].result
+        action.actualResult = response
     },
 
     checkForPassResult: function(action, param, expected, actual){
