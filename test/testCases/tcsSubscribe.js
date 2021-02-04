@@ -3744,7 +3744,7 @@ module.exports = tcsSubscribe = {
         }
 
         for(let i = 0; i < tokens1.length; i++){
-            if(!utility.ifArrayHas2(tokens2, tokens1[i])){
+            if(!utility.ifArrayHas(tokens2, tokens1[i])){
                 return false
             }
         }

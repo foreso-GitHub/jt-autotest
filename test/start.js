@@ -135,8 +135,15 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                    2, 10, true, 5000, true, )
+                let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 10,
+                    [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
+                    5000, true, true, false)
+                tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
+
+                ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.signTx, 2, 10,
+                    [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 8,
+                    5000, true, true, false)
+                tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
@@ -191,15 +198,17 @@ describe('Jingtum测试', function() {
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
 
                 //region websocket subscribe
 
-                // this.timeout(360000)
-                // server.mode.testMode = testMode.singleMode
-                // // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+                this.timeout(360000)
+                server.mode.testMode = testMode.singleMode
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 
@@ -249,21 +258,6 @@ describe('Jingtum测试', function() {
                 //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
                 //     5000, true, false, false)
                 // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
-                // //向不同的账户连续发送交易【可合并】
-                // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-                //
-                // //【可合并】
-                // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
-                //     allRpcServers, 1)
-                //
-                // //【可合并】
-                // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
-                //     allRpcServers, 1, 'WithoutResponse')
-                //
-                // //用sendRaw发送交易 【可合并】
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流',
-                //     10, 2)
 
                 this.timeout(timeout)
 

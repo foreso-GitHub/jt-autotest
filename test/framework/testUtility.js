@@ -276,9 +276,6 @@ module.exports = testUtility = {
         return new Promise(async function(resolve, reject){
             server.responseGetTxByHash(server, hash, true)
                 .then(async function (response) {
-                    //retry
-                    // if(retriedCount < server.mode.retryMaxCount && (response.result.toString().indexOf('can\'t find transaction') != -1
-                    //     || response.result.toString().indexOf('no such transaction') != -1)){
                     if(retriedCount < server.mode.retryMaxCount && !testUtility.isResponseStatusSuccess(response)){
                         retriedCount++
                         logger.debug("===Try responseGetTxByHash again! The " + retriedCount + " retry!===")
@@ -427,7 +424,7 @@ module.exports = testUtility = {
         return newArray
     },
 
-    ifArrayHas: function(array, specialItem){
+    ifArrayHas_1: function(array, specialItem){
         let result = false
         array.forEach((item) => {
             if(item == specialItem){
@@ -438,7 +435,7 @@ module.exports = testUtility = {
         return result
     },
 
-    ifArrayHas2: function(array, item){
+    ifArrayHas: function(array, item){
         return testUtility.indexOf(array, item) != -1
     },
 
@@ -731,6 +728,9 @@ module.exports = testUtility = {
     //region common compare
 
     compareMemos: function(paramMemos, txMemos){
+        if(!txMemos && paramMemos.length == 0){
+            return true
+        }
         if(paramMemos.length != txMemos.length){
             return false
         }
