@@ -233,15 +233,43 @@ describe('Jingtum测试', function() {
 
                 //region basic test
 
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-                //
-                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-                //
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-                //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     2, 10, true, 5000, true, )
+                tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
+                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
+
+                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
+
+                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
+
+                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
+
+                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
+
+                tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
+
+                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
+
+                tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
+
+                tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
+
+                tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
+
+                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
+
+                tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
+
+                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
+
+                tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
+
+                tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCountByHash')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
+
+                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
+
+                tcsSign.testForSign(server, '测试jt_sign')
 
                 //endregion
 

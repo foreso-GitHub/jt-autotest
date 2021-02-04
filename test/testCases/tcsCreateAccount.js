@@ -22,12 +22,12 @@ module.exports = tcsCreateAccount = {
 
     //region create account
     testForCreateAccount: function(server, describeTitle){
-
-        tcsCreateAccount.testByTypes(server, describeTitle, null)
-        tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.ECDSA)
-        tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.Ed25519)
-        tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.SM2)
-
+        describe(describeTitle, async function () {
+            tcsCreateAccount.testByTypes(server, describeTitle, null)
+            tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.ECDSA)
+            tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.Ed25519)
+            tcsCreateAccount.testByTypes(server, describeTitle, consts.walletTypes.SM2)
+        })
     },
 
     testByTypes: function(server, describeTitle, type){

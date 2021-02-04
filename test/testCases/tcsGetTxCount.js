@@ -23,9 +23,11 @@ module.exports = tcsGetTxCount = {
     //region tx count check
 
     testForGetBlockTransactionCountByHash: function(server, describeTitle){
-        tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, null)
-        tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, consts.ledgers.validated)
-        tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, consts.ledgers.current)
+        describe(describeTitle, async function () {
+            tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, null)
+            tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, consts.ledgers.validated)
+            tcsGetTxCount.testForGetBlockTransactionCountByHashByLedger(server, describeTitle, consts.ledgers.current)
+        })
     },
 
     testForGetBlockTransactionCountByHashByLedger: function(server, describeTitle, ledger){
@@ -73,9 +75,11 @@ module.exports = tcsGetTxCount = {
     },
 
     testForGetBlockTransactionCountByNumber: function(server, describeTitle){
-        tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, null)
-        tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, consts.ledgers.validated)
-        tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, consts.ledgers.current)
+        describe(describeTitle, async function () {
+            tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, null)
+            tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, consts.ledgers.validated)
+            tcsGetTxCount.testForGetBlockTransactionCountByNumberByLedger(server, describeTitle, consts.ledgers.current)
+        })
     },
 
     testForGetBlockTransactionCountByNumberByLedger: function(server, describeTitle, ledger){
@@ -172,19 +176,14 @@ module.exports = tcsGetTxCount = {
     //region jt_getTransactionCount
 
     testForGetTransactionCount: function(server, describeTitle){
-
-        //region fields
-
         let from = server.mode.addresses.nickNameSender
         let to = server.mode.addresses.nickNameReceiver
-
-        //endregion
-
-        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, null)
-        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.ledgers.current)
-        tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.ledgers.validated)
-        // tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_区块参数:100', from, to, 100)
-
+        describe(describeTitle, async function () {
+            tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, null)
+            tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.ledgers.current)
+            tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_无区块参数', from, to, consts.ledgers.validated)
+            // tcsGetTxCount.testGroupForGetTransactionCount(server, describeTitle + '_区块参数:100', from, to, 100)
+        })
     },
 
     testGroupForGetTransactionCount: function(server, describeTitle, from, to, ledger){

@@ -25,9 +25,11 @@ module.exports = tcsGetTx = {
     //region get tx by hash
 
     testForGetTransaction: function(server, describeTitle,){
-        tcsGetTx.testForGetTransactionByLedger(server, describeTitle, null)
-        tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.current)
-        tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.validated)
+        describe(describeTitle, async function () {
+            tcsGetTx.testForGetTransactionByLedger(server, describeTitle, null)
+            tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.current)
+            tcsGetTx.testForGetTransactionByLedger(server, describeTitle, consts.ledgers.validated)
+        })
     },
 
     testForGetTransactionByLedger: function(server, describeTitle, ledger){
@@ -158,9 +160,11 @@ module.exports = tcsGetTx = {
     //region get tx by index
 
     testForGetTransactionByIndex: function(server, describeTitle,){
-        tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, null)
-        tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, consts.ledgers.current)
-        tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, consts.ledgers.validated)
+        describe(describeTitle, async function () {
+            tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, null)
+            tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, consts.ledgers.current)
+            tcsGetTx.testForGetTransactionByIndexByLedger(server, describeTitle, consts.ledgers.validated)
+        })
     },
 
     testForGetTransactionByIndexByLedger: function(server, describeTitle, ledger){
@@ -382,9 +386,11 @@ module.exports = tcsGetTx = {
     //region get tx by block and index
 
     testForGetTransactionByBlockHashAndIndex: function(server, describeTitle){
-        tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, null)
-        tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, consts.ledgers.current)
-        tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, consts.ledgers.validated)
+        describe(describeTitle, async function () {
+            tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, null)
+            tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, consts.ledgers.current)
+            tcsGetTx.testForGetTransactionByBlockHashAndIndexByLedger(server, describeTitle, consts.ledgers.validated)
+        })
     },
 
     testForGetTransactionByBlockHashAndIndexByLedger: function(server, describeTitle, ledger){
@@ -494,9 +500,11 @@ module.exports = tcsGetTx = {
     },
 
     testForGetTransactionByBlockNumberAndIndex: function(server, describeTitle){
-        tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, null)
-        tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, consts.ledgers.current)
-        tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, consts.ledgers.validated)
+        describe(describeTitle, async function () {
+            tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, null)
+            tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, consts.ledgers.current)
+            tcsGetTx.testForGetTransactionByBlockNumberAndIndexByLedger(server, describeTitle, consts.ledgers.validated)
+        })
     },
 
     testForGetTransactionByBlockNumberAndIndexByLedger: function(server, describeTitle, ledger){
@@ -644,7 +652,8 @@ module.exports = tcsGetTx = {
         let tx = actual.result
         expect(tx).to.be.jsonSchema(schema.TX_SCHEMA)
         let tx1 = action.server.mode.txs.tx1
-        framework.compareTxs(tx, tx1)
+        let full = param.full
+        framework.compareTxs(tx, tx1, full)
     },
 
     checkForPassResultForGoThrough: function(action, param, expected, actual){

@@ -638,7 +638,7 @@ module.exports = framework = {
     //region 4. test scripts
 
     testTestScripts: function(server, describeTitle, testScripts) {
-        describeTitle = '【' + describeTitle + '】'
+        // describeTitle = '【' + describeTitle + '】'
         let testMode = server.mode.testMode
         if(!testMode || testMode == testModeEnums.batchMode){
             framework.testOnBatchMode(server, describeTitle, testScripts)
@@ -901,7 +901,7 @@ module.exports = framework = {
     //region normal response check
 
     //region compare
-    compareTxs: function(tx1, tx2){
+    compareTxs: function(tx1, tx2, full){
         expect(tx1.Account).to.be.equals(tx2.Account)
         expect(tx1.Destination).to.be.equals(tx2.Destination)
         expect(tx1.Fee).to.be.equals(tx2.Fee)
@@ -912,7 +912,7 @@ module.exports = framework = {
         expect(tx1.Sequence).to.be.equals(tx2.Sequence)
         expect(tx1.hash).to.be.equals(tx2.hash)
         expect(tx1.TransactionType).to.be.equals(tx2.TransactionType)
-        if(tx1.full != undefined && tx1.full){  //todo may need restore
+        if(full != undefined && full){  //todo may need restore
             expect(tx1.date).to.be.equals(tx2.date)
             expect(tx1.inLedger).to.be.equals(tx2.inLedger)
             expect(tx1.ledger_index).to.be.equals(tx2.ledger_index)

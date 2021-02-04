@@ -25,12 +25,15 @@ module.exports = tcsGetAccount = {
     testForGetAccount: function(server, describeTitle){
         let globalCoin = server.mode.coins[0]
         let localCoin = server.mode.coins[1]
-        tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.native, null, null)
-        tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.global, globalCoin.symbol, null)
-        tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.local, localCoin.symbol, localCoin.issuer)
+        describe(describeTitle, async function () {
+            tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.native, null, null)
+            tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.global, globalCoin.symbol, null)
+            tcsGetAccount.testForGetAccountByLedger(server, describeTitle, consts.coinCategory.local, localCoin.symbol, localCoin.issuer)
+        })
     },
 
     testForGetAccountByLedger: function(server, describeTitle, coinType, symbol, issuer){
+        describeTitle = describeTitle + ', coinType: ' + coinType
         describe(describeTitle, function () {
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, null)
             tcsGetAccount.testForGetAccountByParams(server, describeTitle, coinType, symbol, issuer, consts.ledgers.validated)

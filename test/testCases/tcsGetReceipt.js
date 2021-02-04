@@ -23,9 +23,11 @@ module.exports = tcsGetReceipt = {
     //region tx receipt check
 
     testForGetTransactionReceipt: function(server, describeTitle){
-        tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, null)
-        tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, consts.ledgers.current)
-        tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, consts.ledgers.validated)
+        describe(describeTitle, async function () {
+            tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, null)
+            tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, consts.ledgers.current)
+            tcsGetReceipt.testForGetTransactionReceiptByLedger(server, describeTitle, consts.ledgers.validated)
+        })
     },
 
     testForGetTransactionReceiptByLedger: function(server, describeTitle, ledger){

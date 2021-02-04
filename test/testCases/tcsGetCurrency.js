@@ -23,19 +23,21 @@ module.exports = tcsGetCurrency = {
 
     //region get currency
     testForGetCurrency: function(server, describeTitle){
-        tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, null)
-        tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, consts.ledgers.validated)
-        tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, consts.ledgers.current)
+        describe(describeTitle, async function () {
+            tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, null)
+            tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, consts.ledgers.validated)
+            tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, consts.ledgers.current)
 
-        //todo need restore when these ledgers are supported.
-        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'earliest')
-        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'latest')
-        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'pending')
-        // let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
-        //     return chainData.chainDataName
-        // })
-        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, chainData.block.blockNumber)  //block number
-        // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, chainData.block.blockHash)  //block hash
+            //todo need restore when these ledgers are supported.
+            // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'earliest')
+            // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'latest')
+            // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, 'pending')
+            // let chainData = testUtility.findItem(chainDatas, server.mode.chainDataName, function(chainData){
+            //     return chainData.chainDataName
+            // })
+            // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, chainData.block.blockNumber)  //block number
+            // tcsGetCurrency.testForGetCurrencyByLedger(server, describeTitle, chainData.block.blockHash)  //block hash
+        })
     },
 
     testForGetCurrencyByLedger: function(server, describeTitle, ledger){
