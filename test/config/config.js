@@ -36,10 +36,10 @@ let ws_yun_baidu = new ws()
 let ws_yun_tengxun = new ws()
 let ws_yun_huawei = new ws()
 let ws_yun_tianyi = new ws()
-let ws_yun_ali_02 = new rpc()
-let ws_yun_ali_03 = new rpc()
-let ws_yun_ali_04 = new rpc()
-let ws_yun_ali_05 = new rpc()
+let ws_yun_ali_02 = new ws()
+let ws_yun_ali_03 = new ws()
+let ws_yun_ali_04 = new ws()
+let ws_yun_ali_05 = new ws()
 
 let lib_main = new swtclib()
 let lib_test = new swtclib()
@@ -262,22 +262,22 @@ mode_ws_yun_tianyi.initParams = {url:'ws://61.171.12.71:9546/v1/jsonrpc'}
 let mode_ws_yun_ali_02  = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_ali_02.name = "ws_yun_ali_02"
 mode_ws_yun_ali_02.server = ws_yun_ali_02
-mode_ws_yun_ali_02.initParams = {url:'http://121.89.212.154:9546/v1/jsonrpc'}
+mode_ws_yun_ali_02.initParams = {url:'ws://121.89.212.154:9546/v1/jsonrpc'}
 
 let mode_ws_yun_ali_03  = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_ali_03.name = "ws_yun_ali_03"
 mode_ws_yun_ali_03.server = ws_yun_ali_03
-mode_ws_yun_ali_03.initParams = {url:'http://121.89.207.217:9546/v1/jsonrpc'}
+mode_ws_yun_ali_03.initParams = {url:'ws://121.89.207.217:9546/v1/jsonrpc'}
 
 let mode_ws_yun_ali_04  = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_ali_04.name = "ws_yun_ali_04"
 mode_ws_yun_ali_04.server = ws_yun_ali_04
-mode_ws_yun_ali_04.initParams = {url:'http://121.89.206.115:9546/v1/jsonrpc'}
+mode_ws_yun_ali_04.initParams = {url:'ws://121.89.206.115:9546/v1/jsonrpc'}
 
 let mode_ws_yun_ali_05  = cloneMode(mode_ws_yun_ali)
 mode_ws_yun_ali_05.name = "ws_yun_ali_05"
 mode_ws_yun_ali_05.server = ws_yun_ali_05
-mode_ws_yun_ali_05.initParams = {url:'http://121.89.198.119:9546/v1/jsonrpc'}
+mode_ws_yun_ali_05.initParams = {url:'ws://121.89.198.119:9546/v1/jsonrpc'}
 
 //endregion
 
@@ -327,6 +327,7 @@ let modes = [
     // mode_ws_yun_tengxun,
     // mode_ws_yun_huawei,
     // mode_ws_yun_tianyi,
+    // mode_ws_yun_ali_02,
 
     // mode_rpc_newChain,
     // mode_rpc_box01,

@@ -235,8 +235,9 @@ module.exports = tcsSendTxInOneRequest = {
         if(utility.ifArrayHas(serverTypes, interfaceType.websocket)){
             allServers = allServers.concat(wsServers)
         }
+        let max = Math.max(serverCount - 1, allServers.length - 1)
         let servers = []
-        let rands = utility.getRandList(0, serverCount - 1, serverCount, false)
+        let rands = utility.getRandList(0, max, serverCount, false)
         for(let i = 0; i < serverCount; i++){
             servers.push(allServers[rands[i]])
         }
