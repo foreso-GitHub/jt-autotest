@@ -63,6 +63,7 @@ module.exports = framework = {
     },
 
     //region active server
+
     activeServer: function(mode){
         let server = mode.server
         mode.server.init(mode)
@@ -73,22 +74,48 @@ module.exports = framework = {
         return server
     },
 
-    activeAllRpcServers: function(){
+    activeServers: function(type){
         let servers = []
-
-        // servers.push(framework.activeServer(allModes[0]))
-        // servers.push(framework.activeServer(allModes[1]))
-        // servers.push(framework.activeServer(allModes[2]))
-        // servers.push(framework.activeServer(allModes[3]))
-        // servers.push(framework.activeServer(allModes[4]))
 
         for(let i = 0; i < allModes.length; i++){
             let mode = allModes[i]
-            if(mode.name.indexOf('rpc') != -1){
+            if(type == interfaceType.rpc && mode.name.indexOf('rpc') != -1){
+                servers.push(framework.activeServer(mode))
+            }
+            else if(type == interfaceType.websocket && mode.name.indexOf('ws') != -1){
                 servers.push(framework.activeServer(mode))
             }
         }
 
+        return servers
+    },
+
+    // activeAllRpcServers: function(){
+    //     let servers = []
+    //
+    //     // servers.push(framework.activeServer(allModes[0]))
+    //     // servers.push(framework.activeServer(allModes[1]))
+    //     // servers.push(framework.activeServer(allModes[2]))
+    //     // servers.push(framework.activeServer(allModes[3]))
+    //     // servers.push(framework.activeServer(allModes[4]))
+    //
+    //     for(let i = 0; i < allModes.length; i++){
+    //         let mode = allModes[i]
+    //         if(mode.name.indexOf('rpc') != -1){
+    //             servers.push(framework.activeServer(mode))
+    //         }
+    //     }
+    //
+    //     return servers
+    // },
+
+    activeAllRpcServers: function(){
+        let servers = framework.activeServers(interfaceType.rpc)
+        return servers
+    },
+
+    activeAllWsServers: function(){
+        let servers = framework.activeServers(interfaceType.websocket)
         return servers
     },
 

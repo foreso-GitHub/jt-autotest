@@ -164,6 +164,7 @@ describe('Jingtum测试', function() {
                 //region websocket subscribe
 
                 this.timeout(360000)
+                server.mode.testMode = testMode.singleMode
                 tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
                 tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
@@ -229,80 +230,6 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
-                //region done
-
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
-                //
-                // tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-                //
-                // tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-                //
-                // tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-                //
-                // tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
-                //
-                // tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-                //
-                // tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
-                //
-                // tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-                //
-                // tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-                //
-                // tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
-                //
-                // tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
-                //
-                // tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCount')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
-                //
-                // tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
-                //
-                // tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
-                //
-                // tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
-                //
-                // tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
-                //
-                // tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
-
-
-
-                // tcsSign.testForSign(server, '测试jt_sign')
-                //
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-                //
-                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-                //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     2, 10, true, 5000, true, )
-                //
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-
-                //region websocket subscribe
-
-                this.timeout(360000)
-                server.mode.testMode = testMode.singleMode
-                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                this.timeout(timeout)
-
-                //endregion
-
-                //region special
-
-                // this.timeout(3600000)
-                // tcsBugInjection.testForBugInjection(server, '故障注入测试')
-                // tcsBugInjection.testForRAS(server, 'RAS测试')
-                // this.timeout(timeout)
-
-                //endregion
-
-                //endregion
-
-
 
                 //region need work on
 
@@ -343,8 +270,27 @@ describe('Jingtum测试', function() {
                 // 4. 多节点轮流发送交易 【节点list】
                 // 5. 增加发送间隔.x
                 // 6. 可以设定每次发送是否需要重取sequence.x
+
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //     5, 10, true, 5000, false, )
+
+                let param = {}
+                param.txFunctionName =  consts.rpcFunctions.sendTx
+                param.actionCount = 2
+                param.txCount = 2
+                param.serverTypes = interfaceType.websocket
+                param.serverCount = 2
+                param.fromCount = 2
+                param.toCount = 2
+                param.memoSize = 8
+                param.timeout = 5000
+                param.needResetSequence = true
+                param.needCheck = true
+                param.quickTx = false
+
+                tcsSendTxInOneRequest.testForSendTxs2(server, '一个请求执行多个交易', param)
+
+                // tcsSendTxInOneRequest.createServerList([interfaceType.rpc, interfaceType.websocket], 7, 10)
 
                 // for(let i = 0; i < 1; i++){
                 //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
