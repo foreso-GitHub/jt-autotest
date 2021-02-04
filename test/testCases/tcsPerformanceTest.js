@@ -22,7 +22,7 @@ const { token, } = require("../testData/testData")
 let rpcServers = framework.activeAllRpcServers()
 let wsServers = framework.activeAllWsServers()
 
-module.exports = tcsSendTxInOneRequest = {
+module.exports = tcsPerformanceTest = {
 
     //region design
 
@@ -93,12 +93,15 @@ module.exports = tcsSendTxInOneRequest = {
         )
 
         //select server in server list, then change action.server
-        let servers = tcsSendTxInOneRequest.createServerList(ptParam.serverTypes, ptParam.serverCount, ptParam.actionCount)
+        let servers = tcsPerformanceTest.createServerList(ptParam.serverTypes, ptParam.serverCount, ptParam.actionCount)
 
         //memos
         let memos
-        if(ptParam.memoSize && ptParam.memoSize > 0){
+        if(ptParam.memoSize){
             memos = utility.createMemosWithSpecialLength(ptParam.memoSize)
+        }
+        else{
+            memos = []
         }
 
         //region accounts
@@ -118,13 +121,13 @@ module.exports = tcsSendTxInOneRequest = {
         //select from address in address list, then change param.from
         let fromList
         if(ptParam.fromCount && ptParam.fromCount > 1){
-            fromList = tcsSendTxInOneRequest.createAccountList(fromAccounts, ptParam.fromCount, ptParam.actionCount)
+            fromList = tcsPerformanceTest.createAccountList(fromAccounts, ptParam.fromCount, ptParam.actionCount)
         }
 
         //select to address in address list, then change param.to
         let toList
         if(ptParam.toCount && ptParam.toCount > 1){
-            toList = tcsSendTxInOneRequest.createAccountList(toAccounts, ptParam.toCount, ptParam.actionCount)
+            toList = tcsPerformanceTest.createAccountList(toAccounts, ptParam.toCount, ptParam.actionCount)
         }
 
         //endregion
@@ -199,7 +202,7 @@ module.exports = tcsSendTxInOneRequest = {
     },
 
     createServerList: function(serverTypes, serverCount, requestCount){
-        let allServers = tcsSendTxInOneRequest.selectServers(serverTypes, serverCount)
+        let allServers = tcsPerformanceTest.selectServers(serverTypes, serverCount)
         let servers = []
         let rands = utility.getRandList(0, serverCount - 1, requestCount, true)
         for(let i = 0; i < requestCount; i++){
@@ -224,6 +227,10 @@ module.exports = tcsSendTxInOneRequest = {
         }
         return servers
     },
+
+    //endregion
+
+    //region performance test with memos
 
     //endregion
 

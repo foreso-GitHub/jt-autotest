@@ -27,7 +27,7 @@ const tcsGetTxCount = require('./testCases/tcsGetTxCount')
 const tcsSendAndSignTx = require('./testCases/tcsSendAndSignTx')
 const tcsSendRawTx = require('./testCases/tcsSendRawTx')
 const tcsPressureSendTx = require('./testCases/tcsPressureSendTx')
-const tcsSendTxInOneRequest = require('./testCases/tcsSendTxInOneRequest')
+const tcsPerformanceTest = require('./testCases/tcsPerformanceTest')
 const tcsIpfs = require('./testCases/tcsIpfs')
 const tcsInteractiveTest = require('./testCases/tcsInteractiveTest')
 const tcsBugInjection = require('./testCases/tcsBugInjection')
@@ -135,7 +135,7 @@ describe('Jingtum测试', function() {
 
                 tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
 
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                     2, 10, true, 5000, true, )
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
@@ -214,7 +214,7 @@ describe('Jingtum测试', function() {
 
 
                 // for(let i = 0; i < 5000; i++){
-                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //         1, 30, true, 5000, true, )
                 // }
 
@@ -226,57 +226,37 @@ describe('Jingtum测试', function() {
 
                 this.timeout(3600000)
 
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     5, 10, true, 5000, false, )
+                // let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 5, 2,
+                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
+                //     5000, true, true, false)
+                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
 
-                // let param = {}
-                // param.txFunctionName = consts.rpcFunctions.sendTx
-                // param.actionCount = 3
-                // param.txCount = 3
-                // param.serverTypes = [interfaceType.rpc, interfaceType.websocket]
-                // // param.serverTypes = [interfaceType.websocket]
-                // param.serverCount = 18
-                // param.fromCount = 2
-                // param.toCount = 2
-                // param.memoSize = 1
-                // param.timeout = 5000
-                // param.needResetSequence = true
-                // param.needCheck = true
-                // param.quickTx = false
-
-                let ptParam = tcsSendTxInOneRequest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 10, 2,
-                    [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
-                    5000, true, true, false)
-
-                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
-                // tcsSendTxInOneRequest.createServerList([interfaceType.rpc, interfaceType.websocket], 7, 10)
-
-                // for(let i = 0; i < 1; i++){
-                //     tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //         1, 50, true, 5000, false, )
+                // for(let i = 0; i < 2; i++){
+                //     let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 1, 20,
+                //         [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
+                //         5000, true, true, false)
+                //     tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
                 // }
 
-
                 // //连续发送多个交易请求，每个请求一个交易，有检查【完成】
-                // tcsPressureSendTx.testForPressureTest(server, '测试连续发送交易', 1)
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     2, 2, true, 5000, true, false)
+                // ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 10, 1,
+                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
+                //     5000, true, true, false)
+                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
 
                 // //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.【完成】
-                // tcsPressureSendTx.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.signTx,
-                //     1, 2, true, 5000, true, false)
+                // let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 50,
+                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
+                //     5000, true, false, false)
+                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
 
                 // //向不同的账户连续发送交易【可合并】
                 // tcsPressureSendTx.testForPerformanceTest(server, '性能测试：', 1)
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     5, 10, true, 5000, false, )
-
+                //
                 // //【可合并】
                 // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps',
                 //     allRpcServers, 1)
-
+                //
                 // //【可合并】
                 // tcsPressureSendTx.testForFastPerformance(server, '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps',
                 //     allRpcServers, 1, 'WithoutResponse')
@@ -284,7 +264,6 @@ describe('Jingtum测试', function() {
                 // //用sendRaw发送交易 【可合并】
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流',
                 //     10, 2)
-
 
                 this.timeout(timeout)
 
