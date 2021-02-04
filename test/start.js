@@ -191,6 +191,7 @@ describe('Jingtum测试', function() {
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
+
                 //region websocket subscribe
 
                 // this.timeout(360000)
@@ -243,7 +244,7 @@ describe('Jingtum测试', function() {
                 // param.needCheck = true
                 // param.quickTx = false
 
-                let ptParam = tcsSendTxInOneRequest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 5,
+                let ptParam = tcsSendTxInOneRequest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 10, 2,
                     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
                     5000, true, true, false)
 

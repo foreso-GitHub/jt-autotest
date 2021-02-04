@@ -101,7 +101,8 @@ module.exports = tcsSendTxInOneRequest = {
             memos = utility.createMemosWithSpecialLength(ptParam.memoSize)
         }
 
-        //accounts
+        //region accounts
+
         let accounts = server.mode.addresses
         let fromAccounts = [accounts.pressureAccount1, accounts.pressureAccount2,  accounts.pressureAccount3, accounts.pressureAccount4,
             accounts.pressureAccount5, accounts.pressureAccount6,  accounts.pressureAccount7, accounts.pressureAccount8,
@@ -114,35 +115,37 @@ module.exports = tcsSendTxInOneRequest = {
             accounts.sequence2, accounts.sequence3, accounts.sequence4, accounts.sequence5,
             accounts.walletAccount, accounts.fixedReceiver1, accounts.fixedReceiver2, accounts.fixedReceiver3,]
 
+        //select from address in address list, then change param.from
+        let fromList
+        if(ptParam.fromCount && ptParam.fromCount > 1){
+            fromList = tcsSendTxInOneRequest.createAccountList(fromAccounts, ptParam.fromCount, ptParam.actionCount)
+        }
+
+        //select to address in address list, then change param.to
+        let toList
+        if(ptParam.toCount && ptParam.toCount > 1){
+            toList = tcsSendTxInOneRequest.createAccountList(toAccounts, ptParam.toCount, ptParam.actionCount)
+        }
+
+        //endregion
+
         for(let j = 0; j < ptParam.actionCount; j++){
             let txTemplate = framework.createTxParamsForTransfer(server)[0]
             if(ptParam.quickTx) txTemplate.flags = consts.flags.quick
             let expectResults = []
             let txParams = []
 
-            //select from address in address list, then change param.from
-            let fromList
-            if(ptParam.fromCount && ptParam.fromCount > 1){
-                fromList = tcsSendTxInOneRequest.createAccountList(fromAccounts, ptParam.fromCount, ptParam.txCount)
-            }
-
-            //select to address in address list, then change param.to
-            let toList
-            if(ptParam.toCount && ptParam.toCount > 1){
-                toList = tcsSendTxInOneRequest.createAccountList(toAccounts, ptParam.toCount, ptParam.txCount)
-            }
-
             for(let i = 0; i < ptParam.txCount; i++){
                 let txParam = utility.deepClone(txTemplate)
                 expectResults.push(framework.createExpecteResult({needPass: true}))
 
                 if(fromList){
-                    txParam.from = fromList[i].address
-                    txParam.secret = fromList[i].secret
+                    txParam.from = fromList[j].address
+                    txParam.secret = fromList[j].secret
                 }
 
                 if(toList){
-                    txParam.to = toList[i].address
+                    txParam.to = toList[j].address
                 }
 
                 if(memos){
@@ -185,11 +188,11 @@ module.exports = tcsSendTxInOneRequest = {
 
     //region create rand list
 
-    createAccountList: function(accounts, accountCount, txCount){
+    createAccountList: function(accounts, allowAccountsCount, returnAccountsCount){
         let list = []
-        let max = Math.min(accountCount - 1, accounts.length - 1)
-        let rands = utility.getRandList(0, max, txCount, true)
-        for(let i = 0; i < txCount; i++){
+        let max = Math.min(allowAccountsCount - 1, accounts.length - 1)
+        let rands = utility.getRandList(0, max, returnAccountsCount, true)
+        for(let i = 0; i < returnAccountsCount; i++){
             list.push(accounts[rands[i]])
         }
         return list
