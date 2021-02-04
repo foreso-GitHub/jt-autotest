@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -158,7 +158,6 @@ describe('Jingtum测试', function() {
                 //
                 // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
 
-
                 // endregion
 
                 //region websocket subscribe
@@ -190,93 +189,14 @@ describe('Jingtum测试', function() {
 
                 //region test1
 
-                // this.timeout(480000*100)
-                // tcsPressureSendTx.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 100, 'WithoutResponse')
+                //region websocket subscribe
 
                 // this.timeout(360000)
-                // // tcsSubscribe.testForSubscribe_2(server, '测试jt_subscribe')
-                // // tcsSubscribe.testForUnsubscribe_2(server, '测试jt_unsubscribe')
-                //
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // server.mode.testMode = testMode.singleMode
+                // // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
                 // this.timeout(timeout)
-
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-
-                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
-
-                // this.timeout(24000)
-                // for(let i = 0; i < 10000; i++){
-                //     tcsPressureSendTx.testForFastPerformance(server,
-                //         '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 4, 'WithoutResponse')
-                // }
-                // this.timeout(timeout)
-
-                //region special
-
-                // this.timeout(3600000)
-                // tcsBugInjection.test(server, '故障注入测试')
-                // tcsRASTest.testChangeNodeCount(server, 'RAS测试')
-                //
-                // for(let i = 0; i < 100; i++){
-                //     tcsBugInjection.test(server, '故障注入测试')
-                // }
-
-                //endregion
-
-                //endregion
-
-
-                //region basic test
-
-                tcsGetVersion.testForGetVersion(server, '测试jt_version')
-
-                tcsGetBlockNumber.testForGetBlockNumber(server, '测试jt_blockNumber')
-
-                tcsGetBlock.testForGetBlockByNumber(server, '测试jt_getBlockByNumber')
-
-                tcsGetBlock.testForGetBlockByHash(server, '测试jt_getBlockByHash')
-
-                tcsCreateWallet.testForCreateWallet(server, '测试jt_createWallet')
-
-                tcsCreateAccount.testForCreateAccount(server, '测试jt_createAccount')
-
-                tcsGetAccount.testForGetAccount(server, '测试jt_getAccount')
-
-                tcsGetAccounts.testForGetAccounts(server, '测试jt_accounts')
-
-                tcsGetBalance.testForGetBalance(server, '测试jt_getBalance')
-
-                tcsGetCurrency.testForGetCurrency(server, '测试jt_getCurrency')
-
-                tcsGetReceipt.testForGetTransactionReceipt(server, '测试jt_getTransactionReceipt')
-
-                tcsGetTx.testForGetTransaction(server, '测试jt_getTransactionByHash')
-
-                tcsGetTx.testForGetTransactionByIndex(server, '测试jt_getTransactionByIndex')
-
-                tcsGetTx.testForGetTransactionByBlockHashAndIndex(server, '测试jt_getTransactionByBlockHashAndIndex')
-
-                tcsGetTx.testForGetTransactionByBlockNumberAndIndex(server, '测试jt_getTransactionByBlockNumberAndIndex')
-
-                tcsGetTxCount.testForGetTransactionCount(server, '测试jt_getBlockTransactionCountByHash')
-
-                tcsGetTxCount.testForGetBlockTransactionCountByHash(server, '测试jt_getBlockTransactionCountByHash')
-
-                tcsGetTxCount.testForGetBlockTransactionCountByNumber(server, '测试jt_getBlockTransactionCountByNumber')
-
-                tcsSign.testForSign(server, '测试jt_sign')
-
-                //endregion
-
-
-                //region need work on
-
-                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 //endregion
 
@@ -321,11 +241,11 @@ describe('Jingtum测试', function() {
                 // param.txFunctionName =  consts.rpcFunctions.sendTx
                 // param.actionCount = 2
                 // param.txCount = 2
-                // param.serverTypes = interfaceType.websocket
+                // param.serverTypes = [interfaceType.websocket]
                 // param.serverCount = 2
                 // param.fromCount = 2
                 // param.toCount = 2
-                // param.memoSize = 8
+                // param.memoSize = 1
                 // param.timeout = 5000
                 // param.needResetSequence = true
                 // param.needCheck = true
@@ -373,6 +293,13 @@ describe('Jingtum测试', function() {
 
                 // endregion
 
+                //endregion
+
+                //region need work on
+
+                // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
+
+                //endregion
 
             })
         })

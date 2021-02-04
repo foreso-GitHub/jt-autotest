@@ -132,13 +132,8 @@ module.exports = tcsSendTxInOneRequest = {
 
     testForSendTxs2: function(server, describeTitle, ptParam){
         let testScripts = []
-        let testCaseCode
-        let scriptCode
-
-        // let servers = allRpcServers
-
-        testCaseCode = 'UNK_UNKNOWN_000000'
-        scriptCode = '000100_tcsSendTxInOneRequest_' + ptParam.actionCount + '个请求，各执行' + ptParam.txCount + '个交易'
+        let testCaseCode = 'UNK_UNKNOWN_000000'
+        let scriptCode = '000100_tcsSendTxInOneRequest_' + ptParam.actionCount + '个请求，各执行' + ptParam.txCount + '个交易'
 
         let testScript = framework.createTestScript(
             server,
@@ -147,29 +142,43 @@ module.exports = tcsSendTxInOneRequest = {
             [],
             restrictedLevel.L2,
             [serviceType.newChain, ],
-            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
+            [],
         )
 
+        //select server in server list, then change action.server
+        let servers = tcsSendTxInOneRequest.createServerList(ptParam.serverTypes, ptParam.serverCount, ptParam.actionCount)
+
+        //memos
+        let memos
+        if(ptParam.memoSize && ptParam.memoSize > 0){
+            memos = utility.createMemosWithSpecialLength(ptParam.memoSize)
+        }
+
         for(let j = 0; j < ptParam.actionCount; j++){
-            let txParams = framework.createTxParamsForTransfer(server)
-            if(ptParam.quickTx) txParams[0].flags = consts.flags.quick
-            let txTemplate = txParams[0]
+            let txTemplate = framework.createTxParamsForTransfer(server)[0]
+            if(ptParam.quickTx) txTemplate.flags = consts.flags.quick
             let expectResults = []
+            let txParams = []
 
-            //select server in server list, then change action.server
-
-            for(let i = 1; i < ptParam.txCount; i++){
-                txParams.push(utility.deepClone(txTemplate))
+            for(let i = 0; i < ptParam.txCount; i++){
+                let txParam = utility.deepClone(txTemplate)
+                expectResults.push(framework.createExpecteResult({needPass: true}))
 
                 //select from address in address list, then change param.from
 
                 //select to address in address list, then change param.to
 
-                expectResults.push(framework.createExpecteResult({needPass: true}))
+                if(memos){
+                    txParam.memos = memos
+                }
+
+                txParams.push(txParam)
             }
+
             framework.pushTestActionForSendAndSign(testScript, ptParam.txFunctionName, txParams)
             if(ptParam.txFunctionName == consts.rpcFunctions.sendTx){
                 let action = testScript.actions[j]
+                action.server = servers[j]
                 action.needResetSequence = ptParam.needResetSequence
                 action.timeout = ptParam.timeout
                 action.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
@@ -180,6 +189,8 @@ module.exports = tcsSendTxInOneRequest = {
             else if(ptParam.txFunctionName == consts.rpcFunctions.signTx){
                 let action_sign = testScript.actions[j * 2]
                 let action_sendRaw = testScript.actions[j * 2 + 1]
+                action_sign.server = servers[j]
+                action_sendRaw.server = servers[j]
                 action_sign.needResetSequence = ptParam.needResetSequence
                 action_sign.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
                 action_sendRaw.timeout = ptParam.timeout
@@ -206,13 +217,11 @@ module.exports = tcsSendTxInOneRequest = {
 
     },
 
-
-
-    createServerList: function(serverTypes, serverCount, txCount){
+    createServerList: function(serverTypes, serverCount, requestCount){
         let allServers = tcsSendTxInOneRequest.selectServers(serverTypes, serverCount)
         let servers = []
-        let rands = utility.getRandList(0, serverCount - 1, txCount, true)
-        for(let i = 0; i < txCount; i++){
+        let rands = utility.getRandList(0, serverCount - 1, requestCount, true)
+        for(let i = 0; i < requestCount; i++){
             servers.push(allServers[rands[i]])
         }
         return servers
