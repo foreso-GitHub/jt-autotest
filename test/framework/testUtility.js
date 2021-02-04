@@ -274,7 +274,7 @@ module.exports = testUtility = {
             retriedCount = 0
         }
         return new Promise(async function(resolve, reject){
-            server.responseGetTxByHash(server, hash)
+            server.responseGetTxByHash(server, hash, true)
                 .then(async function (response) {
                     //retry
                     // if(retriedCount < server.mode.retryMaxCount && (response.result.toString().indexOf('can\'t find transaction') != -1

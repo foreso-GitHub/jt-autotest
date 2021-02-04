@@ -90,10 +90,9 @@ const TX_SCHEMA = {
         "SigningPubKey",
         "TxnSignature",
         "hash",
-        // todo need restore date, inLedger, ledger_index
-        // "date",
-        // "inLedger",
-        // "ledger_index",
+        "date",
+        "inLedger",
+        "ledger_index",
         // "meta",
         // "validated"
     ],

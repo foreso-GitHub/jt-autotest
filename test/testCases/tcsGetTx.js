@@ -140,7 +140,7 @@ module.exports = tcsGetTx = {
         )
 
         let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByHash)
-        let param = server.createParamGetTxByHash(hash, ledger)
+        let param = server.createParamGetTxByHash(hash, true, ledger)
         action.txParams = [param]
         action.checkForPassResult = tcsGetTx.checkForPassResultForByHash
         testScript.actions.push(action)
@@ -224,7 +224,7 @@ module.exports = tcsGetTx = {
             let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByIndex)
             for(let i = 1; i <= lastIndex; i++){
                 let index = i
-                let param = server.createParamGetTxByIndex(from, index, ledger)
+                let param = server.createParamGetTxByIndex(from, index, true, ledger)
                 action.txParams.push(param)
                 action.expectedResults.push({needPass:true})
             }
@@ -364,7 +364,7 @@ module.exports = tcsGetTx = {
         )
 
         let action = framework.createTestActionForGet(testScript, consts.rpcFunctions.getTransactionByIndex)
-        let param = server.createParamGetTxByIndex(address, sequence, ledger)
+        let param = server.createParamGetTxByIndex(address, sequence, true, ledger)
         action.txParams = [param]
         action.checkForPassResult = tcsGetTx.checkForPassResultForByIndex
         testScript.actions.push(action)
@@ -437,7 +437,7 @@ module.exports = tcsGetTx = {
                     let count = action.actualResult.result[0].result
                     for(let i = 0; i < count; i++){
                         let newAction = framework.createTestActionForGet(testScript, functionName)
-                        let param = server.createParamGetTxByBlockHashAndIndex(hash, i)
+                        let param = server.createParamGetTxByBlockHashAndIndex(hash, i, true)
                         newAction.txParams = [param]
                         newAction.checkForPassResult = tcsGetTx.checkForPassResultForGoThrough
                         testScript.actions.push(newAction)
@@ -552,7 +552,7 @@ module.exports = tcsGetTx = {
                     let count = action.actualResult.result[0].result
                     for(let i = 0; i < count; i++){
                         let newAction = framework.createTestActionForGet(testScript, functionName)
-                        let param = server.createParamGetTxByBlockNumberAndIndex(blockNumber, i)
+                        let param = server.createParamGetTxByBlockNumberAndIndex(blockNumber, i, true)
                         newAction.txParams = [param]
                         newAction.checkForPassResult = tcsGetTx.checkForPassResultForGoThrough
                         testScript.actions.push(newAction)
@@ -636,10 +636,10 @@ module.exports = tcsGetTx = {
         let action = framework.createTestActionForGet(testScript, functionName)
         let param
         if(functionName == consts.rpcFunctions.getTransactionByBlockNumberAndIndex){
-            param = server.createParamGetTxByBlockNumberAndIndex(hashOrNumber, index, ledger)
+            param = server.createParamGetTxByBlockNumberAndIndex(hashOrNumber, index, true, ledger)
         }
         else if(functionName == consts.rpcFunctions.getTransactionByBlockHashAndIndex){
-            param = server.createParamGetTxByBlockHashAndIndex(hashOrNumber, index, ledger)
+            param = server.createParamGetTxByBlockHashAndIndex(hashOrNumber, index, true, ledger)
         }
         action.txParams = [param]
         action.checkForPassResult = tcsGetTx.checkForPassResultForByBlockHashAndIndex

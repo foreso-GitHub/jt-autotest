@@ -213,25 +213,26 @@ function baseInterface() {
 
     //region get tx
 
-    baseInterface.prototype.createParamGetTxByHash = function(hash, ledger) {
+    baseInterface.prototype.createParamGetTxByHash = function(hash, full, ledger) {
         let param = {}
         param.hash = hash
+        if(full != undefined) param.full = full
         if(ledger) param.ledger = ledger
         return param
     }
 
-    baseInterface.prototype.responseGetTxByHash = function (server, hash, ledger) {
-        let param = this.createParamGetTxByHash(hash, ledger)
+    baseInterface.prototype.responseGetTxByHash = function (server, hash, full, ledger) {
+        let param = this.createParamGetTxByHash(hash, full, ledger)
         return this.getResponse(server, consts.rpcFunctions.getTransactionByHash, [param])
     }
 
-    baseInterface.prototype.getTxByHash = async function (server, hash, ledger) {
-        let response = await this.responseGetTxByHash(server, hash, ledger)
+    baseInterface.prototype.getTxByHash = async function (server, hash, full, ledger) {
+        let response = await this.responseGetTxByHash(server, hash, full, ledger)
         return this.returnObjectInResponse(response)
     }
 
-    baseInterface.prototype.getTx = async function (server, hash, ledger) {
-        return await this.getTxByHash(server, hash, ledger)
+    baseInterface.prototype.getTx = async function (server, hash, full, ledger) {
+        return await this.getTxByHash(server, hash, full, ledger)
     }
 
     //endregion
@@ -240,21 +241,22 @@ function baseInterface() {
 
     //jt_getTransactionByIndex
 
-    baseInterface.prototype.createParamGetTxByIndex = function(address, sequence, ledger) {
+    baseInterface.prototype.createParamGetTxByIndex = function(address, sequence, full, ledger) {
         let param = {}
         param.address = address
         param.sequence = sequence
+        if(full != undefined) param.full = full
         if(ledger) param.ledger = ledger
         return param
     }
 
-    baseInterface.prototype.responseGetTxByIndex = function (server, address, sequence, ledger) {
-        let param = this.createParamGetTxByIndex(address, sequence, ledger)
+    baseInterface.prototype.responseGetTxByIndex = function (server, address, sequence, full, ledger) {
+        let param = this.createParamGetTxByIndex(address, sequence, full, ledger)
         return this.getResponse(server, consts.rpcFunctions.getTransactionByIndex, [param])
     }
 
-    baseInterface.prototype.getTxByIndex = async function (server, address, sequence, ledger) {
-        let response = await this.responseGetTxByHash(server, address, sequence, ledger)
+    baseInterface.prototype.getTxByIndex = async function (server, address, sequence, full, ledger) {
+        let response = await this.responseGetTxByHash(server, address, sequence, full, ledger)
         return this.returnObjectInResponse(response)
     }
 
@@ -262,29 +264,31 @@ function baseInterface() {
 
     //region getTxByBlock
 
-    baseInterface.prototype.createParamGetTxByBlockNumberAndIndex = function(blockNumber, index, ledger) {
+    baseInterface.prototype.createParamGetTxByBlockNumberAndIndex = function(blockNumber, index, full, ledger) {
         let param = {}
         param.number = blockNumber
         param.index = index
+        if(full != undefined) param.full = full
         if(ledger) param.ledger = ledger
         return param
     }
 
-    baseInterface.prototype.responseGetTxByBlockNumberAndIndex = function (server, blockNumber, index, ledger) {
-        let param = this.createParamGetTxByBlockNumberAndIndex(blockNumber, index, ledger)
+    baseInterface.prototype.responseGetTxByBlockNumberAndIndex = function (server, blockNumber, index, full, ledger) {
+        let param = this.createParamGetTxByBlockNumberAndIndex(blockNumber, index, full, ledger)
         return this.getResponse(server, consts.rpcFunctions.getTransactionByBlockNumberAndIndex, [param])
     }
 
-    baseInterface.prototype.createParamGetTxByBlockHashAndIndex = function(blockHash, index, ledger) {
+    baseInterface.prototype.createParamGetTxByBlockHashAndIndex = function(blockHash, index, full, ledger) {
         let param = {}
         param.hash = blockHash
         param.index = index
+        if(full != undefined) param.full = full
         if(ledger) param.ledger = ledger
         return param
     }
 
-    baseInterface.prototype.responseGetTxByBlockHashAndIndex = function (server, blockHash, index, ledger) {
-        let param = this.createParamGetTxByBlockHashAndIndex(blockHash, index, ledger)
+    baseInterface.prototype.responseGetTxByBlockHashAndIndex = function (server, blockHash, index, full, ledger) {
+        let param = this.createParamGetTxByBlockHashAndIndex(blockHash, index, full, ledger)
         return this.getResponse(server, consts.rpcFunctions.getTransactionByBlockHashAndIndex, [param])
     }
 
