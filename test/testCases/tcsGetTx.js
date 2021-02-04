@@ -106,7 +106,7 @@ module.exports = tcsGetTx = {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -239,7 +239,7 @@ module.exports = tcsGetTx = {
             index = 99999999
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140,  ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
+                framework.getError(140,  't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -252,7 +252,7 @@ module.exports = tcsGetTx = {
             index = 0
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -339,7 +339,7 @@ module.exports = tcsGetTx = {
             index = 1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, ledger == consts.ledgers.current ? 'no such transaction:' : 't find transaction'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -449,7 +449,7 @@ module.exports = tcsGetTx = {
             let index = '999999'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 'no such transaction in block'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -461,7 +461,7 @@ module.exports = tcsGetTx = {
             let index = '-1'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 'no such transaction in block:'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -563,7 +563,7 @@ module.exports = tcsGetTx = {
             let index = '999999'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 'no such transaction in block'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -576,7 +576,7 @@ module.exports = tcsGetTx = {
             let index = '-1'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 'no such transaction in block:'))
+                framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }

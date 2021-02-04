@@ -80,10 +80,7 @@ module.exports = tcsGetCurrency = {
                 let symbol = 'NoCoin_1'
                 let issuer = null
                 let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
-                let expectedResult = framework.createExpecteResult(false,
-                    ledger == consts.ledgers.current
-                        ? framework.getError(140, 'no such currency info')
-                        : framework.getError(140, 't find currency'))
+                let expectedResult = framework.createExpecteResult(false, framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
                 framework.addTestScript(testScripts, testScript)
             }
@@ -106,10 +103,7 @@ module.exports = tcsGetCurrency = {
                 let symbol = globalCoin.symbol
                 let issuer = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
                 let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
-                let expectedResult = framework.createExpecteResult(false,
-                    ledger == consts.ledgers.current
-                        ? framework.getError(140, 'no such currency info')
-                        : framework.getError(140, 't find currency'))
+                let expectedResult = framework.createExpecteResult(false, framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
                 framework.addTestScript(testScripts, testScript)
             }
@@ -141,10 +135,7 @@ module.exports = tcsGetCurrency = {
                 let symbol = 'NoCoin_1'
                 let issuer = null
                 let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
-                let expectedResult = framework.createExpecteResult(false,
-                    ledger == consts.ledgers.current
-                        ? framework.getError(140, 'no such currency info')
-                        : framework.getError(140, 't find currency'))
+                let expectedResult = framework.createExpecteResult(false, framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
                 framework.addTestScript(testScripts, testScript)
             }
@@ -167,10 +158,7 @@ module.exports = tcsGetCurrency = {
                 let symbol = 'NoCoin_1'
                 let issuer = localCoin.issuer
                 let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
-                let expectedResult = framework.createExpecteResult(false,
-                    ledger == consts.ledgers.current
-                        ? framework.getError(140, 'no such currency info')
-                        : framework.getError(140, 't find currency'))
+                let expectedResult = framework.createExpecteResult(false, framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
                 framework.addTestScript(testScripts, testScript)
             }
@@ -193,10 +181,7 @@ module.exports = tcsGetCurrency = {
                 let symbol = localCoin.symbol
                 let issuer = 'jskmdWGNuDA63aNJn3yWjdoDf2NwtS8FoJ'
                 let testScript = tcsGetCurrency.createTestScript(server, testCaseCode, scriptCode, symbol, issuer, ledger,)
-                let expectedResult = framework.createExpecteResult(false,
-                    ledger == consts.ledgers.current
-                        ? framework.getError(140, 'no such currency info')
-                        : framework.getError(140, 't find currency'))
+                let expectedResult = framework.createExpecteResult(false, framework.getError(140, 't find currency'))
                 framework.changeExpectedResult(testScript, expectedResult)
                 framework.addTestScript(testScripts, testScript)
             }

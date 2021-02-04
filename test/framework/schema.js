@@ -89,11 +89,12 @@ const TX_SCHEMA = {
         // "Memos",
         "SigningPubKey",
         "TxnSignature",
-        "date",
         "hash",
-        "inLedger",
-        "ledger_index",
-        "meta",
+        // todo need restore date, inLedger, ledger_index
+        // "date",
+        // "inLedger",
+        // "ledger_index",
+        // "meta",
         // "validated"
     ],
     properties: {

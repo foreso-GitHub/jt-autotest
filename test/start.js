@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -129,14 +129,14 @@ describe('Jingtum测试', function() {
 
                 //region send and sign
 
-                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
-                //
-                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
-                //
-                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
-                //
-                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //     2, 10, true, 5000, true, )
+                tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+
+                tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                    2, 10, true, 5000, true, )
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
@@ -163,12 +163,12 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                // this.timeout(360000)
-                // server.mode.testMode = testMode.singleMode
-                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+                this.timeout(360000)
+                server.mode.testMode = testMode.singleMode
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 
@@ -227,6 +227,21 @@ describe('Jingtum测试', function() {
                 // }
 
                 //endregion
+
+                //endregion
+
+
+                //region basic test
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+                //
+                // tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
+                //
+                // tcsPressureSendTx.testForSequenceTest(server, 'Sequence测试: ')
+                //
+                // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
+                //     2, 10, true, 5000, true, )
+
 
                 //endregion
 

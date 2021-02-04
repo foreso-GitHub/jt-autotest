@@ -115,7 +115,7 @@ module.exports = tcsGetTxCount = {
             let blockNumber = '-100'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 'invalid syntax'))
+                framework.getError(-269, 'invalid block number'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -126,7 +126,7 @@ module.exports = tcsGetTxCount = {
             let blockNumber = 'addeew'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(140, 'invalid syntax'))
+                framework.getError(-269, 'invalid block number'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -298,10 +298,6 @@ module.exports = tcsGetTxCount = {
 
     createTestScriptForGetTransactionCount: function(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,){
 
-        let txParams = []
-        txParams.push(addressOrName)
-        if(ledger) txParams.push(ledger)
-
         let testScript = framework.createTestScript(
             server,
             testCaseCode,
@@ -330,8 +326,8 @@ module.exports = tcsGetTxCount = {
         let ledger = action.txParams[0].ledger
         action.countBeforeSend = await server.getTransactionCount(server, address, ledger)
 
-        let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, '1')
-        await utility.sendTxs(server, txParams, 1)
+        let txParams = await utility.createTxParams(server, action.from, action.secret, action.to, '0.00001')
+        let response1 = await utility.sendTxs(server, txParams, 1)
         await utility.timeout(6000)
 
         let response = await server.responseGetTransactionCount(server, address, ledger)
