@@ -101,7 +101,7 @@ module.exports = tcsGetBalance = {
             let addressOrName = server.mode.addresses.inactiveAccount1.address
             let testScript = tcsGetBalance.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, ledger)
             let expectedResult = framework.createExpecteResult(false,
-                framework.getError(-96, ledger == consts.ledgers.current ? 'no such account info' : 't find account'))
+                framework.getError(-96, 't find account'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }

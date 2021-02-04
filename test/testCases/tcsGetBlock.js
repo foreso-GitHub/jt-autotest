@@ -131,7 +131,7 @@ module.exports = tcsGetBlock = {
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
-                    ? framework.getError(140, 'invalid syntax')
+                    ? framework.getError(-269, 'invalid block number')
                     : framework.getError(-269, 'NewHash256: Wrong length') )
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -145,7 +145,7 @@ module.exports = tcsGetBlock = {
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
             let expectedResult = framework.createExpecteResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
-                    ? framework.getError(140, 'invalid syntax')
+                    ? framework.getError(-269, 'invalid block number')
                     : framework.getError(-269, 'NewHash256: Wrong length') )
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
