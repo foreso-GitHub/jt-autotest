@@ -82,7 +82,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -274,21 +274,21 @@ describe('Jingtum测试', function() {
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //     5, 10, true, 5000, false, )
 
-                let param = {}
-                param.txFunctionName =  consts.rpcFunctions.sendTx
-                param.actionCount = 2
-                param.txCount = 2
-                param.serverTypes = interfaceType.websocket
-                param.serverCount = 2
-                param.fromCount = 2
-                param.toCount = 2
-                param.memoSize = 8
-                param.timeout = 5000
-                param.needResetSequence = true
-                param.needCheck = true
-                param.quickTx = false
-
-                tcsSendTxInOneRequest.testForSendTxs2(server, '一个请求执行多个交易', param)
+                // let param = {}
+                // param.txFunctionName =  consts.rpcFunctions.sendTx
+                // param.actionCount = 2
+                // param.txCount = 2
+                // param.serverTypes = interfaceType.websocket
+                // param.serverCount = 2
+                // param.fromCount = 2
+                // param.toCount = 2
+                // param.memoSize = 8
+                // param.timeout = 5000
+                // param.needResetSequence = true
+                // param.needCheck = true
+                // param.quickTx = false
+                //
+                // tcsSendTxInOneRequest.testForSendTxs2(server, '一个请求执行多个交易', param)
 
                 // tcsSendTxInOneRequest.createServerList([interfaceType.rpc, interfaceType.websocket], 7, 10)
 

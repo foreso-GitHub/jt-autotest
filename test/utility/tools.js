@@ -26,7 +26,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 
 // init()
 // compare()
-// upgradeChain('20210203')
+// upgradeChain('20210204')
 
 //endregion
 
@@ -38,7 +38,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 
 //endregion
 
-//region update errors and testcases
+//region update errors and test cases
 
 // updateErrorsDoc('..\\ipfslib.wiki\\chain错误信息整理.md')
 // loadErrors()
@@ -140,7 +140,7 @@ async function compare(){
     let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
     let file1 = path + '\\baselines\\base-mochawesome-report-20210121a-no_exp-ws\\' + 'mochawesome.json'
     // let file1 = path + '\\normal\\mochawesome-report-20210115a-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20210126a-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20210204a-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
