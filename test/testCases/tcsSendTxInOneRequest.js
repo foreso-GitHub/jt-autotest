@@ -24,6 +24,18 @@ let wsServers = framework.activeAllWsServers()
 
 module.exports = tcsSendTxInOneRequest = {
 
+    //region design
+
+    // 直接发送交易，每个请求发送txCount个交易，发送actionCount轮，可选是否检查
+    // 1. sendTx，signTx+sendRawTx.x
+    // 2. 多帐号发送 【帐号list】.x
+    // 3. 不同memo内容    【memo的list】.x
+    // 4. 多节点轮流发送交易 【节点list】.x
+    // 5. 增加发送间隔.x
+    // 6. 可以设定每次发送是否需要重取sequence.x
+
+    //endregion
+
     //region create PerformanceTest Param
 
     createPerformanceTestParam: function(txFunctionName, actionCount, txCount, serverTypes, serverCount, fromCount, toCount,
@@ -65,72 +77,7 @@ module.exports = tcsSendTxInOneRequest = {
 
     //endregion
 
-    testForSendTxs: function(server, describeTitle, txFunctionName, actionCount, txCount, needResetSequence, timeout, needCheck, quickTx){
-        let testScripts = []
-        let testCaseCode
-        let scriptCode
-
-        // let servers = allRpcServers
-
-        testCaseCode = 'UNK_UNKNOWN_000000'
-        scriptCode = '000100_tcsSendTxInOneRequest_' + actionCount + '个请求，各执行' + txCount + '个交易'
-
-        let testScript = framework.createTestScript(
-            server,
-            testCaseCode,
-            scriptCode,
-            [],
-            restrictedLevel.L2,
-            [serviceType.newChain, ],
-            [],//[interfaceType.rpc,],//[interfaceType.rpc, interfaceType.websocket]
-        )
-
-        for(let j = 0; j < actionCount; j++){
-            let txParams = framework.createTxParamsForTransfer(server)
-            if(quickTx) txParams[0].flags = consts.flags.quick
-            let txTemplate = txParams[0]
-            let expectResults = []
-
-            //select server in server list, then change action.server
-
-            for(let i = 1; i < txCount; i++){
-                txParams.push(utility.deepClone(txTemplate))
-
-                //select from address in address list, then change param.from
-
-                //select to address in address list, then change param.to
-
-                expectResults.push(framework.createExpecteResult({needPass: true}))
-            }
-            framework.pushTestActionForSendAndSign(testScript, txFunctionName, txParams)
-            if(txFunctionName == consts.rpcFunctions.sendTx){
-                let action = testScript.actions[j]
-                action.needResetSequence = needResetSequence
-                action.timeout = timeout
-                action.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
-                if(needCheck != undefined && needCheck == false){
-                    action.checkFunction = null
-                }
-            }
-            else if(txFunctionName == consts.rpcFunctions.signTx){
-                let action_sign = testScript.actions[j * 2]
-                let action_sendRaw = testScript.actions[j * 2 + 1]
-                action_sign.needResetSequence = needResetSequence
-                action_sign.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
-                action_sendRaw.timeout = timeout
-                action_sendRaw.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
-                if(needCheck != undefined && needCheck == false){
-                    action_sign.checkFunction = null
-                    action_sendRaw.checkFunction = null
-                }
-            }
-        }
-
-        testScripts.push(testScript)
-        framework.testTestScripts(server, describeTitle, testScripts)
-    },
-
-    testForSendTxs2: function(server, describeTitle, ptParam){
+    testForSendTxs: function(server, describeTitle, ptParam){
         let testScripts = []
         let testCaseCode = 'UNK_UNKNOWN_000000'
         let scriptCode = '000100_tcsSendTxInOneRequest_' + ptParam.actionCount + '个请求，各执行' + ptParam.txCount + '个交易'
@@ -154,19 +101,49 @@ module.exports = tcsSendTxInOneRequest = {
             memos = utility.createMemosWithSpecialLength(ptParam.memoSize)
         }
 
+        //accounts
+        let accounts = server.mode.addresses
+        let fromAccounts = [accounts.pressureAccount1, accounts.pressureAccount2,  accounts.pressureAccount3, accounts.pressureAccount4,
+            accounts.pressureAccount5, accounts.pressureAccount6,  accounts.pressureAccount7, accounts.pressureAccount8,
+            accounts.pressureAccount9, accounts.pressureAccount10,  accounts.pressureAccount11, accounts.pressureAccount12,
+            accounts.pressureAccount13, accounts.pressureAccount14, accounts.pressureAccount15, accounts.pressureAccount16,
+            accounts.pressureAccount17, accounts.pressureAccount18, accounts.pressureAccount19, accounts.pressureAccount20,]
+        let toAccounts = [accounts.rootAccount, accounts.fixedSender1,  accounts.fixedSender2, accounts.fixedSender3,
+            accounts.sender1, accounts.receiver1,  accounts.sender2, accounts.receiver2,
+            accounts.sender3, accounts.receiver3,  accounts.balanceAccount, accounts.sequence1,
+            accounts.sequence2, accounts.sequence3, accounts.sequence4, accounts.sequence5,
+            accounts.walletAccount, accounts.fixedReceiver1, accounts.fixedReceiver2, accounts.fixedReceiver3,]
+
         for(let j = 0; j < ptParam.actionCount; j++){
             let txTemplate = framework.createTxParamsForTransfer(server)[0]
             if(ptParam.quickTx) txTemplate.flags = consts.flags.quick
             let expectResults = []
             let txParams = []
 
+            //select from address in address list, then change param.from
+            let fromList
+            if(ptParam.fromCount && ptParam.fromCount > 1){
+                fromList = tcsSendTxInOneRequest.createAccountList(fromAccounts, ptParam.fromCount, ptParam.txCount)
+            }
+
+            //select to address in address list, then change param.to
+            let toList
+            if(ptParam.toCount && ptParam.toCount > 1){
+                toList = tcsSendTxInOneRequest.createAccountList(toAccounts, ptParam.toCount, ptParam.txCount)
+            }
+
             for(let i = 0; i < ptParam.txCount; i++){
                 let txParam = utility.deepClone(txTemplate)
                 expectResults.push(framework.createExpecteResult({needPass: true}))
 
-                //select from address in address list, then change param.from
+                if(fromList){
+                    txParam.from = fromList[i].address
+                    txParam.secret = fromList[i].secret
+                }
 
-                //select to address in address list, then change param.to
+                if(toList){
+                    txParam.to = toList[i].address
+                }
 
                 if(memos){
                     txParam.memos = memos
@@ -206,15 +183,16 @@ module.exports = tcsSendTxInOneRequest = {
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-
     //region create rand list
 
-    createFromList: function(count){
-
-    },
-
-    createFromList: function(count){
-
+    createAccountList: function(accounts, accountCount, txCount){
+        let list = []
+        let max = Math.min(accountCount - 1, accounts.length - 1)
+        let rands = utility.getRandList(0, max, txCount, true)
+        for(let i = 0; i < txCount; i++){
+            list.push(accounts[rands[i]])
+        }
+        return list
     },
 
     createServerList: function(serverTypes, serverCount, requestCount){
@@ -235,7 +213,7 @@ module.exports = tcsSendTxInOneRequest = {
         if(utility.ifArrayHas(serverTypes, interfaceType.websocket)){
             allServers = allServers.concat(wsServers)
         }
-        let max = Math.max(serverCount - 1, allServers.length - 1)
+        let max = Math.min(serverCount - 1, allServers.length - 1)
         let servers = []
         let rands = utility.getRandList(0, max, serverCount, false)
         for(let i = 0; i < serverCount; i++){

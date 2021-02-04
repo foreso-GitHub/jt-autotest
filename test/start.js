@@ -225,36 +225,29 @@ describe('Jingtum测试', function() {
 
                 this.timeout(3600000)
 
-
-
-                // 直接发送交易，每个请求发送txCount个交易，发送actionCount轮，可选是否检查
-                // 需要增加
-                // 1. 目前只有sendTx，需要增加sendRawTx.x
-                // 2. 需要增加多帐号发送 【帐号list】
-                // 3. 增加不同memo内容    【memo的list】
-                // 4. 多节点轮流发送交易 【节点list】
-                // 5. 增加发送间隔.x
-                // 6. 可以设定每次发送是否需要重取sequence.x
-
                 // tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
                 //     5, 10, true, 5000, false, )
 
-                let param = {}
-                param.txFunctionName =  consts.rpcFunctions.sendTx
-                param.actionCount = 3
-                param.txCount = 3
-                param.serverTypes = [interfaceType.rpc, interfaceType.websocket]
-                // param.serverTypes = [interfaceType.websocket]
-                param.serverCount = 18
-                param.fromCount = 2
-                param.toCount = 2
-                param.memoSize = 1
-                param.timeout = 5000
-                param.needResetSequence = true
-                param.needCheck = true
-                param.quickTx = false
+                // let param = {}
+                // param.txFunctionName = consts.rpcFunctions.sendTx
+                // param.actionCount = 3
+                // param.txCount = 3
+                // param.serverTypes = [interfaceType.rpc, interfaceType.websocket]
+                // // param.serverTypes = [interfaceType.websocket]
+                // param.serverCount = 18
+                // param.fromCount = 2
+                // param.toCount = 2
+                // param.memoSize = 1
+                // param.timeout = 5000
+                // param.needResetSequence = true
+                // param.needCheck = true
+                // param.quickTx = false
 
-                tcsSendTxInOneRequest.testForSendTxs2(server, '一个请求执行多个交易', param)
+                let ptParam = tcsSendTxInOneRequest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 5,
+                    [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
+                    5000, true, true, false)
+
+                tcsSendTxInOneRequest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
 
                 // tcsSendTxInOneRequest.createServerList([interfaceType.rpc, interfaceType.websocket], 7, 10)
 
