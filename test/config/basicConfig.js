@@ -11,7 +11,7 @@ let rpcSettings = {
     request_timeout: 13000,  //important: rpc request timeout setting (default: 6000).  if request_timeout <= 0, then request timeout will be ignore.
 }
 
-let jtVersion = '20210202b'
+let jtVersion = '20210203'
 
 let printImportantLog = true
 let printWsLog = true
