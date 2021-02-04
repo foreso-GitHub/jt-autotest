@@ -19,18 +19,18 @@ let utility = require('../framework/testUtility')
 //endregion
 
 
-module.exports = tcsPressureSendTx = {
+module.exports = tcsSequenceTest = {
 
     //region sequence test
 
     testForSequenceTest: function(server, describeTitle){
-        tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
-        tcsPressureSendTx.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
+        tcsSequenceTest.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
+        tcsSequenceTest.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
     },
 
     testSequenceByFunction: function(server, describeTitle, txFunctionName){
         let categoryName = describeTitle + txFunctionName
-        let testScripts = tcsPressureSendTx.createTestScriptsForSequenceTest(server, txFunctionName)
+        let testScripts = tcsSequenceTest.createTestScriptsForSequenceTest(server, txFunctionName)
         framework.testTestScripts(server, categoryName, testScripts)
     },
 
@@ -44,14 +44,14 @@ module.exports = tcsPressureSendTx = {
 
         testCaseCode = 'FCJT_sendTransaction_000630'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
-                    server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee, false)
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee, false)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_000640'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence2, server.mode.addresses.sequence_r_2, value, fee)
 
             if(txFunctionName == consts.rpcFunctions.sendTx){
@@ -72,7 +72,7 @@ module.exports = tcsPressureSendTx = {
 
         testCaseCode = 'FCJT_sendTransaction_000650'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
 
             testScript.actions[0].bindData.txParams[0].sequence = 1  //set sequence as 1
@@ -88,7 +88,7 @@ module.exports = tcsPressureSendTx = {
         testCaseCode = 'FCJT_sendTransaction_000660'
         scriptCode = '000100_' + txFunctionName + '_sequence为小数'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
 
             testScript.actions[0].bindData.txParams[0].sequence = 0.5  //set sequence as 0.5
@@ -104,7 +104,7 @@ module.exports = tcsPressureSendTx = {
         testCaseCode = 'FCJT_sendTransaction_000660'
         scriptCode = '000200_' + txFunctionName + '_sequence为负数'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
 
             testScript.actions[0].bindData.txParams[0].sequence = -2  //set sequence as -2
@@ -120,7 +120,7 @@ module.exports = tcsPressureSendTx = {
         testCaseCode = 'FCJT_sendTransaction_000660'
         scriptCode = '000300_' + txFunctionName + '_sequence为字符串'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
 
             testScript.actions[0].bindData.txParams[0].sequence = '1234'  //set sequence as '1234'
@@ -136,7 +136,7 @@ module.exports = tcsPressureSendTx = {
         testCaseCode = 'FCJT_sendTransaction_000670'
         scriptCode = '000100_' + txFunctionName
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence4, server.mode.addresses.sequence_r_4, value, fee, false)
             let txCount = 5
             let sendOrSignAction = testScript.actions[0]
@@ -147,7 +147,7 @@ module.exports = tcsPressureSendTx = {
             else if (txFunctionName == consts.rpcFunctions.signTx){
                 sendRawAction = testScript.actions[1]
             }
-            tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
+            tcsSequenceTest.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
             sendOrSignAction.bindData.sequenceStart = 0
             sendOrSignAction.bindData.plusValueTimes = txCount  //change value for 5 times
 
@@ -156,7 +156,7 @@ module.exports = tcsPressureSendTx = {
 
         testCaseCode = 'FCJT_sendTransaction_000680'
         {
-            let testScript = tcsPressureSendTx.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence5, server.mode.addresses.sequence_r_5, value, fee, true)
             let txCount = 5
             let sendOrSignAction = testScript.actions[0]
@@ -167,7 +167,7 @@ module.exports = tcsPressureSendTx = {
             else if (txFunctionName == consts.rpcFunctions.signTx){
                 sendRawAction = testScript.actions[1]
             }
-            tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
+            tcsSequenceTest.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
             sendOrSignAction.bindData.sequenceStart = 1
             sendOrSignAction.bindData.sequenceOffset = 2
             sendOrSignAction.bindData.plusValueTimes = 0
@@ -180,7 +180,7 @@ module.exports = tcsPressureSendTx = {
                 sendOrSignAction = testScript.actions[2]
                 sendRawAction = testScript.actions[3]
             }
-            tcsPressureSendTx.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
+            tcsSequenceTest.cloneTxSettings(sendOrSignAction, sendRawAction, txCount)
             sendOrSignAction.bindData.sequenceStart = 0
             sendOrSignAction.bindData.sequenceOffset = 2
             sendOrSignAction.bindData.plusValueTimes = txCount * 2  //change value for 10 times
@@ -203,7 +203,7 @@ module.exports = tcsPressureSendTx = {
         let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams) //fisrt send set
         sendOrSignAction_1st = testScript.actions[0]
         sendRawAction_1st = testScript.actions[1]
-        tcsPressureSendTx.updateSendOrSignActionSet(sendOrSignAction_1st, sendRawAction_1st)
+        tcsSequenceTest.updateSendOrSignActionSet(sendOrSignAction_1st, sendRawAction_1st)
         sendOrSignAction_1st.bindData.sequenceStart = 0
         sendOrSignAction_1st.bindData.plusValueTimes = 1 // value has not changed yet
 
@@ -220,7 +220,7 @@ module.exports = tcsPressureSendTx = {
                 sendOrSignAction_2nd = testScript.actions[2]
                 sendRawAction_2nd = testScript.actions[3]
             }
-            tcsPressureSendTx.updateSendOrSignActionSet(sendOrSignAction_2nd, sendRawAction_2nd)
+            tcsSequenceTest.updateSendOrSignActionSet(sendOrSignAction_2nd, sendRawAction_2nd)
             sendOrSignAction_2nd.bindData.sequenceStart = 0
             sendOrSignAction_2nd.bindData.plusValueTimes = 1 //change value again
         }
@@ -234,16 +234,16 @@ module.exports = tcsPressureSendTx = {
         sendOrSignAction.bindData.timeoutAfterSend = sendOrSignAction.server.mode.defaultBlockTime + 2000
 
         if(sendRawAction == undefined){
-            sendOrSignAction.beforeExecution = tcsPressureSendTx.beforeExecuteSendTx
-            sendOrSignAction.afterExecution = tcsPressureSendTx.fillBalances
-            sendOrSignAction.moreChecks = tcsPressureSendTx.checkBalances
+            sendOrSignAction.beforeExecution = tcsSequenceTest.beforeExecuteSendTx
+            sendOrSignAction.afterExecution = tcsSequenceTest.fillBalances
+            sendOrSignAction.moreChecks = tcsSequenceTest.checkBalances
         }
         else {
-            sendOrSignAction.beforeExecution = tcsPressureSendTx.changeSequence
+            sendOrSignAction.beforeExecution = tcsSequenceTest.changeSequence
             sendRawAction.bindData = sendOrSignAction.bindData
-            sendRawAction.beforeExecution = tcsPressureSendTx.beforeExecute000640_sendRaw
-            sendRawAction.afterExecution = tcsPressureSendTx.fillBalances
-            sendRawAction.moreChecks = tcsPressureSendTx.checkBalances
+            sendRawAction.beforeExecution = tcsSequenceTest.beforeExecute000640_sendRaw
+            sendRawAction.afterExecution = tcsSequenceTest.fillBalances
+            sendRawAction.moreChecks = tcsSequenceTest.checkBalances
         }
     },
 
@@ -270,14 +270,14 @@ module.exports = tcsPressureSendTx = {
 
     fillActualBalance: async function(server, balanceCheck){
         let from = balanceCheck.address
-        balanceCheck.actualBalance = await tcsPressureSendTx.getBalanceValue(server, from)
+        balanceCheck.actualBalance = await tcsSequenceTest.getBalanceValue(server, from)
     },
 
     fillBalances: async function(action){
         let server = action.server
         await utility.timeout(action.bindData.timeoutAfterSend)
-        await tcsPressureSendTx.fillActualBalance(server, action.bindData.balanceChecks[0])
-        await tcsPressureSendTx.fillActualBalance(server, action.bindData.balanceChecks[1])
+        await tcsSequenceTest.fillActualBalance(server, action.bindData.balanceChecks[0])
+        await tcsSequenceTest.fillActualBalance(server, action.bindData.balanceChecks[1])
     },
 
     checkBalances: function(action){
@@ -302,8 +302,8 @@ module.exports = tcsPressureSendTx = {
         let plusTimes = action.bindData.plusValueTimes
         let sequence = action.bindData.txParams[0].sequence
 
-        let from_balance = await tcsPressureSendTx.getBalanceValue(server, from)
-        let to_balance = await tcsPressureSendTx.getBalanceValue(server, to)
+        let from_balance = await tcsSequenceTest.getBalanceValue(server, from)
+        let to_balance = await tcsSequenceTest.getBalanceValue(server, to)
         let from_balance_expected = Number(from_balance) - (Number(value) + Number(fee)) * plusTimes
         let to_balance_expected = Number(to_balance) + Number(value) * plusTimes
 
@@ -329,12 +329,12 @@ module.exports = tcsPressureSendTx = {
     },
 
     beforeExecuteSendTx: async function(action){
-        await tcsPressureSendTx.changeSequence(action)
-        await tcsPressureSendTx.restoreBalances(action)
+        await tcsSequenceTest.changeSequence(action)
+        await tcsSequenceTest.restoreBalances(action)
     },
 
     beforeExecute000640_sendRaw: async function(action){
-        await tcsPressureSendTx.restoreBalances(action)
+        await tcsSequenceTest.restoreBalances(action)
         await framework.beforeSendRawTx(action)
     },
 
