@@ -24,8 +24,10 @@ module.exports = tcsSequenceTest = {
     //region sequence test
 
     testForSequenceTest: function(server, describeTitle){
-        tcsSequenceTest.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
-        tcsSequenceTest.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
+        describe(describeTitle, function () {
+            tcsSequenceTest.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.sendTx)
+            tcsSequenceTest.testSequenceByFunction(server, describeTitle, consts.rpcFunctions.signTx)
+        })
     },
 
     testSequenceByFunction: function(server, describeTitle, txFunctionName){

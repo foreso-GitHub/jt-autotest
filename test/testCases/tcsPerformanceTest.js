@@ -77,6 +77,19 @@ module.exports = tcsPerformanceTest = {
 
     //endregion
 
+    //region script
+
+    testForPerformance: function(server, describeTitle){
+        describe(describeTitle, function () {
+
+            let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 10,
+                [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
+                5000, true, true, false)
+            tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
+
+        })
+    },
+
     testForSendTxs: function(server, describeTitle, ptParam){
         let testScripts = []
         let testCaseCode = 'UNK_UNKNOWN_000000'
@@ -188,6 +201,8 @@ module.exports = tcsPerformanceTest = {
         testScripts.push(testScript)
         framework.testTestScripts(server, describeTitle, testScripts)
     },
+
+    //endregion
 
     //region create rand list
 

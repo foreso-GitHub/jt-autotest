@@ -40,6 +40,7 @@ const HASH_LENGTH = 64
 const IPFS_HASH_LENGTH = 46
 let _SequenceMap = new HashMap()
 let _FullTestCaseList = []
+let _longTimeOut = 3600000
 //endregion
 
 describe('Jingtum测试', function() {
@@ -82,7 +83,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -133,17 +134,9 @@ describe('Jingtum测试', function() {
 
                 tcsSendRawTx.testForSendRawTx(server, '测试jt_sendRawTransaction')
 
-                tcsSequenceTest.testForSequenceTest(server, 'Sequence测试: ')
+                tcsSequenceTest.testForSequenceTest(server, '测试Sequence')
 
-                let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 10,
-                    [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
-                    5000, true, true, false)
-                tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
-                ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.signTx, 2, 10,
-                    [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 8,
-                    5000, true, true, false)
-                tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
+                tcsPerformanceTest.testForPerformance(server, '测试Performance')
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
@@ -169,7 +162,7 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                this.timeout(360000)
+                this.timeout(_longTimeOut)
                 server.mode.testMode = testMode.singleMode
                 tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
@@ -180,7 +173,7 @@ describe('Jingtum测试', function() {
 
                 //region special
 
-                // this.timeout(3600000)
+                // this.timeout(_longTimeOut)
                 // tcsBugInjection.testForBugInjection(server, '故障注入测试')
                 // tcsBugInjection.testForRAS(server, 'RAS测试')
                 // this.timeout(timeout)
@@ -198,13 +191,26 @@ describe('Jingtum测试', function() {
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
+                this.timeout(_longTimeOut)
 
-                // tcsSequenceTest.testForSequenceTest(server, 'Sequence测试: ')
+                tcsPerformanceTest.testForPerformance(server, '测试Performance')
+
+                // let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 10,
+                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
+                //     5000, true, true, false)
+                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
+                //
+                // ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.signTx, 2, 10,
+                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 8,
+                //     5000, true, true, false)
+                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
+
+                this.timeout(timeout)
 
 
                 //region websocket subscribe
 
-                // this.timeout(360000)
+                // this.timeout(_longTimeOut)
                 // server.mode.testMode = testMode.singleMode
                 // // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
@@ -215,7 +221,7 @@ describe('Jingtum测试', function() {
 
                 //region server test
 
-                this.timeout(3600000)
+                this.timeout(_longTimeOut)
 
                 // for(let i = 0; i < 3000; i++) {
                 //     tcsBugInjection.testForBugInjection(server, '故障注入测试')
@@ -232,41 +238,11 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
-                //region performance test
 
-                this.timeout(3600000)
-
-                // let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 5, 2,
-                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
-                //     5000, true, true, false)
-                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
-                // for(let i = 0; i < 2; i++){
-                //     let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 1, 20,
-                //         [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
-                //         5000, true, true, false)
-                //     tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-                // }
-
-                // //连续发送多个交易请求，每个请求一个交易，有检查【完成】
-                // ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 10, 1,
-                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
-                //     5000, true, true, false)
-                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
-                // //pure pressure test means just send tx or send rawtx, whithout checking balance, getting tx, etc checks.【完成】
-                // let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 50,
-                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 1,
-                //     5000, true, false, false)
-                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
-                this.timeout(timeout)
-
-                // endregion
 
                 //region special
 
-                // this.timeout(3600000)
+                // this.timeout(_longTimeOut)
                 // tcsBugInjection.testForBugInjection(server, '故障注入测试')
                 // tcsBugInjection.testForRAS(server, 'RAS测试')
                 // this.timeout(timeout)
