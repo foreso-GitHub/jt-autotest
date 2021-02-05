@@ -51,6 +51,7 @@ describe('Jingtum测试', function() {
     for(let mode of modes){
 
         let server = framework.activeServer(mode)
+        let currentTestMode = server.mode.testMode
 
         //region set timeout
         let timeout = 10000
@@ -136,29 +137,15 @@ describe('Jingtum测试', function() {
 
                 tcsSequenceTest.testForSequenceTest(server, '测试Sequence')
 
-                tcsPerformanceTest.testForPerformance(server, '测试Performance')
+                this.timeout(_longTimeOut)
+                server.mode.testMode = testMode.singleMode
+                tcsPerformanceTest.test(server, '测试Performance')
+                server.mode.testMode = currentTestMode
+                this.timeout(timeout)
 
                 // tcsInteractiveTest.testForInteractiveTest(server, '交互性测试')
 
                 //endregion
-
-                //region performance test
-
-                // tcsSequenceTest.testForPressureTest(server, '测试连续发送交易', 1)
-                //
-                // tcsSequenceTest.testForPurePressureTest(server, '压力测试：发送交易，看tps', 1)
-                //
-                // tcsSequenceTest.testForPerformanceTest(server, '性能测试：', 1)
-                //
-                // tcsSequenceTest.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，等response，看tps', allRpcServers, 1)
-                //
-                // tcsSequenceTest.testForFastPerformance(server,
-                //     '快速压力测试：多帐号通过多节点连续发送交易，不等response，看tps', allRpcServers, 1, 'WithoutResponse')
-                //
-                // tcsSendRawTx.testForPerformanceTestBySendRaw(server, '用sendRaw进行性能测试，多节点轮流', 10, 2)
-
-                // endregion
 
                 //region websocket subscribe
 
@@ -182,6 +169,17 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
+                //region pure performance test
+
+                // this.timeout(_longTimeOut)
+                // for(let i = 0; i < 1000; i++){
+                //     tcsPerformanceTest.testForPurePerformance(server, '测试Performance，全力',
+                //         consts.rpcFunctions.sendTx, 1, 10)
+                // }
+                // this.timeout(timeout)
+
+                // endregion
+
             })
             //*/
 
@@ -192,21 +190,18 @@ describe('Jingtum测试', function() {
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 this.timeout(_longTimeOut)
-
-                tcsPerformanceTest.testForPerformance(server, '测试Performance')
-
-                // let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 10,
-                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
-                //     5000, true, true, false)
-                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-                //
-                // ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.signTx, 2, 10,
-                //     [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 8,
-                //     5000, true, true, false)
-                // tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
+                server.mode.restrictedLevel = restrictedLevel.L5
+                server.mode.testMode = testMode.singleMode
+                tcsPerformanceTest.test(server, '测试Performance')
+                server.mode.testMode = currentTestMode
                 this.timeout(timeout)
 
+                // this.timeout(_longTimeOut)
+                // for(let i = 0; i < 1000; i++){
+                //     tcsPerformanceTest.testForPurePerformance(server, '测试Performance，全力',
+                //         consts.rpcFunctions.sendTx, 1, 10)
+                // }
+                // this.timeout(timeout)
 
                 //region websocket subscribe
 

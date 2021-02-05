@@ -79,21 +79,306 @@ module.exports = tcsPerformanceTest = {
 
     //region script
 
-    testForPerformance: function(server, describeTitle){
+    test: function(server, describeTitle){
         describe(describeTitle, function () {
-
-            let ptParam = tcsPerformanceTest.createPerformanceTestParam(consts.rpcFunctions.sendTx, 2, 10,
-                [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
-                5000, true, true, false)
-            tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', ptParam)
-
+            tcsPerformanceTest.testForPerformance(server, describeTitle, consts.rpcFunctions.sendTx)
+            tcsPerformanceTest.testForPerformance(server, describeTitle, consts.rpcFunctions.signTx)
         })
     },
 
-    testForSendTxs: function(server, describeTitle, ptParam){
+    testForPerformance: function(server, describeTitle, txFunctionName){
+
         let testScripts = []
-        let testCaseCode = 'UNK_UNKNOWN_000000'
-        let scriptCode = '000100_tcsSendTxInOneRequest_' + ptParam.actionCount + '个请求，各执行' + ptParam.txCount + '个交易'
+        let ptParam
+        let testCaseCode
+        let scriptCodePrefix = txFunctionName == consts.rpcFunctions.sendTx ? '000100_' : '000200_'
+        let scriptCode
+        let actionCount = 3
+        let txCount = 5
+
+        //region 同一账户
+
+        testCaseCode = 'PFMC_SameHW_000010'
+        scriptCode = scriptCodePrefix + '同一账户向同一节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000020'
+        scriptCode = scriptCodePrefix + '同一账户向2个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 2, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000030'
+        scriptCode = scriptCodePrefix + '同一账户向3个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 3, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000040'
+        scriptCode = scriptCodePrefix + '同一账户向4个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 4, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000050'
+        scriptCode = scriptCodePrefix + '同一账户向5个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 5, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 不同账户
+
+        testCaseCode = 'PFMC_SameHW_000060'
+        scriptCode = scriptCodePrefix + '不同账户向同一节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000070'
+        scriptCode = scriptCodePrefix + '不同账户向2个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000080'
+        scriptCode = scriptCodePrefix + '不同账户向3个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000090'
+        scriptCode = scriptCodePrefix + '不同账户向4个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000100'
+        scriptCode = scriptCodePrefix + '不同账户向5个不同的节点连续发送交易（不带memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 带8字节memo
+
+        testCaseCode = 'PFMC_SameHW_000110'
+        scriptCode = scriptCodePrefix + '同一账户向同一节点连续发送交易（带8字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 8,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000120'
+        scriptCode = scriptCodePrefix + '不同账户向5个不同的节点连续发送交易（带8字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 8,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 带64字节memo
+
+        testCaseCode = 'PFMC_SameHW_000130'
+        scriptCode = scriptCodePrefix + '同一账户向同一节点连续发送交易（带64字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 64,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L3
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000140'
+        scriptCode = scriptCodePrefix + '不同账户向5个不同的节点连续发送交易（带64字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 64,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L3
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 带512字节memo
+
+        testCaseCode = 'PFMC_SameHW_000150'
+        scriptCode = scriptCodePrefix + '同一账户向同一节点连续发送交易（带512字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 512,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L4
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000160'
+        scriptCode = scriptCodePrefix + '不同账户向5个不同的节点连续发送交易（带512字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 512,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L4
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 带4096字节memo
+
+        testCaseCode = 'PFMC_SameHW_000170'
+        scriptCode = scriptCodePrefix + '同一账户向同一节点连续发送交易（带4096字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 4096,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L4
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000180'
+        scriptCode = scriptCodePrefix + '不同账户向5个不同的节点连续发送交易（带4096字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 4096,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L4
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 带32768字节memo
+
+        testCaseCode = 'PFMC_SameHW_000190'
+        scriptCode = scriptCodePrefix + '同一账户向同一节点连续发送交易（带32768字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 32768,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L5
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'PFMC_SameHW_000200'
+        scriptCode = scriptCodePrefix + '不同账户向5个不同的节点连续发送交易（带32768字节memo）测试性能上限'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 32768,
+                5000, true, true, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            testScript.restrictedLevel = restrictedLevel.L5
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        framework.testTestScripts(server, describeTitle + '_' + txFunctionName, testScripts)
+
+    },
+
+    testForPurePerformance: function(server, describeTitle, txFunctionName, actionCount, txCount){
+        let testScripts = []
+        let ptParam
+        let testCaseCode
+        let scriptCode
+        testCaseCode = 'UNK_UNKNOWN_000000'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
+                [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
+                5000, true, false, false)
+            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
+            framework.addTestScript(testScripts, testScript)
+        }
+        framework.testTestScripts(server, describeTitle, testScripts)
+    },
+
+    testForSendTxs: function(server, describeTitle, testCaseCode, scriptCode, ptParam){
+
+        if(!testCaseCode) testCaseCode = 'UNK_UNKNOWN_000000'
+        let scriptCodePrefix = ptParam.txFunctionName == consts.rpcFunctions.sendTx ? '000100_' : '000200_'
+        if(!scriptCode) scriptCode = scriptCodePrefix + '_tcsSendTxInOneRequest_'
+            + ptParam.actionCount + '个请求，各执行' + ptParam.txCount + '个交易'
 
         let testScript = framework.createTestScript(
             server,
@@ -198,8 +483,8 @@ module.exports = tcsPerformanceTest = {
             }
         }
 
-        testScripts.push(testScript)
-        framework.testTestScripts(server, describeTitle, testScripts)
+        return testScript
+
     },
 
     //endregion
