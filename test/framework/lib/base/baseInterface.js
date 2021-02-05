@@ -485,8 +485,8 @@ function baseInterface() {
 
     baseInterface.prototype.getResponse = function (server, methodName, params) {
         if(basicConfig.printImportantLog){
-            logger.debug('---Trying to invoke ' + methodName + ', by ' + server.getName() + '!')     //important logger
-            logger.debug('---Params: ' + JSON.stringify(params))   //important logger
+            logger.info('---Trying to invoke ' + methodName + ', by ' + server.getName() + '!')     //important logger
+            logger.info('---Params: ' + JSON.stringify(params))   //important logger
         }
     }
 

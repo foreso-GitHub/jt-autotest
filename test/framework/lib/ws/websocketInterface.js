@@ -36,9 +36,9 @@ function websocketInterface() {
             let data = await websocketInterface.prototype.request(server.url, requestContent)
             if (data != null && JSON.stringify(data.result) !== '{}'){
                 if(basicConfig.printImportantLog){  //important logger
-                    logger.debug('---Result: ', JSON.stringify(data))
+                    logger.info('---Result: ', JSON.stringify(data))
                     if(data.error){
-                        logger.debug('---error: ', JSON.stringify(data.error))
+                        logger.error('---error: ', JSON.stringify(data.error))
                     }
                 }
                 resolve(data)
@@ -54,7 +54,7 @@ function websocketInterface() {
             const ws = new WebSocket(url)
 
             ws.on('open', function open() {
-                // console.log('open')
+                // logger.dubug('ws open')
                 ws.send(content)
             })
 
@@ -65,7 +65,7 @@ function websocketInterface() {
             })
 
             ws.on('close', function close() {
-                // console.log('disconnected')
+                // logger.dubug('ws disconnected')
             })
         })
 
@@ -89,7 +89,7 @@ function websocketInterface() {
         let index = 0
 
         ws.on('open', async function open() {
-            if(openLogger) logger.debug('ws open!')  //important logger
+            if(openLogger) logger.info('ws open!')  //important logger
         })
 
         ws.on('message', function incoming(data) {
@@ -97,11 +97,11 @@ function websocketInterface() {
             message.outputIndex = index ++
             all_outputs.push(message)
             sub_outputs.push(message)
-            if(openLogger) logger.debug('ws message: ' + data)  //important logger
+            if(openLogger) logger.info('ws message: ' + data)  //important logger
         })
 
         ws.on('close', function close() {
-            if(openLogger) logger.debug('ws disconnected!')  //important logger
+            if(openLogger) logger.info('ws disconnected!')  //important logger
         })
         return ws
     }
@@ -121,7 +121,7 @@ function websocketInterface() {
 
     websocketInterface.prototype.subscribe = function (ws, methodName, params) {
         let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
-        if(openLogger) logger.debug('ws.send: ' + requestContent) //important logger
+        if(openLogger) logger.info('ws.send: ' + requestContent) //important logger
         return websocketInterface.prototype.subscribeResponse(ws, requestContent)
     }
 

@@ -52,8 +52,8 @@ module.exports = rpc = {
                 // logger.debug("request return: " + JSON.stringify(response))
                 clearTimeout(requestTimer)
                 if (error) {
-                    logger.debug("request error: " + JSON.stringify(error))
-                    logger.debug("request options: " + JSON.stringify(options))
+                    logger.error("request error: " + JSON.stringify(error))
+                    logger.error("request options: " + JSON.stringify(options))
                     reject(error)
                 } else if (response.statusCode !== 200) {
                     resolve(response)
@@ -61,7 +61,7 @@ module.exports = rpc = {
                     try {
                         resolve(JSON.parse(body))
                     } catch (e) {
-                        logger.debug("request exception: " + JSON.stringify(e))
+                        logger.error("request exception: " + JSON.stringify(e))
                         resolve(body)
                     }
                 }
@@ -95,7 +95,7 @@ module.exports = rpc = {
                 if (data != null && JSON.stringify(data.result) !== '{}'){
                     logger.debug('---Result: ', JSON.stringify(data))
                     if(data.error){
-                        logger.debug('---error: ', JSON.stringify(data.error))
+                        logger.error('---error: ', JSON.stringify(data.error))
                     }
                     resolve(data)
                 }

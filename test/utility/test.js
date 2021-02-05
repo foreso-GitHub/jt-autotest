@@ -18,7 +18,7 @@ testSignToken()
 
 function testCreateAccount(){
     let account = offline.createWallet(consts.walletTypes.Ed25519)
-    console.log(JSON.stringify(account))
+    logger.debug(JSON.stringify(account))
 }
 
 async function testSignTx(){
@@ -33,7 +33,7 @@ async function testSignTx(){
     })
 
     let blobs = await offline.signTransaction(txParams)
-    console.log(JSON.stringify(blobs))
+    logger.debug(JSON.stringify(blobs))
 }
 
 async function testSignToken(){
@@ -51,7 +51,7 @@ async function testSignToken(){
     })
 
     let blobs = await offline.signTransaction(txParams)
-    console.log(JSON.stringify(blobs))
+    logger.debug(JSON.stringify(blobs))
 }
 
 

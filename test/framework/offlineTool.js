@@ -1,4 +1,8 @@
 //region require
+let log4js = require('log4js')
+log4js.configure('./log4js.json')
+let logger = log4js.getLogger('default')
+
 const Transaction = require('swtc-transaction-ext').Transaction
 const WalletFactory = require('swtc-wallet').Factory
 const SerializerFactory = require('swtc-serializer-ext').Factory
@@ -6,8 +10,6 @@ const Wallet = WalletFactory('jingtum')
 const jser = SerializerFactory(Wallet)
 const consts = require('../../test/framework/consts')
 const utility = require('./testUtility')
-
-
 //endregion
 
 module.exports = offlineTool = {
@@ -44,7 +46,7 @@ module.exports = offlineTool = {
         // tx_json.Flags = txParam.flags ? txParam.flags : 0
 
         try {
-            console.log(JSON.stringify(tx_json))
+            logger.debug(JSON.stringify(tx_json))
             const wt = new Wallet(txParam.secret)
             tx_json.SigningPubKey = wt.getPublicKey()
             const prefix = 0x53545800
@@ -54,7 +56,7 @@ module.exports = offlineTool = {
             return tx_json.blob
         }
         catch (error) {
-            console.log(error)
+            logger.error(error)
         }
 
     },
@@ -86,7 +88,7 @@ module.exports = offlineTool = {
         }
 
         let txBlob = tx.signPromise(txParam.secret)
-        // console.log('sign', txBlob)
+        // logger.debug('sign', txBlob)
         return txBlob
     },
 

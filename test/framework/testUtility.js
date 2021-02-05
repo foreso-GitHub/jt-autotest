@@ -33,7 +33,7 @@ module.exports = testUtility = {
             try {
                 obj = JSON.parse(str)
             } catch(e) {
-                // console.log('error：'+str+'!!!'+e)
+                // logger.error('error：'+str+'!!!'+e)
                 return false
             }
         }else{
@@ -48,7 +48,7 @@ module.exports = testUtility = {
             return false
         }
 
-        // console.log('It is not a string!')
+        // logger.error('It is not a string!')
         return false
     },
     //endregion
@@ -99,10 +99,10 @@ module.exports = testUtility = {
                 + '\r\nmodule.exports = { ' + moduleName +' }'
             fs.writeFile(destFile, fileString, function (err) {
                 if (err) {
-                    console.log(err)
+                    logger.error(err)
                     reject(err)
                 } else {
-                    console.log(moduleName + ' js saved: ' + destFile)
+                    logger.info(moduleName + ' js saved: ' + destFile)
                     resolve(jsonObject)
                 }
             })
@@ -179,10 +179,10 @@ module.exports = testUtility = {
         return new Promise(async (resolve, reject) =>{
             fs.writeFile(destFile, content, function (err) {
                 if (err) {
-                    console.log(err)
+                    logger.error(err)
                     reject(err)
                 } else {
-                    console.log(destFile + ' has been saved!')
+                    logger.info(destFile + ' has been saved!')
                     resolve(destFile)
                 }
             })
@@ -207,11 +207,11 @@ module.exports = testUtility = {
         return new Promise((resolve, reject) =>{
             fs.copyFile(srcFilePath, destFilePath,function(err){
                 if(err) {
-                    console.log('Copy file error: ' + err)
+                    logger.error('Copy file error: ' + err)
                     reject(err)
                 }
                 else {
-                    console.log('Copy file succeed! From [' + srcFilePath + '] to [' + destFilePath + ']!')
+                    logger.info('Copy file succeed! From [' + srcFilePath + '] to [' + destFilePath + ']!')
                     resolve(destFilePath)
                 }
             })
@@ -222,7 +222,7 @@ module.exports = testUtility = {
 
     //region windows/linux path
     updatePath: function(rawPath, ){
-        // console.log(rawPath.toString())
+        // logger.debug(rawPath.toString())
         return rawPath.split('\\').join(path.sep)
     },
 

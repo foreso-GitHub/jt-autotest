@@ -298,7 +298,7 @@ function swtclibInterface() {
     }
 
     this.processError = function(error, resolve){
-        logger.debug('Request swtclib error:' + JSON.stringify(error))
+        logger.error('Request swtclib error:' + JSON.stringify(error))
         resolve(this.createError(0, error))
         if(this.remote.isConnected()) this.remote.disconnect()
     }

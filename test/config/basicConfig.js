@@ -13,8 +13,8 @@ let rpcSettings = {
 
 let jtVersion = '20210204'
 
-let printImportantLog = true
-let printWsLog = true
+let printImportantLog = false
+let printWsLog = false
 
 module.exports = {
     commonPaths,

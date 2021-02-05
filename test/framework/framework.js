@@ -368,7 +368,7 @@ module.exports = framework = {
                 action.actualResult = response
                 resolve(action)
             }, function (error) {
-                logger.debug(error)
+                logger.error('executeTestActionForGet: ' + error)
                 expect(false).to.be.ok
                 reject(error)
             })
@@ -778,28 +778,28 @@ module.exports = framework = {
 
     printTestScript: function(testScript){
         if(basicConfig.printImportantLog){
-            logger.debug('---script title: ' + testScript.title)      //important logger
-            logger.debug('---test precondition: ' + testScript.testCase.precondition)
-            logger.debug('---test input: ' + testScript.testCase.input)
-            logger.debug('---test expectedOutput: ' + testScript.testCase.expectedOutput)
-            logger.debug('---supportedServices: ' + JSON.stringify(testScript.supportedServices))
-            logger.debug('---supportedInterfaces: ' + JSON.stringify(testScript.supportedInterfaces))
-            logger.debug('---restrictedLevel: ' + JSON.stringify(testScript.restrictedLevel))
-            // logger.debug('---hasExecuted: ' + testScript.hasExecuted)
-            logger.debug('---testResult: ' + testScript.testResult)
+            logger.info('---script title: ' + testScript.title)      //important logger
+            logger.info('---test precondition: ' + testScript.testCase.precondition)
+            logger.info('---test input: ' + testScript.testCase.input)
+            logger.info('---test expectedOutput: ' + testScript.testCase.expectedOutput)
+            logger.info('---supportedServices: ' + JSON.stringify(testScript.supportedServices))
+            logger.info('---supportedInterfaces: ' + JSON.stringify(testScript.supportedInterfaces))
+            logger.info('---restrictedLevel: ' + JSON.stringify(testScript.restrictedLevel))
+            // logger.info('---hasExecuted: ' + testScript.hasExecuted)
+            logger.info('---testResult: ' + testScript.testResult)
             for(let i = 0; i < testScript.actions.length; i++){
                 let action = testScript.actions[i]
-                logger.debug('---txFunctionName[' +i + ']: ' + JSON.stringify(action.txFunctionName))
-                logger.debug('---txParams[' +i + ']: ' + JSON.stringify(action.txParams))
-                logger.debug('---result[' +i + ']: ' + JSON.stringify(action.actualResult))
-                logger.debug('---testResult[' +i + ']: ' + action.testResult)
+                logger.info('---txFunctionName[' +i + ']: ' + JSON.stringify(action.txFunctionName))
+                logger.info('---txParams[' +i + ']: ' + JSON.stringify(action.txParams))
+                logger.info('---result[' +i + ']: ' + JSON.stringify(action.actualResult))
+                logger.info('---testResult[' +i + ']: ' + action.testResult)
             }
         }
     },
 
     ifNeedExecuteOrCheck: function(testScript){
         if(!testScript){
-            logger.debug("Error: test case doesn't exist!")
+            logger.error("Error: test case doesn't exist!")
         }
         if(testScript.server.mode.restrictedLevel < testScript.restrictedLevel){
             return false
@@ -1352,7 +1352,7 @@ module.exports = framework = {
         let phases = code.split('_')
 
         if(level > 3 || level <1){
-            console.log('getPrefix error: wrong level')
+            logger.error('getPrefix error: wrong level')
             return null
         }
 

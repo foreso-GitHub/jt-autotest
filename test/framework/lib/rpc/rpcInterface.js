@@ -37,9 +37,9 @@ function rpcInterface() {
             this.server.RPC_POST(this.url, data).then(function(data){
                 if (data != null && JSON.stringify(data.result) !== '{}'){
                     if(basicConfig.printImportantLog) {  //important logger
-                        logger.debug('---Result: ', JSON.stringify(data))
+                        logger.info('---Result: ', JSON.stringify(data))
                         if(data.error){
-                            logger.debug('---error: ', JSON.stringify(data.error))
+                            logger.info('---error: ', JSON.stringify(data.error))
                         }
                     }
                     resolve(data)
