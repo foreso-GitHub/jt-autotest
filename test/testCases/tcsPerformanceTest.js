@@ -77,7 +77,7 @@ module.exports = tcsPerformanceTest = {
 
     //endregion
 
-    //region script
+    //region test
 
     test: function(server, describeTitle){
         describe(describeTitle, function () {
@@ -104,7 +104,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -115,7 +115,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 2, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -126,7 +126,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 3, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -137,7 +137,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 4, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -148,7 +148,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 5, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -163,7 +163,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -174,7 +174,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -185,7 +185,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -196,7 +196,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -207,7 +207,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 1, 0,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -222,7 +222,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 8,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -233,7 +233,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 8,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
@@ -248,7 +248,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 64,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L3
             framework.addTestScript(testScripts, testScript)
@@ -260,7 +260,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 64,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L3
             framework.addTestScript(testScripts, testScript)
@@ -276,7 +276,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 512,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L4
             framework.addTestScript(testScripts, testScript)
@@ -288,7 +288,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 512,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L4
             framework.addTestScript(testScripts, testScript)
@@ -304,7 +304,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 4096,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L4
             framework.addTestScript(testScripts, testScript)
@@ -316,7 +316,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 4096,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L4
             framework.addTestScript(testScripts, testScript)
@@ -332,7 +332,7 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 1, 1, 32768,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L5
             framework.addTestScript(testScripts, testScript)
@@ -344,9 +344,25 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 32768,
                 5000, true, true, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             testScript.restrictedLevel = restrictedLevel.L5
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        //endregion
+
+        //region 无效交易
+
+        testCaseCode = 'PFMC_SameHW_000210'
+        scriptCode = scriptCodePrefix + '性能测试时加入无效交易'
+        {
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, 5, 20,
+                [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 0,
+                5000, true, true, false)
+            ptParam.failTxCount = 5
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
+                testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
 
@@ -366,14 +382,14 @@ module.exports = tcsPerformanceTest = {
             ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, actionCount, txCount,
                 [interfaceType.rpc, interfaceType.websocket], 18, 20, 20, 0,
                 5000, true, false, false)
-            let testScript = tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易',
+            let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
         }
         framework.testTestScripts(server, describeTitle, testScripts)
     },
 
-    testForSendTxs: function(server, describeTitle, testCaseCode, scriptCode, ptParam){
+    createTestScript: function(server, describeTitle, testCaseCode, scriptCode, ptParam){
 
         if(!testCaseCode) testCaseCode = 'UNK_UNKNOWN_000000'
         let scriptCodePrefix = ptParam.txFunctionName == consts.rpcFunctions.sendTx ? '000100_' : '000200_'
@@ -390,10 +406,11 @@ module.exports = tcsPerformanceTest = {
             [],
         )
 
-        //select server in server list, then change action.server
+        //region select server in server list, then change action.server
         let servers = tcsPerformanceTest.createServerList(ptParam.serverTypes, ptParam.serverCount, ptParam.actionCount)
+        //endregion
 
-        //memos
+        //region memos
         let memos
         if(ptParam.memoSize){
             memos = utility.createMemosWithSpecialLength(ptParam.memoSize)
@@ -401,6 +418,7 @@ module.exports = tcsPerformanceTest = {
         else{
             memos = []
         }
+        //endregion
 
         //region accounts
 
@@ -428,6 +446,15 @@ module.exports = tcsPerformanceTest = {
             toList = tcsPerformanceTest.createAccountList(toAccounts, ptParam.toCount, ptParam.actionCount)
         }
 
+        //endregion
+
+        //region fail tx
+        let failTx
+        if(ptParam.failTxCount && ptParam.failTxCount > 0){
+            failTx = []
+            let rands = utility.getRandList(0, ptParam.txCount - 1, ptParam.failTxCount, false)
+
+        }
         //endregion
 
         for(let j = 0; j < ptParam.actionCount; j++){
@@ -528,9 +555,18 @@ module.exports = tcsPerformanceTest = {
         return servers
     },
 
-    //endregion
-
-    //region performance test with memos
+    createFailTxList: function(){
+        let failTx = {}
+        failTx.index
+        // failTx.expectedResult =
+        failTx.Param = {}
+        failTx.Param.from
+        failTx.Param.secret
+        failTx.Param.to
+        failTx.Param.sequence
+        failTx.Param.value
+        failTx.Param.fee
+    },
 
     //endregion
 

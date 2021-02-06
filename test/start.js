@@ -84,7 +84,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -138,6 +138,7 @@ describe('Jingtum测试', function() {
                 tcsSequenceTest.testForSequenceTest(server, '测试Sequence')
 
                 this.timeout(_longTimeOut)
+                // server.mode.restrictedLevel = restrictedLevel.L5
                 server.mode.testMode = testMode.singleMode
                 tcsPerformanceTest.test(server, '测试Performance')
                 server.mode.testMode = currentTestMode
@@ -189,20 +190,6 @@ describe('Jingtum测试', function() {
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
-                this.timeout(_longTimeOut)
-                server.mode.restrictedLevel = restrictedLevel.L5
-                server.mode.testMode = testMode.singleMode
-                tcsPerformanceTest.test(server, '测试Performance')
-                server.mode.testMode = currentTestMode
-                this.timeout(timeout)
-
-                // this.timeout(_longTimeOut)
-                // for(let i = 0; i < 1000; i++){
-                //     tcsPerformanceTest.testForPurePerformance(server, '测试Performance，全力',
-                //         consts.rpcFunctions.sendTx, 1, 10)
-                // }
-                // this.timeout(timeout)
-
                 //region websocket subscribe
 
                 // this.timeout(_longTimeOut)
@@ -224,10 +211,12 @@ describe('Jingtum测试', function() {
                 // }
 
 
-                // for(let i = 0; i < 5000; i++){
-                //     tcsPerformanceTest.testForSendTxs(server, '一个请求执行多个交易', consts.rpcFunctions.sendTx,
-                //         1, 30, true, 5000, true, )
+                // this.timeout(_longTimeOut)
+                // for(let i = 0; i < 1000; i++){
+                //     tcsPerformanceTest.testForPurePerformance(server, '测试Performance，全力',
+                //         consts.rpcFunctions.sendTx, 1, 10)
                 // }
+                // this.timeout(timeout)
 
                 this.timeout(timeout)
 

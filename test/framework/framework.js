@@ -653,6 +653,9 @@ module.exports = framework = {
 
     //region batch mode
 
+    // testScript按组执行，一组的testScript一条条顺序执行，完成后再一起检查结果。
+    // 因为发送交易需要等5s才能写入区块。这样的做法能极大提高sendTx等测试的效率。
+    // 一组的testScript一条条顺序执行，是防止testScript同时执行会互相干扰，比如sequence无法准确设定。
     testOnBatchMode: function(server, describeTitle, testScripts){
         describe(describeTitle, async function () {
 
@@ -710,6 +713,7 @@ module.exports = framework = {
 
     //region single mode
 
+    // testScript单条执行，一条script执行完后马上检查结果。
     testOnSingleMode: function(server, describeTitle, testScripts) {
         describe(describeTitle, async function () {
             testScripts.forEach(async function(testScript){
@@ -730,6 +734,15 @@ module.exports = framework = {
                 })
             })
         })
+    },
+
+    //endregion
+
+    //region parallel mode
+
+    //todo 一组testScript并行执行，然后一起检查结果。一般用于ws的subscribe相关测试。因为一条testScript有独立的一个ws链接，相互不会干扰。
+    testOnParallelMode: function(server, describeTitle, testScripts){
+
     },
 
     //endregion
