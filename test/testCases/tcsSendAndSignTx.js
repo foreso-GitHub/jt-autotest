@@ -220,7 +220,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = "1/swt"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 't find currency'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
@@ -232,7 +232,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = "1/Swt"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 't find currency'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
@@ -244,7 +244,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].secret = null
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'No secret found for'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -256,7 +256,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].secret = '错误的秘钥'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'Unknown secret format'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -268,20 +268,32 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].secret = testScript.actions[0].txParams[0].secret + '1'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'Bad Base58 checksum'))
+            framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
+            framework.addTestScript(testScripts, testScript)
+        }
+
+        testCaseCode = 'FCJT_sendTransaction_010030'
+        testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
+        scriptCode = '000400_' + scriptType + '_不匹配的秘钥'
+        {
+            let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
+            testScript.actions[0].txParams[0].secret = server.mode.addresses.walletAccount.secret
+            let expectedResult = framework.createExpectedResult(false,
+                framework.getError(-278, 'secret doesn\'t match with address'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
 
         testCaseCode = 'FCJT_sendTransaction_010040'
         testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
-        scriptCode = defaultScriptCode
+        scriptCode = defaultScriptCode + '_错误的发起钱包地址'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].from = testScript.actions[0].txParams[0].from + '1'
             testScript.actions[0].txParams[0].sequence = 1
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'Bad account address'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -289,11 +301,11 @@ module.exports = tcsSendAndSignTx = {
 
         testCaseCode = 'FCJT_sendTransaction_010050'
         testCaseCode = tcsSendAndSignTx.processTestCaseCode(testCaseCode, type)
-        scriptCode = defaultScriptCode
+        scriptCode = defaultScriptCode + '_错误的接收钱包地址'
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].to = testScript.actions[0].txParams[0].to + '1'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'Bad account address'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -307,7 +319,7 @@ module.exports = tcsSendAndSignTx = {
             let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
             let showValue = utility.getFullCurrency('12345678901' ,rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = showValue
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(rawValue.symbol == consts.default.nativeCoin ? -394 : -386,
                     rawValue.symbol == consts.default.nativeCoin ? 'Fee insufficient.' : 'Fund insufficient.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
@@ -323,12 +335,12 @@ module.exports = tcsSendAndSignTx = {
             let showValue = utility.getFullCurrency((consts.default.maxAmount + 1).toString() ,rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = showValue
             if(type == NativeCoinTest){
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-394, 'Fee insufficient.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
             else{
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-278, 'error value, out of range'))
                 framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             }
@@ -343,7 +355,7 @@ module.exports = tcsSendAndSignTx = {
             let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
             let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = "-100" + showSymbol
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'value must be >= 0'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -355,7 +367,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = null
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -367,7 +379,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = "aawrwfsfs"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -379,7 +391,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = "0.0000001"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
@@ -412,7 +424,7 @@ module.exports = tcsSendAndSignTx = {
                 ? consts.default.nativeCoinDecimals : consts.default.tokenDecimals) + 1
             let showValue = Math.pow(0.1, decimals).toFixed(decimals)
             testScript.actions[0].txParams[0].value = showValue.toString() + showSymbol
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error value'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -425,7 +437,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].value = "1.0000011"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'value must be integer type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             if(type == NativeCoinTest) framework.addTestScript(testScripts, testScript)
@@ -469,7 +481,7 @@ module.exports = tcsSendAndSignTx = {
             let rawValue = utility.parseShowValue(testScript.actions[0].txParams[0].value)
             let showSymbol = utility.getShowSymbol(rawValue.symbol, rawValue.issuer)
             testScript.actions[0].txParams[0].value = "-0.1" + showSymbol
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278,
                     rawValue.symbol == undefined || rawValue.symbol == 'SWT'
                         ? 'value must be integer type'
@@ -558,7 +570,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].memos = memos_901k
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'too large memo'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -591,7 +603,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].memos = [{"type":"ok","format":"utf8","data":memos_901k[0]}]
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'too large memo'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -662,7 +674,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = "9"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(136, 'Insufficient balance to pay fee.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -674,7 +686,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = "0"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(136, 'Insufficient balance to pay fee.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -686,7 +698,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = "12.5"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'strconv.ParseUint'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -698,7 +710,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = consts.default.maxAmount.toString()
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-394, 'Fee insufficient.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -710,7 +722,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = "-35"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'strconv.ParseUint'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -722,7 +734,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = 'sdfahkdfjaskjf'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'strconv.ParseUint'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -734,7 +746,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].fee = 35
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'strconv.ParseUint'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -796,7 +808,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals) + 1)
             testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/' + testScript.actions[0].txParams[0].symbol
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error total_supply'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -809,7 +821,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = '-1234567890'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-175, 'No permission issue.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -823,7 +835,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             let newTotalSupply = 54321 + Math.pow(0.1, Number(testScript.actions[0].txParams[0].decimals))
             testScript.actions[0].txParams[0].total_supply = newTotalSupply.toString() + '/NullCoin'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'currency in total_supply is not matched with symbol,'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -837,7 +849,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].from = "from.address"
             testScript.actions[0].txParams[0].sequence = "1"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-284, 'sequence must be positive integer'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -850,7 +862,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].name = utility.createMemosWithSpecialLength(257)[0]
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'The length of the name should be <= 256'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -882,7 +894,7 @@ module.exports = tcsSendAndSignTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + utility.createMemosWithSpecialLength(5)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'the length of the symbol must be in the range [3,12]'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -899,7 +911,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].symbol = existToken.symbol
             testScript.actions[0].txParams[0].local = true
             testScript.actions[0].txParams[0].flag = consts.flags.normal
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'invalid parameter flag'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -921,7 +933,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].decimals = "config.decimals"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -934,7 +946,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].decimals = -8
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -947,7 +959,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].decimals = '-8'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'decimals must be integer type and in range [0, 18]'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -960,7 +972,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].decimals = 11.64
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -973,7 +985,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].decimals = '11.64'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'decimals must be integer type(string) and in range [0, 18]'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -986,7 +998,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = "config.total_supply"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -999,7 +1011,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = -10000000
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1012,7 +1024,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = '-10000000'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-175, 'No permission issue.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1025,7 +1037,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = 10000.12345678
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1038,7 +1050,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = '10000.12345678'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'total_supply must be string type'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1061,7 +1073,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].total_supply = '9000000000000000001'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error total_supply, out of range'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1074,7 +1086,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].symbol = txParams[0].symbol + symbolPostFix++
             testScript.actions[0].txParams[0].type = "issuecoin"
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error type issuecoin'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1111,7 +1123,7 @@ module.exports = tcsSendAndSignTx = {
                     issuer: param.local ? param.from : consts.default.issuer}]
             }
             else{
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1125,7 +1137,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             testScript.actions[0].txParams[0].decimals = '9'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'Invalid.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1138,7 +1150,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             testScript.actions[0].txParams[0].name = 'TestCoin_StrangeName'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'Invalid.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1151,7 +1163,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '9'
             testScript.actions[0].txParams[0].flag = 1
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'invalid parameter flag'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1165,7 +1177,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].total_supply = '9'
             let flags = testScript.actions[0].txParams[0].flag
             testScript.actions[0].txParams[0].flag = flags == consts.flags.normal ? consts.flags.both : consts.flags.normal
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'invalid parameter flag'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1192,7 +1204,7 @@ module.exports = tcsSendAndSignTx = {
                     [{address: param.from, value: '987654328950000006', symbol: param.symbol, issuer: issuer}]
             }
             else{
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1206,7 +1218,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let param = testScript.actions[0].txParams[0]
             param.total_supply = '100.000000005/' + param.symbol
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error total_supply'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1219,7 +1231,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let param = testScript.actions[0].txParams[0]
             param.total_supply = '1/nosymbol'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'currency in total_supply is not matched with symbol'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1233,12 +1245,12 @@ module.exports = tcsSendAndSignTx = {
             let param = testScript.actions[0].txParams[0]
             param.total_supply = '9000000000000000000'
             if(param.flags != consts.flags.normal){
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-385, 'Cannot exceed the maximum total supply number.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
             else{
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1267,7 +1279,7 @@ module.exports = tcsSendAndSignTx = {
                     [{address: param.from, value: '987654328950000007', symbol: param.symbol, issuer: issuer}]
             }
             else{
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-277, 'The transaction has an invalid flag.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1300,7 +1312,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '-9'
             if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1314,7 +1326,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '-9/' + testScript.actions[0].txParams[0].symbol
             if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1330,11 +1342,11 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].decimals = '9'
             let expectedResult
             if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-278, 'Invalid.'))
             }
             else{
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
             }
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
@@ -1350,11 +1362,11 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].name = 'TestCoin_StrangeName'
             let expectedResult
             if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-278, 'Invalid.'))
             }
             else{
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
             }
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
@@ -1368,7 +1380,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '-9'
             testScript.actions[0].txParams[0].flag = 1
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'invalid parameter flag'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1382,7 +1394,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].total_supply = '-9.00000001/' + testScript.actions[0].txParams[0].symbol
             let expectedResult
             if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }
@@ -1396,7 +1408,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '-9.000000001/' + testScript.actions[0].txParams[0].symbol
             let expectedResult
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error total_supply'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1409,7 +1421,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '-9/nosymbol'
             let expectedResult
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'currency in total_supply is not matched with symbol'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1424,11 +1436,11 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].total_supply = '-997654319900000000'
             let expectedResult
             if(tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-228, 'Insufficient total supply to burn.'))
             }
             else{
-                expectedResult = framework.createExpecteResult(false,
+                expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
             }
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
@@ -1442,7 +1454,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].txParams[0].total_supply = '-9'
             testScript.actions[0].txParams[0].type = 'issuecoin'
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-278, 'error type issuecoin'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -1470,7 +1482,7 @@ module.exports = tcsSendAndSignTx = {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             testScript.actions[0].executeFunction = tcsSendAndSignTx.executeBurnAllOfSendTx
             if(!tcsSendAndSignTx.canBurn(testScript.actions[0].txParams[0].flags)){
-                let expectedResult = framework.createExpecteResult(false,
+                let expectedResult = framework.createExpectedResult(false,
                     framework.getError(-175, 'No permission issue.'))
                 framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
             }

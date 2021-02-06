@@ -136,7 +136,7 @@ module.exports = tcsSendRawTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let failTx = _FailRawTx_EmptyRawTx
-            let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
+            let expectedResults = [framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
                 tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
@@ -151,7 +151,7 @@ module.exports = tcsSendRawTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             // let failTx = _FailRawTx_EmptyRawTx
-            // let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
+            // let expectedResults = [framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [],
                 tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
@@ -166,7 +166,7 @@ module.exports = tcsSendRawTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let failTx = _FailRawTx_WrongFormat_1
-            let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
+            let expectedResults = [framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
                 tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
@@ -180,7 +180,7 @@ module.exports = tcsSendRawTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let failTx = _FailRawTx_WrongFormat_2
-            let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
+            let expectedResults = [framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
                 tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
@@ -194,7 +194,7 @@ module.exports = tcsSendRawTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let failTx = _FailRawTx_WrongFormat_3
-            let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
+            let expectedResults = [framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
                 tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
@@ -208,7 +208,7 @@ module.exports = tcsSendRawTx = {
         {
             let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)
             let failTx = _FailRawTx_WrongFormat_4
-            let expectedResults = [framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information))]
+            let expectedResults = [framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information))]
             let sendRawTxAction = framework.createTestAction(testScript, consts.rpcFunctions.sendRawTx, [failTx.tx],
                 tcsSendRawTx.executeTestActionOfSendRawTx,
                 framework.checkTestActionOfSendTx,
@@ -305,7 +305,7 @@ module.exports = tcsSendRawTx = {
         for(let i = 0; i < failTxs.length; i++){
             let failTx = failTxs[i]
             txParams.push(failTx.txParam)
-            expectedResults.push(framework.createExpecteResult(false, framework.getError(failTx.code, failTx.information)))
+            expectedResults.push(framework.createExpectedResult(false, framework.getError(failTx.code, failTx.information)))
         }
 
         let testScript = framework.createTestScriptForTx(server, testCaseCode, scriptCode, txFunctionName, txParams)

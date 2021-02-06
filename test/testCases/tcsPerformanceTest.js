@@ -465,7 +465,7 @@ module.exports = tcsPerformanceTest = {
 
             for(let i = 0; i < ptParam.txCount; i++){
                 let txParam = utility.deepClone(txTemplate)
-                expectResults.push(framework.createExpecteResult({needPass: true}))
+                expectResults.push(framework.createExpectedResult({needPass: true}))
 
                 if(fromList){
                     txParam.from = fromList[j].address
@@ -558,7 +558,10 @@ module.exports = tcsPerformanceTest = {
     createFailTxList: function(){
         let failTx = {}
         failTx.index
-        // failTx.expectedResult =
+        failTx.error = {}
+        failTx.error.code
+        failTx.error.info
+        // failTx.expectedResult = framework.createExpectedResult(false, framework.getError(-278, 'empty raw transaction'))
         failTx.Param = {}
         failTx.Param.from
         failTx.Param.secret
@@ -566,6 +569,60 @@ module.exports = tcsPerformanceTest = {
         failTx.Param.sequence
         failTx.Param.value
         failTx.Param.fee
+    },
+
+    getFixedFailTxs: function(server){
+        let failTxs = {}
+
+        failTxs.wrongFrom = tcsPerformanceTest.createFailTx()
+        failTxs.wrongFrom.Param.from = server.mode.addresses.walletAccount.address + '1'
+        failTxs.wrongFrom.Param.secret = server.mode.addresses.walletAccount.secret
+        failTxs.wrongFrom.error.code = -278
+        failTxs.wrongFrom.error.info = 'Bad account address'
+
+        failTxs.wrongSecret = tcsPerformanceTest.createFailTx()
+        failTxs.wrongSecret.Param.from = server.mode.addresses.walletAccount.address
+        failTxs.wrongSecret.Param.secret = server.mode.addresses.balanceAccount.secret
+        failTxs.wrongSecret.error.code = -278
+        failTxs.wrongSecret.error.info = 'secret doesn\'t match with address'
+
+        failTxs.wrongTo = tcsPerformanceTest.createFailTx()
+        failTxs.wrongTo.Param.to = server.mode.addresses.walletAccount.address + '1'
+        failTxs.wrongTo.error.code = -278
+        failTxs.wrongTo.error.info = 'Bad account address'
+
+        failTxs.wrongSequence = tcsPerformanceTest.createFailTx()
+        failTxs.wrongSequence.Param.sequence = 0
+        failTxs.wrongSequence.error.code = -284
+        failTxs.wrongSequence.error.info = 'Malformed: Sequence is not in the past.'
+
+        failTxs.wrongValue = tcsPerformanceTest.createFailTx()
+        failTxs.wrongValue.Param.value = '-1/SWT'
+        failTxs.wrongValue.error.code = -278
+        failTxs.wrongValue.error.info = 'value must be >= 0'
+
+        failTxs.wrongFee = tcsPerformanceTest.createFailTx()
+        failTxs.wrongFee.Param.fee = '-1/SWT'
+        failTxs.wrongFee.error.code = -278
+        failTxs.wrongFee.error.info = 'value must be >= 0'
+
+        return failTxs
+    },
+
+    createFailTx: function(){
+        let failTx = {}
+        failTx.index
+        failTx.error = {}
+        failTx.error.code
+        failTx.error.info
+        failTx.Param = {}
+        failTx.Param.from
+        failTx.Param.secret
+        failTx.Param.to
+        failTx.Param.sequence
+        failTx.Param.value
+        failTx.Param.fee
+        return failTx
     },
 
     //endregion

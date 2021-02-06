@@ -59,7 +59,7 @@ module.exports = tcsSign = {
             let txParams = [txParam]
             let expectedSignedTxs = []
             let testScript = tcsSign.createTestScript(server, testCaseCode, scriptCode, txParams, expectedSignedTxs)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 'No secret found for'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -72,7 +72,7 @@ module.exports = tcsSign = {
             let txParams = [txParam]
             let expectedSignedTxs = []
             let testScript = tcsSign.createTestScript(server, testCaseCode, scriptCode, txParams, expectedSignedTxs)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-248, 'Unknown secret format'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -85,7 +85,7 @@ module.exports = tcsSign = {
             let txParams = [txParam]
             let expectedSignedTxs = []
             let testScript = tcsSign.createTestScript(server, testCaseCode, scriptCode, txParams, expectedSignedTxs)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-248, 'Bad Base58 checksum'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -98,7 +98,7 @@ module.exports = tcsSign = {
             let txParams = [txParam]
             let expectedSignedTxs = []
             let testScript = tcsSign.createTestScript(server, testCaseCode, scriptCode, txParams, expectedSignedTxs)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -116,19 +116,19 @@ module.exports = tcsSign = {
             let expectedSignedTxs = []
             let testScript = tcsSign.createTestScript(server, testCaseCode, scriptCode, txParams, expectedSignedTxs)
 
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 'No secret found for'))
             framework.changeExpectedResult(testScript, expectedResult)
 
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-248, 'Unknown secret format'))
             framework.addExpectedResult(testScript, expectedResult)
 
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-248, 'Bad Base58 checksum'))
             framework.addExpectedResult(testScript, expectedResult)
 
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.addExpectedResult(testScript, expectedResult)
 
@@ -150,19 +150,19 @@ module.exports = tcsSign = {
 
             let testScript = tcsSign.createTestScript(server, testCaseCode, scriptCode, txParams, expectedResults)
 
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 'No secret found for'))
             framework.addExpectedResult(testScript, expectedResult)
 
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-248, 'Unknown secret format'))
             framework.addExpectedResult(testScript, expectedResult)
 
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-248, 'Bad Base58 checksum'))
             framework.addExpectedResult(testScript, expectedResult)
 
-            expectedResult = framework.createExpecteResult(false,
+            expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.addExpectedResult(testScript, expectedResult)
 

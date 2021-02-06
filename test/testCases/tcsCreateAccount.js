@@ -62,7 +62,7 @@ module.exports = tcsCreateAccount = {
         {
             let nickname = server.mode.addresses.balanceAccount.nickname
             let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'the nickname already exists'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -76,7 +76,7 @@ module.exports = tcsCreateAccount = {
                 + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
                 + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字' + '很长的名字'
             let testScript = tcsCreateAccount.createTestScript(server, testCaseCode, scriptCode, nickname, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'the length of the nickname must be in the range (0,256]'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)

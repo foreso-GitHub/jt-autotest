@@ -317,7 +317,7 @@ module.exports = framework = {
     changeExpectedResultWhenSignFail: function(testScript, expectedResult){
         testScript.actions[0].expectedResults = [expectedResult]
         if(testScript.actions[0].txFunctionName === consts.rpcFunctions.signTx){
-            testScript.actions[1].expectedResults = [framework.createExpecteResult(false,
+            testScript.actions[1].expectedResults = [framework.createExpectedResult(false,
                 framework.getError(-278, 'empty raw transaction'))]  //when signTx fail, sendRawTx will send empty string.
         }
     },
@@ -348,7 +348,7 @@ module.exports = framework = {
         }
     },
 
-    createExpecteResult: function(needPass, expectedError){
+    createExpectedResult: function(needPass, expectedError){
         let expectedResult = {}
         expectedResult.needPass = needPass
         expectedResult.expectedError = expectedError

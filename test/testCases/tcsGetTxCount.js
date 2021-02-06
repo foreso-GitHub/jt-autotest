@@ -54,7 +54,7 @@ module.exports = tcsGetTxCount = {
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find block'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -65,7 +65,7 @@ module.exports = tcsGetTxCount = {
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -107,7 +107,7 @@ module.exports = tcsGetTxCount = {
         {
             let blockNumber = '999999999'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find block'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -118,7 +118,7 @@ module.exports = tcsGetTxCount = {
         {
             let blockNumber = '-100'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'invalid block number'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -129,7 +129,7 @@ module.exports = tcsGetTxCount = {
         {
             let blockNumber = 'addeew'
             let testScript = tcsGetTxCount.createTestScript(server, testCaseCode, scriptCode, functionName, blockNumber, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'invalid block number'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -250,7 +250,7 @@ module.exports = tcsGetTxCount = {
             let addressOrName = 'jnZ7CDuqmj6Pe1KGMdiacfh4aeuXSDj'
             let needSendTx = false
             let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -262,7 +262,7 @@ module.exports = tcsGetTxCount = {
             let addressOrName = from.address + 'a'
             let needSendTx = false
             let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -274,7 +274,7 @@ module.exports = tcsGetTxCount = {
             let addressOrName = server.mode.addresses.wrongFormatAccount1.address
             let needSendTx = false
             let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -286,7 +286,7 @@ module.exports = tcsGetTxCount = {
             let addressOrName = server.mode.addresses.inactiveAccount1.nickname
             let needSendTx = false
             let testScript = tcsGetTxCount.createTestScriptForGetTransactionCount(server, testCaseCode, scriptCode, addressOrName, ledger, needSendTx,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)

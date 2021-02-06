@@ -67,7 +67,7 @@ module.exports = tcsGetBlock = {
         {
             full = 'wrwerwre'
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'full is not boolean'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -78,7 +78,7 @@ module.exports = tcsGetBlock = {
         {
             full = 123123
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'full is not boolean'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -89,7 +89,7 @@ module.exports = tcsGetBlock = {
         {
             full = null
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'full is null'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -101,7 +101,7 @@ module.exports = tcsGetBlock = {
             numberOrHash = '9990000000'
             full = false
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(140, 'value out of range')
                     : framework.getError(-269, 'NewHash256: Wrong length') )
@@ -115,7 +115,7 @@ module.exports = tcsGetBlock = {
             numberOrHash = '99900000'
             full = false
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(140, 't find block')
                     : framework.getError(-269, 'NewHash256: Wrong length') )
@@ -129,7 +129,7 @@ module.exports = tcsGetBlock = {
             numberOrHash = '-100'
             full = false
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(-269, 'invalid block number')
                     : framework.getError(-269, 'NewHash256: Wrong length') )
@@ -143,7 +143,7 @@ module.exports = tcsGetBlock = {
             numberOrHash = 'abcdefg'
             full = false
             let testScript = tcsGetBlock.createTestScript(server, testCaseCode, scriptCode, functionName, numberOrHash, full, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 functionName == consts.rpcFunctions.getBlockByNumber
                     ? framework.getError(-269, 'invalid block number')
                     : framework.getError(-269, 'NewHash256: Wrong length') )
@@ -166,7 +166,7 @@ module.exports = tcsGetBlock = {
             action = framework.createTestAction(testScript, functionName,
                 [tcsGetBlock.createTxParam(server, functionName, numberOrHash, null, ledger)],
                 framework.executeTestActionForGet, tcsGetBlock.checkBlock,
-                [framework.createExpecteResult(false,
+                [framework.createExpectedResult(false,
                     framework.getError(-269, 'full is null'))])
             testScript.actions.push(action)
 

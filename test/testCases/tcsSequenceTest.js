@@ -80,7 +80,7 @@ module.exports = tcsSequenceTest = {
             testScript.actions[0].bindData.txParams[0].sequence = 1  //set sequence as 1
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-284, 'Malformed: Sequence is not in the past.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
 
@@ -96,7 +96,7 @@ module.exports = tcsSequenceTest = {
             testScript.actions[0].bindData.txParams[0].sequence = 0.5  //set sequence as 0.5
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-284, 'sequence must be positive integer'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
 
@@ -112,7 +112,7 @@ module.exports = tcsSequenceTest = {
             testScript.actions[0].bindData.txParams[0].sequence = -2  //set sequence as -2
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-284, 'sequence must be positive integer'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
 
@@ -128,7 +128,7 @@ module.exports = tcsSequenceTest = {
             testScript.actions[0].bindData.txParams[0].sequence = '1234'  //set sequence as '1234'
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-284, 'sequence must be positive integer'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
 

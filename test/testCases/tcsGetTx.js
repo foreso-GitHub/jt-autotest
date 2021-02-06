@@ -74,7 +74,7 @@ module.exports = tcsGetTx = {
         {
             let hash = 1231111
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'hash is not string'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -85,7 +85,7 @@ module.exports = tcsGetTx = {
         {
             let hash = 'data.tx1.hash'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -96,7 +96,7 @@ module.exports = tcsGetTx = {
         {
             let hash = null
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'hash is null'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -107,7 +107,7 @@ module.exports = tcsGetTx = {
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -118,7 +118,7 @@ module.exports = tcsGetTx = {
         {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A1F'
             let testScript = tcsGetTx.createTestScriptForGetTransaction(server, testCaseCode, scriptCode, hash, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'NewHash256: Wrong length'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -242,7 +242,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = 99999999
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140,  't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -255,7 +255,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = 0
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -268,7 +268,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = -1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'index or sequence should be >= 0'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -281,7 +281,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = 5.87
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'sequence is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -294,7 +294,7 @@ module.exports = tcsGetTx = {
             from = tx.Account
             index = 'sjdflsajf32241kjksd'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'sequence is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -306,7 +306,7 @@ module.exports = tcsGetTx = {
             from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSV'
             index = 1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -318,7 +318,7 @@ module.exports = tcsGetTx = {
             from = 'jpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm1'
             index = 1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -330,7 +330,7 @@ module.exports = tcsGetTx = {
             from = 'tpRhBgu4KZAyW9pMv4ckrxVYSvgG9ZuSVm'
             index = 1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -342,7 +342,7 @@ module.exports = tcsGetTx = {
             from = server.mode.addresses.inactiveAccount1.address
             index = 1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -454,7 +454,7 @@ module.exports = tcsGetTx = {
             let hash = txs.block.blockHash
             let index = '999999'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -466,7 +466,7 @@ module.exports = tcsGetTx = {
             let hash = txs.block.blockHash
             let index = '-1'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -478,7 +478,7 @@ module.exports = tcsGetTx = {
             let hash = txs.block.blockHash
             let index = 'asdf'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'index is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -490,7 +490,7 @@ module.exports = tcsGetTx = {
             let hash = 'B07647D61E6F7C4683E715004E2FB236D47DB64DF92F6504B71D6A1D4469530A'
             let index = '0'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find block'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -570,7 +570,7 @@ module.exports = tcsGetTx = {
             let blockNumber = tx.ledger_index.toString()
             let index = '999999'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -583,7 +583,7 @@ module.exports = tcsGetTx = {
             let blockNumber = tx.ledger_index.toString()
             let index = '-1'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find transaction'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -596,7 +596,7 @@ module.exports = tcsGetTx = {
             let blockNumber = tx.ledger_index.toString()
             let index = 'asdf'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'index is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -608,7 +608,7 @@ module.exports = tcsGetTx = {
             let blockNumber = '999999999'
             let index = '0'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(140, 't find block'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)

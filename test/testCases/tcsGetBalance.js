@@ -100,7 +100,7 @@ module.exports = tcsGetBalance = {
         {
             let addressOrName = server.mode.addresses.inactiveAccount1.address
             let testScript = tcsGetBalance.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 't find account'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -112,7 +112,7 @@ module.exports = tcsGetBalance = {
         {
             let addressOrName = server.mode.addresses.inactiveAccount1.nickname
             let testScript = tcsGetBalance.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -124,7 +124,7 @@ module.exports = tcsGetBalance = {
         {
             let addressOrName = server.mode.addresses.wrongFormatAccount1.address
             let testScript = tcsGetBalance.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -136,7 +136,7 @@ module.exports = tcsGetBalance = {
         {
             let addressOrName = server.mode.addresses.wrongFormatAccount1.nickname
             let testScript = tcsGetBalance.createTestScript(server, testCaseCode, scriptCode, addressOrName, symbol, issuer, ledger)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-96, 'Bad account address'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)

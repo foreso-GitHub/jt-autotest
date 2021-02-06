@@ -78,7 +78,7 @@ module.exports = tcsGetBlockNumber = {
         {
             let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = [{"type": "123"}]
-            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+            testScript.actions[0].expectedResults = [framework.createExpectedResult(false,
                 framework.getError(-269, 'error parameter'))]
             framework.addTestScript(testScripts, testScript)
         }
@@ -88,7 +88,7 @@ module.exports = tcsGetBlockNumber = {
         {
             let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = [{"type": ""}]
-            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+            testScript.actions[0].expectedResults = [framework.createExpectedResult(false,
                 framework.getError(-269, 'error parameter'))]
             framework.addTestScript(testScripts, testScript)
         }
@@ -98,7 +98,7 @@ module.exports = tcsGetBlockNumber = {
         {
             let testScript = tcsGetBlockNumber.createTestScript(server, testCaseCode, scriptCode)
             testScript.actions[0].txParams = [{"type": ""}]
-            testScript.actions[0].expectedResults = [framework.createExpecteResult(false,
+            testScript.actions[0].expectedResults = [framework.createExpectedResult(false,
                 framework.getError(-269, 'error parameter'))]
 
             let action = framework.createTestAction(testScript, consts.rpcFunctions.getBlockNumber, [{type: 'number'}],

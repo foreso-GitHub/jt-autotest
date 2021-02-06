@@ -132,7 +132,7 @@ module.exports = tcsCreateWallet = {
         {
             let type = 123123
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'null key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -143,7 +143,7 @@ module.exports = tcsCreateWallet = {
         {
             let type = '123123'
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'unknown key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -154,7 +154,7 @@ module.exports = tcsCreateWallet = {
         {
             let type = "   "
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'unknown key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -165,7 +165,7 @@ module.exports = tcsCreateWallet = {
         {
             let type = "  SM2"
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'unknown key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
@@ -176,7 +176,7 @@ module.exports = tcsCreateWallet = {
         {
             let type = ""
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
-            let expectedResult = framework.createExpecteResult(false,
+            let expectedResult = framework.createExpectedResult(false,
                 framework.getError(-269, 'null key type'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)

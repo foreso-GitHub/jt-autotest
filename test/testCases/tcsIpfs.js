@@ -99,7 +99,7 @@ module.exports = tcsIpfs = {
 
         let testCase = framework.createTestCase(title, server,
             txFunctionName, txParams, null,
-            executeFunction, framework.checkTestCase, framework.createExpecteResult(true),
+            executeFunction, framework.checkTestCase, framework.createExpectedResult(true),
             restrictedLevel.L2, [serviceType.ipfs])
         return testCase
     },
@@ -305,7 +305,7 @@ module.exports = tcsIpfs = {
         {
             dataArray = []
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            testCase.expectedResult = createExpecteResult(false, true, 'no hash')
+            testCase.expectedResult = createExpectedResult(false, true, 'no hash')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -313,7 +313,7 @@ module.exports = tcsIpfs = {
         {
             dataArray = [123]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+            testCase.expectedResult = createExpectedResult(false, true, 'only string allowed')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -325,7 +325,7 @@ module.exports = tcsIpfs = {
         {
             dataArray = [123, 456, 789]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+            testCase.expectedResult = createExpectedResult(false, true, 'only string allowed')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -333,7 +333,7 @@ module.exports = tcsIpfs = {
         {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 456, 789]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+            testCase.expectedResult = createExpectedResult(false, true, 'only string allowed')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -341,7 +341,7 @@ module.exports = tcsIpfs = {
         {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', 456, '789']
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+            testCase.expectedResult = createExpectedResult(false, true, 'only string allowed')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -349,7 +349,7 @@ module.exports = tcsIpfs = {
         {
             dataArray = ['QmUuVfJrQ2mb7F223fUhvpkQ6bjFFM4FaPKnKLLBWMEpBW', '456', 789]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, dataArray)
-            testCase.expectedResult = createExpecteResult(false, true, 'only string allowed')
+            testCase.expectedResult = createExpectedResult(false, true, 'only string allowed')
             framework.addTestScript(testCases, testCase)
         }
         //endregion
@@ -425,7 +425,7 @@ module.exports = tcsIpfs = {
                     hashAarray.push(result.ipfs_hash)
                 })
                 let rawDatas = testCase.txParams
-                let downloadCheck = await tcsIpfs.downloadDataBase(testCase, hashAarray, rawDatas, createExpecteResult(true))
+                let downloadCheck = await tcsIpfs.downloadDataBase(testCase, hashAarray, rawDatas, createExpectedResult(true))
                 testCase.actualResult.push(downloadCheck.actualResult)
             }
             resolve(testCase)
@@ -449,7 +449,7 @@ module.exports = tcsIpfs = {
                         hashAarray.push(result.ipfs_hash)
                     })
                     let rawDatas = [data]
-                    let downloadCheck = await tcsIpfs.downloadDataBase(testCase, hashAarray, rawDatas, createExpecteResult(true))
+                    let downloadCheck = await tcsIpfs.downloadDataBase(testCase, hashAarray, rawDatas, createExpectedResult(true))
                     testCase.actualResult.push(downloadCheck.actualResult)
                     doneCount++
 
@@ -507,7 +507,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -515,7 +515,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -523,7 +523,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
@@ -531,7 +531,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -539,7 +539,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             // framework.addTestScript(testCases, testCase) //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
@@ -578,7 +578,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [validData.ipfs_hash, validData.ipfs_hash, validData.ipfs_hash, ]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(true)
+            testCase.expectedResult = createExpectedResult(true)
             testCase.rawDatas = [validData.raw_data, validData.raw_data, validData.raw_data,]
             framework.addTestScript(testCases, testCase)
         }
@@ -645,7 +645,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -653,7 +653,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -661,7 +661,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -671,7 +671,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -681,7 +681,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -691,7 +691,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForRemoveDataWithPreparation
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -717,7 +717,7 @@ module.exports = tcsIpfs = {
     executeForRemoveDataWithPreparation: function(testCase){  //upload data to make sure there is data can be removed.
         return new Promise(async function(resolve){
             testCase.hasExecuted = true
-            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, testCase.uploadParams, createExpecteResult(true))
+            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, testCase.uploadParams, createExpectedResult(true))
             testCase.actualResult.push(uploadCheck.actualResult)
             let uploadResponse = uploadCheck.actualResult
             let hashAarray = []
@@ -739,7 +739,7 @@ module.exports = tcsIpfs = {
             for(let i = 0; i < count; i++){
                 dataArray.push(i.toString() + '. ' + txt)
             }
-            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, dataArray, createExpecteResult(true))
+            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, dataArray, createExpectedResult(true))
             testCase.actualResult.push(uploadCheck.actualResult)
             let uploadResponse = uploadCheck.actualResult
             testCase.txParams = []
@@ -807,7 +807,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -815,7 +815,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -823,7 +823,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             //framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
@@ -833,7 +833,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForPinDataWithPreparation
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -843,7 +843,7 @@ module.exports = tcsIpfs = {
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
             testCase.executeFunction = executeForPinDataWithPreparation
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
@@ -878,7 +878,7 @@ module.exports = tcsIpfs = {
     executeForPinDataWithPreparation: function(testCase){
         return new Promise(async function(resolve){
             testCase.hasExecuted = true
-            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, testCase.uploadParams, createExpecteResult(true))
+            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, testCase.uploadParams, createExpectedResult(true))
             testCase.actualResult.push(uploadCheck.actualResult)
             let uploadResponse = uploadCheck.actualResult
             let hashAarray = []
@@ -900,7 +900,7 @@ module.exports = tcsIpfs = {
             for(let i = 0; i < count; i++){
                 dataArray.push(i.toString() + '. ' + txt)
             }
-            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, dataArray, createExpecteResult(true))
+            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, dataArray, createExpectedResult(true))
             testCase.actualResult.push(uploadCheck.actualResult)
             let uploadResponse = uploadCheck.actualResult
             testCase.txParams = []
@@ -946,7 +946,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -954,7 +954,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -962,7 +962,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             //framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
@@ -971,7 +971,7 @@ module.exports = tcsIpfs = {
             let txParams = [validData.ipfs_hash, ipfs_data.bad_data_1.ipfs_hash_too_short, ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
-            testCase.expectedResult = createExpecteResult(false, true, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, true, 'selected encoding not supported')
             testCase.executeFunction = executeForUnpinDataWithPreparation
             framework.addTestScript(testCases, testCase)
         }
@@ -981,7 +981,7 @@ module.exports = tcsIpfs = {
             let txParams = [validData.ipfs_hash, ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
             testCase.uploadParams = [validData.raw_data]
-            testCase.expectedResult = createExpecteResult(false, true, 'blockstore: block not found')
+            testCase.expectedResult = createExpectedResult(false, true, 'blockstore: block not found')
             testCase.executeFunction = executeForUnpinDataWithPreparation
             // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
@@ -1008,14 +1008,14 @@ module.exports = tcsIpfs = {
     executeForUnpinDataWithPreparation: function(testCase){
         return new Promise(async function(resolve){
             testCase.hasExecuted = true
-            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, testCase.uploadParams, createExpecteResult(true))
+            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, testCase.uploadParams, createExpectedResult(true))
             testCase.actualResult.push(uploadCheck.actualResult)
             let uploadResponse = uploadCheck.actualResult
             let hashAarray = []
             uploadResponse.result.forEach((result)=>{
                 hashAarray.push(result.ipfs_hash)
             })
-            let pinCheck = await tcsIpfs.pinDataBase(testCase, hashAarray, createExpecteResult(true))
+            let pinCheck = await tcsIpfs.pinDataBase(testCase, hashAarray, createExpectedResult(true))
             testCase.actualResult.push(pinCheck.actualResult)
             let unpinCheck = await tcsIpfs.unpinDataBase(testCase, testCase.txParams, testCase.expectedResult)
             testCase.actualResult.push(unpinCheck.actualResult)
@@ -1032,13 +1032,13 @@ module.exports = tcsIpfs = {
             for(let i = 0; i < count; i++){
                 dataArray.push(i.toString() + '. ' + txt)
             }
-            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, dataArray, createExpecteResult(true))
+            let uploadCheck = await tcsIpfs.uploadDataBase(testCase, dataArray, createExpectedResult(true))
             let uploadResponse = uploadCheck.actualResult
             let hashAarray = []
             uploadResponse.result.forEach((result)=>{
                 hashAarray.push(result.ipfs_hash)
             })
-            let pinCheck = await tcsIpfs.pinDataBase(testCase, hashAarray, createExpecteResult(true))
+            let pinCheck = await tcsIpfs.pinDataBase(testCase, hashAarray, createExpectedResult(true))
             let unpinCheck = await tcsIpfs.unpinDataBase(testCase, hashAarray, testCase.expectedResult)
             testCase.actualResult.push(uploadCheck.actualResult)
             testCase.actualResult.push(pinCheck.actualResult)
@@ -1143,7 +1143,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_short]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, false, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -1151,7 +1151,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.bad_data_1.ipfs_hash_too_long]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, false, 'selected encoding not supported')
             framework.addTestScript(testCases, testCase)
         }
 
@@ -1159,7 +1159,7 @@ module.exports = tcsIpfs = {
         {
             let txParams = [ipfs_data.deleted_data_1.ipfs_hash]
             testCase = tcsIpfs.createTestCaseForIpfsTest(server, title, txFunctionName, txParams)
-            testCase.expectedResult = createExpecteResult(false, false, 'selected encoding not supported')
+            testCase.expectedResult = createExpectedResult(false, false, 'selected encoding not supported')
             // framework.addTestScript(testCases, testCase)  //todo: this case will cause getting response for long long time.  it is a bug. need be restore after fix.
         }
 
@@ -1251,7 +1251,7 @@ module.exports = tcsIpfs = {
             testCase.hasExecuted = true
 
             //step1.1 upload
-            let check = await tcsIpfs.uploadDataBase(testCase, testCase.txParams, createExpecteResult(true))
+            let check = await tcsIpfs.uploadDataBase(testCase, testCase.txParams, createExpectedResult(true))
             check.title = 'Step1.1: upload data successfully'
             testCase.actualResult.push(check.actualResult)
 
@@ -1269,7 +1269,7 @@ module.exports = tcsIpfs = {
             let doneCount = 0;
             for(let i = 0; i < count; i++){
                 //step1.1 upload
-                let check = await tcsIpfs.uploadDataBase(testCase, testCase.txParams, createExpecteResult(true))
+                let check = await tcsIpfs.uploadDataBase(testCase, testCase.txParams, createExpectedResult(true))
                 check.title = 'Step1.1: upload data successfully'
                 testCase.actualResult.push(check.actualResult)
                 await executeForFullProcess(testCase)
@@ -1286,7 +1286,7 @@ module.exports = tcsIpfs = {
             testCase.hasExecuted = true
 
             //step1.1 upload
-            let check = await tcsIpfs.uploadFileBase(testCase, testCase.txParams, createExpecteResult(true))
+            let check = await tcsIpfs.uploadFileBase(testCase, testCase.txParams, createExpectedResult(true))
             check.title = 'Step1.1: upload file successfully'
             testCase.actualResult.push(check.actualResult)
 
@@ -1310,44 +1310,44 @@ module.exports = tcsIpfs = {
             let rawDatas = testCase.rawDownloadDatas
 
             //step1.2 download
-            await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step1.2')
+            await executeForDownloads(testCase, hashAarray, rawDatas, createExpectedResult(true), 'Step1.2')
 
             //step2.1 unpin
-            check = await tcsIpfs.unpinDataBase(testCase, hashAarray, createExpecteResult(false, true, 'not pinned'))
+            check = await tcsIpfs.unpinDataBase(testCase, hashAarray, createExpectedResult(false, true, 'not pinned'))
             check.title = 'Step2.1: unpin data failed before pin'
             testCase.actualResult.push(check.actualResult)
 
             //step2.2 pin
-            check = await tcsIpfs.pinDataBase(testCase, hashAarray, createExpecteResult(true))
+            check = await tcsIpfs.pinDataBase(testCase, hashAarray, createExpectedResult(true))
             check.title = 'Step2.2: pin data successfully'
             testCase.actualResult.push(check.actualResult)
 
             //step2.3 download
-            await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step2.3')
+            await executeForDownloads(testCase, hashAarray, rawDatas, createExpectedResult(true), 'Step2.3')
 
             //step2.4 fail to remove
-            check = await tcsIpfs.removeDataBase(testCase, hashAarray, createExpecteResult(false, true, 'pinned: direct'))
+            check = await tcsIpfs.removeDataBase(testCase, hashAarray, createExpectedResult(false, true, 'pinned: direct'))
             check.title = 'Step2.4: fail to remove data'
             testCase.actualResult.push(check.actualResult)
 
             //step2.5 download
-            await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step2.5')
+            await executeForDownloads(testCase, hashAarray, rawDatas, createExpectedResult(true), 'Step2.5')
 
             //step3.1 unpin
-            check = await tcsIpfs.unpinDataBase(testCase, hashAarray, createExpecteResult(true))
+            check = await tcsIpfs.unpinDataBase(testCase, hashAarray, createExpectedResult(true))
             check.title = 'Step2.2: unpin data successfully'
             testCase.actualResult.push(check.actualResult)
 
             //step3.2 download
-            await executeForDownloads(testCase, hashAarray, rawDatas, createExpecteResult(true), 'Step3.2')
+            await executeForDownloads(testCase, hashAarray, rawDatas, createExpectedResult(true), 'Step3.2')
 
             //step4.1 remove successfully
-            check = await tcsIpfs.removeDataBase(testCase, hashAarray, createExpecteResult(true))
+            check = await tcsIpfs.removeDataBase(testCase, hashAarray, createExpectedResult(true))
             check.title = 'Step4.1: remove data successfully'
             testCase.actualResult.push(check.actualResult)
 
             //step4.2 fail to remove
-            check = await tcsIpfs.removeDataBase(testCase, hashAarray, createExpecteResult(false, true, 'blockstore: block not found'))
+            check = await tcsIpfs.removeDataBase(testCase, hashAarray, createExpectedResult(false, true, 'blockstore: block not found'))
             check.title = 'Step4.2: fail to remove data'
             testCase.actualResult.push(check.actualResult)
 
