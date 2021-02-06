@@ -39,7 +39,7 @@ function rpcInterface() {
                     if(basicConfig.printImportantLog) {  //important logger
                         logger.info('---Result: ', JSON.stringify(data))
                         if(data.error){
-                            logger.info('---error: ', JSON.stringify(data.error))
+                            logger.error('---error: ', JSON.stringify(data.error))
                         }
                     }
                     resolve(data)

@@ -357,10 +357,10 @@ module.exports = tcsPerformanceTest = {
         testCaseCode = 'PFMC_SameHW_000210'
         scriptCode = scriptCodePrefix + '性能测试时加入无效交易'
         {
-            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, 5, 20,
+            ptParam = tcsPerformanceTest.createPerformanceTestParam(txFunctionName, 1, 2,
                 [interfaceType.rpc, interfaceType.websocket], 18, 5, 5, 0,
                 5000, true, true, false)
-            ptParam.failTxCount = 5
+            ptParam.failTxCount = 1
             let testScript = tcsPerformanceTest.createTestScript(server, '一个请求执行多个交易',
                 testCaseCode, scriptCode, ptParam)
             framework.addTestScript(testScripts, testScript)
@@ -449,11 +449,11 @@ module.exports = tcsPerformanceTest = {
         //endregion
 
         //region fail tx
-        let failTx
+        let failTxs
+        let txCount = ptParam.txCount
         if(ptParam.failTxCount && ptParam.failTxCount > 0){
-            failTx = []
-            let rands = utility.getRandList(0, ptParam.txCount - 1, ptParam.failTxCount, false)
-
+            failTxs = tcsPerformanceTest.createFailTxList(server, ptParam.txCount, ptParam.failTxCount,)
+            txCount = ptParam.txCount - ptParam.failTxCount
         }
         //endregion
 
@@ -463,7 +463,7 @@ module.exports = tcsPerformanceTest = {
             let expectResults = []
             let txParams = []
 
-            for(let i = 0; i < ptParam.txCount; i++){
+            for(let i = 0; i < txCount; i++){
                 let txParam = utility.deepClone(txTemplate)
                 expectResults.push(framework.createExpectedResult({needPass: true}))
 
@@ -483,13 +483,24 @@ module.exports = tcsPerformanceTest = {
                 txParams.push(txParam)
             }
 
+            if(failTxs){
+                for(let k = 0; k < failTxs.length; k++){
+                    let failTx = failTxs[k]
+                    let txParam = failTx.param
+                    expectResults.push(framework.createExpectedResult(false,
+                        framework.getError(failTx.error.code, failTx.error.info)))
+                    txParams.push(txParam)
+                }
+            }
+
             framework.pushTestActionForSendAndSign(testScript, ptParam.txFunctionName, txParams)
             if(ptParam.txFunctionName == consts.rpcFunctions.sendTx){
                 let action = testScript.actions[j]
                 action.server = servers[j]
                 action.needResetSequence = ptParam.needResetSequence
                 action.timeout = ptParam.timeout
-                action.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                // action.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                action.expectedResults = expectResults
                 if(ptParam.needCheck != undefined && ptParam.needCheck == false){
                     action.checkFunction = null
                 }
@@ -500,10 +511,19 @@ module.exports = tcsPerformanceTest = {
                 action_sign.server = servers[j]
                 action_sendRaw.server = servers[j]
                 action_sign.needResetSequence = ptParam.needResetSequence
-                action_sign.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                // action_sign.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                action_sign.expectedResults = expectResults
                 action_sendRaw.timeout = ptParam.timeout
-                action_sendRaw.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
-                if(ptParam.needCheck != undefined && ptParam.needCheck == false){
+                // action_sendRaw.expectedResults = testScript.actions[0].expectedResults.concat(expectResults)
+                action_sendRaw.expectedResults = []
+                for(let k = 0; k < expectResults.length; k++){
+                    action_sendRaw.expectedResults.push(utility.deepClone(expectResults[k]))
+                    if(!action_sendRaw.expectedResults[k].needPass){
+                        action_sendRaw.expectedResults[k] = framework.createExpectedResult(false,
+                            framework.getError(-278, 'empty raw transaction'))
+                    }
+                }
+                 if(ptParam.needCheck != undefined && ptParam.needCheck == false){
                     action_sign.checkFunction = null
                     action_sendRaw.checkFunction = null
                 }
@@ -518,6 +538,7 @@ module.exports = tcsPerformanceTest = {
 
     //region create rand list
 
+    //region accounts
     createAccountList: function(accounts, allowAccountsCount, returnAccountsCount){
         let list = []
         let max = Math.min(allowAccountsCount - 1, accounts.length - 1)
@@ -527,7 +548,9 @@ module.exports = tcsPerformanceTest = {
         }
         return list
     },
+    //endregion
 
+    //region servers
     createServerList: function(serverTypes, serverCount, requestCount){
         let allServers = tcsPerformanceTest.selectServers(serverTypes, serverCount)
         let servers = []
@@ -554,76 +577,103 @@ module.exports = tcsPerformanceTest = {
         }
         return servers
     },
+    //endregion
 
-    createFailTxList: function(){
-        let failTx = {}
-        failTx.index
-        failTx.error = {}
-        failTx.error.code
-        failTx.error.info
-        // failTx.expectedResult = framework.createExpectedResult(false, framework.getError(-278, 'empty raw transaction'))
-        failTx.Param = {}
-        failTx.Param.from
-        failTx.Param.secret
-        failTx.Param.to
-        failTx.Param.sequence
-        failTx.Param.value
-        failTx.Param.fee
+    //region fail txs
+    createFailTxList: function(server, txCount, failTxCount){
+        let allFailTxs = tcsPerformanceTest.getFixedFailTxs(server)
+        let txIndexList = utility.getRandList(0, txCount - 1, failTxCount, false)
+        let failTxIndexList = utility.getRandList(0, allFailTxs.length - 1, failTxCount, true)
+        let failTxs = []
+        for(let i = 0; i < failTxCount; i++){
+            let failTx = utility.deepClone(allFailTxs[failTxIndexList[i]])
+            failTx.index = txIndexList[i]
+            failTxs.push(failTx)
+        }
+        return failTxs
     },
 
     getFixedFailTxs: function(server){
         let failTxs = {}
+        let allFailTxs = []
 
-        failTxs.wrongFrom = tcsPerformanceTest.createFailTx()
-        failTxs.wrongFrom.Param.from = server.mode.addresses.walletAccount.address + '1'
-        failTxs.wrongFrom.Param.secret = server.mode.addresses.walletAccount.secret
+        failTxs.wrongFrom = tcsPerformanceTest.createFailTx(server)
+        failTxs.wrongFrom.param.from = server.mode.addresses.walletAccount.address + '1'
+        failTxs.wrongFrom.param.secret = server.mode.addresses.walletAccount.secret
+        failTxs.wrongFrom.param.sequence = 1
         failTxs.wrongFrom.error.code = -278
         failTxs.wrongFrom.error.info = 'Bad account address'
+        allFailTxs.push(failTxs.wrongFrom)
 
-        failTxs.wrongSecret = tcsPerformanceTest.createFailTx()
-        failTxs.wrongSecret.Param.from = server.mode.addresses.walletAccount.address
-        failTxs.wrongSecret.Param.secret = server.mode.addresses.balanceAccount.secret
+        failTxs.wrongSecret = tcsPerformanceTest.createFailTx(server)
+        failTxs.wrongSecret.param.from = server.mode.addresses.walletAccount.address
+        failTxs.wrongSecret.param.secret = server.mode.addresses.balanceAccount.secret
+        failTxs.wrongSecret.param.sequence = 1
         failTxs.wrongSecret.error.code = -278
         failTxs.wrongSecret.error.info = 'secret doesn\'t match with address'
+        allFailTxs.push(failTxs.wrongSecret)
 
-        failTxs.wrongTo = tcsPerformanceTest.createFailTx()
-        failTxs.wrongTo.Param.to = server.mode.addresses.walletAccount.address + '1'
+        failTxs.wrongTo = tcsPerformanceTest.createFailTx(server)
+        failTxs.wrongTo.param.to = server.mode.addresses.balanceAccount.address + '1'
+        failTxs.wrongTo.param.sequence = 1
         failTxs.wrongTo.error.code = -278
         failTxs.wrongTo.error.info = 'Bad account address'
+        allFailTxs.push(failTxs.wrongTo)
 
-        failTxs.wrongSequence = tcsPerformanceTest.createFailTx()
-        failTxs.wrongSequence.Param.sequence = 0
-        failTxs.wrongSequence.error.code = -284
-        failTxs.wrongSequence.error.info = 'Malformed: Sequence is not in the past.'
+        // failTxs.wrongSequence = tcsPerformanceTest.createFailTx(server)
+        // failTxs.wrongSequence.param.sequence = 0
+        // failTxs.wrongSequence.error.code = -278
+        // failTxs.wrongSequence.error.info = 'sequence must be positive integer'
+        // allFailTxs.push(failTxs.wrongSequence)
 
-        failTxs.wrongValue = tcsPerformanceTest.createFailTx()
-        failTxs.wrongValue.Param.value = '-1/SWT'
+        failTxs.wrongValue = tcsPerformanceTest.createFailTx(server)
+        failTxs.wrongValue.param.value = '99999999999999999999999999'
+        failTxs.wrongValue.param.sequence = 1
         failTxs.wrongValue.error.code = -278
-        failTxs.wrongValue.error.info = 'value must be >= 0'
+        failTxs.wrongValue.error.info = 'out of range'
+        allFailTxs.push(failTxs.wrongValue)
 
-        failTxs.wrongFee = tcsPerformanceTest.createFailTx()
-        failTxs.wrongFee.Param.fee = '-1/SWT'
+        failTxs.wrongFee = tcsPerformanceTest.createFailTx(server)
+        failTxs.wrongFee.param.fee = '99999999999999999999999999'
+        failTxs.wrongFee.param.sequence = 1
         failTxs.wrongFee.error.code = -278
-        failTxs.wrongFee.error.info = 'value must be >= 0'
+        failTxs.wrongFee.error.info = 'out of range'
+        allFailTxs.push(failTxs.wrongFee)
 
-        return failTxs
+        return allFailTxs
     },
 
-    createFailTx: function(){
+    createFailTx: function(server){
         let failTx = {}
+        failTx.name
         failTx.index
         failTx.error = {}
         failTx.error.code
         failTx.error.info
-        failTx.Param = {}
-        failTx.Param.from
-        failTx.Param.secret
-        failTx.Param.to
-        failTx.Param.sequence
-        failTx.Param.value
-        failTx.Param.fee
+        failTx.param = {}
+        failTx.param.from = server.mode.addresses.walletAccount.address
+        failTx.param.secret = server.mode.addresses.walletAccount.secret
+        failTx.param.to = server.mode.addresses.balanceAccount.address
+        failTx.param.sequence
+        failTx.param.value = '1'
+        failTx.param.fee = '10'
         return failTx
     },
+
+    // updateTxParamWithFailTx(txParam, failTx){
+    //     if(failTx.param.from) txParam.from = failTx.param.from
+    //     if(failTx.param.secret) txParam.secret = failTx.param.secret
+    //     if(failTx.param.to) txParam.to = failTx.param.to
+    //     if(failTx.param.sequence) txParam.sequence = failTx.param.sequence
+    //     if(failTx.param.value) txParam.value = failTx.param.value
+    //     if(failTx.param.fee) txParam.fee = failTx.param.fee
+    // },
+    //
+    // getExpectedResultByFailTx(failTx){
+    //     return framework.createExpectedResult(false, framework.getError(failTx.error.code, failTx.error.info))
+    // },
+
+    //endregion
 
     //endregion
 
