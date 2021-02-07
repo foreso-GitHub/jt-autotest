@@ -26,7 +26,7 @@ const upgradeChainTool = require("./upgradeChain/upgradeChainTool")
 
 // init()
 // compare()
-// upgradeChain('20210204')
+// upgradeChain('20210204b')
 
 //endregion
 

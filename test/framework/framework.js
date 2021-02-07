@@ -16,6 +16,7 @@ const AccountsDealer = require('../utility/init/accountsDealer')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const testModeEnums = testMode
 const { allModes, } = require("../config/config")
+const { commonPaths } = require("../config/basicConfig")
 let errorsDoc = require('../testData/errors').errors
 let mdTool = require('../utility/markdown/markdownTool')
 let testCasesDoc = require('../testData/testCase').fullTestCases
@@ -48,7 +49,7 @@ module.exports = framework = {
 
     //sendRawTx
     // 在sendRawTx的action中，有signTxActions，这样可以把前置的signTx的action的执行结果（signedTx）作为参数引用
-    // 等离线的签名功能完成，可以不再关联signTxActions，直接本地签名，生成signedTx todo
+    // todo 等离线的签名功能完成，可以不再关联signTxActions，直接本地签名，生成signedTx
 
     //endregion
 
@@ -925,10 +926,11 @@ module.exports = framework = {
         expect(tx1.Sequence).to.be.equals(tx2.Sequence)
         expect(tx1.hash).to.be.equals(tx2.hash)
         expect(tx1.TransactionType).to.be.equals(tx2.TransactionType)
-        if(full != undefined && full){  //todo may need restore
-            expect(tx1.date).to.be.equals(tx2.date)
-            expect(tx1.inLedger).to.be.equals(tx2.inLedger)
-            expect(tx1.ledger_index).to.be.equals(tx2.ledger_index)
+        expect(tx1.date).to.be.equals(tx2.date)
+        expect(tx1.inLedger).to.be.equals(tx2.inLedger)
+        expect(tx1.ledger_index).to.be.equals(tx2.ledger_index)
+        if(full != undefined && full){
+            expect(JSON.stringify(tx1.meta)).to.be.equals(JSON.stringify(tx2.meta))
         }
         if(tx1.TransactionType == consts.rpcParamConsts.issueCoin){
             expect(tx1.Name).to.be.equals(tx2.Name)
@@ -1161,7 +1163,7 @@ module.exports = framework = {
             washedTestCases.push(framework.washTestCaseData(allTestCases[i]))
         }
 
-        let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
+        let resultsPath = commonPaths.test_case_statistics_files_path
         let resultFile = 'washedTestCases'
         await utility.saveJsonFile(resultsPath, resultFile, washedTestCases)
 
@@ -1169,7 +1171,7 @@ module.exports = framework = {
     },
 
     loadWashedTestCases: async function(){
-        let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
+        let resultsPath = commonPaths.test_case_statistics_files_path
         let resultFile = 'washedTestCases_2021-01-14_a.json'
         let washedTestCases = await utility.loadJsonFile(resultsPath + resultFile, )
         framework.statTestCases(washedTestCases)
@@ -1199,7 +1201,7 @@ module.exports = framework = {
             // testCasesStatistics.passedTestCases.count = _temp_PassedTestCases.length
         }
 
-        let resultsPath = '.\\test\\testData\\testCaseStatistics\\'
+        let resultsPath = commonPaths.test_case_statistics_files_path
         let resultFile = 'tcsStat'
         utility.saveJsonFile(resultsPath, resultFile, testCasesStatistics)
 

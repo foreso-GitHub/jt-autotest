@@ -619,10 +619,6 @@ module.exports = tcsGetTx = {
 
     createTestScriptForGetTransactionByBlockAndIndex: function(server, testCaseCode, scriptCode, functionName, hashOrNumber, index, ledger){
 
-        let txParams = []
-        txParams.push(hashOrNumber)
-        txParams.push(index)
-
         let testScript = framework.createTestScript(
             server,
             testCaseCode,

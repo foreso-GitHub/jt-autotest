@@ -157,7 +157,8 @@ module.exports = testUtility = {
                 if(!exists){
                     fs.mkdir(execPath,function(err){
                         if (err) {
-                            reject(console.error(err))
+                            logger.error(err)
+                            reject(err)
                         }
                         else{
                             resolve(filePath)

@@ -188,16 +188,16 @@ describe('Jingtum测试', function() {
 
                 //region test1
 
-                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+                tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-                this.timeout(_longTimeOut)
-                // server.mode.restrictedLevel = restrictedLevel.L5
-                server.mode.testMode = testMode.singleMode
-                tcsPerformanceTest.test(server, '测试Performance')
-                server.mode.testMode = currentTestMode
-                this.timeout(timeout)
+                // this.timeout(_longTimeOut)
+                // // server.mode.restrictedLevel = restrictedLevel.L5
+                // server.mode.testMode = testMode.singleMode
+                // tcsPerformanceTest.test(server, '测试Performance')
+                // server.mode.testMode = currentTestMode
+                // this.timeout(timeout)
 
                 //region websocket subscribe
 
@@ -210,6 +210,8 @@ describe('Jingtum测试', function() {
 
                 //endregion
 
+                //endregion
+
                 //region server test
 
                 this.timeout(_longTimeOut)
@@ -219,17 +221,12 @@ describe('Jingtum测试', function() {
                 //     tcsBugInjection.testForRAS(server, 'RAS测试')
                 // }
 
-                // this.timeout(_longTimeOut)
-                // for(let i = 0; i < 1000; i++){
+                // for(let i = 0; i < 5000; i++){
                 //     tcsPerformanceTest.testForPurePerformance(server, '测试Performance，全力',
-                //         consts.rpcFunctions.sendTx, 1, 10)
+                //         consts.rpcFunctions.sendTx, 1, 50)
                 // }
-                // this.timeout(timeout)
 
                 this.timeout(timeout)
-
-                //endregion
-
 
                 //endregion
 

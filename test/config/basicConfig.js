@@ -1,17 +1,18 @@
 
 let commonPaths = {
     test_data_path: ".\\test\\testData\\",
-    test_data_backup_path: ".\\test\\testData\\backup\\",
+    test_data_backup_path: ".\\testResults\\testData\\backup\\",
     ipfs_test_files_path: ".\\test\\testData\\testFiles\\",
     accounts_js_file_path: ".\\test\\testData\\accounts.js",
     chain_data_js_file_path: ".\\test\\testData\\chainDatas.js",
+    test_case_statistics_files_path: '.\\testResults\\testCaseStatistics\\'
 }
 
 let rpcSettings = {
     request_timeout: 13000,  //important: rpc request timeout setting (default: 6000).  if request_timeout <= 0, then request timeout will be ignore.
 }
 
-let jtVersion = '20210204'
+let jtVersion = '20210204b'
 
 // * 优先级从高到低依次为:OFF FATAL ERROR WARN INFO DEBUG TRACE ALL
 // *
