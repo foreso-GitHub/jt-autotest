@@ -476,39 +476,6 @@ const RESPONSE_SCHEMA = {
     },
 }
 
-const GET_RESPONSE_SCHEMA = {  //todo: need combine with RESPONSE_SCHEMA when get function has result
-    title: "test response schema",
-    type: "object",
-    required: [
-        "id",
-        "jsonrpc",
-        // "result",
-        // "type",
-        // "status",
-    ],
-    properties: {
-        id: {
-            type: "integer"
-        },
-        jsonrpc: {
-            type: "string"
-        },
-        // result: {
-        //     type: "array",
-        //     minItems: 0,
-        // },
-        type: {
-            type: "string"
-        },
-        status: {
-            type: "integer"
-        },
-        error: {
-            type: "object"
-        },
-    },
-}
-
 // const ERROR_SCHEMA = {
 //     title: "test response error item schema",
 //     type: "object",
@@ -1140,7 +1107,6 @@ module.exports = {
     CURRENCY_SCHEMA,
     RECEIPT_SCHEMA,
     RESPONSE_SCHEMA,
-    GET_RESPONSE_SCHEMA,
     ERROR_SCHEMA,
     SENDTX_SCHEMA,
     SIGNTX_SCHEMA,

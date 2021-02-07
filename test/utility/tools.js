@@ -4,6 +4,7 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const { allModes } = require("../config/config")
 const utility = require('../framework/testUtility')
+let basicConfig = require('../config/basicConfig')
 
 const AccountsDealer = require('./init/accountsDealer')
 const ChainDataCreator = require('./init/chainDataCreator')
@@ -139,11 +140,11 @@ async function compare(){
 
     let path = 'E:\\2. work\\井系\\3. 链景\\井通新链\\自动测试\\codes\\reports'
     let file1 = path + '\\baselines\\base-mochawesome-report-20210204c-no_exp-ws\\' + 'mochawesome.json'
-    let file2 = path + '\\normal\\mochawesome-report-20210204c-no_exp-ws\\' + 'mochawesome.json'
+    let file2 = path + '\\normal\\mochawesome-report-20210207a-no_exp-ws\\' + 'mochawesome.json'
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
-    let resultsPath = '.\\test\\utility\\reportComparor\\results\\'
+    let resultsPath = basicConfig.commonPaths.report_comparor_results_path
     utility.saveJsonFile(resultsPath, 'compare_result', reportsChanges)
 
 }

@@ -4,6 +4,7 @@ log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
 const utility = require('../../framework/testUtility')
 const reportComparor = require('./mochaReportComparor')
+let basicConfig = require('../config/basicConfig')
 //endregion
 
 
@@ -25,7 +26,7 @@ async function test(){
 
     let reportsChanges = await reportComparor.compareReportFiles(file1, file2, false)
 
-    let resultsPath = '.\\test\\utility\\reportComparor\\results\\'
+    let resultsPath = basicConfig.commonPaths.report_comparor_results_path
     utility.saveJsonFile(resultsPath, 'compare_result', reportsChanges)
 
 }

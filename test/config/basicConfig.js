@@ -5,7 +5,8 @@ let commonPaths = {
     ipfs_test_files_path: ".\\test\\testData\\testFiles\\",
     accounts_js_file_path: ".\\test\\testData\\accounts.js",
     chain_data_js_file_path: ".\\test\\testData\\chainDatas.js",
-    test_case_statistics_files_path: '.\\testResults\\testCaseStatistics\\'
+    test_case_statistics_path: '.\\testResults\\testCaseStatistics\\',
+    report_comparor_results_path: '.\\testResults\\reportComparorResults\\',
 }
 
 let rpcSettings = {

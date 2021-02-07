@@ -16,7 +16,6 @@ const AccountsDealer = require('../utility/init/accountsDealer')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./enums")
 const testModeEnums = testMode
 const { allModes, } = require("../config/config")
-const { commonPaths } = require("../config/basicConfig")
 let errorsDoc = require('../testData/errors').errors
 let mdTool = require('../utility/markdown/markdownTool')
 let testCasesDoc = require('../testData/testCase').fullTestCases
@@ -743,7 +742,25 @@ module.exports = framework = {
 
     //todo 一组testScript并行执行，然后一起检查结果。一般用于ws的subscribe相关测试。因为一条testScript有独立的一个ws链接，相互不会干扰。
     testOnParallelMode: function(server, describeTitle, testScripts){
-
+        describe(describeTitle, function () {
+            testScripts.forEach(function(testScript){
+                it(testScript.title, async function () {
+                    try{
+                        for(let i = 0; i < testScript.actions.length; i++){
+                            let action = testScript.actions[i]
+                            if(action.executeFunction) await action.executeFunction(action)
+                            if(action.checkFunction) await action.checkFunction(action)
+                            action.testResult = true
+                        }
+                        framework.afterTestFinish(testScript)
+                    }
+                    catch(ex){
+                        framework.afterTestFinish(testScript)
+                        throw ex
+                    }
+                })
+            })
+        })
     },
 
     //endregion
@@ -1001,18 +1018,9 @@ module.exports = framework = {
         expect(actualResult).to.be.jsonSchema(schema.RESPONSE_SCHEMA)
     },
 
-    checkGetResponse: function(actualResult){  //todo 需要并入checkResponse当get功能返回值都有result
-        expect(actualResult).to.be.jsonSchema(schema.GET_RESPONSE_SCHEMA)
-        // framework.checkResponse(actualResult)
+    checkGetResponse: function(actualResult){
+        framework.checkResponse(actualResult)
     },
-
-    // checkResponseError: function(action, expectedResult, actualResult){
-    //     if(NEED_CHECK_ExpectedResult
-    //         && action.server.mode.restrictedLevel >= restrictedLevel.L3){
-    //         expect(action.actualResult).to.be.jsonSchema(schema.ERROR_SCHEMA)
-    //         framework.checkError(expectedResult.expectedError, actualResult)
-    //     }
-    // },
 
     checkError: function(expectedError, actualError){
         expect(actualError).to.be.jsonSchema(schema.ERROR_SCHEMA)
@@ -1163,7 +1171,7 @@ module.exports = framework = {
             washedTestCases.push(framework.washTestCaseData(allTestCases[i]))
         }
 
-        let resultsPath = commonPaths.test_case_statistics_files_path
+        let resultsPath = basicConfig.commonPaths.test_case_statistics_path
         let resultFile = 'washedTestCases'
         await utility.saveJsonFile(resultsPath, resultFile, washedTestCases)
 
@@ -1171,7 +1179,7 @@ module.exports = framework = {
     },
 
     loadWashedTestCases: async function(){
-        let resultsPath = commonPaths.test_case_statistics_files_path
+        let resultsPath = basicConfig.commonPaths.test_case_statistics_path
         let resultFile = 'washedTestCases_2021-01-14_a.json'
         let washedTestCases = await utility.loadJsonFile(resultsPath + resultFile, )
         framework.statTestCases(washedTestCases)
@@ -1201,7 +1209,7 @@ module.exports = framework = {
             // testCasesStatistics.passedTestCases.count = _temp_PassedTestCases.length
         }
 
-        let resultsPath = commonPaths.test_case_statistics_files_path
+        let resultsPath = basicConfig.commonPaths.test_case_statistics_path
         let resultFile = 'tcsStat'
         utility.saveJsonFile(resultsPath, resultFile, testCasesStatistics)
 
