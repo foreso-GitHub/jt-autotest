@@ -188,16 +188,16 @@ describe('Jingtum测试', function() {
 
                 //region test1
 
-                tcsGetVersion.testForGetVersion(server, '测试jt_version')
+                // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 
-                // this.timeout(_longTimeOut)
-                // // server.mode.restrictedLevel = restrictedLevel.L5
-                // server.mode.testMode = testMode.singleMode
-                // tcsPerformanceTest.test(server, '测试Performance')
-                // server.mode.testMode = currentTestMode
-                // this.timeout(timeout)
+                this.timeout(_longTimeOut)
+                // server.mode.restrictedLevel = restrictedLevel.L5
+                server.mode.testMode = testMode.singleMode
+                tcsPerformanceTest.test(server, '测试Performance')
+                server.mode.testMode = currentTestMode
+                this.timeout(timeout)
 
                 //region websocket subscribe
 
