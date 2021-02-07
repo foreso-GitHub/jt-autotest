@@ -357,7 +357,12 @@ module.exports = consts = {
             "checksum": "d083a50b96df7ad31ddd275f80e260016e992ce4",
             "time": "20210204",
             "version": "v0.5.4-dev"
-        }
+        },
+        '20210207':{
+            "checksum": "43cbe092fb0189526471ed956f1c8932ce4e93d2",
+            "time": "20210207",
+            "version": "v0.5.4-dev"
+        },
     },
     //endregion
 
