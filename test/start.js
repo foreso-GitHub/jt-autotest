@@ -5,7 +5,6 @@ const expect = chai.expect
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
-let HashMap = require('hashmap')
 const { modes, } = require("./config/config")
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("./framework/enums")
 const framework = require('./framework/framework')
@@ -38,8 +37,6 @@ const tcsSign = require('./testCases/tcsSign')
 //region global fields
 const HASH_LENGTH = 64
 const IPFS_HASH_LENGTH = 46
-let _SequenceMap = new HashMap()
-let _FullTestCaseList = []
 let _longTimeOut = 3600000
 //endregion
 
