@@ -646,6 +646,9 @@ module.exports = framework = {
         else if (testMode == testModeEnums.singleMode) {
             framework.testOnSingleMode(server, describeTitle, testScripts)
         }
+        else if (testMode == testModeEnums.parallelMode) {
+            framework.testOnParallelMode(server, describeTitle, testScripts)
+        }
         else{
             logger.debug("No special test mode!")
         }
@@ -742,15 +745,22 @@ module.exports = framework = {
 
     //todo 一组testScript并行执行，然后一起检查结果。一般用于ws的subscribe相关测试。因为一条testScript有独立的一个ws链接，相互不会干扰。
     testOnParallelMode: function(server, describeTitle, testScripts){
-        describe(describeTitle, function () {
-            testScripts.forEach(function(testScript){
+        describe(describeTitle, async function () {
+
+            before(async function() {
+                await framework.execEachTestScriptParallelly(testScripts, 0)  //NOTICE!!! the execute method must RETURN a promise, then batch mode can work!!!
+            })
+
+            testScripts.forEach(async function(testScript){
                 it(testScript.title, async function () {
                     try{
                         for(let i = 0; i < testScript.actions.length; i++){
                             let action = testScript.actions[i]
-                            if(action.executeFunction) await action.executeFunction(action)
+                            // logger.debug('===before checkFunction')
+                            // logger.debug('hasExecuted: ' + testScript.hasExecuted)
                             if(action.checkFunction) await action.checkFunction(action)
                             action.testResult = true
+                            // logger.debug('===after checkFunction')
                         }
                         framework.afterTestFinish(testScript)
                     }
@@ -759,6 +769,30 @@ module.exports = framework = {
                         throw ex
                     }
                 })
+            })
+
+        })
+    },
+
+    execEachTestScriptParallelly: async function(testScripts){
+        return new Promise((resolve, reject) => {
+            let count = 0
+            testScripts.forEach(async function(testScript){
+                testScript.hasExecuted = true
+                for(let i = 0; i < testScript.actions.length; i++){
+                    let action = testScript.actions[i]
+                    if(action.executeFunction) await action.executeFunction(action)
+                    // 执行timeout
+                    if(action.timeout){
+                        logger.debug('=== Waiting for ' + action.timeout + '!')
+                        await utility.timeout(action.timeout)
+                    }
+                }
+                count ++
+
+                if(count == testScripts.length){
+                    resolve('done!')
+                }
             })
         })
     },

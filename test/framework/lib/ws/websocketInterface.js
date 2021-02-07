@@ -3,6 +3,7 @@ let WebSocket = require('ws')
 let log4js = require('log4js')
 log4js.configure('./log4js.json')
 let logger = log4js.getLogger('default')
+let HashMap = require('hashmap')
 let util = require('util')
 let baseInterface = require('../base/baseInterface')
 let utility = require('../../testUtility')
@@ -54,7 +55,7 @@ function websocketInterface() {
             const ws = new WebSocket(url)
 
             ws.on('open', function open() {
-                // logger.dubug('ws open')
+                // logger.dubug('[ws-' + ws.index +'] open')
                 ws.send(content)
             })
 
@@ -65,7 +66,7 @@ function websocketInterface() {
             })
 
             ws.on('close', function close() {
-                // logger.dubug('ws disconnected')
+                // logger.dubug('[ws-' + ws.index +'] disconnected')
             })
         })
 
@@ -78,30 +79,32 @@ function websocketInterface() {
     //endregion
 
     //region subscribe methods
-    let all_outputs
-    let sub_outputs
+    let all_outputs = new HashMap()
+    let sub_outputs = new HashMap()
     let openLogger = basicConfig.printWsLog
+    let ws_index = 0
 
     websocketInterface.prototype.newWebSocket = function(server) {
         let ws = new WebSocket(server.url)
-        all_outputs = []
-        sub_outputs = []
+        ws.index = ws_index++
+        all_outputs.set(ws.index, [])
+        sub_outputs.set(ws.index, [])
         let index = 0
 
         ws.on('open', async function open() {
-            if(openLogger) logger.info('ws open!')  //important logger
+            if(openLogger) logger.info('[ws-' + ws.index +'] open!')  //important logger
         })
 
         ws.on('message', function incoming(data) {
             let message = JSON.parse(data)
             message.outputIndex = index ++
-            all_outputs.push(message)
-            sub_outputs.push(message)
-            if(openLogger) logger.info('ws message: ' + data)  //important logger
+            all_outputs.get(ws.index).push(message)
+            sub_outputs.get(ws.index).push(message)
+            if(openLogger) logger.info('[ws-' + ws.index +'] message: ' + data)  //important logger
         })
 
         ws.on('close', function close() {
-            if(openLogger) logger.info('ws disconnected!')  //important logger
+            if(openLogger) logger.info('[ws-' + ws.index +'] disconnected!')  //important logger
         })
         return ws
     }
@@ -109,9 +112,9 @@ function websocketInterface() {
     websocketInterface.prototype.closeWebSocket = function(ws) {
         if(openLogger) {
             logger.debug('sub_outputs: ')
-            websocketInterface.prototype.printOutputs(sub_outputs)
+            websocketInterface.prototype.printOutputs(ws.index, sub_outputs)
             logger.debug('all_outputs: ')
-            websocketInterface.prototype.printOutputs(all_outputs)
+            websocketInterface.prototype.printOutputs(ws.index, all_outputs)
         }
         ws.close()
         return new Promise((resolve, reject)=>{
@@ -121,16 +124,16 @@ function websocketInterface() {
 
     websocketInterface.prototype.subscribe = function (ws, methodName, params) {
         let requestContent = JSON.stringify(baseInterface.prototype.createJsonRpcRequestContent(this.id++, methodName, params))
-        if(openLogger) logger.info('ws.send: ' + requestContent) //important logger
+        if(openLogger) logger.info('[ws-' + ws.index +'].send: ' + requestContent) //important logger
         return websocketInterface.prototype.subscribeResponse(ws, requestContent)
     }
 
     websocketInterface.prototype.subscribeResponse = function(ws, content){
         if(openLogger) {
             logger.debug('sub_outputs: ')
-            websocketInterface.prototype.printOutputs(sub_outputs)
+            websocketInterface.prototype.printOutputs(ws.index, sub_outputs)
         }
-        websocketInterface.prototype.clearSub()
+        websocketInterface.prototype.clearSub(ws.index)
         return new Promise((resolve, reject)=>{
             /*
             Constant	Value	Description
@@ -148,7 +151,7 @@ function websocketInterface() {
                 ws.send(content)
             }
             else{
-                logger.debug('ws.readyState: ' + ws.readyState)
+                logger.debug('[ws-' + ws.index +'].readyState: ' + ws.readyState)
             }
             resolve(websocketInterface.prototype.createOutputs(sub_outputs, all_outputs))
         })
@@ -156,8 +159,8 @@ function websocketInterface() {
 
     //region outputs
 
-    websocketInterface.prototype.clearSub = function(){
-        sub_outputs = []
+    websocketInterface.prototype.clearSub = function(index){
+        sub_outputs.get(index).length = 0
     }
 
     websocketInterface.prototype.getOutputs = function(){
@@ -168,7 +171,8 @@ function websocketInterface() {
         return {sub: sub_outputs, all: all_outputs}
     }
 
-    websocketInterface.prototype.printOutputs = function(outputs){
+    websocketInterface.prototype.printOutputs = function(ws_index, outputs_map){
+        let outputs = outputs_map.get(ws_index)
         for(let i = 0; i < outputs.length; i++){
             let output = outputs[i]
             logger.debug(output.outputIndex + '. ' + JSON.stringify(output))

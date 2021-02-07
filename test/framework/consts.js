@@ -160,6 +160,59 @@ module.exports = consts = {
 
     //endregion
 
+    //region swt
+    swtConsts:{
+        oneSwt: 1000000,
+        totalSwt: 100000000,
+        totalFee: 100000000000000,
+    },
+
+    sendTxType:{
+        Normal: 'Noraml',
+        InOneRequest: 'InOneRequest',
+        InOneRequestQuickly: 'InOneRequestQuickly',
+        default: '',
+    },
+
+    // defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+    // defaultNativeCoin: 'SWT',
+    default:{
+        issuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
+        nativeCoin: 'SWT',
+        nativeCoinDecimals: 6,
+        tokenDecimals: 8,
+        maxAmount: 90000000000,
+        fee: 10
+        // maxAmount: Math.pow(2, 63),
+        // maxAmount:9223372036854775000,  //其實應該是9223372036854775807，2的63次方，但這樣nodejs會自動進位爲9223372036854776000，溢出了。
+    },
+    //endregion
+
+    //region markdown
+    markdownTypes: {
+        text: "text",
+        softbreak: "softbreak",
+        linebreak: "linebreak",
+        emph: "emph",
+        strong: "strong",
+        html_inline: "html_inline",
+        link: "link",
+        image: "image",
+        text: "text",
+        code: "code",
+        text: "text",
+        document: "document",
+        paragraph: "paragraph",
+        block_quote: "block_quote",
+        item: "item",
+        list: "list",
+        heading: "heading",
+        code_block: "code_block",
+        html_block: "html_block",
+        thematic_break: "thematic_break",
+    },
+    //endregion
+
     //region versions
     versions:{
         '20201105': 'v0.5.1-dev',
@@ -366,57 +419,5 @@ module.exports = consts = {
     },
     //endregion
 
-    //region swt
-    swtConsts:{
-        oneSwt: 1000000,
-        totalSwt: 100000000,
-        totalFee: 100000000000000,
-    },
-
-    sendTxType:{
-        Normal: 'Noraml',
-        InOneRequest: 'InOneRequest',
-        InOneRequestQuickly: 'InOneRequestQuickly',
-        default: '',
-    },
-
-    // defaultIssuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
-    // defaultNativeCoin: 'SWT',
-    default:{
-        issuer: 'jjjjjjjjjjjjjjjjjjjjjhoLvTp',
-        nativeCoin: 'SWT',
-        nativeCoinDecimals: 6,
-        tokenDecimals: 8,
-        maxAmount: 90000000000,
-        fee: 10
-        // maxAmount: Math.pow(2, 63),
-        // maxAmount:9223372036854775000,  //其實應該是9223372036854775807，2的63次方，但這樣nodejs會自動進位爲9223372036854776000，溢出了。
-    },
-    //endregion
-
-    //region markdown
-    markdownTypes: {
-        text: "text",
-        softbreak: "softbreak",
-        linebreak: "linebreak",
-        emph: "emph",
-        strong: "strong",
-        html_inline: "html_inline",
-        link: "link",
-        image: "image",
-        text: "text",
-        code: "code",
-        text: "text",
-        document: "document",
-        paragraph: "paragraph",
-        block_quote: "block_quote",
-        item: "item",
-        list: "list",
-        heading: "heading",
-        code_block: "code_block",
-        html_block: "html_block",
-        thematic_break: "thematic_break",
-    }
-    //endregion
 }
 

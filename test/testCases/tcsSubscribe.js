@@ -98,7 +98,7 @@ module.exports = tcsSubscribe = {
                 if(action.type == actionTypes.sendTx
                     || action.type == actionTypes.signTx
                     || action.type == actionTypes.sendRawTx){  // send txs
-                    mainAction.server.clearSub() //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
+                    mainAction.server.clearSub(ws.index) //因为sendTx不走subscribe，因此必须在这里执行清空上一次sub的动作。
                     // logger.debug('mainAction.server.getOutputs().sub: ' + mainAction.server.getOutputs().sub.length)
                     let server = mainAction.server
 
@@ -137,7 +137,7 @@ module.exports = tcsSubscribe = {
 
                 //保存这个action的执行结果
                 logger.debug(JSON.stringify(mainAction.server.getOutputs()))
-                action.output = utility.deepClone(mainAction.server.getOutputs().sub)  //必须现在调用getOutputs()获取最新的output，不能用变量
+                action.output = utility.deepClone(mainAction.server.getOutputs().sub.get(ws.index))  //必须现在调用getOutputs()获取最新的output，不能用变量
             }
 
             //close ws
@@ -494,10 +494,9 @@ module.exports = tcsSubscribe = {
 
                 testScript = tcsSubscribe.createTestScript(server, testCaseCode, scriptCode, txFunctionName, actions)
                 framework.addTestScript(testScripts, testScript)
-
             }
 
-            // framework.testTestScripts(server, describeTitle + '_订阅block', testScripts)
+            framework.testTestScripts(server, describeTitle + '_订阅block', testScripts)
 
             //endregion
 

@@ -84,7 +84,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -201,12 +201,12 @@ describe('Jingtum测试', function() {
 
                 //region websocket subscribe
 
-                // this.timeout(_longTimeOut)
-                // server.mode.testMode = testMode.singleMode
-                // // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                // // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                // this.timeout(timeout)
+                this.timeout(_longTimeOut)
+                server.mode.testMode = testMode.parallelMode
+                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                this.timeout(timeout)
 
                 //endregion
 

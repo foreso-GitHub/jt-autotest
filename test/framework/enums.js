@@ -27,6 +27,7 @@ let testMode = {
     unknown: 0,
     singleMode: 10,
     batchMode: 20,
+    parallelMode: 30,
 }
 
 let restrictedLevel = {
