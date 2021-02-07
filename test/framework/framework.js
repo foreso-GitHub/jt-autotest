@@ -743,7 +743,9 @@ module.exports = framework = {
 
     //region parallel mode
 
-    //todo 一组testScript并行执行，然后一起检查结果。一般用于ws的subscribe相关测试。因为一条testScript有独立的一个ws链接，相互不会干扰。
+    //一组testScript并行执行，然后一起检查结果。
+    // 一般用于ws的subscribe相关测试。因为一条testScript有独立的一个ws链接，相互不会干扰。
+    // 【注：还是不能用于subscribe相关测试，同时发送tx时会相互干扰。但可以用于listSubscribe】
     testOnParallelMode: function(server, describeTitle, testScripts){
         describe(describeTitle, async function () {
 

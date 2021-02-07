@@ -154,7 +154,9 @@ describe('Jingtum测试', function() {
                 server.mode.testMode = testMode.singleMode
                 tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
                 tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // server.mode.testMode = testMode.parallelMode
                 tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                server.mode.testMode = currentTestMode
                 this.timeout(timeout)
 
                 //endregion
@@ -198,17 +200,6 @@ describe('Jingtum测试', function() {
                 // tcsPerformanceTest.test(server, '测试Performance')
                 // server.mode.testMode = currentTestMode
                 // this.timeout(timeout)
-
-                //region websocket subscribe
-
-                this.timeout(_longTimeOut)
-                server.mode.testMode = testMode.parallelMode
-                tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
-                tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
-                tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
-                this.timeout(timeout)
-
-                //endregion
 
                 //endregion
 
