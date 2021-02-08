@@ -1243,7 +1243,7 @@ module.exports = tcsSubscribe = {
 
             testScripts = []
 
-            //region token tx
+            //region tx token
 
             token = utility.getDynamicTokenName()
             token.issuer = sender.address
@@ -1408,13 +1408,13 @@ module.exports = tcsSubscribe = {
 
             //endregion
 
-            //region tx token
+            //region token token
 
             token = utility.getDynamicTokenName()
             token.issuer = sender.address
 
             testCaseCode = 'FCJT_subscribe_000081'
-            scriptCode = defaultScriptCode + '_订阅tx，发行token，全局token'
+            scriptCode = defaultScriptCode + '_订阅token，发行token，全局token'
             {
                 actions = []
 
