@@ -211,7 +211,7 @@ describe('Jingtum测试', function() {
 
                 // for(let i = 0; i < 5000; i++){
                 //     tcsPerformanceTest.testForPurePerformance(server, '测试Performance，全力',
-                //         consts.rpcFunctions.sendTx, 1, 50)
+                //         consts.rpcFunctions.sendTx, 1, 5)
                 // }
 
                 this.timeout(timeout)
