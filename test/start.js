@@ -81,7 +81,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            // /*
+            /*
             describe('用例测试', function () {
 
                 //region basic test

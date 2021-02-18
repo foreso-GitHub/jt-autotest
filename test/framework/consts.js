@@ -420,6 +420,11 @@ module.exports = consts = {
             "checksum": "66f82228b3003001cb4f134e1240b58413ddf3d4",
             "time": "20210208",
             "version": "v0.5.4-dev"
+        },
+        '20210209':{
+            "checksum": "f080e8c2b57b52cabd3cef2718439ab6305d3f46",
+            "time": "20210209",
+            "version": "v0.5.4-dev"
         }
     },
     //endregion
