@@ -133,7 +133,7 @@ module.exports = tcsCreateWallet = {
             let type = 123123
             let testScript = tcsCreateWallet.createTestScript(server, testCaseCode, scriptCode, functionName, type)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-269, 'null key type'))
+                framework.getError(-269, 'type is not string'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }

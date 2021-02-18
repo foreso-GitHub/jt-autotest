@@ -850,7 +850,7 @@ module.exports = tcsSendAndSignTx = {
             testScript.actions[0].txParams[0].from = "from.address"
             testScript.actions[0].txParams[0].sequence = "1"
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-284, 'sequence must be positive integer'))
+                framework.getError(-278, 'Bad account address'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
