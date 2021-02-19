@@ -81,7 +81,7 @@ describe('Jingtum测试', function() {
                 framework.stoptWork()
             })
 
-            /*
+            // /*
             describe('用例测试', function () {
 
                 //region basic test
@@ -188,6 +188,15 @@ describe('Jingtum测试', function() {
                 //region test1
 
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
+
+
+                //region basic test
+
+                // tcsSequenceTest.testForSequenceTest(server, '测试Sequence')
+
+                // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
+
+                //endregion
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
 

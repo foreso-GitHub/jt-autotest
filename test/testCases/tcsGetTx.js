@@ -269,7 +269,7 @@ module.exports = tcsGetTx = {
             index = -1
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-269, 'index or sequence should be >= 0'))
+                framework.getError(-284, 'for sequence'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -282,7 +282,7 @@ module.exports = tcsGetTx = {
             index = 5.87
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-269, 'sequence is not integer'))
+                framework.getError(-284, 'sequence is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -295,7 +295,7 @@ module.exports = tcsGetTx = {
             index = 'sjdflsajf32241kjksd'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-269, 'sequence is not integer'))
+                framework.getError(-284, 'sequence is not integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
