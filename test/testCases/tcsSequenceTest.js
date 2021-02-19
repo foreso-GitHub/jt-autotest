@@ -51,6 +51,40 @@ module.exports = tcsSequenceTest = {
             framework.addTestScript(testScripts, testScript)
         }
 
+        testCaseCode = 'FCJT_sendTransaction_000630'
+        scriptCode = '000200_' + txFunctionName + '_sequence为整数字符串'
+        {
+            let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
+                server.mode.addresses.sequence1, server.mode.addresses.sequence_r_1, value, fee, false)
+            let action = testScript.actions[0]
+            let sequence2stringForSign = async function(action) {
+                let server = action.server
+                let from = action.bindData.txParams[0].from
+                let currentSequence = await server.getSequence(server, from)
+
+                for (let i = 0; i < action.bindData.txParams.length; i++) {
+                    let txParam = action.bindData.txParams[i]
+                    if (!txParam.sequence) {
+                        txParam.sequence = currentSequence.toString()
+                    }
+                }
+            }
+
+            let sequence2stringForSend = async function(action) {
+                await sequence2stringForSign(action)
+                await tcsSequenceTest.restoreBalances(action)
+            }
+
+            if(txFunctionName == consts.rpcFunctions.sendTx){
+                action.beforeExecution = sequence2stringForSend
+            }
+            else if(txFunctionName == consts.rpcFunctions.signTx){
+                action.beforeExecution = sequence2stringForSign
+            }
+
+            framework.addTestScript(testScripts, testScript)
+        }
+
         testCaseCode = 'FCJT_sendTransaction_000640'
         {
             let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
@@ -125,11 +159,11 @@ module.exports = tcsSequenceTest = {
             let testScript = tcsSequenceTest.createTestScript(server, testCaseCode, scriptCode, txFunctionName,
                 server.mode.addresses.sequence3, server.mode.addresses.sequence_r_3, value, fee, false)
 
-            testScript.actions[0].bindData.txParams[0].sequence = '1234'  //set sequence as '1234'
+            testScript.actions[0].bindData.txParams[0].sequence = 'abcd'  //set sequence as '1234'
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-284, 'sequence must be positive integer'))
+                framework.getError(-284, 'sequence is not integer'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
 
             framework.addTestScript(testScripts, testScript)

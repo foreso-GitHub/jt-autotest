@@ -999,7 +999,7 @@ module.exports = framework = {
         expect(tx.Account).to.be.equals(param.from)
         expect(tx.Destination).to.be.equals(param.to)
         expect(tx.Fee).to.be.equals(param.fee ? param.fee : consts.default.fee.toString())
-        expect(tx.Sequence).to.be.equals(param.sequence)
+        expect(tx.Sequence.toString()).to.be.equals(param.sequence.toString())
 
         //region check value
         if(tx.Amount){

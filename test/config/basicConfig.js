@@ -13,7 +13,7 @@ let rpcSettings = {
     request_timeout: 13000,  //important: rpc request timeout setting (default: 6000).  if request_timeout <= 0, then request timeout will be ignore.
 }
 
-let jtVersion = '20210219'
+let jtVersion = '20210219b'
 
 // * 优先级从高到低依次为:OFF FATAL ERROR WARN INFO DEBUG TRACE ALL
 // *
