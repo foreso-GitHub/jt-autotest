@@ -115,7 +115,7 @@ module.exports = tcsSequenceTest = {
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-284, 'Malformed: Sequence is not in the past.'))
+                framework.getError(-284, 'Malformed: Bad sequence.'))
             framework.changeExpectedResultWhenSignPassButSendRawTxFail(testScript, expectedResult)
 
             framework.addTestScript(testScripts, testScript)
@@ -131,7 +131,7 @@ module.exports = tcsSequenceTest = {
             testScript.actions[0].bindData.plusValueTimes = 0 // value should not change
             testScript.actions[0].bindData.timeoutAfterSend = 0  //need not timeout
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-284, 'sequence must be positive integer'))
+                framework.getError(-284, 'sequence is not integer'))
             framework.changeExpectedResultWhenSignFail(testScript, expectedResult)
 
             framework.addTestScript(testScripts, testScript)

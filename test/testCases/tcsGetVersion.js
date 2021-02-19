@@ -14,6 +14,7 @@ const framework = require('../framework/framework')
 const schema = require('../framework/schema')
 const { responseStatus,  serviceType,  interfaceType,  testMode,  restrictedLevel, } = require("../framework/enums")
 const consts = require('../framework/consts')
+const history = require('../framework/history')
 const jtVersion = require('../config/basicConfig').jtVersion
 let utility = require('../framework/testUtility')
 //endregion
@@ -152,18 +153,18 @@ module.exports = tcsGetVersion = {
     checkForGetByNoneArrayParams: function(action){
         let actualResults = action.actualResult.result
         let version = utility.parseVersionInfo(actualResults)
-        expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+        expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(history.versions[jtVersion]))
     },
 
     checkForPassResult: function(action, param, expected, actual){
         let version = actual.result
         if(param.format && param.format == 'json'){
             expect(version).to.be.jsonSchema(schema.VERSION_JSON_SCHEMA)
-            expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+            expect(utility.combineVersionInfo(version)).to.be.equal(utility.combineVersionInfo(history.versions[jtVersion]))
         }
         else if (param.format && param.format == 'text'){
             expect(version).to.be.jsonSchema(schema.VERSION_TXT_SCHEMA)
-            expect(version).to.be.equal(utility.combineVersionInfo(consts.versions[jtVersion]))
+            expect(version).to.be.equal(utility.combineVersionInfo(history.versions[jtVersion]))
         }
         else{
             expect('param error ' + JSON.stringify(param)).to.be.not.ok
