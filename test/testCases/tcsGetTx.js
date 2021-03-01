@@ -282,7 +282,7 @@ module.exports = tcsGetTx = {
             index = 5.87
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-284, 'sequence is not integer'))
+                framework.getError(-284, 'sequence is not a valid integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -295,7 +295,7 @@ module.exports = tcsGetTx = {
             index = 'sjdflsajf32241kjksd'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByIndex(server, testCaseCode, scriptCode, from, index, ledger)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-284, 'sequence is not integer'))
+                framework.getError(-284, 'sequence is not a valid integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -479,7 +479,7 @@ module.exports = tcsGetTx = {
             let index = 'asdf'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, hash, index,)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-269, 'index is not integer'))
+                framework.getError(-269, 'index is not a valid integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
@@ -597,7 +597,7 @@ module.exports = tcsGetTx = {
             let index = 'asdf'
             let testScript = tcsGetTx.createTestScriptForGetTransactionByBlockAndIndex(server, testCaseCode, scriptCode, functionName, blockNumber, index,)
             let expectedResult = framework.createExpectedResult(false,
-                framework.getError(-269, 'index is not integer'))
+                framework.getError(-269, 'index is not a valid integer'))
             framework.changeExpectedResult(testScript, expectedResult)
             framework.addTestScript(testScripts, testScript)
         }
