@@ -55,7 +55,7 @@ module.exports = upgradeChainTool = {
             else{
                 if(result.shasum != results[i].shasum){
                     allSame = false
-                    logger.debug(result.service.name + ' and ' + results[i].service.name + ' have different shasum: '
+                    logger.debug('[' + result.service.name + '] and [' + results[i].service.name + '] have different shasum: '
                         + result.shasum + ' | ' + results[i].shasum)
                 }
             }

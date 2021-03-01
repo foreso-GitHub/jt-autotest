@@ -227,6 +227,11 @@ module.exports = history = {
             "checksum": "ae3070493c2d87812731c2583fe3820089246ee7",
             "time": "20210219",
             "version": "v0.6.4-dev"
+        },
+        '20210301':{
+            "checksum": "f0ae0dfed6982ab2222339a7bed661355df68136",
+            "time": "20210301",
+            "version": "v0.6.4-dev"
         }
     },
     //endregion
