@@ -21,12 +21,15 @@ compare current chain.
 
  */
 
+// const chain_file = 'skywell.chain'
+const chain_file = 'skywell.iot.jingtum'
+
 const cmds = {
-    shasum_newChain: 'shasum ./download/skywell.chain',
-    shasum_currentChain: 'shasum ./node/skywell.chain',
-    shasum_backupChain: 'shasum ./backup/versions/skywell.chain',
-    cp_newChain: 'cp ./download/skywell.chain ./node/skywell.chain',
-    cp_backup: 'cp ./download/skywell.chain ./backup/versions/skywell.chain',
+    shasum_newChain: 'sudo shasum ./download/' + chain_file,
+    shasum_currentChain: 'sudo shasum ./node/' + chain_file,
+    shasum_backupChain: 'sudo shasum ./backup/versions/' + chain_file,
+    cp_newChain: 'cp ./download/' + chain_file + ' ./node/' + chain_file,
+    cp_backup: 'cp ./download/' + chain_file + ' ./backup/versions/' + chain_file,
 }
 
 module.exports = upgradeChainTool = {
@@ -64,11 +67,12 @@ module.exports = upgradeChainTool = {
         return allSame ? result.shasum : null
     },
 
-    //2d55b2941a775a8c090b9039d57ef805dba3c516  ./download/skywell.chain
+    //2d55b2941a775a8c090b9039d57ef805dba3c516 ./download/skywell.chain
     parseShasum: function(cmd, result){
-        let removePart = cmd.replace('shasum', '')
+        let removePart = cmd.replace('sudo shasum', '')
         let shasum = result.replace(removePart,'')
-        shasum = shasum.replace('\r','')
+        shasum = shasum.replace(' \r','')
+        shasum = shasum.replace(' ','')
         return shasum
     },
 
