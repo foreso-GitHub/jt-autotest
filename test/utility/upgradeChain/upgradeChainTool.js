@@ -28,8 +28,8 @@ const cmds = {
     shasum_newChain: 'sudo shasum ./download/' + chain_file,
     shasum_currentChain: 'sudo shasum ./node/' + chain_file,
     shasum_backupChain: 'sudo shasum ./backup/versions/' + chain_file,
-    cp_newChain: 'cp ./download/' + chain_file + ' ./node/' + chain_file,
-    cp_backup: 'cp ./download/' + chain_file + ' ./backup/versions/' + chain_file,
+    cp_newChain: 'sudo cp ./download/' + chain_file + ' ./node/' + chain_file,
+    cp_backup: 'sudo cp ./download/' + chain_file + ' ./backup/versions/' + chain_file,
 }
 
 module.exports = upgradeChainTool = {
