@@ -187,6 +187,8 @@ describe('Jingtum测试', function() {
 
                 //region test1
 
+                // tcsSequenceTest.testForSequenceTest(server, '测试Sequence')
+
                 // tcsGetVersion.testForGetVersion(server, '测试jt_version')
 
                 // tcsSendAndSignTx.testForSendTxAndSignTx(server, '测试jt_sendTransaction和jt_signTransaction')
@@ -215,6 +217,19 @@ describe('Jingtum测试', function() {
                 // }
 
                 this.timeout(timeout)
+
+                //endregion
+
+                //region websocket subscribe
+
+                // this.timeout(_longTimeOut)
+                // server.mode.testMode = testMode.singleMode
+                // tcsSubscribe.testForSubscribe(server, '测试jt_subscribe')
+                // tcsSubscribe.testForUnsubscribe(server, '测试jt_unsubscribe')
+                // // server.mode.testMode = testMode.parallelMode
+                // tcsSubscribe.testForListSubscribe(server, '测试jt_listSubscribe')
+                // server.mode.testMode = currentTestMode
+                // this.timeout(timeout)
 
                 //endregion
 
