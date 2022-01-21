@@ -13,7 +13,7 @@
     "chai": "^4.2.0",
     "chai-json-schema": "^1.5.1",
     "hashmap": "^2.4.0",
-    "log4js": "^6.1.0",
+    "log4js": "^6.4.0",
     "mocha": "^5.2.0",
     "nativescript-websockets": "^1.5.3",
     "querystring": "^0.2.0",
